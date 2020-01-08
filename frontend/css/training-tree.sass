@@ -1,0 +1,108 @@
+.kars-tt-container
+    padding: 0
+    background-color: $kars-tt-placeholder-bg
+    position: relative
+
+.kars-tt-window
+    position: relative
+    overflow-x: scroll
+
+.kars-tt-placeholder
+    padding: 0.5rem
+
+.kars-tt-thing
+    background-color: lighten($kars-tt-placeholder-bg, 3%)
+    padding: 0.5rem 1rem
+    border-radius: 0 0 16px 16px
+
+    .kars-item-list
+        display: flex
+        flex-wrap: wrap
+
+        .item:not(:last-child)
+            margin-right: 0.5em
+
+// SVG STYLES START HERE
+
+$primary-stroke-color: white
+$highlight-color: lighten(red, 25%)
+$active-color: yellow
+$hexNodeTypes: ("voice": rgb(65, 152, 242), "story": rgb(238, 103, 103), "suit": rgb(203, 138, 240), "active-level": rgb(94, 203, 219), "hirameku": rgb(255,154,115), "passive": rgb(159, 187, 76))
+svg
+    .p-appeal
+        fill: #f383c8
+    .p-tech
+        fill: #ffc746
+    .p-sta
+        fill: #25c76e
+
+    .tt-t, .tt-s
+        text-anchor: middle
+        font-weight: bold
+        font-size: 12pt
+    .tt-t
+        stroke: none
+    .tt-s
+        stroke-width: 2pt !important
+        stroke: white
+
+    #stt-awaken-node-fill
+        .s1
+            stop-color: rgb(246,203,231)
+        .s2
+            stop-color: rgb(142,209,245)
+
+    .stt-connection 
+        fill: none
+        stroke: darken(#fff, 20%)
+        stroke-width: 4pt
+
+        .highlight-path
+            stroke: $highlight-color
+        .active-path
+            stroke: $active-color
+
+    .stt-node
+        stroke-width: 2pt
+        stroke: $primary-stroke-color
+
+        &.highlight-path
+            stroke: lighten($highlight-color, 10%)
+        &.active-path
+            stroke: yellow
+
+    .stt-node-start
+        fill: darken(white, 10%)
+        .tt-t
+            fill: #444
+
+    .stt-node-param
+        .tt-t
+            fill: #009e47
+
+    @each $className, $colour in $hexNodeTypes
+        .stt-node-#{$className}
+            fill: $colour
+            .tt-t
+                fill: white
+            .tt-s
+                stroke: $colour
+
+    .stt-node-awake
+        fill: url("#stt-awaken-node-fill")
+        .tt-t
+            fill: white
+        .tt-s
+            stroke: rgb(100, 166, 202)
+
+    .stt-node:hover
+        stroke: yellow
+        stroke-width: 3pt
+    
+    .stt-level-separator
+        stroke-width: 2pt
+        stroke-dasharray: 5,5
+    
+    .stt-level-indicator
+        stroke: none
+        fill: darken(#fff, 20%)

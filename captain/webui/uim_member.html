@@ -1,0 +1,31 @@
+    <div class="kars-list-alternate">
+        <div class="card-body kars-member-header">
+            <img class="item kars-mem-icon" src="{{ image_url_reify(member.thumbnail_image_asset_path, "png") }}" />
+            <div class="item">
+                <h1 class="h4">
+                    {% raw tlinject_static(member.name_romaji) %}
+                </h1>
+
+                <h2 class="h6 mb-0">
+                    {{ format_ordinal(member.year) }} Year,
+                    {% if member.subunit_name %}
+                        <a href="/idols/group/{{ member.group }}">{% raw tlinject_static(member.group_name) %}</a>, 
+                        <a href="/idols/unit/{{ member.subunit }}">{% raw tlinject_static(member.subunit_name) %}</a>
+                    {% else %}
+                        <a href="/idols/group/{{ member.group }}">{% raw tlinject_static(member.group_name) %}</a>
+                    {% end %}
+                </h2>
+            </div>
+        </div>
+
+        <div class="card-body kars-card-brief-list position-relative">
+            <div class="kars-ornament-top-left" style="border-top-color: {{ member.css_color() }}; border-left-color: {{ member.css_color() }}"></div>
+            {% for cl in member.card_brief[-9:] %}
+            <a href="/card/{{ cl.ordinal }}" class="card-icon">
+                <img width="64" height="64" src="{{ card_icon_url(cl, cl.normal_appearance) }}"
+                    alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">
+            </a>
+            {% end %}
+            <a class="btn btn-primary" href="/cards/by_idol/{{ member.id }}/{{ member.ascii_name() }}">{{ _("All...") }}</a>
+        </div>
+    </div>

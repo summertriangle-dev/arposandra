@@ -1,0 +1,31 @@
+version: '3'
+services:
+  asset:
+    ports:
+      - "5001:30001"
+    volumes:
+      - ./arena/astool_server_specific_fixme:/external/astool:ro
+      - ./arena/nrcfg:/newrelic:ro
+    environment:
+      AS_ASSET_JIT_SECRET: B10E7DBB0B7E462398879E649DCE3C09
+      NEW_RELIC_CONFIG_FILE: "/newrelic/skyfarer.ini"
+      NEW_RELIC_ENVIRONMENT: "staging"
+    restart: unless-stopped
+  web:
+    ports:
+      - "5000:30001"
+    volumes:
+      - ./arena/astool_server_specific_fixme:/external/astool:ro
+      - ./arena/nrcfg:/newrelic:ro
+    environment:
+      AS_IMAGE_SERVER: "http://mari.local:5001"
+      AS_TLINJECT_SECRET: A3EAEE7BDC584150A9E2CCC03CD64ED4
+      AS_ASSET_JIT_SECRET: B10E7DBB0B7E462398879E649DCE3C09
+      AS_HOST_ID: mari-staging
+      NEW_RELIC_CONFIG_FILE: "/newrelic/captain.ini"
+      NEW_RELIC_ENVIRONMENT: "staging"
+    restart: unless-stopped
+  utils:
+    user: "501"
+    volumes:
+      - ./arena/astool:/external/astool_storage:rw

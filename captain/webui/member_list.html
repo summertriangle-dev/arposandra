@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>{{ _("PT.IdolList") }} - {{ _("PT.SiteName") }}</title>
+
+        {% include t_preamble.html %}
+    </head>
+    <body>
+        {% module Template("uim_nav.html", current="idol_list") %}
+
+        {% for group_name, members in member_groups.items() %}
+        <div class="container">
+            <h1 class="h3 ml-3 mb-3">
+                {% if nav_crumb_level > 1 %}
+                    <a class="font-weight-light" href="/idols/group/{{ members[0].group }}">
+                        {% raw tlinject_static(group_name) %}
+                    </a> /
+                    {% raw tlinject_static(members[0].subunit_name) %}
+                {% else %}
+                    {% raw tlinject_static(members[0].group_name) %}
+                {% end %}
+            </h1>
+
+            <div class="card kars-card-box">
+            {% for member in members %}
+                {% module Template("uim_member.html", member=member) %}
+            {% end %}
+            </div>
+        </div>
+        {% end %}
+
+        {% include t_footer.html %}
+    </body>
+</html>

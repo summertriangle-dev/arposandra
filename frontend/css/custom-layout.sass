@@ -1,0 +1,296 @@
+$kars-card-radius: 16px
+
+@include media-breakpoint-down(sm)
+    .container
+        padding-left: 0
+        padding-right: 0
+
+.icon
+    width: 1.5rem
+    display: inline-flex
+    justify-content: center
+
+.kars-navbar
+    display: flex
+    justify-content: space-between
+    margin-top: 12px
+    margin-bottom: 12px
+    padding-left: 8px
+    padding-right: 8px
+
+    .kars-navbar-list
+        display: flex
+
+        .item
+            margin-left: 10px
+            margin-right: 10px
+            color: $kars-navbar-item-color
+        a.item:hover 
+            color: $kars-navbar-item-hover-color
+        
+    .icon 
+        font-size: 1.33rem
+
+.kars-sub-navbar
+    display: flex
+    flex-direction: row
+    align-items: center
+    padding: 0 10px
+    
+    &.is-right
+        justify-content: flex-end
+    &.is-right > .item
+        margin-left: 1rem
+        margin-right: 0
+        &:not(.has-icon)
+            font-size: 0.9rem
+    &> .item
+        color: $kars-navbar-item-color
+        margin-left: 0
+        margin-right: 1rem
+        &:not(.has-icon)
+            font-size: 0.9rem
+
+.kars-footer
+    font-size: 0.8rem
+    margin-top: 20px
+    margin-bottom: 20px
+    padding-bottom: env(safe-area-inset-bottom)
+
+/* cards */
+
+.kars-card-box
+    margin-top: 0.8rem
+    margin-bottom: 2rem
+    border: none
+    border-radius: $kars-card-radius
+
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 0 0 1px $kars-box-highlight-color
+
+    &>*:first-child
+        border-radius: $kars-card-radius $kars-card-radius 0 0
+        
+    &>*:last-child
+        border-radius: 0 0 $kars-card-radius $kars-card-radius
+
+.kars-card-image-backing
+    background-size: cover
+    position: relative
+    display: block
+    font-size: 0
+
+.kars-card-image-backing:first-child, .kars-card-image-backing:first-child img
+    border-radius: $kars-card-radius $kars-card-radius 0 0
+
+.kars-card-image-float
+    position: absolute
+    bottom: 0
+    left: 0
+    padding: 8px
+    display: flex
+    align-items: center
+    font-size: 0.9rem
+
+.kars-mem-padding
+    padding: 35px 20px 20px 20px
+
+.kars-mem-icon
+    width: 64px
+    height: 64px
+
+.kars-mem-inline-icons
+    display: flex
+    align-items: flex-end
+    flex-wrap: wrap
+
+.kars-member-header
+    display: flex
+    flex-wrap: wrap
+    align-items: flex-end
+    position: relative
+
+    &.kars-member-small
+        margin-bottom: 0 !important
+        padding-bottom: 0
+
+    .item
+        margin-right: 0.75rem
+
+.kars-card-spread
+    max-width: 100%
+    object-fit: cover
+    min-height: 300px
+
+.kars-ornament-top-left
+    pointer-events: none
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    border-top: 8px solid orange
+    border-left: 40px solid orange
+    border-bottom: 40px solid transparent
+
+.kars-ornament-bottom-left
+    pointer-events: none
+    position: absolute
+    bottom: 0
+    left: 0
+    width: 100%
+    border-bottom: 8px solid orange
+    border-left: 40px solid orange
+    border-top: 40px solid transparent
+
+/* stats */
+
+.kars-stats-table
+    margin-bottom: 0
+    thead th
+        border-top: none
+
+/* skills */
+
+img.kars-skill-icon
+    width: 44px
+    height: 44px
+
+.kars-skill-name
+    font-weight: bold
+
+.var, .let
+    color: $kars-var-color
+.var
+    font-weight: bold
+
+@for $i from 1 through 6
+    .kars-attr-#{$i} 
+        color: nth($kars-attr-colors, $i)
+
+@each $e in $kars-role-colors
+    .kars-role-#{index($kars-role-colors, $e)} 
+        color: $e
+
+@each $e in $kars-stat-colors
+    .kars-stat-#{index($kars-stat-colors, $e)} 
+        color: $e
+
+.kars-image-switch
+    border-radius: 999px
+    padding: 2px 2px
+    transition: opacity 86ms
+
+    background-color: $kars-gutter-bg
+
+    a, a:hover
+        display: inline-block
+        text-decoration: none
+        color: $kars-gutter-text !important
+        padding: 2px 16px
+
+    a.selected, a.selected:hover
+        border-radius: 999px
+        color: $kars-gutter-select-text !important
+        background-color: $kars-gutter-select-bg
+
+.kars-image-switch.neutral
+    background-color: rgba(10, 10, 10, 0.7) !important
+    a, a:hover
+        color: #eee !important
+    a.selected, a.selected:hover
+        color: #111 !important
+        background: #fff
+
+.card-image .kars-image-switch.is-gallery-mode
+    visibility: hidden
+
+@include media-breakpoint-down(sm)
+    .card-image .kars-image-switch.is-gallery-mode
+        visibility: visible
+
+.card-image:hover .kars-image-switch.is-gallery-mode
+    visibility: visible
+
+.kars-card-brief-list
+    display: flex
+    align-items: flex-end
+    flex-wrap: wrap
+    padding-top: 22px
+    padding-bottom: 16px
+
+    .card-icon
+        display: block
+        margin-right: 8px
+        font-size: 0
+
+.card-icon img, .kars-mem-icon
+    border-radius: 3px
+
+.tlinject:hover
+    color: white
+    background-color: rgba(128, 128, 128, 0.7)
+    cursor: pointer
+
+.kars-fieldset-naturalorder
+    flex-direction: row-reverse
+
+    .item:not(:last-child)
+        margin-left: 0.75rem
+    .item.flexible-space
+        flex-grow: 100
+        flex-shrink: 100
+
+.kars-css-modal
+    display: flex
+    align-items: center
+
+    .kars-css-modal-backdrop
+        position: fixed
+        left: 0
+        top: 0
+        width: 100%
+        height: 100%
+        transition: background 200ms ease
+
+    .modal-dialog
+        width: 100%
+        transition: opacity 100ms ease-out
+
+    &.is-hidden .modal-dialog
+        opacity: 0
+    &.is-shown .kars-css-modal-backdrop
+        background: rgba(0, 0, 0, 0.75)
+    
+    /* hack! */
+    .form-row 
+        margin-right: 0
+        margin-left: 0
+
+.kars-list-alternate
+    background-color: $card-bg
+    border-bottom: 1px solid darken($card-bg-alt, 5%)
+
+    &:nth-child(even)
+        background-color: $card-bg-alt
+    
+    &:first-child
+        border-radius: 16px 16px 0 0
+    &:last-child
+        border-radius: 0 0 16px 16px
+
+.kars-butt
+    height: 24px
+
+.kars-long-var-table
+    width: 100%
+
+    th
+        background: change-color($kars-var-color, $alpha: 0.5)
+        text-transform: uppercase
+
+    th, td
+        font-size: 80%
+        border: 1px solid $kars-var-color
+        text-align: center
+
+.kars-data-ts[data-orig-offset]
+    border-bottom: 1px dashed $body-color

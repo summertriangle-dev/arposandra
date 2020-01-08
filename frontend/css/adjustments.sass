@@ -1,0 +1,31 @@
+/* This file is for appearance changes we make using JS. */
+
+/* CARD */
+
+.kars-stats-extraneous
+    display: none
+
+/* Users in esports mode probably want to see all info. */
+.kars-stats-displaying-extraneous, .kars-esports-config
+    .kars-stats-extraneous
+        display: table-row !important
+    .kars-show-full-stat-table
+        display: none
+
+.kars-esports-config
+    .kars-card-box
+        .card-image
+            display: none
+
+    .kars-member-small
+        border-radius: $kars-card-radius $kars-card-radius 0 0
+        .kars-ornament-top-left
+            border-left: none
+            border-radius: $kars-card-radius $kars-card-radius 0 0
+
+.kars-gallery-config .kars-card-box
+    .gallery-mode-hidden
+        display: none
+
+    .kars-card-header.kars-member-small
+        padding-bottom: 1.5rem

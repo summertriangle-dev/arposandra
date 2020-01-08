@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>{{ _("PT.Welcome") }} - {{ _("PT.SiteName") }}</title>
+
+        {% include t_preamble.html %}
+    </head>
+    <body>
+        {% module Template("uim_nav.html", current="cards") %}
+
+        {% try %}
+            {% module Template("uim_homecontent.html") %}
+        {% except FileNotFoundError %}
+            <div class="container">
+                <h1 class="title">Default Content</h1>
+                <p>Edit the file webui/uim_homecontent.html to change the content displayed here.</p>
+            </div>
+        {% end %}
+
+        {% include t_footer.html %}
+    </body>
+</html>

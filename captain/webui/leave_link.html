@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>{{ _("PT.SiteName") }}</title>
+        
+        {% include t_preamble.html %}
+    </head>
+    <body class="kars-dark" data-master="{{ handler.settings["master"].version }}">
+        {% module Template("uim_nav.html", current=None) %}
+        
+        <div class="container">
+            <div class="card kars-card-box">
+                <div class="card-body">
+                    <p>{{ _("You are about to leave this site and visit the following external link:") }}</p>
+                    <p><a rel="noreferrer noopener nofollow" href="{{ the_link }}">{{ the_link }}</a></p>
+                    <p class="mb-0">{{ _("Be aware that external sites may contain malicious content. To continue, click the link.") }}</p>
+                </div>
+            </div>
+        </div>
+
+        {% include t_footer.html %}
+    </body>
+</html>

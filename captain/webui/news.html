@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>
+            {% if is_single %}
+                {{ news_items[0].title }} -
+            {% end %}
+            {{ _("PT.News") }} - {{ _("PT.SiteName") }}
+        </title>
+
+        {% include t_preamble.html %}
+    </head>
+    <body class="kars-dark" data-master="{{ handler.settings["master"].version }}">
+        {% module Template("uim_nav.html", current="news") %}
+        
+        <div class="container">
+            <h1 class="h3 ml-3 mb-3">
+                {% if has_offset or is_single %}
+                <a href="/{{ server }}/news">{{ _("PT.News") }}</a>
+                {% else %}
+                {{ _("PT.News") }}
+                {% end %}
+            </h1>
+
+            {% if not is_single %}
+            <div class="kars-react-component" data-component-class="NewsFilterSwitch"></div>
+            {% end %}
+
+            <div class="card kars-card-box">
+            {% for news_item in news_items %}
+                {% module Template("uim_news_item.html", news_item=news_item, server=server, expand=expand, show_ts_msg=show_ts_msg, time_offset=time_offset) %}
+            {% end %}
+            </div>
+            {% if has_next_page %}
+            <a class="btn btn-primary" href="/{{ server }}/news/?before={{ news_items[-1].timestamp() }}">
+                {{ _("More...") }}
+            </a>
+            {% end %}
+        </div>
+
+        {% include t_footer.html %}
+    </body>
+</html>

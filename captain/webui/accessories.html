@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>{{ _("PT.Welcome") }} - {{ _("PT.SiteName") }}</title>
+
+        {% include t_preamble.html %}
+    </head>
+    <body>
+        {% module Template("uim_nav.html", current="cards") %}
+
+        <div class="container">
+            <h1 class="h3 ml-3 mb-3">
+                Appendix: AppendixHiramekuSkills
+            </h1>
+            <div class="kars-stack">
+                <div class="kars-stack-header">
+                    {{ _("AppendixHiramekuSkills") }}
+                </div>
+                {% for skill in skills %}
+                <div class="media kars-stack-member">
+                    <img class="kars-skill-icon mr-3" src="{{ image_url_reify(skill.thumbnail_asset_path, "png") }}" />
+                    <div class="media-body">
+                        <p class="kars-skill-name mb-0">{% raw tlinject_static(skill.name) %}</p>
+                        <p class="mb-0">{% raw format_skill_effect(skill) %}</p>
+                        <p class="mb-0">{% raw format_skill_target(skill) %}</p>
+                    </div>
+                </div>
+                {% end %}
+            </div>
+        </div>
+
+        {% include t_footer.html %}
+    </body>
+</html>

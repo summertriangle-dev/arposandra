@@ -1,0 +1,29 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+{% if handler.settings["debug"] %}
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' *; img-src *; style-src 'self' 'unsafe-inline';" />
+{% else %}
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src {{ handler.settings["image_server"] }} https: 'self'; style-src 'self' 'unsafe-inline';" />
+{% end %}
+
+<link data-appearance="light" data-bg-color="#f2dbf8" 
+    class="theme" rel="stylesheet" type="text/css" 
+    href="{{ handler.static_url('css/theme-light.css') }}">
+<link data-appearance="dark" data-bg-color="#262336" 
+    class="theme" rel="stylesheet" type="text/css" 
+    media="(prefers-color-scheme: dark)" 
+    href="{{ handler.static_url('css/theme-dark.css') }}">
+
+<link href="{{ handler.static_url('vendor/ionicons.min.css') }}" rel="stylesheet" />
+
+{% if handler.settings["debug"] %}
+<script type="text/javascript" src="http://localhost:5002/static/js/vendors~early~main.bundle.js"></script>
+<script type="text/javascript" src="http://localhost:5002/static/js/early.bundle.js"></script>
+<script type="text/javascript" src="http://localhost:5002/static/js/vendors~main.bundle.js" async></script>
+<script type="text/javascript" src="http://localhost:5002/static/js/main.bundle.js" async></script>
+{% else %}
+<script type="text/javascript" src="{{ handler.static_url('js/vendors~early~main.bundle.js') }}"></script>
+<script type="text/javascript" src="{{ handler.static_url('js/early.bundle.js') }}"></script>
+<script type="text/javascript" src="{{ handler.static_url('js/vendors~main.bundle.js') }}" async></script>
+<script type="text/javascript" src="{{ handler.static_url('js/main.bundle.js') }}" async></script>
+{% end %}

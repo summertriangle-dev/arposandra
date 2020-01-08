@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>
+            {{ _("PT.CardReleases") }} - {{ _("PT.SiteName") }}
+        </title>
+
+        {% include t_preamble.html %}
+    </head>
+    <body class="kars-dark" data-master="{{ handler.settings["master"].version }}">
+        {% module Template("uim_nav.html", current="cards") %}
+        
+        <div class="container">
+            <h1 class="h3 ml-3 mb-3">
+                {{ _("PT.CardReleases") }}
+            </h1>
+
+            <div class="card kars-card-box">
+            {% for release in releases %}
+                {% module Template("uim_card_releases.html", release=release) %}
+            {% end %}
+            </div>
+            {% if has_next_page %}
+            <a class="btn btn-primary" href="/cards/history/?before={{ str(releases[-1].norm_date) }}">
+                {{ _("More...") }}
+            </a>
+            {% end %}
+        </div>
+
+        {% include t_footer.html %}
+    </body>
+</html>

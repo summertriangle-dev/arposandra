@@ -1,0 +1,43 @@
+$font-family-sans-serif:
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI", "MS PGothic",
+  "Roboto",
+  "Helvetica Neue", Arial, sans-serif,
+  "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+
+$body-color: hsl(0, 0%, 20%);
+$kars-navbar-item-color: lighten($body-color, 10%);
+$kars-navbar-item-hover-color: $body-color;
+
+$body-bg: #f8dbf2;
+
+$kars-stack-background: #fff;
+$kars-skill-bg-active: #ffd2d2;
+$kars-skill-bg-passive: #cbd9ff;
+
+$card-bg: hsl(313, 100%, 99%);
+$card-bg-alt: darken($card-bg, 2%);
+
+$kars-var-color: green;
+$kars-attr-colors: darken(#ff3fb6, 10%) darken(#05c159, 10%) darken(#00aeff, 10%) darken(#fe4646, 10%) darken(#ffb400, 10%) darken(#bc4dd6, 10%);
+$kars-role-colors: darken(#fe4646, 10%) darken(#00aeff, 10%) darken(#05c159, 10%) darken(#ffb400, 10%); 
+$kars-stat-colors: #ff3fb6 #05c159 #ffb400;
+
+$kars-tt-placeholder-bg: darken($card-bg, 2%);
+
+$kars-box-highlight-color: rgba(10, 10, 10, 0.1);
+
+$kars-gutter-bg: darken(desaturate($body-bg, 50%), 30%);
+$kars-gutter-text: white;
+$kars-gutter-select-bg: white;
+$kars-gutter-select-text: black;
+
+@import "node_modules/bootstrap/scss/bootstrap";
+@import "custom-layout.sass";
+@import "stack.sass";
+@import "sprites.scss"; 
+@import "aspect-ratio.scss";
+@import "training-tree.sass";
+@import "news.sass";
+@import "adjustments.sass";

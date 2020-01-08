@@ -1,0 +1,153 @@
+#. captain/webui/uim_member.html
+msgid "All..."
+msgstr "All..."
+
+#. captain/webui/member_list.html
+msgid "All Stars idol list"
+msgstr "All Stars idol list"
+
+#. captain/webui/t_card_stats_box.html
+msgid "TypeAndStatsHeader"
+msgstr "Base Stats"
+
+#. captain/webui/t_card_stats_box.html
+msgid "(Lv.1 .. Lv.{max_level} .. Potential)"
+msgstr "(Lv.1 .. Lv.{max_level} .. Potential)"
+
+#. captain/webui/t_card_stats_box.html
+msgid "Appeal"
+msgstr "Appeal"
+
+#. captain/webui/t_card_stats_box.html
+msgid "Stamina"
+msgstr "Stamina"
+
+#. captain/webui/t_card_stats_box.html
+msgid "Technique"
+msgstr "Technique"
+
+#. captain/webui/t_card_stats_box.html
+msgid "Role"
+msgstr "Role"
+
+#. captain/webui/t_footer.html
+#, fuzzy
+msgid "All game assets belong to KLabGames/Sunrise/Bushiroad. I don't own any of it."
+msgstr "All game assets belong to KLabGames/Sunrise/Bushiroad. I don't own any of it."
+
+#. captain/webui/t_footer.html
+msgid "This site is open source:"
+msgstr "This site is open source:"
+
+#. captain/webui/t_footer.html
+msgid "Fork me on GitHub"
+msgstr "Fork me on GitHub"
+
+#. captain/webui/t_footer.html
+msgid "Acknowledgements"
+msgstr "Acknowledgements"
+
+#. captain/webui/t_footer.html
+msgid "Version:"
+msgstr "Version:"
+
+#. captain/webui/t_footer.html
+msgid "Render time (so far):"
+msgstr "Render time (so far):"
+
+#. captain/webui/uim_card.html
+msgid "Card image"
+msgstr "Card image"
+
+#. captain/webui/uim_card.html
+msgid "Quick Links"
+msgstr "Quick Links"
+
+#. captain/webui/uim_card.html
+msgid "PrimarySkillHeader"
+msgstr "Primary Skill"
+
+#. captain/webui/uim_card.html
+msgid "IndividualSkillHeader"
+msgstr "Individual Skills"
+
+msgid "TTWrapper.WaitingForWebpack"
+msgstr "Waiting for JavaScript components..."
+
+msgid "Cards of {idol_name}"
+msgstr "Cards of {idol_name}"
+
+msgid "#{card_no}: {idol_name}"
+msgstr "#{card_no}: {idol_name}"
+
+msgid "{num_cards} cards"
+msgstr "{num_cards} cards"
+
+msgid "PT.Welcome"
+msgstr "Welcome"
+
+msgid "PT.SiteName"
+msgstr "All Stars"
+
+msgid "PT.IdolList"
+msgstr "Idol list"
+
+msgid "Nav.Idols"
+msgstr "Idols"
+
+msgid "Nav.Lives"
+msgstr "Lives"
+
+msgid "You'll have a better time with JavaScript enabled."
+msgstr "You'll have a better time with JavaScript enabled."
+
+msgid "CDMOption.Normal"
+msgstr "Normal"
+
+msgid "CDMOption.Esports"
+msgstr "Esports"
+
+msgid "CDMOption.Gallery"
+msgstr "Gallery"
+
+msgid "Card icon #{ordinal}"
+msgstr "Card icon #{ordinal}"
+
+msgid "Toggle Appearance"
+msgstr "Toggle Appearance"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Warning"
+msgstr "Warning"
+
+msgid "PT.News"
+msgstr "Updates"
+
+msgid "Nav.News"
+msgstr "Updates"
+
+msgid "NewsType.1"
+msgstr "Information"
+
+msgid "NewsType.2"
+msgstr "Gacha"
+
+msgid "NewsType.3"
+msgstr "Event"
+
+msgid "NewsType.4"
+msgstr "Shop"
+
+msgid "NewsPostDisclaimer"
+msgstr "This news post is presented on a best-effort basis and may differ from its display in game."
+
+msgid "NewsPostLocalTimestampsAvailableMessage"
+msgstr "Dates and times with a dashed underline will be converted to local time, if your browser supports it."
+
+msgid "LevelShort"
+msgstr "Lv."
+
+msgid "SkillValueShort"
+msgstr "V"

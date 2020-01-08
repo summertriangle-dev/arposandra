@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>{{ custom_title }} - {{ _("PT.SiteName") }}</title>
+        
+        {% include t_preamble.html %}
+    </head>
+    <body class="kars-dark" data-master="{{ handler.settings["master"].version }}" data-inject="card">
+        {% module Template("uim_nav.html", current="cards") %}
+
+        <div class="container">
+            <div class="kars-react-component"
+                data-component-class="CardDisplayModeSwitcher">
+            </div>
+        </div>
+        
+        {% for card in cards %}
+            {% module Template("uim_card.html", card=card) %}
+        {% end %}
+
+        {% include t_footer.html %}
+    </body>
+</html>

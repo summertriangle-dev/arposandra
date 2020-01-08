@@ -1,0 +1,51 @@
+<div class="kars-list-alternate">
+    <div class="card-body kars-member-header {% if news_item.card_refs %}kars-member-small{% end %}">
+        {% if news_item.thumbnail_asset_path %}
+            <img class="item" width="210" src="{{ image_url_reify(news_item.thumbnail_asset_path, "jpg") }}" />
+        {% end %}
+        <div class="item">
+            <h1 class="h4">
+                {% if not expand %}
+                <a href="/{{ server }}/news/{{ news_item.id }}">{{ news_item.display_title() }}</a>
+                {% else %}
+                {{ news_item.title }}
+                {% end %}
+            </h1>
+            <h2 class="h6 mb-0">
+                {{ _(f"NewsType.{news_item.category}") }},
+                <span class="kars-data-ts" data-orig-offset="{{ time_offset }},JST" data-ts="{{ news_item.timestamp() }}">{{ news_item.date }} UTC</span>
+            </h2>
+        </div>
+    </div>
+    {% if news_item.card_refs %}
+    <div class="card-body kars-card-brief-list">
+        {% for cl in news_item.card_refs %}
+        <a href="/card/{{ cl.ordinal }}" class="card-icon">
+            <img width="48" height="48" src="{{ card_icon_url(cl, cl.normal_appearance) }}"
+                alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">
+        </a>
+        {% end %}
+        <a class="btn btn-primary btn-sm" href="/card/{{ ",".join(str(c.ordinal) for c in news_item.card_refs if c) }}">{{ _("All...") }}</a>
+    </div>
+    {% end %}
+</div>
+{% if expand %}
+<div class="kars-list-alternate">
+    <div class="card-body kars-news-container">
+        <div class="alert alert-warning">
+            <i class="ion-ios-warning"></i> 
+            {{ _("NewsPostDisclaimer") }}
+        </div>
+        {% if show_ts_msg %}
+        <div class="alert alert-info">
+            <i class="ion-ios-information-circle-outline"></i> 
+            {{ _("NewsPostLocalTimestampsAvailableMessage") }}
+        </div>
+        {% end %}
+
+        {% whitespace all %}
+        {% raw news_item.body_html %}
+        {% whitespace single %}
+    </div>
+</div>
+{% end %}

@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        AS_GIT_REVISION: b4117a9 # @exp_as_git_rev@
+    environment:
+      AS_DATA_ROOT: /external/astool
+      AS_WEB_ADDR: 0.0.0.0
+      AS_WEB_PORT: 30001

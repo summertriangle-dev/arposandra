@@ -1,0 +1,26 @@
+<footer class="container kars-footer">
+    <div class="content is-small text-center">
+        {{ _("All game assets belong to KLabGames/Sunrise/Bushiroad. I don't own any of it.") }} <br>
+        {{ _("This site is open source:") }} <a href="https://github.com/summertriangle-dev/arposandra">
+            {{ _("Fork me on GitHub") }}
+        </a> &bull; <a href="https://github.com/summertriangle-dev/arposandra/blob/master/LICENSE.md">
+            {{ _("Acknowledgements") }}
+        </a><br>
+    
+        {{ _("Version:") }} {{ handler.settings["runtime_info"].app_revision }} hosting 
+        {{ handler.settings["master"].version }} on
+        {{ handler.settings["runtime_info"].host_id }} <br>
+        {{ _("Render time (so far):") }} {{ request.request_time() * 1000 }} ms.
+
+        <div class="kars-debug-footer-only">
+            {% try %}
+                <br> Assets requested: {{ len(handler._reified_tags) }},
+            {% except %}
+            {% end %}
+            {% try %}
+                TLInject base size: {{ len(handler._tlinject_base) }}
+            {% except %}
+            {% end %}
+        </div>
+    </div>
+</footer>

@@ -1,0 +1,128 @@
+<div class="container">
+    <div class="card kars-card-box">
+        {% set Lext = "jpg" if card_has_full_bg(card) else "png" %}
+        <div class="card-image position-relative">
+            <div class="kars-react-component"
+                data-component-class="ImageSwitcher"
+                data-normal-image="{{ image_url_reify(card.normal_appearance.image_asset_path, Lext) }}"
+                data-idolized-image="{{ image_url_reify(card.idolized_appearance.image_asset_path, Lext) }}"
+
+                {% if not card_has_full_bg(card) %}
+                data-generic-bg="{{ image_url_reify(card.background_asset_path, "jpg") }}"
+                {% end %}
+            >
+            <a href="{{ image_url_reify(card.normal_appearance[1]) }}"
+                class="kars-card-image-backing"
+                {% if not card_has_full_bg(card) %}
+                style="background-image: url({{ image_url_reify(card.background_asset_path, "jpg") }})"
+                {% end %}
+                alt="{{ _("Card image") }}">
+                <img class="kars-card-spread" src="{{ image_url_reify(card.normal_appearance.image_asset_path, Lext) }}" />
+            </a>
+            </div>
+        </div>
+        <div class="card-body kars-member-header kars-member-small kars-card-header">
+            <div class="kars-ornament-top-left" style="border-top-color: {{ card.member.css_color() }}; border-left-color: {{ card.member.css_color() }}"></div>
+            <img class="item kars-mem-icon" src="{{ card_icon_url(card, card.normal_appearance) }}" />
+            <img class="item kars-mem-icon" src="{{ card_icon_url(card, card.idolized_appearance) }}" />
+            <div class="item">
+                <h1 class="kars-mem-inline-icons h4">
+                    <i class="kars-sprite k-rarity-{{ card.rarity }}"></i>
+                    <span id="card-title-norm-{{ card.id }}">
+                        {% raw tlinject(card.normal_appearance.name) %}
+                    </span>
+                    <span class="text-muted">&nbsp;/&nbsp;</span>
+                    <span id="card-title-idz-{{ card.id }}">
+                        {% raw tlinject(card.idolized_appearance.name) %}
+                    </span>
+                </h1>
+
+                <h2 class="h6 mb-0">
+                    <a href="/card/{{ card.ordinal }}" title="{{ card.id }}">#{{ card.ordinal }}</a> &bull;
+                    <a href="/cards/by_idol/{{ card.member.id }}/{{ card.member.ascii_name() }}">{% raw tlinject_static(card.member.name_romaji) %}</a>
+                    &bull; {{ format_ordinal(card.member.year) }} Year,
+                    {% if card.member.subunit_name %}
+                        <a href="/idols/group/{{ card.member.group }}">{% raw tlinject_static(card.member.group_name) %}</a>, 
+                        <a href="/idols/unit/{{ card.member.subunit }}">{% raw tlinject_static(card.member.subunit_name) %}</a>
+                    {% else %}
+                        <a href="/idols/group/{{ card.member.group }}">{% raw tlinject_static(card.member.group_name) %}</a>
+                    {% end %}
+                </h2>
+            </div>
+        </div>
+
+        <div class="card-body gallery-mode-hidden">
+            <div class="row">
+                <div class="col-lg">
+                    <div class="kars-stack kars-collection-module-mountpoint" data-cid="{{ card.id }}" style="display: none"></div>
+
+                    {% include t_card_stats_box.html %}
+                    <div class="kars-stack">
+                        <div class="kars-stack-header">{{ _("Quick Links") }}</div>
+                        <div class="kars-stack-member">
+                            <a class="btn btn-sm btn-primary" href="/card/{{ card.ordinal - 1 }}">Prev. card</a>
+                            <a class="btn btn-sm btn-primary" href="/card/{{ card.ordinal + 1 }}">Next card</a>
+                            <a class="btn btn-sm btn-primary" href="{{ handler.settings["image_server"] }}/inspector/group/card:{{ card.id }}">Inspect</a>
+                            <a class="btn btn-sm btn-primary" href="/api/v1/{{ handler.settings["master"].version }}/card/{{ card.ordinal }}.json">API</a>
+                        </div>
+                    </div>
+                </div>
+
+                {% if card.passive_skills or card.active_skill %}
+                <div class="col-lg">
+                    <div class="kars-stack kars-skill-stack kars-bg-active-skills">
+                        <div class="kars-stack-header">
+                            {{ _("PrimarySkillHeader") }}
+                        </div>
+                        <div class="media kars-stack-member">
+                            <img class="kars-skill-icon mr-3" src="{{ image_url_reify(card.active_skill.thumbnail_asset_path, "png") }}" />
+                            <div class="media-body">
+                                <p class="kars-skill-name mb-0">{% raw tlinject(card.active_skill.name) %}</p>
+                                <p class="mb-0">{% raw format_skill_effect(card.active_skill) %}</p>
+                                <p class="mb-0">{% raw format_skill_target(card.active_skill, card) %}</p>
+
+                                {% module Template("uim_skill_prog_box.html", skill=card.active_skill) %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="kars-stack kars-skill-stack kars-bg-passive-skills">
+                        <div class="kars-stack-header">
+                            {{ _("IndividualSkillHeader") }}
+                        </div>
+                        {% for skill in card.passive_skills %}
+                        <div class="media kars-stack-member">
+                            <img class="kars-skill-icon mr-3" src="{{ image_url_reify(skill.thumbnail_asset_path, "png") }}" />
+                            <div class="media-body">
+                                <p class="kars-skill-name mb-0">{% raw tlinject(skill.name) %}</p>
+                                <p class="mb-0">{% raw format_skill_effect(skill) %}</p>
+                                <p class="mb-0">{% raw format_skill_target(skill, card) %}</p>
+
+                                {% module Template("uim_skill_prog_box.html", skill=skill) %}
+                            </div>
+                        </div>
+                        {% end %}
+
+                        <div class="media kars-stack-member">
+                            <div class="media-body">
+                                <p class="mb-0">+ {{ card.max_passive_skill_slot }} unlockable skill slots</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% end %}
+            </div>
+        </div>
+
+        <div class="card-body kars-tt-container gallery-mode-hidden">
+            <div class="kars-react-component"
+                data-component-class="SkillTree"
+                data-tt-id="{{ card.training_tree_m_id }}"
+                data-card-id="{{ card.id }}">
+
+                <div class="kars-tt-placeholder text-center">
+                    {{ _("TTWrapper.WaitingForWebpack") }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

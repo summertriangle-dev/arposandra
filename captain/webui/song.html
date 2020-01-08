@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>TTTTT - {{ _("PT.SiteName") }}</title>
+        
+        {% include t_preamble.html %}
+    </head>
+    <body class="kars-dark">
+        {% module Template("uim_nav.html", current="lives") %}
+
+        {% for song in songs %}
+            {% module Template("uim_song_difficulty.html", song=song) %}
+        {% end %}
+
+        {% include t_footer.html %}
+    </body>
+</html>

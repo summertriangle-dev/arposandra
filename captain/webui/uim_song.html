@@ -1,0 +1,20 @@
+<div class="kars-list-alternate">
+    <div class="card-body">
+        <div class="media">
+            <img width="128" class="mr-3" src="{{ image_url_reify(song.cover_asset_path, "jpg") }}" alt="{{ _("Album cover") }}" />
+            <div class="media-body">
+                <h1 class="h4">{% raw tlinject(song.name) %}</h1>
+                <h2 class="h6">
+                    {% if song.member_unit_name %}
+                        <a href="/lives/group/{{ song.member_group }}">{% raw tlinject_static(song.member_group_name) %}</a>, 
+                        <a href="/lives/unit/{{ song.member_unit }}">{% raw tlinject_static(song.member_unit_name) %}</a>
+                    {% else %}
+                        <a href="/lives/group/{{ song.member_group }}">{% raw tlinject_static(song.member_group_name) %}</a>
+                    {% end %}
+                </h2>
+                <a class="btn btn btn-primary" href="/lives/{{ song.id }}">Details...</a>
+                <p>{{ str(song) }}</p>
+            </div>
+        </div>
+    </div>
+</div>

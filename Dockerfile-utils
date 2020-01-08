@@ -1,0 +1,24 @@
+FROM python:3.7 AS python-builder
+COPY ./maintenance/lib/libpenguin /usr/src/libpenguin
+WORKDIR /usr/src/libpenguin
+RUN DYLIBFLAGS=-shared make libpenguin.dylib
+
+FROM python:3.7-slim
+
+COPY ./libcard2 /usr/kars/libcard2
+COPY ./maintenance /usr/kars/maintenance
+WORKDIR /usr/kars/maintenance
+
+RUN pip3 --no-cache-dir install -r requirements.txt
+
+COPY --from=python-builder /usr/src/libpenguin/libpenguin.dylib /usr/local/lib/libpenguin.dylib
+ENV AS_LIBPENGUIN_PATH /usr/local/lib/libpenguin.dylib
+
+RUN mkdir -p /external/astool_storage
+RUN chmod 777 /external/astool_storage
+ENV ASTOOL_STORAGE /external/astool_storage
+ENV LIVE_MASTER_CHECK_ALLOWED 1
+
+USER 501:501
+ENTRYPOINT ["/usr/kars/maintenance/start.sh"]
+CMD ["none"]

@@ -1,0 +1,8 @@
+rt
+skyfarer/hwdecrypt/dist
+skyfarer/hwdecrypt/build
+*/__pycache/*
+*/node_modules/*
+arena
+
+*.o

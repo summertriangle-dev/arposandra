@@ -1,0 +1,70 @@
+<div class="container">
+    <div class="card kars-card-box">
+        <div class="card-body">
+            <div class="media">
+                <img width="128" class="mr-3" src="{{ image_url_reify(song.cover_asset_path, "jpg") }}" alt="{{ _("Album cover") }}" />
+                <div class="media-body">
+                    <h1 class="h4">{% raw tlinject(song.name) %}</h1>
+                    <h2 class="h6">
+                        {% if song.member_unit_name %}
+                            <a href="/lives/group/{{ song.member_group }}">{% raw tlinject_static(song.member_group_name) %}</a>, 
+                            <a href="/lives/unit/{{ song.member_unit }}">{% raw tlinject_static(song.member_unit_name) %}</a>
+                        {% else %}
+                            <a href="/lives/group/{{ song.member_group }}">{% raw tlinject_static(song.member_group_name) %}</a>
+                        {% end %}
+                    </h2>
+                </div>
+            </div>
+        </div>
+        {% for difficulty in song.difficulties %}
+        <div class="card-body kars-list-alternate">
+            <p>Diff {{ difficulty.level }}, {{difficulty.id}}</p>
+            <div class="row">
+                <div class="col-md">
+                    <div class="kars-stack kars-skill-stack">
+                        <div class="kars-stack-header">
+                            {{ _("Appeal Chances") }}
+                        </div>
+                        {% for mission in difficulty.wave_missions %}
+                        <div class="kars-stack-member">
+                            <p class="kars-skill-name mb-0">{{ format_wave_desc(mission) }}</p>
+                        </div>
+                        {% end %}
+                    </div>
+                </div>
+                <div class="col-md">
+                {% if difficulty.stage_gimmicks %}
+                    <div class="kars-stack kars-skill-stack kars-bg-active-skills">
+                        <div class="kars-stack-header">
+                            {{ _("Persistent Gimmick") }}
+                        </div>
+                        {% for gimmick in difficulty.stage_gimmicks %}
+                        <div class="kars-stack-member">
+                            <p class="kars-skill-name mb-0">{% raw tlinject(gimmick.name) %}</p>
+                            <p class="mb-0">{% raw format_skill_effect(gimmick) %}</p>
+                            <p class="mb-0">{% raw format_skill_target(gimmick) %}</p>
+                        </div>
+                        {% end %}
+                    </div>
+                {% end %}
+
+                {% if difficulty.note_gimmicks %}
+                    <div class="kars-stack kars-skill-stack kars-bg-passive-skills">
+                        <div class="kars-stack-header">
+                            {{ _("Note Gimmicks") }}
+                        </div>
+                        {% for gimmick in difficulty.note_gimmicks %}
+                        <div class="kars-stack-member">
+                            <p class="kars-skill-name mb-0">{% raw tlinject(gimmick.name) %} ({{ gimmick.id }}x)</p>
+                            <p class="mb-0">{% raw format_skill_effect(gimmick) %}</p>
+                            <p class="mb-0">{% raw format_skill_target(gimmick) %}</p>
+                        </div>
+                        {% end %}
+                    </div>
+                {% end %}
+                </div>
+            </div>
+        </div>
+        {% end %}
+    </div>
+</div>

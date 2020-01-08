@@ -1,0 +1,58 @@
+<div class="kars-stack kars-card-base-stats" data-cid="{{ card.id }}">
+    <div class="kars-stack-header">
+        {{ _("TypeAndStatsHeader") }}
+    </div>
+    <div class="kars-stack-member">
+        <p class="my-0">
+            <b>{{ _("Attribute") }}</b>: {% raw tlinject_static(f"kars.attribute_{card.attribute}", escape=False) %},
+            <b>{{ _("Role") }}</b>: {% raw tlinject_static(f"kars.role_{card.role}", escape=False) %}
+        </p>
+        {% raw format_card_role_effect(card.role_effect) %}
+    </div>
+    <div class="kars-stack-member">
+        <table class="table table-sm kars-stats-table">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">{{ _("Appeal") }}</th>
+                    <th scope="col">{{ _("Stam.") }}</th>
+                    <th scope="col">{{ _("Tech.") }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">{{ _("Lv. {level}").format(level=1) }}</th>
+                    <td class="let">{{ card.stats[0].appeal }}</td>
+                    <td class="let">{{ card.stats[0].stamina }}</td>
+                    <td class="let">{{ card.stats[0].technique }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{{ _("Lv. {level}").format(level=len(card.stats)) }}</th>
+                    <td class="let">{{ card.stats[-1].appeal }}</td>
+                    <td class="let">{{ card.stats[-1].stamina }}</td>
+                    <td class="let">{{ card.stats[-1].technique }}</td>
+                </tr>
+                {% set lb_appeal_base = card.stats[-1].appeal + card.idolized_offset.appeal %}
+                {% set lb_stamina_base = card.stats[-1].stamina + card.idolized_offset.stamina %}
+                {% set lb_tech_base = card.stats[-1].technique + card.idolized_offset.technique %}
+
+                {% for lb_level in card.tt_offset %}
+                <tr class="
+                    {% if lb_level.level not in [0, 5] %} kars-stats-extraneous {% end %}
+                    ">
+                    <th scope="row">{{ _("\u2605 {star}").format(star=lb_level.level) }}</th>
+                    <td class="let">{{ lb_appeal_base + lb_level.appeal }}</td>
+                    <td class="let">{{ lb_stamina_base + lb_level.stamina }}</td>
+                    <td class="let">{{ lb_tech_base + lb_level.technique }}</td>
+                </tr>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+    <div class="kars-stack-member">
+        <p class="small my-0">
+            {{ _("Rows with \u2605 include idolization bonus, and all tree unlocks up to that limit break level.") }}
+            <a class="kars-show-full-stat-table" data-cmid-target="{{ card.id }}">Show All Limit Breaks</a>
+        </p>
+    </div>
+</div>

@@ -1,0 +1,6 @@
+lxml
+cryptography
+requests
+plac
+asyncpg
+cachetools==3.1.1

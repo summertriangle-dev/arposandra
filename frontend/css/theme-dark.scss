@@ -1,0 +1,217 @@
+// Darkly 4.3.1
+// Bootswatch
+
+//
+// Color system
+//
+
+$font-family-sans-serif:
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI", "MS PGothic",
+  "Roboto",
+  "Helvetica Neue", Arial, sans-serif,
+  "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+
+$white:    #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #ebebeb !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #999 !default;
+$gray-700: #666 !default;
+$gray-800: #303030 !default;
+$gray-900: #222 !default;
+$black:    #000 !default;
+
+$blue:    #007bff !default;
+$indigo:  #6610f2 !default;
+$purple:  #6f42c1 !default;
+$pink:    #e83e8c !default;
+$red:     #E74C3C !default;
+$orange:  #fd7e14 !default;
+$yellow:  #F39C12 !default;
+$green:   #00bc8c !default;
+$teal:    #20c997 !default;
+$cyan:    #3498DB !default;
+
+$primary:       $blue !default;
+$secondary:     $gray-700 !default;
+$success:       $green !default;
+$info:          $cyan !default;
+$warning:       $yellow !default;
+$danger:        $red !default;
+$light:         $gray-600 !default;
+$dark:          $gray-800 !default;
+
+$yiq-contrasted-threshold:  175 !default;
+
+// Body
+
+$body-bg:                   $gray-900 !default;
+$body-color:                $white !default;
+
+// Links
+
+$link-color:                $success !default;
+
+// Tables
+
+$table-accent-bg:             $gray-800 !default;
+
+$table-border-color:          $gray-700 !default;
+
+// Forms
+
+$input-border-color:                    transparent !default;
+
+$input-group-addon-color:               $gray-500 !default;
+$input-group-addon-bg:                  $gray-700 !default;
+
+$custom-file-color:                 $gray-500 !default;
+$custom-file-border-color:          $gray-700 !default;
+
+// Dropdowns
+
+$dropdown-bg:                       $gray-900 !default;
+$dropdown-border-color:             $gray-700 !default;
+$dropdown-divider-bg:               $gray-700 !default;
+
+$dropdown-link-color:               $white !default;
+$dropdown-link-hover-color:         $white !default;
+$dropdown-link-hover-bg:            $primary !default;
+
+// Navs
+
+$nav-link-padding-x:                2rem !default;
+$nav-link-disabled-color:           $gray-500 !default;
+
+$nav-tabs-border-color:             $gray-700 !default;
+$nav-tabs-link-hover-border-color:  $nav-tabs-border-color $nav-tabs-border-color transparent !default;
+$nav-tabs-link-active-color:        $white !default;
+$nav-tabs-link-active-border-color: $nav-tabs-border-color $nav-tabs-border-color transparent !default;
+
+// Navbar
+
+$navbar-padding-y:                  1rem !default;
+
+$navbar-dark-color:                rgba($white,.6) !default;
+$navbar-dark-hover-color:          $white !default;
+
+$navbar-light-color:                 $white !default;
+$navbar-light-hover-color:           $success !default;
+$navbar-light-active-color:         $white !default;
+$navbar-light-disabled-color:       rgba($white,.3) !default;
+$navbar-light-toggler-border-color: rgba($white,.1) !default;
+
+// Pagination
+
+$pagination-color:                  $white !default;
+$pagination-bg:                     $success !default;
+$pagination-border-width:           0 !default;
+$pagination-border-color:           transparent !default;
+
+$pagination-hover-color:            $white !default;
+$pagination-hover-bg:               lighten($success, 10%) !default;
+$pagination-hover-border-color:     transparent !default;
+
+$pagination-active-bg:              $pagination-hover-bg !default;
+$pagination-active-border-color:    transparent !default;
+
+$pagination-disabled-color:         $white !default;
+$pagination-disabled-bg:            darken($success, 15%) !default;
+$pagination-disabled-border-color:  transparent !default;
+
+// Jumbotron
+
+$jumbotron-bg:                      $gray-800 !default;
+
+// Cards
+
+$card-cap-bg:                       $gray-700 !default;
+$card-bg:                           $gray-800 !default;
+
+// Popovers
+
+$popover-bg:                        $gray-800 !default;
+
+$popover-header-bg:                 $gray-700 !default;
+
+// Modals
+
+$modal-content-bg:                  $gray-800 !default;
+$modal-content-border-color:        $gray-700 !default;
+
+$modal-header-border-color:         $gray-700 !default;
+
+// Progress bars
+
+$progress-height:                   0.625rem !default;
+$progress-font-size:                0.625rem !default;
+$progress-bg:                       $gray-700 !default;
+
+// List group
+
+$list-group-bg:                     $gray-800 !default;
+$list-group-border-color:           $gray-700 !default;
+
+$list-group-hover-bg:               $gray-700 !default;
+
+// Breadcrumbs
+
+$breadcrumb-bg:                     $gray-700 !default;
+
+// Close
+
+$close-color:                       $white !default;
+$close-text-shadow:                 none !default;
+
+// Code
+
+$pre-color:                         inherit !default;
+
+
+$body-bg: hsl(252, 27%, 21%);
+$body-color: #eee;
+
+$link-color: rgb(116, 155, 240);
+$link-hover-color: rgb(116, 155, 240);
+
+$title-color: darken($body-color, 10%);
+$subtitle-color: darken($body-color, 15%);
+
+$kars-navbar-item-color: darken($body-color, 10%);
+$kars-navbar-item-hover-color: $body-color;
+
+$main_content_background_dark: hsl(252, 13%, 24%);
+$card-bg: $main_content_background_dark;
+$card-bg-alt: darken($main_content_background_dark, 3%);
+
+$kars-stack-background: lighten($card-bg, 5%);
+$kars-skill-bg-active: #772929;
+$kars-skill-bg-passive: #304581;
+
+$kars-var-color: desaturate(lighten(green, 30%), 50%);
+$kars-attr-colors: #ff3fb6 #05c159 #00aeff #fe4646 #ffb400 lighten(#bc4dd6, 10%);
+$kars-role-colors: lighten(#fe4646, 10%) #00aeff #05c159 #ffb400; 
+$kars-role-bg-colors: darken(#fe4646, 30%) darken(#00aeff, 30%) darken(#05c159, 30%) darken(#ffb400, 30%); 
+$kars-stat-colors: #ff3fb6 #05c159 #ffb400;
+
+$kars-tt-placeholder-bg: darken($main_content_background_dark, 5%);
+
+$kars-box-highlight-color: rgba(255, 255, 255, 0.1);
+
+$kars-gutter-bg: darken($body-bg, 5%);
+$kars-gutter-text: white;
+$kars-gutter-select-bg: white;
+$kars-gutter-select-text: black;
+
+@import "node_modules/bootstrap/scss/bootstrap";
+@import "custom-layout.sass";
+@import "stack.sass";
+@import "sprites.scss"; 
+@import "aspect-ratio.scss";
+@import "training-tree.sass";
+@import "news.sass";
+@import "adjustments.sass";

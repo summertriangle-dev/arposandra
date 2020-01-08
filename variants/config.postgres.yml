@@ -1,0 +1,17 @@
+version: '3'
+services:
+  db:
+    ports:
+      - "5432:5432"
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    volumes:
+      - ./arena/pgdata:/var/lib/postgresql/data
+  web:
+    environment:
+      AS_POSTGRES_DSN: "postgres://postgres:example@arpos-oss_db_1/postgres"
+  utils:
+    environment:
+      AS_POSTGRES_DSN: "postgres://postgres:example@arpos-oss_db_1/postgres"

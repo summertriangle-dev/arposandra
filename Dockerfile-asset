@@ -1,0 +1,23 @@
+FROM python:3.7 as extension-builder
+
+WORKDIR /usr/kars/skyfarer/hwdecrypt_src
+COPY ./skyfarer/hwdecrypt_src /usr/kars/skyfarer/hwdecrypt_src
+RUN python setup.py clean bdist && mv dist/hwdecrypt*.tar.gz hwdecrypt.tar.gz
+
+FROM python:3.7-slim
+
+WORKDIR /usr/kars
+COPY ./skyfarer/requirements.txt /usr/kars/skyfarer/requirements.txt
+RUN pip3 --no-cache-dir install -r skyfarer/requirements.txt
+
+COPY ./skyfarer /usr/kars/skyfarer
+COPY ./libcard2 /usr/kars/libcard2
+COPY ./common_config.py ./start_asset.py /usr/kars/
+COPY --from=extension-builder /usr/kars/skyfarer/hwdecrypt_src/hwdecrypt.tar.gz .
+
+RUN tar -C / -xvf hwdecrypt.tar.gz && rm hwdecrypt.tar.gz
+RUN mkdir -p /external/assets
+RUN chmod 777 /external/assets
+
+USER 501:501
+CMD ["python", "./start_asset.py"]

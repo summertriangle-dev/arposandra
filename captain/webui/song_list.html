@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>{{ _("PT.SongList") }} - {{ _("PT.SiteName") }}</title>
+
+        {% include t_preamble.html %}
+    </head>
+    <body>
+        {% module Template("uim_nav.html", current="live_list") %}
+
+        {% for group_name, songs in live_groups.items() %}
+        <div class="container">
+            <h1 class="h3 ml-3 mb-3">
+                {% if nav_crumb_level > 1 %}
+                    <a class="font-weight-light" href="/idols/group/{{ group_name }}">
+                        {% raw tlinject_static(group_name) %}
+                    </a> /
+                    {% raw tlinject_static(songs[0].member_unit_name) %}
+                {% else %}
+                    {% raw tlinject_static(group_name) %}
+                {% end %}
+            </h1>
+
+            <div class="card kars-card-box">
+            {% for song in songs %}
+                {% module Template("uim_song.html", song=song) %}
+            {% end %}
+            </div>
+        </div>
+        {% end %}
+
+        {% include t_footer.html %}
+    </body>
+</html>

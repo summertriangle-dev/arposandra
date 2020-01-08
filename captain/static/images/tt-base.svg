@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <image id="g-stt-node-voice" href="/static/images/tt-node-voice.png" width="55" height="55" />
+        <image id="g-stt-node-story" href="/static/images/tt-node-story.png" width="55" height="55" />
+        <image id="g-stt-node-awake" href="/static/images/tt-node-idz.png" width="55" height="55" />
+        <image id="g-stt-node-suit" href="/static/images/tt-node-costume.png" width="55" height="55" />
+        <image id="g-stt-node-active-level" href="/static/images/tt-node-active-skill.png" width="55" height="55" />
+        <image id="g-stt-node-hirameku" href="/static/images/tt-node-hirameku.png" width="55" height="55" />
+        <image id="g-stt-node-passive" href="/static/images/tt-node-passive-skill.png" width="55" height="55" />
+        <image id="g-stt-node-p-sta" href="/static/images/tt-node-stamina.png" width="20" height="20" />
+        <image id="g-stt-node-p-appeal" href="/static/images/tt-node-appeal.png" width="20" height="20" />
+        <image id="g-stt-node-p-tech" href="/static/images/tt-node-tech.png" width="20" height="20" />
+    </defs>
+</svg>
