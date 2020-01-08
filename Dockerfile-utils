@@ -1,7 +1,8 @@
-FROM python:3.7 AS python-builder
-COPY ./maintenance/lib/libpenguin /usr/src/libpenguin
-WORKDIR /usr/src/libpenguin
-RUN DYLIBFLAGS=-shared make libpenguin.dylib
+FROM python:3.7 as extension-builder
+
+WORKDIR /usr/kars/skyfarer/hwdecrypt_src
+COPY ./skyfarer/hwdecrypt_src /usr/kars/skyfarer/hwdecrypt_src
+RUN python setup.py clean bdist && mv dist/hwdecrypt*.tar.gz hwdecrypt.tar.gz
 
 FROM python:3.7-slim
 
@@ -11,8 +12,8 @@ WORKDIR /usr/kars/maintenance
 
 RUN pip3 --no-cache-dir install -r requirements.txt
 
-COPY --from=python-builder /usr/src/libpenguin/libpenguin.dylib /usr/local/lib/libpenguin.dylib
-ENV AS_LIBPENGUIN_PATH /usr/local/lib/libpenguin.dylib
+COPY --from=extension-builder /usr/kars/skyfarer/hwdecrypt_src/hwdecrypt.tar.gz .
+RUN tar -C / -xvf hwdecrypt.tar.gz && rm hwdecrypt.tar.gz
 
 RUN mkdir -p /external/astool_storage
 RUN chmod 777 /external/astool_storage
