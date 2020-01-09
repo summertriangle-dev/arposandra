@@ -11,7 +11,7 @@ services:
       - ./arena/pgdata:/var/lib/postgresql/data
   web:
     environment:
-      AS_POSTGRES_DSN: "postgres://postgres:example@arpos-oss_db_1/postgres"
+      AS_POSTGRES_DSN: "postgres://postgres:example@arposandra_db_1/postgres"
   utils:
     environment:
-      AS_POSTGRES_DSN: "postgres://postgres:example@arpos-oss_db_1/postgres"
+      AS_POSTGRES_DSN: "postgres://postgres:example@arposandra_db_1/postgres"
