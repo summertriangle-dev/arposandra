@@ -8,12 +8,14 @@ import * as Album from "./album"
 import * as NewsFilter from "./news_filter"
 import { CardDisplayModeSwitcher, ImageSwitcher } from "./card_page_components"
 import SkillTree from "./skill_tree"
+import { StoryViewer } from "./transcript"
 
 const ReactComponentClassRegistry = {    
     CardDisplayModeSwitcher,
     ImageSwitcher,
     SkillTree,
     NewsFilterSwitch: NewsFilter.NewsFilterSwitch,
+    StoryViewer,
 }
 
 function initializeContextDependentModules() {

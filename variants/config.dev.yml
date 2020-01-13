@@ -24,4 +24,4 @@ services:
   utils:
     volumes:
       - .:/usr/kars
-      - ./arena/astool:/external/astool:ro
+      - ./arena/astool:/external/astool_storage:rw

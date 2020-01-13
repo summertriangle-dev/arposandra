@@ -24,7 +24,6 @@ module.exports = {
             },
         ]
     },
-    devtool: "source-map",
     devServer: {
         compress: true,
         port: 5002,

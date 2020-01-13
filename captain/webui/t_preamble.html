@@ -3,7 +3,7 @@
 {% if handler.settings["debug"] %}
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' *; img-src *; style-src 'self' 'unsafe-inline';" />
 {% else %}
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src {{ handler.settings["image_server"] }} https: 'self'; style-src 'self' 'unsafe-inline';" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src {{ handler.settings["image_server"] }} 'self'; img-src {{ handler.settings["image_server"] }} https: 'self'; style-src 'self' 'unsafe-inline';" />
 {% end %}
 
 <link data-appearance="light" data-bg-color="#f2dbf8" 

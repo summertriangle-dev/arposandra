@@ -151,3 +151,9 @@ msgstr "Lv."
 
 msgid "SkillValueShort"
 msgstr "V"
+
+msgid "StoryTranscriptDisclaimer"
+msgstr "This story transcript is presented on a best-effort basis and may differ from its display in game."
+
+msgid "SST.WaitingForWebpack"
+msgstr "Waiting for JavaScript components..."

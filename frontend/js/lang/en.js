@@ -42,5 +42,10 @@ export default {
     },
     "NFS.Title": "Only show events/gachas?",
     "NFSOption.No": "No",
-    "NFSOption.Yes": "Yes"
+    "NFSOption.Yes": "Yes",
+    SST: {
+        LoadingPleaseWait: "Please wait while the script loads...",
+        Header: "Story Transcript",
+        PlayerName: "You"
+    }
 }

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>{{ _("PT.SiteName") }}</title>
+
+        {% include t_preamble.html %}
+    </head>
+    <body>
+        {% module Template("uim_nav.html", current="story") %}
+
+        <div class="container">
+            <div class="alert alert-warning">
+                <i class="ion-ios-warning"></i> 
+                {{ _("StoryTranscriptDisclaimer") }}
+            </div>
+            <div class="kars-react-component" data-component-class="StoryViewer"
+                data-signed-url="{{ asset_path }}" data-script-region="{{ region }}"
+                data-name="{{ basename }}">
+                <div class="card kars-card-box">
+                    <p class="card-body my-0">{{ _("SSF.WaitingForWebpack") }}</p>
+                </div>
+            </div>
+        </div>
+
+        {% include t_footer.html %}
+    </body>
+</html>

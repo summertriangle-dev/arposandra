@@ -3,6 +3,7 @@ from tornado.web import RequestHandler
 
 from .dispatch import route
 from . import pageutils
+import libcard2.localization
 
 
 @route("/")
@@ -103,6 +104,12 @@ class Hirameku(RequestHandler):
         self.render("accessories.html", skills=skills)
 
 
+@route("/([a-z]+)/story/(.+)")
+class StoryViewerScaffold(RequestHandler):
+    def get(self, region, script):
+        self.render("story_scaffold.html", 
+            region=region, basename=script, asset_path=pageutils.sign_object(self, f"adv/{script}", "json"))
+
 @route(r"/api/v1/(?:[^/]*)/skill_tree/([0-9]+).json")
 class APISkillTree(RequestHandler):
     def get(self, i):
@@ -114,3 +121,20 @@ class APISkillTree(RequestHandler):
         }
 
         self.write({"id": int(i), "tree": shape, "lock_levels": locks, "item_sets": items})
+
+@route(r"/api/private/search/bootstrap.json")
+class APISearchBootstrap(RequestHandler):
+    def gen_sd(self):
+        sd = libcard.localization.skill_describer_for_locale(self.locale.code)
+        desc_fmt_args = {"var": "", "let": "", "end": "", "value": "X"}
+        
+        word_set = {}
+        for skill_id, formatter in sd.skill_effect.data.items():
+            if callable(formatter):
+                wl = formatter(**desc_fmt_args)
+            else:
+                wl = formatter.format(**desc_fmt_args)
+            
+
+    def get(self):
+        return

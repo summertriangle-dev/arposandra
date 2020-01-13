@@ -248,3 +248,21 @@ def card_icon_url(handler, card, appearance):
 
     base[key] = signed
     return signed
+
+@export
+def sign_object(handler, key, suffix):
+    try:
+        base = handler._reified_tags
+    except AttributeError:
+        handler._reified_tags = base = {}
+
+    if key in base:
+        return base[key]
+
+    assr = hmac.new(get_as_secret(), key.encode("utf8"), hashlib.sha224).digest()[:10]
+    assr = base64.urlsafe_b64encode(assr).decode("ascii").rstrip("=")
+    isr = handler.settings["image_server"]
+    signed = f"{isr}/{key}/{assr}.{suffix}"
+
+    base[key] = signed
+    return signed

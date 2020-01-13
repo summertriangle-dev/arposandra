@@ -84,6 +84,34 @@ class ExtractContext(object):
 
         return (*info, 0x3039)
 
+    def get_script(self, key):
+        if key.startswith("@"):
+            key = key[1:]
+        else:
+            key = f"Scripts/{key}"
+        row = self.asset_db.execute(
+            """SELECT pack_name, head, size, key1, key2 
+            FROM adv_script WHERE asset_path = ?""",
+            (key,),
+        )
+        info = row.fetchone()
+        if not info:
+            raise ExtractFailure(1)
+
+        pack_name, head, size, key1, key2 = info
+        pack = os.path.join(self.cache, f"pkg{pack_name[0]}", pack_name)
+        k1 = to_unsigned(key1)
+        k2 = to_unsigned(key2)
+
+        keyset = hwdecrypt.Keyset(k1, k2)
+        with open(pack, "rb") as f:
+            f.seek(head)
+            buf = bytearray(size)
+            f.readinto(buf)
+
+        hwdecrypt.decrypt(keyset, buf)
+        return buf
+
     def get_texture(self, key, intobuf):
         pack_name, head, size, key1, key2, _ = self.get_texture_info(key)
         pack = os.path.join(self.cache, f"pkg{pack_name[0]}", pack_name)
@@ -102,6 +130,36 @@ class ExtractContext(object):
                 else:
                     yield (intobuf, nread)
                 size -= nread
+
+    def get_script_texture(self, scpt_name, idx, intobuf):
+        row = self.asset_db.execute(
+            """SELECT pack_name, head, size, key1, key2 
+            FROM adv_graphic LEFT JOIN texture ON (resource = asset_path) 
+            WHERE script_name = ? AND idx = ?""",
+            (scpt_name, idx),
+        )
+        info = row.fetchone()
+        if not info:
+            raise ExtractFailure(1)
+
+        pack_name, head, size, key1, key2 = info
+        pack = os.path.join(self.cache, f"pkg{pack_name[0]}", pack_name)
+        k1 = to_unsigned(key1)
+        k2 = to_unsigned(key2)
+
+        keyset = hwdecrypt.Keyset(k1, k2)
+        with open(pack, "rb") as f:
+            f.seek(head)
+
+            while size > 0:
+                nread = f.readinto(intobuf)
+                hwdecrypt.decrypt(keyset, intobuf)
+                if nread > size:
+                    yield (intobuf, size)
+                else:
+                    yield (intobuf, nread)
+                size -= nread
+
 
     async def get_cardicon(self, image_asset_id, format, frame_num, role_num, attr_num):
         pack, *texinfo = self.get_texture_info(image_asset_id)

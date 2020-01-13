@@ -41,7 +41,7 @@ def begin_session(tag, cfg) -> iceapi.ICEBinder:
             print("Login failed, trying to reset auth count...")
             ice.set_login(uid, pwd, ret.app_data.get("authorization_count") + 1)
             ice.api.login.login()
-    
+
     return ice
 
 def end_session(tag, ice: iceapi.ICEBinder):
@@ -87,7 +87,7 @@ async def get_new_notices(ice, db, tag):
                 continue
             await add_notice(ice, db, tag, no)
             seen.add(no["notice_id"])
-    
+
     await db.update_visibility(list(vis_set))
 
 async def main():
@@ -98,6 +98,7 @@ async def main():
     ice = begin_session(tag, cfg)
     try:
         db = ingest.DatabaseConnection()
+        await db.init_models()
         await get_new_notices(ice, db, tag)
     finally:
         end_session(tag, ice)
