@@ -133,6 +133,7 @@ const keywords = {
     "soundstop": null,
     "label": null,
     "window": null,
+    "volume": null,
 }
 
 class ScriptWalker {
