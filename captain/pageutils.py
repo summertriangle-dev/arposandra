@@ -207,17 +207,17 @@ def image_url_reify(handler, asset_tag, ext=None):
     except AttributeError:
         handler._reified_tags = base = {}
 
-    asset_tag = binascii.hexlify(asset_tag.encode("utf8")).decode("ascii")
     if asset_tag in base:
         return base[asset_tag]
 
     my = hmac.new(get_as_secret(), asset_tag.encode("utf8"), hashlib.sha224).digest()[:10]
     my = base64.urlsafe_b64encode(my).decode("ascii").rstrip("=")
     isr = handler.settings["image_server"]
+    url_asset_tag = binascii.hexlify(asset_tag.encode("utf8")).decode("ascii")
     if ext:
-        signed = f"{isr}/i/{asset_tag}/{my}.{ext}"
+        signed = f"{isr}/i/{url_asset_tag}/{my}.{ext}"
     else:
-        signed = f"{isr}/i/{asset_tag}/{my}"
+        signed = f"{isr}/i/{url_asset_tag}/{my}"
 
     base[asset_tag] = signed
     return signed

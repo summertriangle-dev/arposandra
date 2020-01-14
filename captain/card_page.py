@@ -28,7 +28,7 @@ class CardPageByMemberID(RequestHandler):
         )
 
 
-@route("/card/(everything|random|(?:[0-9,]+))(/.*)?")
+@route("/card/(random|(?:[0-9,]+))(/.*)?")
 class CardPage(RequestHandler):
     def card_spec(self, spec: str) -> list:
         if spec == "everything":

@@ -39,7 +39,7 @@ def application(master, debug):
             (r"/i/((?:[0-9a-f][0-9a-f])+)(?:\.(?:png|jpg))?", ReifyHandler),
             (r"/adv/(.+)/([^/\.]+)\.json", AdvScriptHandler),
             (r"/advg/(.+)/([0-9]+)\.(?:png|jpg)", AdvScriptGraphicHandler),
-            (r"/t_reify/(.*)", TestHmacGuardAccess),
+            (r"/if/(.+)/([^/\.]+)(?:\.(?:png|jpg))?", BareReifyHandler),
             # (r"/api/inspect/hello", InspectServerInfo),
             # (r"/api/inspect/lookup", InspectLookupAsset),
             # (r"/api/inspect/texture", InspectRealizeTexture),
@@ -47,6 +47,7 @@ def application(master, debug):
             # (r"/api/inspect/bundle/((?:[0-9a-f][0-9a-f])+)/([0-9a-f]{16})", InspectGetUnityBundleData),
         ],
         debug=debug,
+        disable_security=debug,
     )
     return application
 
@@ -69,20 +70,6 @@ class AssetServerApplication(Application):
     def change_asset_db(self, newdb):
         self.settings["extract_context"].change_asset_db(newdb)
 
-
-class TestHmacGuardAccess(RequestHandler):
-    def get(self, key):
-        if not self.settings.get("debug"):
-            self.set_status(403)
-            self.write("This endpoint is only available in development mode.")
-            return
-
-        hx = binascii.hexlify(key.encode("utf8")).decode("ascii")
-        my = hmac.new(self.settings["jit_secret"], hx.encode("ascii"), hashlib.sha224).digest()[:10]
-        my = base64.urlsafe_b64encode(my).decode("ascii").rstrip("=")
-        return self.redirect(f"/i/{hx}/{my}.png")
-
-
 ######################################################
 # HANDLERS
 ######################################################
@@ -90,9 +77,9 @@ class TestHmacGuardAccess(RequestHandler):
 ERR_REQUEST_NOAUTH = "Your request was declined because it was not properly authenticated."
 
 
-class ReifyHandler(RequestHandler):
+class BareReifyHandler(RequestHandler):
     async def get(self, key, assr=None):
-        my = hmac.new(self.settings["jit_secret"], key.encode("ascii"), hashlib.sha224).digest()
+        my = hmac.new(self.settings["jit_secret"], key.encode("utf8"), hashlib.sha224).digest()
 
         if not assr:
             assr = self.get_argument("assr")
@@ -105,11 +92,10 @@ class ReifyHandler(RequestHandler):
             return
 
         if not hmac.compare_digest(my[:10], assr):
-            self.set_status(400)
-            self.write(ERR_REQUEST_NOAUTH)
-            return
-
-        key = binascii.unhexlify(key).decode("utf8")
+            if not self.settings["disable_security"]:
+                self.set_status(403)
+                self.write(ERR_REQUEST_NOAUTH)
+                return
 
         did_headers = False
         buf = bytearray(65536)
@@ -122,8 +108,21 @@ class ReifyHandler(RequestHandler):
             self.write(bytes(buf[:size]))
             await self.flush()
 
+class ReifyHandler(BareReifyHandler):
+    async def get(self, key, assr=None):
+        try:
+            key = binascii.unhexlify(key).decode("utf8")
+        except UnicodeDecodeError:
+            self.set_status(400)
+            return
+
+        await super().get(key, assr)
+
 class BaseAssrValidating(RequestHandler):
     def validate_assr(self, value, given):
+        if self.settings["disable_security"]:
+            return True
+
         my = hmac.new(self.settings["jit_secret"], value.encode("utf8"), hashlib.sha224).digest()
 
         try:
@@ -136,7 +135,7 @@ class BaseAssrValidating(RequestHandler):
 class SyntheticCardIconHandler(BaseAssrValidating):
     async def get(self, frame_info, asset_hex, assr, filetype):
         if not self.validate_assr(f"ci/{frame_info}/{asset_hex}", assr):
-            self.set_status(400)
+            self.set_status(403)
             self.write(ERR_REQUEST_NOAUTH)
             return
 
@@ -170,7 +169,7 @@ class AdvScriptHandler(BaseAssrValidating):
         self.set_header("Content-Type", "application/json")
 
         if not self.validate_assr(f"adv/{scpt_name}", assr):
-            self.set_status(400)
+            self.set_status(403)
             self.write({"error": ERR_REQUEST_NOAUTH})
             return
 

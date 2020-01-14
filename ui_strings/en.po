@@ -157,3 +157,6 @@ msgstr "This story transcript is presented on a best-effort basis and may differ
 
 msgid "SST.WaitingForWebpack"
 msgstr "Waiting for JavaScript components..."
+
+msgid "PT.History"
+msgstr "Card Releases"
