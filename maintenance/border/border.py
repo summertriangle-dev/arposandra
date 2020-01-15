@@ -95,8 +95,10 @@ async def write_common_event_status(
         stories
     )
 
+TWO_MINUTES = 120
 HALF_DAY = 43200
 FULL_DAY = 86400
+TRACK_INTERVAL_NOW = 1
 TRACK_INTERVAL_ACCELERATED = 900
 TRACK_INTERVAL = 3600
 def track_interval(current: datetime, status: models.event_status_t):
@@ -105,6 +107,10 @@ def track_interval(current: datetime, status: models.event_status_t):
 
     since_start = current - status.start_time
     to_end = status.end_time - current
+
+    if to_end.total_seconds() < TWO_MINUTES:
+        logging.info("Event is ending - tracking immediately")
+        return TRACK_INTERVAL_NOW
 
     if since_start.total_seconds() < HALF_DAY or to_end.total_seconds() < FULL_DAY:
         logging.info("On accelerated track pace")
