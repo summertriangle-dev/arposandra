@@ -12,23 +12,23 @@ import models
 
 def begin_session_2(tag, cfg):
     with open("border/tests/fetchBootstrap.json", "r") as ff:
-        m_bootstrap = json.load(ff)[3]
+        bs_t, _1, _2, m_bootstrap, _3 = json.load(ff)
     with open("border/tests/fetchEventMining.json", "r") as ff:
-        m_event_top = json.load(ff)[3]
+        met_t, _1, _2, m_event_top, _3 = json.load(ff)
     with open("border/tests/fetchEventMiningRanking.json", "r") as ff:
-        m_event_ranking = json.load(ff)[3]
+        mer_t, _1, _2, m_event_ranking, _3 = json.load(ff)
     #with open("border/tests/fetchEventMarathon.json", "r") as ff:
     #    m_event_top_marathon = json.load(ff)[3]
     with open("border/tests/fetchEventMarathonRanking.json", "r") as ff:
-        m_event_ranking_marathon = json.load(ff)[3]
+        merm_t, _1, _2, m_event_ranking_marathon, _3 = json.load(ff)
 
     session = mock.Mock()
     session.device_token = "abcd"
-    session.api.bootstrap.fetchBootstrap.return_value = iceapi.api_return_t({}, 0, m_bootstrap)
-    session.api.eventMining.fetchEventMining.return_value = iceapi.api_return_t({}, 0, m_event_top)
-    session.api.eventMiningRanking.fetchEventMiningRanking.return_value = iceapi.api_return_t({}, 0, m_event_ranking)
+    session.api.bootstrap.fetchBootstrap.return_value = iceapi.api_return_t({}, 0, m_bootstrap, bs_t / 1000)
+    session.api.eventMining.fetchEventMining.return_value = iceapi.api_return_t({}, 0, m_event_top, met_t / 1000)
+    session.api.eventMiningRanking.fetchEventMiningRanking.return_value = iceapi.api_return_t({}, 0, m_event_ranking, mer_t / 1000)
     #session.api.eventMarathon.fetchEventMarathon.return_value = iceapi.api_return_t({}, 0, m_event_top_marathon)
-    session.api.eventMarathonRanking.fetchEventMarathonRanking.return_value = iceapi.api_return_t({}, 0, m_event_ranking_marathon)
+    session.api.eventMarathonRanking.fetchEventMarathonRanking.return_value = iceapi.api_return_t({}, 0, m_event_ranking_marathon, merm_t / 1000)
     return session
 
 def end_session_2(tag, ice):
@@ -65,10 +65,107 @@ def end_session(tag, ice: iceapi.ICEBinder):
 EMPTY_IMAGE = {"v": None}
 EMPTY_TEXT = {"dot_under_text": None}
 
-async def fetch_marathon_event_border(ice, 
+async def write_common_event_status(
+    db: models.DatabaseConnection, 
+    region: str,
+    event_main_struct: dict,
+    event_type: str
+):
+    stories = []
+    if "story_status" in event_main_struct:
+        for story in event_main_struct["story_status"].get("stories", []):
+            stories.append((
+                event_main_struct["event_id"],
+                story["story_number"],
+                story.get("required_event_point", 0),
+                story.get("story_banner_thumbnail_path", EMPTY_IMAGE)["v"],
+                story.get("title", EMPTY_TEXT)["dot_under_text"],
+                story.get("scenario_script_asset_path", EMPTY_IMAGE)["v"]
+            ))
+
+    await db.add_event(
+        region,
+        event_main_struct["event_id"], 
+        None,
+        event_main_struct["title_image_path"]["v"],
+        event_type,
+        event_main_struct["start_at"], 
+        event_main_struct["expired_at"],
+        event_main_struct["result_at"],
+        stories
+    )
+
+HALF_DAY = 43200
+FULL_DAY = 86400
+TRACK_INTERVAL_ACCELERATED = 900
+TRACK_INTERVAL = 3600
+def track_interval(current: datetime, status: models.event_status_t):
+    if current < status.start_time:
+        return 999999999
+
+    since_start = current - status.start_time
+    to_end = status.end_time - current
+
+    if since_start.total_seconds() < HALF_DAY or to_end.total_seconds() < FULL_DAY:
+        logging.info("On accelerated track pace")
+        return TRACK_INTERVAL_ACCELERATED
+    
+    return TRACK_INTERVAL
+
+def should_track_for_event(status: models.event_status_t):
+    current = datetime.utcnow()
+
+    if status.have_final:
+        logging.info("Not collecting data because event has ended with final results.")
+        return False
+
+    if current > status.end_time and current < status.results_time:
+        logging.info("Not collecting data because event has ended and final results are unavailable.")
+        return False
+
+    if status.last_collect_time is not None:
+        since_last = current - status.last_collect_time
+        if since_last.total_seconds() < track_interval(current, status):
+            logging.info("Not collecting data because it's not time.")
+            return False
+    
+    return True
+
+def make_common_top10_row(cell_coll, rank_type, userinfo_key):
+    l = [rank_type]
+    max_ = len(cell_coll)
+    for x in range(10):
+        if x >= max_:
+            l.append(None)
+            l.append(None)
+            continue
+
+        l.append(cell_coll[x]["event_point"])
+        l.append(cell_coll[x][userinfo_key]["user_id"])
+    return l
+
+def make_common_border_rows(row_coll, rank_type):
+    for tier in row_coll:
+        if tier["ranking_border_master_row"]["ranking_type"] != 1:
+            continue
+        if not tier["ranking_border_master_row"].get("lower_rank"):
+            continue
+        
+        yield (
+            rank_type,
+            tier["ranking_border_point"],
+            tier["ranking_border_master_row"]["upper_rank"],
+            tier["ranking_border_master_row"]["lower_rank"],
+            tier["ranking_border_master_row"]["display_order"],
+        )
+
+async def fetch_marathon_event_border(
+    ice: iceapi.ICEBinder, 
     region: str,
     db: models.DatabaseConnection, 
     eid: int):
+    is_new_event = False
+
     if not await db.have_event_info(region, eid):
         logging.info("Need to fetch event description for %s %d", region, eid)
         event_info = ice.api.eventMarathon.fetchEventMarathon({
@@ -76,38 +173,11 @@ async def fetch_marathon_event_border(ice,
         }).app_data
 
         main = event_info["event_marathon_top_status"]
-
-        stories = []
-        if "story_status" in main:
-            for story in main["story_status"].get("stories", []):
-                stories.append((
-                    main["event_id"],
-                    story["story_number"],
-                    story.get("required_event_point", 0),
-                    story.get("story_banner_thumbnail_path", EMPTY_IMAGE)["v"],
-                    story.get("title", EMPTY_TEXT)["dot_under_text"],
-                    story.get("scenario_script_asset_path", EMPTY_IMAGE)["v"]
-                ))
-
-        await db.add_event(
-            region,
-            main["event_id"], 
-            None,
-            main["title_image_path"]["v"],
-            "marathon",
-            main["start_at"], 
-            main["expired_at"],
-            main["result_at"],
-            stories
-        )
+        await write_common_event_status(db, region, main, "marathon")
+        is_new_event = True
     
-    d = datetime.utcnow()
-    endt, resultst = await db.get_event_timing(region, eid)
-    if d > endt and d < resultst:
-        logging.info("Event ended, not collecting data.")
-        return
-
-    if await db.have_final_tiers(region, eid):
+    status = await db.get_event_status(region, eid)
+    if (not is_new_event) and (not should_track_for_event(status)):
         return
 
     ranking_info = ice.api.eventMarathonRanking.fetchEventMarathonRanking({
@@ -115,36 +185,38 @@ async def fetch_marathon_event_border(ice,
     }).app_data
     observe_time = datetime.utcnow()
 
-    if observe_time > resultst:
+    if observe_time > status.results_time:
         logging.info("Getting final word...")
         is_last = True
     else:
         is_last = False
 
-    send_to_db = []
+    fixed_rows = []
+    flex_rows = []
+
+    top_pt_ranking = ranking_info.get("point_top_ranking_cells")
+    if top_pt_ranking:
+        top_pt_ranking = sorted(top_pt_ranking, key=lambda x: x["order"])
+        fixed_rows.append(make_common_top10_row(top_pt_ranking, "points", "event_marathon_ranking_user"))
+        flex_rows.append((
+            "points", 
+            top_pt_ranking[-1]["event_point"], 
+            0, 
+            top_pt_ranking[-1]["order"], -1))
+
     pt_ranking = ranking_info.get("ranking_border_info")
     if pt_ranking:
-        for tier in pt_ranking:
-            if tier["ranking_border_master_row"]["ranking_type"] != 1:
-                continue
-            if not tier["ranking_border_master_row"].get("lower_rank"):
-                continue
-        
-            send_to_db.append((
-                "points",
-                tier["ranking_border_point"],
-                tier["ranking_border_master_row"]["upper_rank"],
-                tier["ranking_border_master_row"]["lower_rank"],
-                tier["ranking_border_master_row"]["display_order"],
-            ))
+        flex_rows.extend(make_common_border_rows(pt_ranking, "points"))
     
-    logging.info("Adding %d entries", len(send_to_db))
-    await db.add_tiers(region, eid, observe_time, is_last, send_to_db)
+    logging.info("Adding %d entries", len(flex_rows))
+    await db.add_tiers(region, eid, observe_time, is_last, flex_rows, fixed_rows)
 
-async def fetch_mining_event_border(ice, 
+async def fetch_mining_event_border(ice: iceapi.ICEBinder, 
     region: str,
     db: models.DatabaseConnection, 
     eid: int):
+
+    is_new_event = False
     if not await db.have_event_info(region, eid):
         logging.info("Need to fetch event description for %s %d", region, eid)
         event_info = ice.api.eventMining.fetchEventMining({
@@ -152,87 +224,58 @@ async def fetch_mining_event_border(ice,
         }).app_data
 
         main = event_info["event_mining_top_status"]
-
-        stories = []
-        if "story_status" in main:
-            for story in main["story_status"].get("stories", []):
-                stories.append((
-                    region,
-                    main["event_id"],
-                    story["story_number"],
-                    story.get("required_event_point", 0),
-                    story.get("story_banner_thumbnail_path", EMPTY_IMAGE)["v"],
-                    story.get("title", EMPTY_TEXT)["dot_under_text"],
-                    story.get("scenario_script_asset_path", EMPTY_IMAGE)["v"]
-                ))
-
-        await db.add_event(
-            region,
-            main["event_id"], 
-            None,
-            main["title_image_path"]["v"],
-            "mining",
-            main["start_at"], 
-            main["expired_at"],
-            main["result_at"],
-            stories
-        )
+        await write_common_event_status(db, region, main, "mining")
+        is_new_event = True
     
-    d = datetime.utcnow()
-    endt, resultst = await db.get_event_timing(region, eid)
-    if d > endt and d < resultst:
-        logging.info("Event ended, not collecting data.")
+    status = await db.get_event_status(region, eid)
+    if (not is_new_event) and (not should_track_for_event(status)):
         return
 
-    if await db.have_final_tiers(region, eid):
-        return
-
-    ranking_info = ice.api.eventMiningRanking.fetchEventMiningRanking({
+    iced = ice.api.eventMiningRanking.fetchEventMiningRanking({
         "event_id": eid,
-    }).app_data
-    observe_time = datetime.utcnow()
+    })
+    ranking_info = iced.app_data
+    observe_time = datetime.utcfromtimestamp(iced.server_time)
 
-    if observe_time > resultst:
+    if observe_time > status.results_time:
         logging.info("Getting final word...")
         is_last = True
     else:
         is_last = False
 
-    send_to_db = []
+    fixed_rows = []
+    flex_rows = []
+
+    top_pt_ranking = ranking_info.get("point_top_ranking_cells")
+    if top_pt_ranking:
+        top_pt_ranking = sorted(top_pt_ranking, key=lambda x: x["order"])
+        fixed_rows.append(make_common_top10_row(top_pt_ranking, "points", "event_mining_ranking_user"))
+        flex_rows.append((
+            "points", 
+            top_pt_ranking[-1]["event_point"], 
+            0, 
+            top_pt_ranking[-1]["order"], -1))
+
+    top_score_ranking = ranking_info.get("voltage_top_ranking_cells")
+    if top_score_ranking:
+        top_score_ranking = sorted(top_score_ranking, key=lambda x: x["order"])
+        fixed_rows.append(make_common_top10_row(top_score_ranking, "voltage", "event_mining_ranking_user"))
+        flex_rows.append((
+            "voltage", 
+            top_score_ranking[-1]["event_point"], 
+            0, 
+            top_score_ranking[-1]["order"], -1))
+
     pt_ranking = ranking_info.get("point_ranking_border_info")
     if pt_ranking:
-        for tier in pt_ranking:
-            if tier["ranking_border_master_row"]["ranking_type"] != 1:
-                continue
-            if not tier["ranking_border_master_row"].get("lower_rank"):
-                continue
-        
-            send_to_db.append((
-                "points",
-                tier["ranking_border_point"],
-                tier["ranking_border_master_row"]["upper_rank"],
-                tier["ranking_border_master_row"]["lower_rank"],
-                tier["ranking_border_master_row"]["display_order"],
-            ))
+        flex_rows.extend(make_common_border_rows(pt_ranking, "points"))
     
     score_ranking = ranking_info.get("voltage_ranking_border_info")
     if score_ranking:
-        for tier in score_ranking:
-            if tier["ranking_border_master_row"]["ranking_type"] != 1:
-                continue
-            if not tier["ranking_border_master_row"].get("lower_rank"):
-                continue
-        
-            send_to_db.append((
-                "voltage",
-                tier["ranking_border_point"],
-                tier["ranking_border_master_row"]["upper_rank"],
-                tier["ranking_border_master_row"]["lower_rank"],
-                tier["ranking_border_master_row"]["display_order"],
-            ))
-    
-    logging.info("Adding %d entries", len(send_to_db))
-    await db.add_tiers(region, eid, observe_time, is_last, send_to_db)
+        flex_rows.extend(make_common_border_rows(score_ranking, "voltage"))
+
+    logging.info("Adding %d entries", len(flex_rows))
+    await db.add_tiers(region, eid, observe_time, is_last, flex_rows, fixed_rows)
 
 
 async def get_event_border(ice, region, db, tag):
@@ -242,7 +285,7 @@ async def get_event_border(ice, region, db, tag):
         "device_name": "iPhoneX"
     }).app_data
 
-    event = status["fetch_bootstrap_pickup_info_response"].get("active_event")
+    event = status.get("fetch_bootstrap_pickup_info_response", {}).get("active_event")
     if not event:
         logging.info("No event.")
         return
