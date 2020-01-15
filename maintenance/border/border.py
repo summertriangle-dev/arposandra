@@ -48,7 +48,7 @@ def begin_session(tag, cfg) -> iceapi.ICEBinder:
     if not ice.resume_session(fast_resume):
         ret = ice.api.login.login()
         if ret.return_code != 0:
-            print("Login failed, trying to reset auth count...")
+            logging.info("Login failed, trying to reset auth count...")
             ice.set_login(uid, pwd, ret.app_data.get("authorization_count") + 1)
             ice.api.login.login()
 
@@ -244,6 +244,7 @@ async def get_event_border(ice, region, db, tag):
 
     event = status["fetch_bootstrap_pickup_info_response"].get("active_event")
     if not event:
+        logging.info("No event.")
         return
 
     eid = event["event_id"]
