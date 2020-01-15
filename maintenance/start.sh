@@ -22,11 +22,20 @@ case $executable in
         SERVER=$1; shift
         exec python3 lib/package_list_tool.py -r ${SERVER} $@ sync everything
         ;;
+    sync-both)
+        SERVER=$1; shift
+        python3 lib/karstool.py -r ${SERVER} && \
+            python3 lib/package_list_tool.py -r ${SERVER} sync main card:%
+        ;;
     plt)
         exec python3 lib/package_list_tool.py $@
         ;;
     mtrack) 
         exec python3 mtrack/mtrack.py $@
+        ;;
+    border-ingest)
+        SERVER=$1; shift
+        exec python3 border/border.py $SERVER $@
         ;;
     none)
         exit 0
