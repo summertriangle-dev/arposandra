@@ -43,16 +43,8 @@ class IdolsRoot(RequestHandler):
 
 @route("/lives")
 class LiveRoot(RequestHandler):
-    def get(self, specific=None, specific_value=None):
-        nav_crumb_level = 0
-        if specific == "unit":
-            songs = self.settings["master"].lookup_member_list(subunit=int(specific_value))
-            nav_crumb_level = 2
-        elif specific == "group":
-            songs = self.settings["master"].lookup_member_list(group=int(specific_value))
-            nav_crumb_level = 1
-        else:
-            songs = self.settings["master"].lookup_song_list()
+    def get(self):
+        songs = self.settings["master"].lookup_song_list()
 
         tlbatch = set()
         groups = OrderedDict()
@@ -104,11 +96,16 @@ class Hirameku(RequestHandler):
         self.render("accessories.html", skills=skills)
 
 
-@route("/([a-z]+)/story/(.+)")
+@route(r"/([a-z]+)/story/(.+)")
 class StoryViewerScaffold(RequestHandler):
     def get(self, region, script):
-        self.render("story_scaffold.html", 
-            region=region, basename=script, asset_path=pageutils.sign_object(self, f"adv/{script}", "json"))
+        self.render(
+            "story_scaffold.html",
+            region=region,
+            basename=script,
+            asset_path=pageutils.sign_object(self, f"adv/{script}", "json"),
+        )
+
 
 @route(r"/api/v1/(?:[^/]*)/skill_tree/([0-9]+).json")
 class APISkillTree(RequestHandler):
@@ -122,19 +119,19 @@ class APISkillTree(RequestHandler):
 
         self.write({"id": int(i), "tree": shape, "lock_levels": locks, "item_sets": items})
 
+
 @route(r"/api/private/search/bootstrap.json")
 class APISearchBootstrap(RequestHandler):
     def gen_sd(self):
-        sd = libcard.localization.skill_describer_for_locale(self.locale.code)
+        sd = libcard2.localization.skill_describer_for_locale(self.locale.code)
         desc_fmt_args = {"var": "", "let": "", "end": "", "value": "X"}
-        
+
         word_set = {}
         for skill_id, formatter in sd.skill_effect.data.items():
             if callable(formatter):
                 wl = formatter(**desc_fmt_args)
             else:
                 wl = formatter.format(**desc_fmt_args)
-            
 
     def get(self):
         return

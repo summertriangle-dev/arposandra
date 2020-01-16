@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.2.1",
+    "chart.js": "^2.9.3",
     "js-cookie": "^2.2.1",
     "react": "^16.10.2",
     "react-aspect-ratio": "^1.0.41",

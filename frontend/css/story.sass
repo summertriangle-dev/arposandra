@@ -3,3 +3,24 @@
 
 .kars-story-cell
     padding: 0.8rem 1rem
+
+.kars-story-grid
+    padding: 1rem
+    .row
+        margin-bottom: 1rem
+    .row:last-child
+        margin-bottom: 0
+
+    @include media-breakpoint-down(md)
+        .kars-story-header-cell
+            margin-bottom: 1rem
+        .row
+            margin-bottom: 0
+
+.kars-story-header-cell
+    .card-img-top
+        height: 100px
+        object-fit: cover
+    .card-body
+        padding: 0.5rem
+        text-align: center

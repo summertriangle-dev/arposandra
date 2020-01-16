@@ -6,6 +6,7 @@ import Infra from "./infra"
 import * as TLInject from "./tlinject"
 import * as Album from "./album"
 import * as NewsFilter from "./news_filter"
+import * as EventTracker from "./event_tracker"
 import { CardDisplayModeSwitcher, ImageSwitcher } from "./card_page_components"
 import SkillTree from "./skill_tree"
 import { StoryViewer } from "./transcript"
@@ -26,6 +27,9 @@ function initializeContextDependentModules() {
     const wantModules = document.body.dataset.inject.split(/ /g)
     if (wantModules.indexOf("card") != -1) {
         Album.injectIntoPage()
+    }
+    if (wantModules.indexOf("saint") != -1) {
+        EventTracker.injectIntoPage()
     }
 }
 

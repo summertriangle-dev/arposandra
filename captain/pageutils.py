@@ -249,6 +249,7 @@ def card_icon_url(handler, card, appearance):
     base[key] = signed
     return signed
 
+
 @export
 def sign_object(handler, key, suffix):
     try:
@@ -266,3 +267,18 @@ def sign_object(handler, key, suffix):
 
     base[key] = signed
     return signed
+
+
+@export
+def gridify(handler, itera, per_row):
+    if len(itera) <= per_row:
+        yield itera
+        return
+
+    start = 0
+    while 1:
+        group = itera[start : start + per_row]
+        if not group:
+            break
+        yield group
+        start = start + per_row

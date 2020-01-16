@@ -14,6 +14,7 @@ from . import pageutils
 from . import tlinject
 from . import news
 from . import card_tracking
+from . import event_tracker
 import libcard2
 
 
@@ -56,6 +57,7 @@ def application(master, debug):
         tlinject_context=tlinject.TLInjectContext(db_coordinator),
         news_context=news.NewsDatabase(db_coordinator),
         card_tracking=card_tracking.CardTrackingDatabase(db_coordinator),
+        event_tracking=event_tracker.EventTrackingDatabase(db_coordinator),
         template_path=readonly_app_path("webui"),
         runtime_info=create_runtime_info(),
         tlinject_secret=os.environ.get("AS_TLINJECT_SECRET", "").encode("utf8"),
