@@ -63,7 +63,7 @@ class DatabaseConnection(object):
                     points_t9 int, userid_t9 int,
                     points_t10 int, userid_t10 int,
 
-                    UNIQUE (serverid, event_id, observation),
+                    UNIQUE (serverid, event_id, tier_type, observation),
                     FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
                         ON UPDATE CASCADE ON DELETE CASCADE
                 );
@@ -78,7 +78,7 @@ class DatabaseConnection(object):
                     tier_from int,
                     tier_to int,
 
-                    UNIQUE(serverid, event_id, tier_to, observation),
+                    UNIQUE(serverid, event_id, tier_type, tier_to, observation),
                     FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
                         ON UPDATE CASCADE ON DELETE CASCADE
                 );
@@ -181,14 +181,14 @@ class DatabaseConnection(object):
                 INSERT INTO border_fixed_data_v2 VALUES
                 ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 
                     $16, $17, $18, $19, $20, $21, $22, $23, $24, $25)
-                ON CONFLICT (serverid, event_id, observation) DO NOTHING 
+                ON CONFLICT (serverid, event_id, tier_type, observation) DO NOTHING 
                 """,
                 ((region, event_id, time, is_last, *r) for r in singular),
             )
             await c.executemany(
                 """
                 INSERT INTO border_data_v2 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-                ON CONFLICT (serverid, event_id, tier_to, observation) DO NOTHING 
+                ON CONFLICT (serverid, event_id, tier_type, tier_to, observation) DO NOTHING 
                 """,
                 ((region, event_id, time, is_last, *r) for r in rows),
             )

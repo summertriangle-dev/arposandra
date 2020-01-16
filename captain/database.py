@@ -83,7 +83,7 @@ class DatabaseCoordinator(object):
                     points_t9 int, userid_t9 int,
                     points_t10 int, userid_t10 int,
 
-                    UNIQUE (serverid, event_id, observation),
+                    UNIQUE (serverid, event_id, tier_type, observation),
                     FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
                         ON UPDATE CASCADE ON DELETE CASCADE
                 );
@@ -98,7 +98,7 @@ class DatabaseCoordinator(object):
                     tier_from int,
                     tier_to int,
 
-                    UNIQUE(serverid, event_id, tier_to, observation),
+                    UNIQUE(serverid, event_id, tier_type, tier_to, observation),
                     FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
                         ON UPDATE CASCADE ON DELETE CASCADE
                 );
