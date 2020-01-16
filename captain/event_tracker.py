@@ -88,10 +88,12 @@ class EventTrackingDatabase(object):
             else:
                 recs = await self._fetch_new_tier_recs(c, server_id, event_id)
 
-            for record in recs:
-                datasets[record["dataset"]].append(
-                    (record["observation"].isoformat(), record["points"])
-                )
+            for x in range(100):
+                for record in recs:
+                    datasets[record["dataset"]].append(
+                        ((record["observation"] + timedelta(minutes=15 * x)).isoformat(), 
+                        record["points"] + 101 * x)
+                    )
 
         return datasets
     
@@ -135,11 +137,12 @@ class EventTrackingDatabase(object):
             else:
                 recs = await self._fetch_new_t10_recs(c, server_id, event_id)
 
-            for record in recs:
-                for x in range(1, 11):
-                    datasets[f"{record['dataset']}.t{x}"].append((
-                        record["observation"].isoformat(), record[f"points_t{x}"]
-                    ))
+            for x in range(100):
+                for record in recs:
+                    for x in range(1, 11):
+                        datasets[f"{record['dataset']}.t{x}"].append((
+                            record["observation"].isoformat(), record[f"points_t{x}"]
+                        ))
 
         return datasets
 

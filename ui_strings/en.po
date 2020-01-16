@@ -160,3 +160,12 @@ msgstr "Waiting for JavaScript components..."
 
 msgid "PT.History"
 msgstr "Card Releases"
+
+msgid "PT.EventTracker"
+msgstr "Event Tracker"
+
+msgid "EventTracker.HeaderCurrentTiers"
+msgstr "Tracker"
+
+msgid "EventTracker.HeaderStories"
+msgstr "Event Story"

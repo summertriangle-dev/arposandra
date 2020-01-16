@@ -1,3 +1,4 @@
+import Infra from "./infra"
 
 let chartjs
 let chartData
@@ -8,6 +9,36 @@ const DEFAULT_DATASETS_TO_SHOW = [
     "points.10000",
 ]
 
+const COLOURS = [
+    "rgba(34, 116, 165, 1)",
+    "rgba(91, 95, 151, 1)",
+    "rgba(255, 193, 69, 1)",
+    "rgba(255, 107, 108, 1)",
+    "rgba(181, 186, 114, 1)",
+]
+
+function colourArray(n) {
+    let a = new Array(n)
+    for (let i = 0; i < n; ++i) {
+        a[i] = COLOURS[i % COLOURS.length]
+    }
+    return a
+}
+
+function localizeDatasetName(dsn) {
+    let s = dsn.split(".")
+    if (s.length !== 2) return s
+
+    let criteria
+    switch(s[0]) {
+    case "voltage": criteria = Infra.strings.Saint.DatasetFriendlyName.Voltage; break
+    case "points": criteria = Infra.strings.Saint.DatasetFriendlyName.Points; break
+    default: criteria = s[0]; break
+    }
+
+    return Infra.strings.formatString(Infra.strings.Saint.DatasetNameFormat, s[1], criteria)
+}
+
 class SaintDatasetCoordinator {
     constructor(serverid, eventID) {
         this.serverid = serverid
@@ -17,7 +48,6 @@ class SaintDatasetCoordinator {
         this.lastError = null
 
         this.datasets = {}
-        this.xAxis = []
     }
 
     async refresh() {
@@ -34,16 +64,18 @@ class SaintDatasetCoordinator {
         this.lastCheckTime = nextLastTime
         if (R.is_new) {
             const keys = Object.keys(R.datasets)
+            const colours = colourArray(keys.length)
             this.datasets = {}
-            keys.map((k) => {
+            keys.map((k, i) => {
                 return {
-                    label: k,
+                    _saintRealName: k,
+                    label: localizeDatasetName(k),
                     data: SaintDatasetCoordinator.reshapeDataset(R.datasets[k]),
                     fill: false,
-                    borderWidth: 2
+                    borderWidth: 2,
+                    borderColor: colours[i]
                 }
             }).forEach((v) => this.datasets[v.label] = v)
-            this.xAxis = R.datasets[keys[0]].map((v) => v[0])
         } else {
             for (let dataset of Object.keys(adata.result.datasets)) {
                 const se = this.datasets[dataset]
@@ -58,10 +90,10 @@ class SaintDatasetCoordinator {
     }
 
     static reshapeDataset(dso) {
-        return dso.map((v) => v[1])
+        return dso.map((v) => {return {y: v[1], t: v[0]}})
     }
 
-    async getUpdateURL() {
+    getUpdateURL() {
         return `/api/private/saint/${this.serverid}/${this.eventId}/tiers.json`
     }
 
@@ -85,7 +117,7 @@ class SaintDatasetCoordinator {
 }
 
 class SaintTop10DatasetCoordinator extends SaintDatasetCoordinator {
-    async getUpdateURL() {
+    getUpdateURL() {
         return `/api/private/saint/${this.serverid}/${this.eventId}/top10.json`
     }
 }
@@ -114,7 +146,21 @@ function initSaintAfterChartsReady() {
             }]
         },
         options: {
+            animation: {duration: 0}, // general animation time
+            hover: {animationDuration: 0}, // duration of animations when hovering an item
+            responsiveAnimationDuration: 0, // animation duration after a resize
+            elements: {
+                line: {
+                    tension: 0 // disables bezier curves
+                }
+            },
             scales: {
+                xAxes: [{
+                    type: 'time',
+                    time: {
+                        unit: 'hour'
+                    }
+                }],
                 yAxes: [{
                     ticks: {
                         beginAtZero: true
@@ -127,9 +173,10 @@ function initSaintAfterChartsReady() {
     chartData.refresh().then(() => {
         console.log(chartData)
         let ds = []
-        for (let name of DEFAULT_DATASETS_TO_SHOW) {
-            if (Object.hasOwnProperty.call(chartData.datasets, name)) {
-                ds.push(chartData.datasets[name])
+        for (let name of Object.keys(chartData.datasets)) {
+            ds.push(chartData.datasets[name])
+            if (DEFAULT_DATASETS_TO_SHOW.indexOf(chartData.datasets[name]._saintRealName) == -1) {
+                chartData.datasets[name].hidden = true
             }
         }
 

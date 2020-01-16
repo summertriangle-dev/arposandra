@@ -47,5 +47,12 @@ export default {
         LoadingPleaseWait: "Please wait while the script loads...",
         Header: "Story Transcript",
         PlayerName: "You"
+    },
+    Saint: {
+        DatasetNameFormat: "T{0} ({1})",
+        DatasetFriendlyName: {
+            Voltage: "Voltage",
+            Points: "Points",
+        }
     }
 }
