@@ -22,8 +22,7 @@ class SaintDatasetCoordinator {
 
     async refresh() {
         const nextLastTime = (Date.now() / 1000) | 0
-        const adata = await SaintDatasetCoordinator.getUpdateFromAPI(
-            this.serverid, this.eventId, this.lastCheckTime)
+        const adata = await this.getUpdateFromAPI(this.lastCheckTime)
 
         if (!adata.result) {
             this.status = 0
@@ -62,7 +61,11 @@ class SaintDatasetCoordinator {
         return dso.map((v) => v[1])
     }
 
-    static async getUpdateFromAPI(sid, eid, last) {
+    async getUpdateURL() {
+        return `/api/private/saint/${this.serverid}/${this.eventId}/tiers.json`
+    }
+
+    async getUpdateFromAPI(last) {
         const xhr = new XMLHttpRequest()
         return new Promise((resolve, reject) => {
             xhr.onreadystatechange = () => {
@@ -75,9 +78,15 @@ class SaintDatasetCoordinator {
                     reject()
                 }
             }
-            xhr.open("GET", `/api/private/saint/${sid}/${eid}/data.json?after=${last}`)
+            xhr.open("GET", `${this.getUpdateURL()}?after=${last}`)
             xhr.send()
         })
+    }
+}
+
+class SaintTop10DatasetCoordinator extends SaintDatasetCoordinator {
+    async getUpdateURL() {
+        return `/api/private/saint/${this.serverid}/${this.eventId}/top10.json`
     }
 }
 

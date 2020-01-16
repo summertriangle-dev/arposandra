@@ -1,5 +1,6 @@
 FROM python:3.7 as extension-builder
 
+# We use Skyfarer's copy of hwdecrypt here. This is intentional.
 WORKDIR /usr/kars/skyfarer/hwdecrypt_src
 COPY ./skyfarer/hwdecrypt_src /usr/kars/skyfarer/hwdecrypt_src
 RUN python setup.py clean bdist && mv dist/hwdecrypt*.tar.gz hwdecrypt.tar.gz

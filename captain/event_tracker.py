@@ -51,26 +51,95 @@ class EventTrackingDatabase(object):
                 event_id,
             )
 
+    async def _fetch_new_tier_recs(self, con, server_id, event_id):
+        return await con.fetch(
+            """
+            WITH closest AS (
+	            SELECT observation FROM border_data_v2 
+	            WHERE serverid=$1 AND event_id=$2 
+	            ORDER BY observation LIMIT 1
+            )
+
+            SELECT observation, CONCAT_WS('.', tier_type, tier_to) AS dataset, points
+            FROM border_data_v2 WHERE serverid=$1 AND event_id=$2
+            AND observation > (SELECT observation FROM closest) - INTERVAL '1 day'
+            ORDER BY observation
+            """, server_id, event_id
+        )
+    
+    async def _fetch_tiers_with_afterts(self, con, server_id, event_id, ts):
+        return await con.fetch(
+            """
+            SELECT observation, CONCAT_WS('.', tier_type, tier_to) AS dataset,
+                points
+            FROM border_data_v2 WHERE serverid=$1 AND event_id=$2 AND observation > $3
+            ORDER BY observation
+            """,
+            server_id,
+            event_id,
+            ts
+        )
+
     async def get_tier_records(self, server_id, event_id, after_dt):
         datasets = defaultdict(lambda: [])
         async with self.coordinator.pool.acquire() as c:
-            recs = await c.fetch(
-                """
-                SELECT observation, CONCAT_WS('.', tier_type, tier_to) AS dataset,
-                    points
-                FROM border_data_v2 WHERE serverid=$1 AND event_id=$2 AND observation > $3
-                ORDER BY observation
-                """,
-                server_id,
-                event_id,
-                after_dt,
+            if after_dt is not None:
+                recs = await self._fetch_tiers_with_afterts(c, server_id, event_id, after_dt)
+            else:
+                recs = await self._fetch_new_tier_recs(c, server_id, event_id)
+
+            for record in recs:
+                datasets[record["dataset"]].append(
+                    (record["observation"].isoformat(), record["points"])
+                )
+
+        return datasets
+    
+    async def _fetch_new_t10_recs(self, con, server_id, event_id):
+        return await con.fetch(
+            """
+            WITH closest AS (
+	            SELECT observation FROM border_fixed_data_v2 
+	            WHERE serverid=$1 AND event_id=$2 
+	            ORDER BY observation LIMIT 1
             )
 
-            for y in range(50):
-                for record in recs:
-                    datasets[record["dataset"]].append(
-                        (record["observation"].isoformat(), record["points"])
-                    )
+            SELECT observation, tier_type AS dataset, 
+                points_t1, points_t2, points_t3, points_t4, points_t5,
+                points_t6, points_t7, points_t8, points_t9, points_t10
+            FROM border_fixed_data_v2 WHERE serverid=$1 AND event_id=$2
+            AND observation > (SELECT observation FROM closest) - INTERVAL '1 day'
+            ORDER BY observation
+            """, server_id, event_id
+        )
+    
+    async def _fetch_t10_afterts(self, con, server_id, event_id, ts):
+        return await con.fetch(
+            """
+            SELECT observation, tier_type AS dataset, 
+                points_t1, points_t2, points_t3, points_t4, points_t5,
+                points_t6, points_t7, points_t8, points_t9, points_t10
+            FROM border_fixed_data_v2 WHERE serverid=$1 AND event_id=$2 AND observation > $3
+            ORDER BY observation
+            """,
+            server_id,
+            event_id,
+            ts
+        )
+
+    async def get_t10_records(self, server_id, event_id, after_dt):
+        datasets = defaultdict(lambda: [])
+        async with self.coordinator.pool.acquire() as c:
+            if after_dt is not None:
+                recs = await self._fetch_t10_afterts(c, server_id, event_id, after_dt)
+            else:
+                recs = await self._fetch_new_t10_recs(c, server_id, event_id)
+
+            for record in recs:
+                for x in range(1, 11):
+                    datasets[f"{record['dataset']}.t{x}"].append((
+                        record["observation"].isoformat(), record[f"points_t{x}"]
+                    ))
 
         return datasets
 
@@ -138,9 +207,12 @@ class APISaintInfo(RequestHandler):
         )
 
 
-@route(r"/api/private/saint/([a-z]+)/([0-9]+)/data.json")
+@route(r"/api/private/saint/([a-z]+)/([0-9]+)/tiers.json")
 class APISaintData(RequestHandler):
     MAX_LOOK_BACK_TIME = 86400
+
+    async def get_data_validated(self, sid, eid, after_dt):
+        return await self.settings["event_tracking"].get_tier_records(sid, eid, after_dt)
 
     async def get(self, sid, eid=None):
         if self.settings["event_tracking"].validate_server_id(sid) != sid:
@@ -158,21 +230,25 @@ class APISaintData(RequestHandler):
                 self.set_status(400)
                 self.write({"error": "Invalid timestamp given for after parameter."})
                 return
+
+            if after_dt > now:
+                self.set_status(400)
+                self.write({"error": "Date too far in the future."})
+                return
+
+            # We only return up to 24 hours of past results. If you need
+            # more, you should use CSV dumps.            
+            if (now - after_dt).total_seconds() > self.MAX_LOOK_BACK_TIME:
+                after_dt = None
+                is_new = True
         else:
-            after_dt = now - timedelta(seconds=self.MAX_LOOK_BACK_TIME)
+            after_dt = None
             is_new = True
 
-        if after_dt > now:
-            self.set_status(400)
-            self.write({"error": "Date too far in the future."})
-            return
-
-        # We only return up to 24 hours of past results. If you need
-        # more, you should use CSV dumps.
-        if (now - after_dt).total_seconds() > self.MAX_LOOK_BACK_TIME:
-            after_dt = now - timedelta(seconds=self.MAX_LOOK_BACK_TIME)
-            is_new = True
-
-        out = await self.settings["event_tracking"].get_tier_records(sid, int(eid), after_dt)
+        out = await self.get_data_validated(sid, int(eid), after_dt)
         self.write({"result": {"is_new": is_new, "datasets": out}})
 
+@route(r"/api/private/saint/([a-z]+)/([0-9]+)/top10.json")
+class APISaintFixedData(APISaintData):
+    async def get_data_validated(self, sid, eid, after_dt):
+        return await self.settings["event_tracking"].get_t10_records(sid, eid, after_dt)
