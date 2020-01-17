@@ -1,7 +1,9 @@
-import tornado.web
 import json
 import os
 import time
+
+import tornado.web
+from tornado import locale
 
 ROUTES = []
 
@@ -34,3 +36,11 @@ def dev_mode_only(wrapped):
             self.write("The requested endpoint is only available in development mode.")
 
     return not_dev_error
+
+
+class LanguageCookieMixin(tornado.web.RequestHandler):
+    def get_user_locale(self):
+        preferred_lang = self.get_cookie("lang", None)
+        if preferred_lang not in locale.get_supported_locales():
+            return None
+        return locale.get(preferred_lang)

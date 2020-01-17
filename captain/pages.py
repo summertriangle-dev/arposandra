@@ -1,13 +1,13 @@
 from collections import OrderedDict
 from tornado.web import RequestHandler
 
-from .dispatch import route
+from .dispatch import route, LanguageCookieMixin
 from . import pageutils
 import libcard2.localization
 
 
 @route("/")
-class Slash(RequestHandler):
+class Slash(LanguageCookieMixin):
     def get(self):
         self.render("home.html")
 
@@ -15,7 +15,7 @@ class Slash(RequestHandler):
 @route("/(?:idols|idol)/?")
 @route("/idols/(unit)/([0-9]+)")
 @route("/idols/(group)/([0-9]+)")
-class IdolsRoot(RequestHandler):
+class IdolsRoot(LanguageCookieMixin):
     def get(self, specific=None, specific_value=None):
         nav_crumb_level = 0
         if specific == "unit":
@@ -42,7 +42,7 @@ class IdolsRoot(RequestHandler):
 
 
 @route("/lives")
-class LiveRoot(RequestHandler):
+class LiveRoot(LanguageCookieMixin):
     def get(self):
         songs = self.settings["master"].lookup_song_list()
 
@@ -60,7 +60,7 @@ class LiveRoot(RequestHandler):
 
 
 @route("/live(?:s)?/([0-9]+)(/.*)?")
-class LiveSingle(RequestHandler):
+class LiveSingle(LanguageCookieMixin):
     def get(self, live_id, _slug=None):
         song = self.settings["master"].lookup_song_difficulties(int(live_id))
 
@@ -71,7 +71,7 @@ class LiveSingle(RequestHandler):
 
 
 @route("/accessory_skills")
-class Accessories(RequestHandler):
+class Accessories(LanguageCookieMixin):
     def get(self):
         skills = self.settings["master"].lookup_all_accessory_skills()
         tlbatch = set()
@@ -83,7 +83,7 @@ class Accessories(RequestHandler):
 
 
 @route("/hirameku_skills")
-class Hirameku(RequestHandler):
+class Hirameku(LanguageCookieMixin):
     def get(self):
         skills = self.settings["master"].lookup_all_hirameku_skills()
         skills.sort(key=lambda x: (x.levels[0][2], x.rarity))
@@ -97,7 +97,7 @@ class Hirameku(RequestHandler):
 
 
 @route(r"/([a-z]+)/story/(.+)")
-class StoryViewerScaffold(RequestHandler):
+class StoryViewerScaffold(LanguageCookieMixin):
     def get(self, region, script):
         self.render(
             "story_scaffold.html",

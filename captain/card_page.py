@@ -3,12 +3,12 @@ from datetime import datetime
 
 from tornado.web import RequestHandler
 
-from .dispatch import route
+from .dispatch import route, LanguageCookieMixin
 from .pageutils import tlinject_static
 
 
 @route("/cards/by_idol/([0-9]+)(/.*)?")
-class CardPageByMemberID(RequestHandler):
+class CardPageByMemberID(LanguageCookieMixin):
     def get(self, member_id, _):
         member = self.settings["master"].lookup_member_by_id(member_id)
 
@@ -29,7 +29,7 @@ class CardPageByMemberID(RequestHandler):
 
 
 @route("/card/(random|(?:[0-9,]+))(/.*)?")
-class CardPage(RequestHandler):
+class CardPage(LanguageCookieMixin):
     def card_spec(self, spec: str) -> list:
         if spec == "everything":
             return self.settings["master"].all_ordinals()
@@ -76,7 +76,7 @@ class CardPage(RequestHandler):
 
 
 @route("/cards/history")
-class CardHistory(RequestHandler):
+class CardHistory(LanguageCookieMixin):
     async def get(self):
         his = await self.settings["card_tracking"].get_history_entries("jp", datetime.now(), 21)
         if len(his) == 21:

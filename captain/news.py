@@ -17,7 +17,7 @@ from html import unescape
 import asyncpg
 from tornado.web import RequestHandler
 
-from .dispatch import route
+from .dispatch import route, LanguageCookieMixin
 from . import pageutils
 from libcard2.dataclasses import Card
 
@@ -88,7 +88,7 @@ class NewsDatabase(object):
 
 @route("/news/?")
 @route("/([a-z]+)/news/?")
-class NewsList(RequestHandler):
+class NewsList(LanguageCookieMixin):
     NUM_ITEMS_PER_PAGE = 20
 
     async def get(self, region=None):
@@ -140,7 +140,7 @@ class NewsList(RequestHandler):
 
 
 @route("/([a-z]+)/news/([0-9]+)")
-class NewsSingle(RequestHandler):
+class NewsSingle(LanguageCookieMixin):
     CARD_INCLUDE_INSTR = re.compile(r"<\?asi-include-card card-id:([0-9]+)\?>")
     TIMESTAMP_INSTR = re.compile(r"<\?asi-blind-ts t:(1|2|4|5);v:([0-9]+)\?>")
     JP_OFFSET_FROM_UTC = 32400
@@ -226,7 +226,7 @@ class InlineImageResolver(RequestHandler):
 
 
 @route("/api/private/intersitial")
-class NewsLinkDerefer(RequestHandler):
+class NewsLinkDerefer(LanguageCookieMixin):
     def get(self):
         imp = self.get_argument("p", None)
         if imp is None:

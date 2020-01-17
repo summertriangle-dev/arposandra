@@ -8,10 +8,10 @@ msgid "#{card_no}: {idol_name}"
 msgstr "#{card_no}: {idol_name}"
 
 msgid "Acknowledgements"
-msgstr "Acknowledgements"
+msgstr "ライセンス通知"
 
 msgid "Album cover"
-msgstr "Album cover"
+msgstr "アルバムカバー"
 
 msgid ""
 "All game assets belong to KLabGames/Sunrise/Bushiroad. I don't own any of it."
@@ -19,19 +19,19 @@ msgstr ""
 "All game assets belong to KLabGames/Sunrise/Bushiroad. I don't own any of it."
 
 msgid "All..."
-msgstr "All..."
+msgstr "すべてを表示..."
 
 msgid "Appeal Chances"
-msgstr "Appeal Chances"
+msgstr "アーピルチャンス"
 
 msgid "Appeal"
-msgstr "Appeal"
+msgstr "アーピル"
 
 msgid "AppendixHiramekuSkills"
 msgstr "AppendixHiramekuSkills"
 
 msgid "Attribute"
-msgstr "Attribute"
+msgstr "属性"
 
 msgid "Base stats"
 msgstr "Base stats"
@@ -44,43 +44,43 @@ msgstr ""
 "click the link."
 
 msgid "Card image"
-msgstr "Card image"
+msgstr "カードの映像"
 
 msgid "Cards of {idol_name}"
-msgstr "Cards of {idol_name}"
+msgstr "{idol_name}のカード"
 
 msgid "EventTracker.HeaderCurrentTiers"
-msgstr "Tracker"
+msgstr "トラッカー"
 
 msgid "EventTracker.HeaderStories"
-msgstr "Event Story"
+msgstr "エピソード"
 
 msgid "Fork me on GitHub"
-msgstr "Fork me on GitHub"
+msgstr "ソースコードへ"
 
 msgid "IndividualSkillHeader"
-msgstr "Individual Skills"
+msgstr "個性"
 
 msgid "Language Options"
 msgstr "Language Options"
 
 msgid "LevelShort"
-msgstr "Lv."
+msgstr "レベル"
 
 msgid "Lv. {level}"
-msgstr "Lv. {level}"
+msgstr "レベル {level}"
 
 msgid "More..."
-msgstr "More..."
+msgstr "さらに表示..."
 
 msgid "Nav.Idols"
-msgstr "Idols"
+msgstr "アイドル"
 
 msgid "Nav.Lives"
-msgstr "Lives"
+msgstr "ライブ"
 
 msgid "Nav.News"
-msgstr "Updates"
+msgstr "お知らせ"
 
 msgid "NewsPostDisclaimer"
 msgstr ""
@@ -93,83 +93,81 @@ msgstr ""
 "your browser supports it."
 
 msgid "NewsType.1"
-msgstr "Information"
+msgstr "通告"
 
 msgid "NewsType.2"
-msgstr "Gacha"
+msgstr "ガシャ"
 
 msgid "NewsType.3"
-msgstr "Event"
+msgstr "イベント"
 
 msgid "NewsType.4"
-msgstr "Shop"
+msgstr "ショップ"
 
 msgid "Note Gimmicks"
-msgstr "Note Gimmicks"
+msgstr "ノーツギミック"
 
 msgid "PT.CardReleases"
-msgstr "PT.CardReleases"
+msgstr "リリース履歴"
 
 msgid "PT.EventTracker"
-msgstr "Event Tracker"
+msgstr "イベントトラッカー"
 
 msgid "PT.IdolList"
-msgstr "Idol list"
+msgstr "アイドルリスト"
 
 msgid "PT.News"
-msgstr "Updates"
+msgstr "お知らせ"
 
 msgid "PT.SiteName"
-msgstr "All Stars"
+msgstr "スクスター"
 
 msgid "PT.SongList"
-msgstr "Song list"
+msgstr "ライブリスト"
 
 msgid "PT.Welcome"
 msgstr "Welcome"
 
 msgid "Persistent Gimmick"
-msgstr "Persistent Gimmick"
+msgstr "ライブの特徴"
 
 msgid "Plus{num}UnlockableSkillSlots"
-msgstr "+ {num} unlockable skill slots"
+msgstr "+{num}ひらめきスキル枠"
 
 msgid "PrimarySkillHeader"
-msgstr "Primary Skill"
+msgstr "特技"
 
 msgid "Quick Links"
 msgstr "Quick Links"
 
 msgid "Render time (so far):"
-msgstr "Render time (so far):"
+msgstr "ページ経過時間 (ここまで):"
 
 msgid "Role"
-msgstr "Role"
+msgstr "タイプ"
 
 msgid ""
 "Rows with ★ include idolization bonus, and all tree unlocks up to that limit "
 "break level."
-msgstr ""
-"Rows with ★ include idolization bonus, and all tree unlocks up to that "
-"limit break level."
+msgstr "★のある行には、その限界突破までの特訓増加が含まれます。"
 
 msgid "SSF.WaitingForWebpack"
-msgstr "Waiting for JavaScript components..."
+msgstr "追加のコンポーネントを待っています..."
 
 msgid "Search"
-msgstr "Search"
+msgstr "サーチ"
 
 msgid "Show All Limit Breaks"
-msgstr "Show All Limit Breaks"
+msgstr "全ての限界突破を広がって"
 
 msgid "SkillValueShort"
-msgstr "V"
+msgstr "値"
 
 msgid "Stam."
-msgstr "Stam."
+msgstr "スタミナ"
 
 msgid "Stamina"
-msgstr "Stamina"
+msgstr "スタミナ"
 
 msgid "StoryTranscriptDisclaimer"
 msgstr ""
@@ -182,28 +180,28 @@ msgstr ""
 "Summary for this card cannot be displayed because the server is out of date."
 
 msgid "TTWrapper.WaitingForWebpack"
-msgstr "Waiting for JavaScript components..."
+msgstr "追加のコンポーネントを待っています..."
 
 msgid "Tech."
-msgstr "Tech."
+msgstr "テクニーク"
 
 msgid "Technique"
-msgstr "Technique"
+msgstr "テクニーク"
 
 msgid "This site is open source:"
-msgstr "This site is open source:"
+msgstr "このサイトはオープンソースです。"
 
 msgid "Toggle Appearance"
-msgstr "Toggle Appearance"
+msgstr "外観を取り替えて"
 
 msgid "TypeAndStatsHeader"
-msgstr "Base Stats"
+msgstr "基本パラメター"
 
 msgid "Version:"
-msgstr "Version:"
+msgstr "バション:"
 
 msgid "Warning"
-msgstr "Warning"
+msgstr "ワーニング"
 
 msgid "You are about to leave this site and visit the following external link:"
 msgstr ""
@@ -213,10 +211,10 @@ msgid "You'll have a better time with JavaScript enabled."
 msgstr "You'll have a better time with JavaScript enabled."
 
 msgid "{num_cards} cards"
-msgstr "{num_cards} cards"
+msgstr "{num_cards}カード"
 
 msgid "{pts} pts"
-msgstr "{pts} pts"
+msgstr "{pts}ポイント"
 
 msgid "★ {star}"
 msgstr "★ {star}"

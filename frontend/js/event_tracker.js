@@ -10,11 +10,14 @@ const DEFAULT_DATASETS_TO_SHOW = [
 ]
 
 const COLOURS = [
-    "rgba(34, 116, 165, 1)",
-    "rgba(91, 95, 151, 1)",
-    "rgba(255, 193, 69, 1)",
-    "rgba(255, 107, 108, 1)",
-    "rgba(181, 186, 114, 1)",
+    "#007bff",
+    "#6610f2",
+    "#e83e8c",
+    "#dc3545",
+    "#fd7e14",
+    "#ffc107",
+    "#28a745",
+    "#20c997",
 ]
 
 function colourArray(n) {
@@ -156,9 +159,9 @@ function initSaintAfterChartsReady() {
             },
             scales: {
                 xAxes: [{
-                    type: 'time',
+                    type: "time",
                     time: {
-                        unit: 'hour'
+                        unit: "hour"
                     }
                 }],
                 yAxes: [{

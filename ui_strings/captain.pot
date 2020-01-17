@@ -1,9 +1,3 @@
-msgid ""
-msgstr ""
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-
 msgid "#{card_no}: {idol_name}"
 msgstr "#{card_no}: {idol_name}"
 
@@ -13,10 +7,8 @@ msgstr "Acknowledgements"
 msgid "Album cover"
 msgstr "Album cover"
 
-msgid ""
-"All game assets belong to KLabGames/Sunrise/Bushiroad. I don't own any of it."
-msgstr ""
-"All game assets belong to KLabGames/Sunrise/Bushiroad. I don't own any of it."
+msgid "All game assets belong to KLabGames/Sunrise/Bushiroad. I don't own any of it."
+msgstr "All game assets belong to KLabGames/Sunrise/Bushiroad. I don't own any of it."
 
 msgid "All..."
 msgstr "All..."
@@ -36,12 +28,8 @@ msgstr "Attribute"
 msgid "Base stats"
 msgstr "Base stats"
 
-msgid ""
-"Be aware that external sites may contain malicious content. To continue, "
-"click the link."
-msgstr ""
-"Be aware that external sites may contain malicious content. To continue, "
-"click the link."
+msgid "Be aware that external sites may contain malicious content. To continue, click the link."
+msgstr "Be aware that external sites may contain malicious content. To continue, click the link."
 
 msgid "Card image"
 msgstr "Card image"
@@ -50,22 +38,22 @@ msgid "Cards of {idol_name}"
 msgstr "Cards of {idol_name}"
 
 msgid "EventTracker.HeaderCurrentTiers"
-msgstr "Tracker"
+msgstr "EventTracker.HeaderCurrentTiers"
 
 msgid "EventTracker.HeaderStories"
-msgstr "Event Story"
+msgstr "EventTracker.HeaderStories"
 
 msgid "Fork me on GitHub"
 msgstr "Fork me on GitHub"
 
 msgid "IndividualSkillHeader"
-msgstr "Individual Skills"
+msgstr "IndividualSkillHeader"
 
 msgid "Language Options"
 msgstr "Language Options"
 
 msgid "LevelShort"
-msgstr "Lv."
+msgstr "LevelShort"
 
 msgid "Lv. {level}"
 msgstr "Lv. {level}"
@@ -74,35 +62,31 @@ msgid "More..."
 msgstr "More..."
 
 msgid "Nav.Idols"
-msgstr "Idols"
+msgstr "Nav.Idols"
 
 msgid "Nav.Lives"
-msgstr "Lives"
+msgstr "Nav.Lives"
 
 msgid "Nav.News"
-msgstr "Updates"
+msgstr "Nav.News"
 
 msgid "NewsPostDisclaimer"
-msgstr ""
-"This news post is presented on a best-effort basis and may differ from its "
-"display in game."
+msgstr "NewsPostDisclaimer"
 
 msgid "NewsPostLocalTimestampsAvailableMessage"
-msgstr ""
-"Dates and times with a dashed underline will be converted to local time, if "
-"your browser supports it."
+msgstr "NewsPostLocalTimestampsAvailableMessage"
 
 msgid "NewsType.1"
-msgstr "Information"
+msgstr "NewsType.1"
 
 msgid "NewsType.2"
-msgstr "Gacha"
+msgstr "NewsType.2"
 
 msgid "NewsType.3"
-msgstr "Event"
+msgstr "NewsType.3"
 
 msgid "NewsType.4"
-msgstr "Shop"
+msgstr "NewsType.4"
 
 msgid "Note Gimmicks"
 msgstr "Note Gimmicks"
@@ -111,31 +95,31 @@ msgid "PT.CardReleases"
 msgstr "PT.CardReleases"
 
 msgid "PT.EventTracker"
-msgstr "Event Tracker"
+msgstr "PT.EventTracker"
 
 msgid "PT.IdolList"
-msgstr "Idol list"
+msgstr "PT.IdolList"
 
 msgid "PT.News"
-msgstr "Updates"
+msgstr "PT.News"
 
 msgid "PT.SiteName"
-msgstr "All Stars"
+msgstr "PT.SiteName"
 
 msgid "PT.SongList"
-msgstr "Song list"
+msgstr "PT.SongList"
 
 msgid "PT.Welcome"
-msgstr "Welcome"
+msgstr "PT.Welcome"
 
 msgid "Persistent Gimmick"
 msgstr "Persistent Gimmick"
 
 msgid "Plus{num}UnlockableSkillSlots"
-msgstr "+ {num} unlockable skill slots"
+msgstr "Plus{num}UnlockableSkillSlots"
 
 msgid "PrimarySkillHeader"
-msgstr "Primary Skill"
+msgstr "PrimarySkillHeader"
 
 msgid "Quick Links"
 msgstr "Quick Links"
@@ -146,15 +130,11 @@ msgstr "Render time (so far):"
 msgid "Role"
 msgstr "Role"
 
-msgid ""
-"Rows with ★ include idolization bonus, and all tree unlocks up to that limit "
-"break level."
-msgstr ""
-"Rows with ★ include idolization bonus, and all tree unlocks up to that "
-"limit break level."
+msgid "Rows with ★ include idolization bonus, and all tree unlocks up to that limit break level."
+msgstr "Rows with ★ include idolization bonus, and all tree unlocks up to that limit break level."
 
 msgid "SSF.WaitingForWebpack"
-msgstr "Waiting for JavaScript components..."
+msgstr "SSF.WaitingForWebpack"
 
 msgid "Search"
 msgstr "Search"
@@ -163,7 +143,7 @@ msgid "Show All Limit Breaks"
 msgstr "Show All Limit Breaks"
 
 msgid "SkillValueShort"
-msgstr "V"
+msgstr "SkillValueShort"
 
 msgid "Stam."
 msgstr "Stam."
@@ -172,17 +152,13 @@ msgid "Stamina"
 msgstr "Stamina"
 
 msgid "StoryTranscriptDisclaimer"
-msgstr ""
-"This story transcript is presented on a best-effort basis and may differ "
-"from its display in game."
+msgstr "StoryTranscriptDisclaimer"
 
-msgid ""
-"Summary for this card cannot be displayed because the server is out of date."
-msgstr ""
-"Summary for this card cannot be displayed because the server is out of date."
+msgid "Summary for this card cannot be displayed because the server is out of date."
+msgstr "Summary for this card cannot be displayed because the server is out of date."
 
 msgid "TTWrapper.WaitingForWebpack"
-msgstr "Waiting for JavaScript components..."
+msgstr "TTWrapper.WaitingForWebpack"
 
 msgid "Tech."
 msgstr "Tech."
@@ -197,7 +173,7 @@ msgid "Toggle Appearance"
 msgstr "Toggle Appearance"
 
 msgid "TypeAndStatsHeader"
-msgstr "Base Stats"
+msgstr "TypeAndStatsHeader"
 
 msgid "Version:"
 msgstr "Version:"
@@ -206,8 +182,7 @@ msgid "Warning"
 msgstr "Warning"
 
 msgid "You are about to leave this site and visit the following external link:"
-msgstr ""
-"You are about to leave this site and visit the following external link:"
+msgstr "You are about to leave this site and visit the following external link:"
 
 msgid "You'll have a better time with JavaScript enabled."
 msgstr "You'll have a better time with JavaScript enabled."
@@ -220,3 +195,4 @@ msgstr "{pts} pts"
 
 msgid "★ {star}"
 msgstr "★ {star}"
+

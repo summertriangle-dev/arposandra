@@ -3,7 +3,7 @@ from collections import defaultdict
 
 from tornado.web import RequestHandler
 
-from .dispatch import route
+from .dispatch import route, LanguageCookieMixin
 from . import pageutils
 
 
@@ -55,18 +55,20 @@ class EventTrackingDatabase(object):
         return await con.fetch(
             """
             WITH closest AS (
-	            SELECT observation FROM border_data_v2 
-	            WHERE serverid=$1 AND event_id=$2 
-	            ORDER BY observation LIMIT 1
+                SELECT observation FROM border_data_v2 
+                WHERE serverid=$1 AND event_id=$2 
+                ORDER BY observation DESC LIMIT 1
             )
 
             SELECT observation, CONCAT_WS('.', tier_type, tier_to) AS dataset, points
             FROM border_data_v2 WHERE serverid=$1 AND event_id=$2
             AND observation > (SELECT observation FROM closest) - INTERVAL '1 day'
             ORDER BY observation
-            """, server_id, event_id
+            """,
+            server_id,
+            event_id,
         )
-    
+
     async def _fetch_tiers_with_afterts(self, con, server_id, event_id, ts):
         return await con.fetch(
             """
@@ -77,7 +79,7 @@ class EventTrackingDatabase(object):
             """,
             server_id,
             event_id,
-            ts
+            ts,
         )
 
     async def get_tier_records(self, server_id, event_id, after_dt):
@@ -88,22 +90,20 @@ class EventTrackingDatabase(object):
             else:
                 recs = await self._fetch_new_tier_recs(c, server_id, event_id)
 
-            for x in range(100):
-                for record in recs:
-                    datasets[record["dataset"]].append(
-                        ((record["observation"] + timedelta(minutes=15 * x)).isoformat(), 
-                        record["points"] + 101 * x)
-                    )
+            for record in recs:
+                datasets[record["dataset"]].append(
+                    (record["observation"].isoformat(), record["points"],)
+                )
 
         return datasets
-    
+
     async def _fetch_new_t10_recs(self, con, server_id, event_id):
         return await con.fetch(
             """
             WITH closest AS (
-	            SELECT observation FROM border_fixed_data_v2 
-	            WHERE serverid=$1 AND event_id=$2 
-	            ORDER BY observation LIMIT 1
+                SELECT observation FROM border_fixed_data_v2 
+                WHERE serverid=$1 AND event_id=$2 
+                ORDER BY observation DESC LIMIT 1
             )
 
             SELECT observation, tier_type AS dataset, 
@@ -112,9 +112,11 @@ class EventTrackingDatabase(object):
             FROM border_fixed_data_v2 WHERE serverid=$1 AND event_id=$2
             AND observation > (SELECT observation FROM closest) - INTERVAL '1 day'
             ORDER BY observation
-            """, server_id, event_id
+            """,
+            server_id,
+            event_id,
         )
-    
+
     async def _fetch_t10_afterts(self, con, server_id, event_id, ts):
         return await con.fetch(
             """
@@ -126,7 +128,7 @@ class EventTrackingDatabase(object):
             """,
             server_id,
             event_id,
-            ts
+            ts,
         )
 
     async def get_t10_records(self, server_id, event_id, after_dt):
@@ -137,12 +139,11 @@ class EventTrackingDatabase(object):
             else:
                 recs = await self._fetch_new_t10_recs(c, server_id, event_id)
 
-            for x in range(100):
-                for record in recs:
-                    for x in range(1, 11):
-                        datasets[f"{record['dataset']}.t{x}"].append((
-                            record["observation"].isoformat(), record[f"points_t{x}"]
-                        ))
+            for record in recs:
+                for x in range(1, 11):
+                    datasets[f"{record['dataset']}.t{x}"].append(
+                        (record["observation"].isoformat(), record[f"points_t{x}"])
+                    )
 
         return datasets
 
@@ -163,7 +164,7 @@ class EventServerRedirect(RequestHandler):
 
 @route(r"/([a-z]+)/events")
 @route(r"/([a-z]+)/events/([0-9]+)(?:/[^/]*)?")
-class EventDash(RequestHandler):
+class EventDash(LanguageCookieMixin):
     async def get(self, sid, eid=None):
         sid = self.settings["event_tracking"].validate_server_id(sid)
 
@@ -240,7 +241,7 @@ class APISaintData(RequestHandler):
                 return
 
             # We only return up to 24 hours of past results. If you need
-            # more, you should use CSV dumps.            
+            # more, you should use CSV dumps.
             if (now - after_dt).total_seconds() > self.MAX_LOOK_BACK_TIME:
                 after_dt = None
                 is_new = True
@@ -250,6 +251,7 @@ class APISaintData(RequestHandler):
 
         out = await self.get_data_validated(sid, int(eid), after_dt)
         self.write({"result": {"is_new": is_new, "datasets": out}})
+
 
 @route(r"/api/private/saint/([a-z]+)/([0-9]+)/top10.json")
 class APISaintFixedData(APISaintData):

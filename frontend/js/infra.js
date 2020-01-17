@@ -48,7 +48,7 @@ function canWritebackState() {
 
 async function initialize() {
     const locale = getDocumentLocale()
-    const stringsMod = await import(/* webpackMode: "eager" */ `./lang/${locale}.js`)
+    const stringsMod = await import(`./lang/${locale}.js`)
 
     strings.setContent({
         locale: stringsMod.default,

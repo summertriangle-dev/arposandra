@@ -9,27 +9,26 @@
         <a class="item" href="/lives">
             {{ _("Nav.Lives") }}
         </a>
+        <a class="item" href="/events">
+            {{ _("Nav.EventTracker") }}
+        </a>
     </div>
     <div class="kars-navbar-list kars-navbar-trailing">
-        <a class="item" id="bind-environment-toggle" style="display:none">
-            <i class="icon ion-ios-hammer"></i>
-            <span>DEV</span>
-        </a>
         <a class="item" id="bind-languagemenu-toggle">
-            <i class="icon ion-ios-globe" title="{{ _('Language Options') }}"></i>
+            <i class="icon ion-ios-globe" title="{{ _("Language Options") }}"></i>
         </a>
         <a class="item" id="bind-appearance-toggle">
-            <i class="icon ion-ios-bulb" title="{{ _('Toggle Appearance') }}"></i>
+            <i class="icon ion-ios-bulb" title="{{ _("Toggle Appearance") }}"></i>
         </a>
-        <a class="item" id="bind-search-toggle">
-            <i class="icon ion-ios-search" title="{{ _('Search') }}"></i>
+        <a class="item" id="bind-search-toggle" style="display:none">
+            <i class="icon ion-ios-search" title="{{ _("Search") }}"></i>
         </a>
     </div>
 </nav>
 
 <noscript>
     <div class="container alert alert-warning">
-        <i class="icon ion-ios-warning" title="{{ _('Warning') }}"></i>
+        <i class="icon ion-ios-warning" title="{{ _("Warning") }}"></i>
         {{ _("You'll have a better time with JavaScript enabled.") }}
     </div>
 </noscript>

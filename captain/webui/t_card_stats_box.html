@@ -40,7 +40,7 @@
                 <tr class="
                     {% if lb_level.level not in [0, 5] %} kars-stats-extraneous {% end %}
                     ">
-                    <th scope="row">{{ _("\u2605 {star}").format(star=lb_level.level) }}</th>
+                    <th scope="row">{{ _("★ {star}").format(star=lb_level.level) }}</th>
                     <td class="let">{{ lb_appeal_base + lb_level.appeal }}</td>
                     <td class="let">{{ lb_stamina_base + lb_level.stamina }}</td>
                     <td class="let">{{ lb_tech_base + lb_level.technique }}</td>
@@ -51,8 +51,8 @@
     </div>
     <div class="kars-stack-member">
         <p class="small my-0">
-            {{ _("Rows with \u2605 include idolization bonus, and all tree unlocks up to that limit break level.") }}
-            <a class="kars-show-full-stat-table" data-cmid-target="{{ card.id }}">Show All Limit Breaks</a>
+            {{ _("Rows with ★ include idolization bonus, and all tree unlocks up to that limit break level.") }}
+            <a class="kars-show-full-stat-table" data-cmid-target="{{ card.id }}">{{ _("Show All Limit Breaks") }}</a>
         </p>
     </div>
 </div>

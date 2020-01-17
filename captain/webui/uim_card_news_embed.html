@@ -30,7 +30,7 @@
 
                     <div class="kars-stack">
                         <div class="kars-stack-header">
-                            {{ _("Base stats") }}
+                            {{ _("TypeAndStatsHeader") }}
                         </div>
                         <div class="media kars-stack-member">
                             <div class="media-body">
@@ -51,7 +51,7 @@
 
                         {% if card.passive_skills or card.active_skill %}
                         <div class="kars-stack-header">
-                            {{ _("Active Skill") }}
+                            {{ _("PrimarySkillHeader") }}
                         </div>
                         <div class="media kars-stack-member">
                             <img class="kars-skill-icon mr-3" src="{{ image_url_reify(card.active_skill.thumbnail_asset_path, "png") }}" />
@@ -62,7 +62,7 @@
                             </div>
                         </div>
                         <div class="kars-stack-header">
-                            {{ _("Passive Skills") }}
+                            {{ _("IndividualSkillHeader") }}
                         </div>
                         {% for skill in card.passive_skills %}
                         <div class="media kars-stack-member">
@@ -76,7 +76,7 @@
                         {% end %}
                         <div class="media kars-stack-member">
                             <div class="media-body">
-                                <p class="mb-0">+ {{ card.max_passive_skill_slot }} unlockable skill slots</p>
+                                <p class="mb-0">{{ _("Plus{num}UnlockableSkillSlots").format(num=card.max_passive_skill_slot) }}</p>
                             </div>
                         </div>
                         {% end %}

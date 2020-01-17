@@ -316,7 +316,7 @@ export function initialize() {
     }
 
     getSupportedLanguages().then((langs) => {
-        if (langs.indexOf(Infra.getDocumentLocale())) {
+        if (langs.indexOf(Infra.getDocumentLocale()) !== -1) {
             config.language = Infra.getDocumentLocale()
         } else {
             config.language = langs[0]
