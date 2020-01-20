@@ -1,12 +1,14 @@
 import Infra from "./infra"
 import React from "react"
 import ReactDOM from "react-dom"
-import { SaintDatasetCoordinator, toRankTypeFriendlyName } from "./event_tracker_internal"
+import {connect, Provider} from "react-redux"
+import { SaintDatasetCoordinator, SaintUserConfig, toRankTypeFriendlyName, rankTypesForEventType } from "./event_tracker_internal"
 
 const DEFAULT_DATASETS_TO_SHOW = [
     "points.50000",
     "points.40000",
     "points.10000",
+    "points.1000"
 ]
 
 const COLOURS = [
@@ -39,58 +41,109 @@ function colourArray(n) {
     return a
 }
 
-class SaintDisplayBoard extends React.Component {
-    render() {
-        return <ul>
-            {this.props.visibility.map((k) => {
-                const s = this.props.summaryData[k]
-                if (!s) {
-                    return null
-                }
-                return <li key={k}>Pts: {s.points} Delta: {s.delta} Diff2: {s.delta2}</li>
-            })}
-        </ul>
+class _SaintRankTypeSelector extends React.Component {
+    isSelected(m) {
+        return this.props.rankMode[this.props.eventType] === m? "selected" : null
     }
+
+    render() {
+        const choices = rankTypesForEventType(this.props.eventType)
+        if (choices.length < 2) {
+            return <div></div>
+        }
+
+        return <div className="kars-sub-navbar is-left">
+            <span className="item">{Infra.strings.Saint.RankTypeSwitchLabel}</span>
+            <div className="item kars-image-switch always-active">
+                {choices.map((v) => {
+                    return <a className={this.isSelected(v)} 
+                        onClick={() => this.props.setMode(this.props.eventType, v)}>
+                        {toRankTypeFriendlyName(v)}
+                    </a>
+                })}
+            </div>
+        </div>
+    }
+}
+
+const SaintRankTypeSelector = connect(
+    (state) => { return {rankMode: state.saint.rankMode} },
+    (dispatch) => {
+        return {
+            setMode: (t, m) => dispatch({type: `${SaintUserConfig.actions.setMode}`, 
+                mode: m, forType: t})
+        }
+    })(_SaintRankTypeSelector)
+
+function SaintDisplayBoardCard(props) {
+    let sym
+    if (!props.d.delta) {
+        sym = "-"
+    } else if (props.d.delta > 0) {
+        sym = "↑"
+    } else {
+        sym = "↓"
+    }
+
+    let diff2sym
+    if (!props.d.diff2) {
+        diff2sym = "-"
+    } else if (props.d.diff2 > 0) {
+        diff2sym = "↑"
+    } else {
+        diff2sym = "↓"
+    }
+
+    return <div className="card">
+        <div className="card-body">
+            <p className="card-text my-0">{props.d.points}</p>
+            <p className="card-subtitle my-0">
+                <span className="delta-symbol">{sym}</span>
+                {" "}
+                <span className="delta-symbol small">{diff2sym}</span>
+                {" "}
+                <span className="delta-word">{props.d.delta || "--"}</span>
+            </p>
+        </div>
+    </div>
+}
+
+function SaintDisplayBoard(props) {
+    return <div className="row">
+        {props.visibility.map((k) => {
+            const s = props.summaryData[k]
+            if (!s) {
+                return null
+            }
+            return <div className="col-4" key={k}><SaintDisplayBoardCard d={s} /></div>
+        })}
+    </div>
 }
 
 class SaintDisplayController {
     constructor(canvas) {
         this.canvas = canvas
-        this.displayStat = "points"
         this.chartData = new SaintDatasetCoordinator(canvas.dataset.serverId, 
             parseInt(canvas.dataset.eventId))
         this.chart = null
         this.timeout = null
-        this.visibleSet = DEFAULT_DATASETS_TO_SHOW
-    }
 
-    didFireRefreshTimer() {
-        this.chartData.refresh().then(() => {
-            console.log(this.chartData)
-            this.installDisplayBoard()
+        Infra.store.dispatch({type: `${SaintUserConfig.actions.loadFromLocalStorage}`})
+        Infra.store.subscribe(() => {
+            if (Infra.canWritebackState()) {
+                localStorage.setItem("as$$saint", JSON.stringify(state.saint))
+            }
         })
     }
 
     installTimer() {
-        this.timeout = setInterval(() => this.didFireRefreshTimer(), 15 * 60 * 1000)
+        this.timeout = setInterval(() => this.refreshData(), 15 * 60 * 1000)
     }
 
     disableUpdates() {
         if (this.timeout) {
             clearInterval(this.timeout)
         }
-    }
-
-    didSelectRankingType(rankType) {
-        this.displayStat = rankType
-        this.refreshData()
-    }
-
-    shouldDatasetBeVisible(theSet) {
-        if (theSet.rankType === this.displayStat) {
-            return true
-        }
-        return false
     }
 
     refreshData() {
@@ -101,51 +154,10 @@ class SaintDisplayController {
     }
 
     installDisplayBoard() {
+        const et = document.querySelector("#saintRankTypeSelector").dataset.eventType
         const summaries = this.chartData.summaryForDatasets(Object.keys(this.chartData.datasets))
-        ReactDOM.render(<SaintDisplayBoard visibility={this.visibleSet} summaryData={summaries} />, this.canvas.querySelector("#saintCutoffBoard"))
-    }
-}
-
-function initRankSwitch(rs, forController) {
-    let rankTypes
-    switch(rs.dataset.eventType) {
-    case "mining":
-        rankTypes = ["points", "voltage"]
-        break
-    default:
-        rankTypes = null
-        break
-    }
-
-    if (!rankTypes) return
-
-    const label = document.createElement("span")
-    label.className = "item"
-    label.textContent = Infra.strings.Saint.RankTypeSwitchLabel
-    rs.appendChild(label)
-
-    const sw = document.createElement("div")
-    sw.className = "item kars-image-switch always-active"
-    rs.appendChild(sw)
-
-    const didSelectSwitch = (event) => {
-        const rankType = event.target.dataset.target
-        forController.didSelectRankingType(rankType)
-
-        const buttons = sw.querySelectorAll("a")
-        for (let i = 0; i < buttons.length; ++i) {
-            buttons[i].className = ""
-        }
-        event.target.className = "selected"
-    }
-
-    for (let i = 0; i < rankTypes.length; ++i) {
-        const knob = document.createElement("a")
-        knob.className = (i == 0)? "selected" : ""
-        knob.textContent = toRankTypeFriendlyName(rankTypes[i])
-        knob.dataset.target = rankTypes[i]
-        knob.addEventListener("click", didSelectSwitch, {passive: true})
-        sw.appendChild(knob)
+        ReactDOM.render(<SaintDisplayBoard visibility={Infra.store.getState().saint.displayTiers} summaryData={summaries} />, this.canvas.querySelector("#saintCutoffBoard"))
+        ReactDOM.render(<Provider store={Infra.store}><SaintRankTypeSelector eventType={et} /></Provider>, this.canvas.querySelector("#saintRankTypeSelector"))
     }
 }
   
@@ -153,9 +165,6 @@ let controller
 
 export function injectIntoPage() {
     controller = new SaintDisplayController(document.getElementById("saintControl"))
-    const rankSwitch = document.getElementById("saintRankTypeSelector")
-    initRankSwitch(rankSwitch, controller)
-
     controller.refreshData()
     controller.installTimer()
     controller.installDisplayBoard()

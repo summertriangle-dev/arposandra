@@ -7,6 +7,7 @@ import * as TLInject from "./tlinject"
 import * as Album from "./album"
 import * as NewsFilter from "./news_filter"
 import * as EventTracker from "./event_tracker"
+import { SaintUserConfig } from "./event_tracker_internal"
 import { CardDisplayModeSwitcher, ImageSwitcher } from "./card_page_components"
 import SkillTree from "./skill_tree"
 import { StoryViewer } from "./transcript"
@@ -57,7 +58,8 @@ function initializeReactComponents() {
 function init() {
     Infra.store.injectReducers({
         album: Album.AlbumStore.reducer,
-        newsFilter: NewsFilter.NewsFilter.reducer
+        newsFilter: NewsFilter.NewsFilter.reducer,
+        saint: SaintUserConfig.reducer
     })
     TLInject.initialize()
     NewsFilter.initWithRedux(Infra.store)

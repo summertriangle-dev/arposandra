@@ -1,4 +1,21 @@
 import Infra from "./infra"
+import {createSlice} from "@reduxjs/toolkit"
+
+const DEFAULT_DATASETS_TO_SHOW = [
+    "points.50000",
+    "points.40000",
+    "points.10000",
+    "points.1000"
+]
+
+export function rankTypesForEventType(eventType) {
+    switch(eventType) {
+    case "mining":
+        return ["points", "voltage"]
+    default:
+        return ["points"]
+    }
+}
 
 export function toRankTypeFriendlyName(key) {
     switch(key) {
@@ -16,6 +33,36 @@ function localizeDatasetName(dsn) {
 
     return Infra.strings.formatString(Infra.strings.Saint.DatasetNameFormat, s[1], criteria)
 }
+
+export const SaintUserConfig = createSlice({
+    name: "saint",
+    initialState: {
+        displayTiers: DEFAULT_DATASETS_TO_SHOW,
+        rankMode: {
+            marathon: "points",
+            mining: "points",
+        }
+    },
+    reducers: {
+        setMode: (state, action) => {
+            state.rankMode[action.forType] = action.mode
+        },
+        loadFromLocalStorage: (state) => {
+            const ls = localStorage.getItem("as$$saint")
+            if (!ls) {
+                return
+            }
+
+            const json = JSON.parse(ls)
+            if (json.rankMode) {
+                Object.assign(state.rankMode, json.rankMode)
+            }
+            if (json.displayTiers && json.displayTiers.length !== undefined) {
+                state.displayTiers = displayTiers
+            }
+        }
+    }
+})
 
 export class SaintDatasetCoordinator {
     constructor(serverid, eventID) {
