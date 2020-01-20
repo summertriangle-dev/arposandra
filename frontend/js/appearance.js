@@ -99,6 +99,19 @@ function dmToggleAppearance() {
     Infra.store.dispatch({type: `${Appearance.actions.setTheme}`, payload: nextAppearance})
 }
 
+export function effectiveAppearance() {
+    const theme = Infra.store.getState().appearance.theme
+    if (theme === "system") {
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            return "dark"
+        } else {
+            return "light"
+        }
+    }
+
+    return theme
+}
+
 export function initWithRedux(store) {
     dmInitThemeRegistry()
 

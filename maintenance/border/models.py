@@ -21,6 +21,12 @@ class DatabaseConnection(object):
         async with self.pool.acquire() as c, c.transaction():
             await c.execute(
                 """
+                DO $$ BEGIN
+                    CREATE TYPE tier_type_t AS ENUM ('points', 'voltage');
+                EXCEPTION
+                    WHEN duplicate_object THEN null;
+                END $$;
+                
                 CREATE TABLE IF NOT EXISTS event_v2 (
                     serverid varchar(8),
                     event_id int,
@@ -45,13 +51,13 @@ class DatabaseConnection(object):
                     FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
                         ON UPDATE CASCADE ON DELETE CASCADE
                 );
-                CREATE TABLE IF NOT EXISTS border_fixed_data_v2 (
+                CREATE TABLE IF NOT EXISTS border_fixed_data_v3 (
                     serverid varchar(8),
                     event_id int,
                     observation timestamp,
                     is_last boolean,
 
-                    tier_type varchar(8),
+                    tier_type tier_type_t,
                     points_t1 int, userid_t1 int,
                     points_t2 int, userid_t2 int,
                     points_t3 int, userid_t3 int,
@@ -67,18 +73,38 @@ class DatabaseConnection(object):
                     FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
                         ON UPDATE CASCADE ON DELETE CASCADE
                 );
-                CREATE TABLE IF NOT EXISTS border_data_v2 (
+                CREATE TABLE IF NOT EXISTS border_data_v3 (
                     serverid varchar(8),
                     event_id int,
                     observation timestamp,
                     is_last boolean,
 
-                    tier_type varchar(8),
+                    tier_type tier_type_t,
                     points int,
                     tier_from int,
                     tier_to int,
 
                     UNIQUE(serverid, event_id, tier_type, tier_to, observation),
+                    FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
+                        ON UPDATE CASCADE ON DELETE CASCADE
+                );
+                CREATE TABLE IF NOT EXISTS border_t100_v1 (
+                    serverid varchar(8),
+                    event_id int,
+                    tier_type tier_type_t,
+
+                    rank int,
+                    points int,
+                    user_id int,
+                    user_name text,
+                    user_level int,
+                    center_card int,
+                    center_level int,
+                    awakened boolean,
+                    full_tree boolean,
+                    wield_title int,
+
+                    UNIQUE(serverid, event_id, tier_type, rank),
                     FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
                         ON UPDATE CASCADE ON DELETE CASCADE
                 );
@@ -99,7 +125,7 @@ class DatabaseConnection(object):
     async def have_final_tiers(self, region, event_id):
         async with self.pool.acquire() as c:
             row = await c.fetchrow(
-                """SELECT is_last FROM border_data_v2 WHERE serverid=$1 AND event_id=$2 AND is_last=TRUE""",
+                """SELECT is_last FROM border_data_v3 WHERE serverid=$1 AND event_id=$2 AND is_last=TRUE""",
                 region,
                 event_id,
             )
@@ -136,7 +162,7 @@ class DatabaseConnection(object):
             obs, fin = None, False
             last_collect = await c.fetchrow(
                 """
-                SELECT observation, is_last FROM border_data_v2 WHERE serverid=$1 AND event_id=$2 
+                SELECT observation, is_last FROM border_data_v3 WHERE serverid=$1 AND event_id=$2 
                 ORDER BY observation DESC LIMIT 1
                 """,
                 region,
@@ -178,17 +204,28 @@ class DatabaseConnection(object):
         async with self.pool.acquire() as c, c.transaction():
             await c.executemany(
                 """
-                INSERT INTO border_fixed_data_v2 VALUES
-                ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 
+                INSERT INTO border_fixed_data_v3 VALUES
+                ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
                     $16, $17, $18, $19, $20, $21, $22, $23, $24, $25)
-                ON CONFLICT (serverid, event_id, tier_type, observation) DO NOTHING 
+                ON CONFLICT (serverid, event_id, tier_type, observation) DO NOTHING
                 """,
                 ((region, event_id, time, is_last, *r) for r in singular),
             )
             await c.executemany(
                 """
-                INSERT INTO border_data_v2 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-                ON CONFLICT (serverid, event_id, tier_type, tier_to, observation) DO NOTHING 
+                INSERT INTO border_data_v3 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                ON CONFLICT (serverid, event_id, tier_type, tier_to, observation) DO NOTHING
                 """,
                 ((region, event_id, time, is_last, *r) for r in rows),
+            )
+
+    async def add_t100(self, region, event_id, type_, rows):
+        async with self.pool.acquire() as c, c.transaction():
+            await c.executemany(
+                """
+                INSERT INTO border_t100_v1 VALUES
+                ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                ON CONFLICT (serverid, event_id, tier_type, rank) DO NOTHING 
+                """,
+                ((region, event_id, type_, *r) for r in rows),
             )

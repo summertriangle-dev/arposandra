@@ -1,7 +1,7 @@
 import Infra from "./infra"
-
-let chartjs
-let chartData
+import React from "react"
+import ReactDOM from "react-dom"
+import { SaintDatasetCoordinator, toRankTypeFriendlyName } from "./event_tracker_internal"
 
 const DEFAULT_DATASETS_TO_SHOW = [
     "points.50000",
@@ -20,6 +20,17 @@ const COLOURS = [
     "#20c997",
 ]
 
+const THEME_VARS = {
+    dark: {
+        gridLines: "rgba(238, 238, 238, 0.1)",
+        textColor: "#eeeeee",
+    },
+    light: {
+        gridLines: "rgba(51, 51, 51, 0.1)",
+        textColor: "#333333",
+    }
+}
+
 function colourArray(n) {
     let a = new Array(n)
     for (let i = 0; i < n; ++i) {
@@ -28,171 +39,124 @@ function colourArray(n) {
     return a
 }
 
-function localizeDatasetName(dsn) {
-    let s = dsn.split(".")
-    if (s.length !== 2) return s
-
-    let criteria
-    switch(s[0]) {
-    case "voltage": criteria = Infra.strings.Saint.DatasetFriendlyName.Voltage; break
-    case "points": criteria = Infra.strings.Saint.DatasetFriendlyName.Points; break
-    default: criteria = s[0]; break
+class SaintDisplayBoard extends React.Component {
+    render() {
+        return <ul>
+            {this.props.visibility.map((k) => {
+                const s = this.props.summaryData[k]
+                if (!s) {
+                    return null
+                }
+                return <li key={k}>Pts: {s.points} Delta: {s.delta} Diff2: {s.delta2}</li>
+            })}
+        </ul>
     }
-
-    return Infra.strings.formatString(Infra.strings.Saint.DatasetNameFormat, s[1], criteria)
 }
 
-class SaintDatasetCoordinator {
-    constructor(serverid, eventID) {
-        this.serverid = serverid
-        this.eventId = eventID
-        this.lastCheckTime = 0
-        this.status = 0
-        this.lastError = null
-
-        this.datasets = {}
+class SaintDisplayController {
+    constructor(canvas) {
+        this.canvas = canvas
+        this.displayStat = "points"
+        this.chartData = new SaintDatasetCoordinator(canvas.dataset.serverId, 
+            parseInt(canvas.dataset.eventId))
+        this.chart = null
+        this.timeout = null
+        this.visibleSet = DEFAULT_DATASETS_TO_SHOW
     }
 
-    async refresh() {
-        const nextLastTime = (Date.now() / 1000) | 0
-        const adata = await this.getUpdateFromAPI(this.lastCheckTime)
-
-        if (!adata.result) {
-            this.status = 0
-            this.lastError = adata.error? adata.error : "Unknown server error"
-            return
-        }
-
-        const R = adata.result
-        this.lastCheckTime = nextLastTime
-        if (R.is_new) {
-            const keys = Object.keys(R.datasets)
-            const colours = colourArray(keys.length)
-            this.datasets = {}
-            keys.map((k, i) => {
-                return {
-                    _saintRealName: k,
-                    label: localizeDatasetName(k),
-                    data: SaintDatasetCoordinator.reshapeDataset(R.datasets[k]),
-                    fill: false,
-                    borderWidth: 2,
-                    borderColor: colours[i]
-                }
-            }).forEach((v) => this.datasets[v.label] = v)
-        } else {
-            for (let dataset of Object.keys(adata.result.datasets)) {
-                const se = this.datasets[dataset]
-                se.data.push(
-                    ...SaintDatasetCoordinator.reshapeDataset(R.datasets[dataset]))
-                if (se.length > 50) {
-                    se.splice(0, se.length - 50)
-                }
-            }
-
-        }
-    }
-
-    static reshapeDataset(dso) {
-        return dso.map((v) => {return {y: v[1], t: v[0]}})
-    }
-
-    getUpdateURL() {
-        return `/api/private/saint/${this.serverid}/${this.eventId}/tiers.json`
-    }
-
-    async getUpdateFromAPI(last) {
-        const xhr = new XMLHttpRequest()
-        return new Promise((resolve, reject) => {
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState !== 4) return
-    
-                if (xhr.status == 200) {
-                    const json = JSON.parse(xhr.responseText)
-                    resolve(json)
-                } else {
-                    reject()
-                }
-            }
-            xhr.open("GET", `${this.getUpdateURL()}?after=${last}`)
-            xhr.send()
+    didFireRefreshTimer() {
+        this.chartData.refresh().then(() => {
+            console.log(this.chartData)
+            this.installDisplayBoard()
         })
     }
-}
 
-class SaintTop10DatasetCoordinator extends SaintDatasetCoordinator {
-    getUpdateURL() {
-        return `/api/private/saint/${this.serverid}/${this.eventId}/top10.json`
+    installTimer() {
+        this.timeout = setInterval(() => this.didFireRefreshTimer(), 15 * 60 * 1000)
+    }
+
+    disableUpdates() {
+        if (this.timeout) {
+            clearInterval(this.timeout)
+        }
+    }
+
+    didSelectRankingType(rankType) {
+        this.displayStat = rankType
+        this.refreshData()
+    }
+
+    shouldDatasetBeVisible(theSet) {
+        if (theSet.rankType === this.displayStat) {
+            return true
+        }
+        return false
+    }
+
+    refreshData() {
+        this.chartData.refresh().then(() => {
+            console.log(this.chartData)
+            this.installDisplayBoard()
+        })
+    }
+
+    installDisplayBoard() {
+        const summaries = this.chartData.summaryForDatasets(Object.keys(this.chartData.datasets))
+        ReactDOM.render(<SaintDisplayBoard visibility={this.visibleSet} summaryData={summaries} />, this.canvas.querySelector("#saintCutoffBoard"))
     }
 }
 
-function initSaintAfterChartsReady() {
-    const sg = document.getElementById("saintGraph")
-    chartData = new SaintDatasetCoordinator(sg.dataset.serverId, parseInt(sg.dataset.eventId))
-    
-    let ctx = sg.getContext("2d")
-    let myChart = new chartjs.Chart(ctx, {
-        type: "line",
-        data: {
-            labels: [
-                new Date(2019,12,31,12,0,0), 
-                new Date(2019,12,31,13,0,0), 
-                new Date(2019,12,31,14,0,0), 
-                new Date(2019,12,31,15,0,0),
-                new Date(2019,12,31,16,0,0),
-                new Date(2019,12,31,17,0,0),
-            ],
-            datasets: [{
-                label: "Points",
-                data: [12, 19, 3, 5, 2, 3],
-                fill: false,
-                borderWidth: 2
-            }]
-        },
-        options: {
-            animation: {duration: 0}, // general animation time
-            hover: {animationDuration: 0}, // duration of animations when hovering an item
-            responsiveAnimationDuration: 0, // animation duration after a resize
-            elements: {
-                line: {
-                    tension: 0 // disables bezier curves
-                }
-            },
-            scales: {
-                xAxes: [{
-                    type: "time",
-                    time: {
-                        unit: "hour"
-                    }
-                }],
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
+function initRankSwitch(rs, forController) {
+    let rankTypes
+    switch(rs.dataset.eventType) {
+    case "mining":
+        rankTypes = ["points", "voltage"]
+        break
+    default:
+        rankTypes = null
+        break
+    }
+
+    if (!rankTypes) return
+
+    const label = document.createElement("span")
+    label.className = "item"
+    label.textContent = Infra.strings.Saint.RankTypeSwitchLabel
+    rs.appendChild(label)
+
+    const sw = document.createElement("div")
+    sw.className = "item kars-image-switch always-active"
+    rs.appendChild(sw)
+
+    const didSelectSwitch = (event) => {
+        const rankType = event.target.dataset.target
+        forController.didSelectRankingType(rankType)
+
+        const buttons = sw.querySelectorAll("a")
+        for (let i = 0; i < buttons.length; ++i) {
+            buttons[i].className = ""
         }
-    })
+        event.target.className = "selected"
+    }
 
-    chartData.refresh().then(() => {
-        console.log(chartData)
-        let ds = []
-        for (let name of Object.keys(chartData.datasets)) {
-            ds.push(chartData.datasets[name])
-            if (DEFAULT_DATASETS_TO_SHOW.indexOf(chartData.datasets[name]._saintRealName) == -1) {
-                chartData.datasets[name].hidden = true
-            }
-        }
-
-        myChart.data.labels = chartData.xAxis
-        myChart.data.datasets = ds
-        myChart.update()
-    })
-
+    for (let i = 0; i < rankTypes.length; ++i) {
+        const knob = document.createElement("a")
+        knob.className = (i == 0)? "selected" : ""
+        knob.textContent = toRankTypeFriendlyName(rankTypes[i])
+        knob.dataset.target = rankTypes[i]
+        knob.addEventListener("click", didSelectSwitch, {passive: true})
+        sw.appendChild(knob)
+    }
 }
+  
+let controller
 
 export function injectIntoPage() {
-    import("chart.js").then((_chartjs) => {
-        chartjs = _chartjs
-        initSaintAfterChartsReady()
-    })
+    controller = new SaintDisplayController(document.getElementById("saintControl"))
+    const rankSwitch = document.getElementById("saintRankTypeSelector")
+    initRankSwitch(rankSwitch, controller)
+
+    controller.refreshData()
+    controller.installTimer()
+    controller.installDisplayBoard()
 }

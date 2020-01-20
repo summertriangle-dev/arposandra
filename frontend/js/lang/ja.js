@@ -44,7 +44,7 @@ export default {
         ja: "日本語"
     },
 
-    "NFS.Title": "イベント/ガチャのみを表示",
+    "NFS.Title": "イベントとガチャのみを表示",
     "NFSOption.No": "○",
     "NFSOption.Yes": "｜",
     SST: {
@@ -56,7 +56,8 @@ export default {
         DatasetNameFormat: "{0}位上 ({1})",
         DatasetFriendlyName: {
             Voltage: "ボルテージ",
-            Points: "イベポイント",
-        }
+            Points: "イベントP",
+        },
+        RankTypeSwitchLabel: "ランキング型",
     }
 }

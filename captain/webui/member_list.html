@@ -10,7 +10,7 @@
 
         {% for group_name, members in member_groups.items() %}
         <div class="container">
-            <h1 class="h3 ml-3 mb-3">
+            <h1 class="h3 mb-3 kars-negative-box">
                 {% if nav_crumb_level > 1 %}
                     <a class="font-weight-light" href="/idols/group/{{ members[0].group }}">
                         {% raw tlinject_static(group_name) %}

@@ -53,6 +53,7 @@ export default {
         DatasetFriendlyName: {
             Voltage: "Voltage",
             Points: "Points",
-        }
+        },
+        RankTypeSwitchLabel: "Ranking Type",
     }
 }

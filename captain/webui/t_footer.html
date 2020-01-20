@@ -1,12 +1,12 @@
-<footer class="container kars-footer">
-    <div class="content is-small text-center">
+<div class="container">
+    <footer class="kars-footer small text-center">
         {{ _("All game assets belong to KLabGames/Sunrise/Bushiroad. I don't own any of it.") }} <br>
         {{ _("This site is open source:") }} <a href="https://github.com/summertriangle-dev/arposandra">
             {{ _("Fork me on GitHub") }}
         </a> &bull; <a href="https://github.com/summertriangle-dev/arposandra/blob/master/LICENSE.md">
             {{ _("Acknowledgements") }}
         </a><br>
-    
+
         {{ _("Version:") }} {{ handler.settings["runtime_info"].app_revision }} hosting 
         {{ handler.settings["master"].version }} on
         {{ handler.settings["runtime_info"].host_id }} <br>
@@ -22,5 +22,5 @@
             {% except %}
             {% end %}
         </div>
-    </div>
-</footer>
+    </footer>
+</div>

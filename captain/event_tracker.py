@@ -1,10 +1,14 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 
 from tornado.web import RequestHandler
 
 from .dispatch import route, LanguageCookieMixin
 from . import pageutils
+
+
+def to_utc_timestamp(naive):
+    return naive.replace(tzinfo=timezone.utc).timestamp()
 
 
 class EventTrackingDatabase(object):
@@ -55,13 +59,13 @@ class EventTrackingDatabase(object):
         return await con.fetch(
             """
             WITH closest AS (
-                SELECT observation FROM border_data_v2 
+                SELECT observation FROM border_data_v3 
                 WHERE serverid=$1 AND event_id=$2 
                 ORDER BY observation DESC LIMIT 1
             )
 
             SELECT observation, CONCAT_WS('.', tier_type, tier_to) AS dataset, points
-            FROM border_data_v2 WHERE serverid=$1 AND event_id=$2
+            FROM border_data_v3 WHERE serverid=$1 AND event_id=$2
             AND observation > (SELECT observation FROM closest) - INTERVAL '1 day'
             ORDER BY observation
             """,
@@ -74,7 +78,7 @@ class EventTrackingDatabase(object):
             """
             SELECT observation, CONCAT_WS('.', tier_type, tier_to) AS dataset,
                 points
-            FROM border_data_v2 WHERE serverid=$1 AND event_id=$2 AND observation > $3
+            FROM border_data_v3 WHERE serverid=$1 AND event_id=$2 AND observation > $3
             ORDER BY observation
             """,
             server_id,
@@ -92,7 +96,7 @@ class EventTrackingDatabase(object):
 
             for record in recs:
                 datasets[record["dataset"]].append(
-                    (record["observation"].isoformat(), record["points"],)
+                    (to_utc_timestamp(record["observation"]), record["points"])
                 )
 
         return datasets
@@ -101,7 +105,7 @@ class EventTrackingDatabase(object):
         return await con.fetch(
             """
             WITH closest AS (
-                SELECT observation FROM border_fixed_data_v2 
+                SELECT observation FROM border_fixed_data_v3 
                 WHERE serverid=$1 AND event_id=$2 
                 ORDER BY observation DESC LIMIT 1
             )
@@ -109,7 +113,7 @@ class EventTrackingDatabase(object):
             SELECT observation, tier_type AS dataset, 
                 points_t1, points_t2, points_t3, points_t4, points_t5,
                 points_t6, points_t7, points_t8, points_t9, points_t10
-            FROM border_fixed_data_v2 WHERE serverid=$1 AND event_id=$2
+            FROM border_fixed_data_v3 WHERE serverid=$1 AND event_id=$2
             AND observation > (SELECT observation FROM closest) - INTERVAL '1 day'
             ORDER BY observation
             """,
@@ -123,7 +127,7 @@ class EventTrackingDatabase(object):
             SELECT observation, tier_type AS dataset, 
                 points_t1, points_t2, points_t3, points_t4, points_t5,
                 points_t6, points_t7, points_t8, points_t9, points_t10
-            FROM border_fixed_data_v2 WHERE serverid=$1 AND event_id=$2 AND observation > $3
+            FROM border_fixed_data_v3 WHERE serverid=$1 AND event_id=$2 AND observation > $3
             ORDER BY observation
             """,
             server_id,
@@ -142,7 +146,7 @@ class EventTrackingDatabase(object):
             for record in recs:
                 for x in range(1, 11):
                     datasets[f"{record['dataset']}.t{x}"].append(
-                        (record["observation"].isoformat(), record[f"points_t{x}"])
+                        (to_utc_timestamp(record["observation"]), record[f"points_t{x}"])
                     )
 
         return datasets

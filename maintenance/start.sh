@@ -37,6 +37,9 @@ case $executable in
         SERVER=$1; shift
         exec python3 border/border.py $SERVER $@
         ;;
+    border-ingest2)
+        exec python3 border/et_fake.py $@
+        ;;
     none)
         exit 0
         ;;

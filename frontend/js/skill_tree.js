@@ -493,7 +493,7 @@ export default class WrapSkillTree extends React.Component {
         case 0: // Collapsed and no data
             return <div className="kars-tt-placeholder text-center" onClick={() => this.expand()}>
                 <i className="icon ion-ios-expand"></i>
-                {Infra.strings["TTWrapper.ExpandSkillTree"]}
+                <span className="link-like">{Infra.strings["TTWrapper.ExpandSkillTree"]}</span>
             </div>
         case 1: // Expanded and loading
             return <div className="kars-tt-placeholder text-center">

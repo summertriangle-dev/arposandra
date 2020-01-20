@@ -158,6 +158,24 @@ def should_track_for_event(status: models.event_status_t):
     return True
 
 
+def make_common_top100_rows(cell_coll, userinfo_key):
+    return [
+        (
+            cell["order"],
+            cell["event_point"],
+            cell[userinfo_key]["user_id"],
+            cell[userinfo_key]["user_name"]["dot_under_text"],
+            cell[userinfo_key]["user_rank"],
+            cell[userinfo_key]["card_master_id"],
+            cell[userinfo_key]["level"],
+            cell[userinfo_key]["is_awakening"],
+            cell[userinfo_key]["is_all_training_activated"],
+            cell[userinfo_key]["emblem_master_id"],
+        )
+        for cell in cell_coll
+    ]
+
+
 def make_common_top10_row(cell_coll, rank_type, userinfo_key):
     l = [rank_type]
     max_ = len(cell_coll)
@@ -235,11 +253,18 @@ async def fetch_marathon_event_border(
     logging.info("Adding %d entries", len(flex_rows))
     await db.add_tiers(region, eid, observe_time, is_last, flex_rows, fixed_rows)
 
+    if is_last and top_pt_ranking:
+        await db.add_t100(
+            region,
+            eid,
+            "points",
+            make_common_top100_rows(top_pt_ranking, "event_marathon_ranking_user"),
+        )
+
 
 async def fetch_mining_event_border(
     ice: iceapi.ICEBinder, region: str, db: models.DatabaseConnection, eid: int
 ):
-
     is_new_event = False
     if not await db.have_event_info(region, eid):
         logging.info("Need to fetch event description for %s %d", region, eid)
@@ -297,8 +322,24 @@ async def fetch_mining_event_border(
     logging.info("Adding %d entries", len(flex_rows))
     await db.add_tiers(region, eid, observe_time, is_last, flex_rows, fixed_rows)
 
+    if is_last:
+        if top_pt_ranking:
+            await db.add_t100(
+                region,
+                eid,
+                "points",
+                make_common_top100_rows(top_pt_ranking, "event_mining_ranking_user"),
+            )
+        if top_score_ranking:
+            await db.add_t100(
+                region,
+                eid,
+                "voltage",
+                make_common_top100_rows(top_score_ranking, "event_mining_ranking_user"),
+            )
 
-async def get_event_border(ice, region, db, tag):
+
+async def get_event_border(ice, region, db):
     status = ice.api.bootstrap.fetchBootstrap(
         {
             "bootstrap_fetch_types": [2, 3, 4, 5, 9, 10],
@@ -329,7 +370,7 @@ async def main():
     try:
         db = models.DatabaseConnection()
         await db.init_models()
-        await get_event_border(ice, tag, db, tag)
+        await get_event_border(ice, tag, db)
     finally:
         end_session(tag, ice)
 

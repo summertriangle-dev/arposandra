@@ -14,7 +14,7 @@
         {% module Template("uim_nav.html", current="news") %}
         
         <div class="container">
-            <h1 class="h3 ml-3 mb-3">
+            <h1 class="h3 mb-3 kars-negative-box">
                 {% if has_offset or is_single %}
                 <a href="/{{ server }}/news">{{ _("PT.News") }}</a>
                 {% else %}
@@ -23,7 +23,7 @@
             </h1>
 
             {% if not is_single %}
-            <div class="kars-react-component" data-component-class="NewsFilterSwitch"></div>
+            <div class="kars-react-component kars-negative-box" data-component-class="NewsFilterSwitch"></div>
             {% end %}
 
             <div class="card kars-card-box">
@@ -32,9 +32,11 @@
             {% end %}
             </div>
             {% if has_next_page %}
-            <a class="btn btn-primary" href="/{{ server }}/news/?before={{ news_items[-1].timestamp() }}">
-                {{ _("More...") }}
-            </a>
+            <div class="kars-negative-box">
+                <a class="btn btn-primary" href="/{{ server }}/news/?before={{ news_items[-1].timestamp() }}">
+                    {{ _("More...") }}
+                </a>
+            </div>
             {% end %}
         </div>
 

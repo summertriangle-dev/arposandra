@@ -1,36 +1,33 @@
-<nav class="container kars-navbar" role="navigation">
-    <div class="kars-navbar-list kars-navbar-leading">
-        <a class="item" href="/news">
-            {{ _("Nav.News") }}
-        </a>
-        <a class="item" href="/idols">
-            {{ _("Nav.Idols") }}
-        </a>
-        <a class="item" href="/lives">
-            {{ _("Nav.Lives") }}
-        </a>
-        <a class="item" href="/events">
-            {{ _("Nav.EventTracker") }}
-        </a>
-    </div>
-    <div class="kars-navbar-list kars-navbar-trailing">
-        <a class="item" id="bind-languagemenu-toggle">
-            <i class="icon ion-ios-globe" title="{{ _("Language Options") }}"></i>
-        </a>
-        <a class="item" id="bind-appearance-toggle">
-            <i class="icon ion-ios-bulb" title="{{ _("Toggle Appearance") }}"></i>
-        </a>
-        <a class="item" id="bind-search-toggle" style="display:none">
-            <i class="icon ion-ios-search" title="{{ _("Search") }}"></i>
-        </a>
-    </div>
-</nav>
-
-<noscript>
-    <div class="container alert alert-warning">
-        <i class="icon ion-ios-warning" title="{{ _("Warning") }}"></i>
-        {{ _("You'll have a better time with JavaScript enabled.") }}
-    </div>
-</noscript>
-
-<div id="bind-gutter"></div>
+<div class="container">
+    <nav class="kars-navbar kars-negative-box">
+        <div class="kars-navbar-list kars-navbar-leading">
+            <a class="item" href="/news">
+                {{ _("Nav.News") }}
+            </a>
+            <a class="item" href="/idols">
+                {{ _("Nav.Idols") }}
+            </a>
+            <a class="item" href="/lives">
+                {{ _("Nav.Lives") }}
+            </a>
+        </div>
+        <div class="kars-navbar-list kars-navbar-trailing">
+            <a class="item" id="bind-languagemenu-toggle">
+                <i class="icon ion-ios-globe" title="{{ _("Language Options") }}"></i>
+            </a>
+            <a class="item" id="bind-appearance-toggle">
+                <i class="icon ion-ios-bulb" title="{{ _("Toggle Appearance") }}"></i>
+            </a>
+            <a class="item" id="bind-search-toggle" style="display:none">
+                <i class="icon ion-ios-search" title="{{ _("Search") }}"></i>
+            </a>
+        </div>
+    </nav>
+    
+    <noscript>
+        <div class="container alert alert-warning">
+            <i class="icon ion-ios-warning" title="{{ _("Warning") }}"></i>
+            {{ _("You'll have a better time with JavaScript enabled.") }}
+        </div>
+    </noscript>
+</div>

@@ -8,7 +8,7 @@ msgid "#{card_no}: {idol_name}"
 msgstr "#{card_no}: {idol_name}"
 
 msgid "Acknowledgements"
-msgstr "ライセンス通知"
+msgstr "謝辞"
 
 msgid "Album cover"
 msgstr "アルバムカバー"

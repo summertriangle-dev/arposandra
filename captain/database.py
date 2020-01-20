@@ -41,6 +41,12 @@ class DatabaseCoordinator(object):
                 );
                 
                 -- Saint
+                DO $$ BEGIN
+                    CREATE TYPE tier_type_t AS ENUM ('points', 'voltage');
+                EXCEPTION
+                    WHEN duplicate_object THEN null;
+                END $$;
+                
                 CREATE TABLE IF NOT EXISTS event_v2 (
                     serverid varchar(8),
                     event_id int,
@@ -65,13 +71,13 @@ class DatabaseCoordinator(object):
                     FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
                         ON UPDATE CASCADE ON DELETE CASCADE
                 );
-                CREATE TABLE IF NOT EXISTS border_fixed_data_v2 (
+                CREATE TABLE IF NOT EXISTS border_fixed_data_v3 (
                     serverid varchar(8),
                     event_id int,
                     observation timestamp,
                     is_last boolean,
 
-                    tier_type varchar(8),
+                    tier_type tier_type_t,
                     points_t1 int, userid_t1 int,
                     points_t2 int, userid_t2 int,
                     points_t3 int, userid_t3 int,
@@ -87,13 +93,13 @@ class DatabaseCoordinator(object):
                     FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
                         ON UPDATE CASCADE ON DELETE CASCADE
                 );
-                CREATE TABLE IF NOT EXISTS border_data_v2 (
+                CREATE TABLE IF NOT EXISTS border_data_v3 (
                     serverid varchar(8),
                     event_id int,
                     observation timestamp,
                     is_last boolean,
 
-                    tier_type varchar(8),
+                    tier_type tier_type_t,
                     points int,
                     tier_from int,
                     tier_to int,

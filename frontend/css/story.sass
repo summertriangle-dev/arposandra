@@ -5,11 +5,8 @@
     padding: 0.8rem 1rem
 
 .kars-story-grid
-    padding: 1rem
-    .row
-        margin-bottom: 1rem
-    .row:last-child
-        margin-bottom: 0
+    .row:not(:first-child)
+        margin-top: 1rem
 
     @include media-breakpoint-down(md)
         .kars-story-header-cell

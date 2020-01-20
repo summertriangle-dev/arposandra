@@ -11,25 +11,12 @@
     
     <div class="container">
         <div class="card kars-card-box">
-            <div class="kars-list-alternate p-3 text-center">
-                <img width="400" src="{{ image_url_reify(event_rec["banner"], "png") }}" />
-            </div>
-            <div class="kars-list-alternate p-3">
+            {% module Template("uim_saint_graph.html", server=server_id, event=event_rec) %}
+
+            <div class="kars-list-alternate card-body kars-story-grid">
                 <div class="row">
                     <div class="col-12">
-                        <h2 class="h4 my-0">{{ _("EventTracker.HeaderCurrentTiers") }}</h2>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <canvas id="saintGraph" data-server-id="{{ server_id }}" data-event-id="{{ event_rec["event_id"] }}"></canvas>
-                    </div>
-                </div>
-            </div>
-            <div class="kars-list-alternate kars-story-grid">
-                <div class="row">
-                    <div class="col-12">
-                        <h2 class="h4 my-0">{{ _("EventTracker.HeaderStories") }}</h2>
+                        <h2 class="h4">{{ _("EventTracker.HeaderStories") }}</h2>
                     </div>
                 </div>
                 
