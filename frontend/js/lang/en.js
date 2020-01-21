@@ -49,11 +49,15 @@ export default {
         PlayerName: "You"
     },
     Saint: {
+        HeaderCurrentTiers: "Cutoffs",
         DatasetNameFormat: "T{0} ({1})",
         DatasetFriendlyName: {
             Voltage: "Voltage",
             Points: "Points",
         },
         RankTypeSwitchLabel: "Ranking Type",
+        EnterEditMode: "Edit",
+        ExitEditMode: "Done",
+        PointCount: "{0} pts",
     }
 }

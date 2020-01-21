@@ -1,12 +1,29 @@
 import Infra from "./infra"
 import {createSlice} from "@reduxjs/toolkit"
 
-const DEFAULT_DATASETS_TO_SHOW = [
-    "points.50000",
-    "points.40000",
-    "points.10000",
-    "points.1000"
-]
+const DEFAULT_DATASETS_TO_SHOW_MARATHON = {
+    "points.1000": true,
+    "points.10000": true,
+    "points.20000": true,
+    "points.50000": true,
+}
+
+const DEFAULT_DATASETS_TO_SHOW_MINING = {
+    "points.1000": true,
+    "points.10000": true,
+    "points.20000": true,
+    "points.50000": true,
+    "voltage.1000": true,
+    "voltage.5000": true,
+    "voltage.10000": true,
+}
+
+// slow!
+export function compareDatasetKey(a, b) {
+    const A = parseInt(a.split(".")[1])
+    const B = parseInt(b.split(".")[1])
+    return A - B
+}
 
 export function rankTypesForEventType(eventType) {
     switch(eventType) {
@@ -25,7 +42,7 @@ export function toRankTypeFriendlyName(key) {
     }
 }
 
-function localizeDatasetName(dsn) {
+export function localizeDatasetName(dsn) {
     let s = dsn.split(".")
     if (s.length !== 2) return s
 
@@ -37,7 +54,10 @@ function localizeDatasetName(dsn) {
 export const SaintUserConfig = createSlice({
     name: "saint",
     initialState: {
-        displayTiers: DEFAULT_DATASETS_TO_SHOW,
+        displayTiers: {
+            marathon: DEFAULT_DATASETS_TO_SHOW_MARATHON, 
+            mining: DEFAULT_DATASETS_TO_SHOW_MINING
+        },
         rankMode: {
             marathon: "points",
             mining: "points",
@@ -46,6 +66,15 @@ export const SaintUserConfig = createSlice({
     reducers: {
         setMode: (state, action) => {
             state.rankMode[action.forType] = action.mode
+        },
+        toggleVisFlag: (state, action) => {
+            state.displayTiers[action.forType][action.key] = !state.displayTiers[action.forType][action.key]
+        },
+        enterEditMode: (state) => {
+            if (!state.editMode)
+                state.editMode = true
+            else
+                state.editMode = false
         },
         loadFromLocalStorage: (state) => {
             const ls = localStorage.getItem("as$$saint")
@@ -57,8 +86,8 @@ export const SaintUserConfig = createSlice({
             if (json.rankMode) {
                 Object.assign(state.rankMode, json.rankMode)
             }
-            if (json.displayTiers && json.displayTiers.length !== undefined) {
-                state.displayTiers = displayTiers
+            if (json.displayTiers && json.displayTiers.length === undefined) {
+                state.displayTiers = json.displayTiers
             }
         }
     }
@@ -132,7 +161,10 @@ export class SaintDatasetCoordinator {
             }
 
             const len = this.datasets[key].data.length
-            ret[key] = {points: this.datasets[key].data[len - 1].y}
+            ret[key] = {
+                points: this.datasets[key].data[len - 1].y,
+                label: this.datasets[key].name
+            }
 
             if (len > 1) {
                 ret[key].delta = ret[key].points - this.datasets[key].data[len - 2].y

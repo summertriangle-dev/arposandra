@@ -2,14 +2,8 @@ import Infra from "./infra"
 import React from "react"
 import ReactDOM from "react-dom"
 import {connect, Provider} from "react-redux"
-import { SaintDatasetCoordinator, SaintUserConfig, toRankTypeFriendlyName, rankTypesForEventType } from "./event_tracker_internal"
-
-const DEFAULT_DATASETS_TO_SHOW = [
-    "points.50000",
-    "points.40000",
-    "points.10000",
-    "points.1000"
-]
+import { SaintDatasetCoordinator, SaintUserConfig, toRankTypeFriendlyName, 
+    rankTypesForEventType, localizeDatasetName, compareDatasetKey } from "./event_tracker_internal"
 
 const COLOURS = [
     "#007bff",
@@ -56,69 +50,153 @@ class _SaintRankTypeSelector extends React.Component {
             <span className="item">{Infra.strings.Saint.RankTypeSwitchLabel}</span>
             <div className="item kars-image-switch always-active">
                 {choices.map((v) => {
-                    return <a className={this.isSelected(v)} 
+                    return <a key={v} className={this.isSelected(v)} 
                         onClick={() => this.props.setMode(this.props.eventType, v)}>
                         {toRankTypeFriendlyName(v)}
                     </a>
                 })}
             </div>
+            <button className="btn btn-sm btn-primary"
+                onClick={() => this.props.enterEditMode()}>{this.props.editMode? 
+                    Infra.strings.Saint.ExitEditMode :
+                    Infra.strings.Saint.EnterEditMode}</button>
         </div>
     }
 }
 
 const SaintRankTypeSelector = connect(
-    (state) => { return {rankMode: state.saint.rankMode} },
+    (state) => { return {rankMode: state.saint.rankMode, editMode: state.saint.editMode} },
     (dispatch) => {
         return {
-            setMode: (t, m) => dispatch({type: `${SaintUserConfig.actions.setMode}`, 
-                mode: m, forType: t})
+            setMode: (t, m) => dispatch({
+                type: `${SaintUserConfig.actions.setMode}`, 
+                mode: m, 
+                forType: t
+            }),
+            enterEditMode: () => dispatch({
+                type: `${SaintUserConfig.actions.enterEditMode}`
+            })
         }
     })(_SaintRankTypeSelector)
 
 function SaintDisplayBoardCard(props) {
     let sym
-    if (!props.d.delta) {
+    if (!props.datum.delta) {
         sym = "-"
-    } else if (props.d.delta > 0) {
+    } else if (props.datum.delta > 0) {
         sym = "↑"
     } else {
         sym = "↓"
     }
 
     let diff2sym
-    if (!props.d.diff2) {
+    if (!props.datum.diff2) {
         diff2sym = "-"
-    } else if (props.d.diff2 > 0) {
+    } else if (props.datum.diff2 > 0) {
         diff2sym = "↑"
     } else {
         diff2sym = "↓"
     }
 
-    return <div className="card">
+    return <div className="card kars-event-cutoff-card">
         <div className="card-body">
-            <p className="card-text my-0">{props.d.points}</p>
-            <p className="card-subtitle my-0">
+            <p className="card-text mb-1">{props.datum.label}</p>
+            <p className="h5 card-title mb-1">
+                {Infra.strings.formatString(Infra.strings.Saint.PointCount, props.datum.points)}</p>
+            <p className="h6 card-subtitle my-0">
                 <span className="delta-symbol">{sym}</span>
                 {" "}
                 <span className="delta-symbol small">{diff2sym}</span>
                 {" "}
-                <span className="delta-word">{props.d.delta || "--"}</span>
+                <span className="delta-word">{props.datum.delta || "--"}</span>
             </p>
         </div>
     </div>
 }
 
-function SaintDisplayBoard(props) {
+const SaintDisplayBoard = connect(
+    (state) => {
+        return {
+            rankMode: state.saint.rankMode,
+            displayTiers: state.saint.displayTiers
+        }
+    }
+)(function(props) {
+    const prefix = `${props.rankMode[props.eventType]}.`
+    const vset = Object.keys(props.displayTiers[props.eventType]).filter((v) => {
+        return v.startsWith(prefix) && props.displayTiers[props.eventType][v]
+    })
+
+    vset.sort(compareDatasetKey)
     return <div className="row">
-        {props.visibility.map((k) => {
+        {vset.map((k) => {
             const s = props.summaryData[k]
             if (!s) {
                 return null
             }
-            return <div className="col-4" key={k}><SaintDisplayBoardCard d={s} /></div>
+            return <div className="col-sm-4" key={k}>
+                <SaintDisplayBoardCard datum={s} />
+            </div>
         })}
     </div>
+})
+
+class _SaintDisplayEditor extends React.Component {
+    buttonsToShow() {
+        const prefix = `${this.props.rankMode[this.props.eventType]}.`
+        let show = []
+        for (let key of this.props.available) {
+            if (key.startsWith(prefix)) show.push(key)
+        }
+
+        return show.sort(compareDatasetKey)
+    }
+
+    render() {
+        const map = this.props.displayTiers[this.props.eventType]
+
+        return <div className="row">
+            {this.buttonsToShow().map((k) => {
+                return <div className="col-md-4" key={k}>
+                    <div className="card kars-event-cutoff-card" 
+                        onClick={() => this.props.toggleVisSet(this.props.eventType, k)}>
+                        <div className="card-body">
+                            <p className="card-text h6">
+                                {localizeDatasetName(k)} {" "}
+                                <input type="checkbox" 
+                                    checked={map[k] === true} 
+                                    readOnly={true}
+                                    style={{float: "right"}} />
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            })}
+        </div>
+    }
 }
+const SaintDisplayEditor = connect((state) => { return {
+    rankMode: state.saint.rankMode,
+    displayTiers: state.saint.displayTiers,
+}}, (dispatch) => { return {
+    toggleVisSet: (m, k) => dispatch({
+        type: `${SaintUserConfig.actions.toggleVisFlag}`,
+        forType: m,
+        key: k
+    })
+}})(_SaintDisplayEditor)
+
+const SaintRoot = connect((state) => { return {editMode: state.saint.editMode} })(
+    function(props) {
+        return <div>
+            <h2 className="h4 mb-2">{Infra.strings.Saint.HeaderCurrentTiers}</h2>
+            <SaintRankTypeSelector eventType={props.eventType} />
+            {props.editMode?
+                <SaintDisplayEditor eventType={props.eventType} available={props.availableSet}/> :
+                <SaintDisplayBoard eventType={props.eventType} summaryData={props.summaries} /> }
+        </div>
+    }
+)
 
 class SaintDisplayController {
     constructor(canvas) {
@@ -127,13 +205,21 @@ class SaintDisplayController {
             parseInt(canvas.dataset.eventId))
         this.chart = null
         this.timeout = null
+        this.eventType = canvas.dataset.eventType
 
         Infra.store.dispatch({type: `${SaintUserConfig.actions.loadFromLocalStorage}`})
         Infra.store.subscribe(() => {
             if (Infra.canWritebackState()) {
-                localStorage.setItem("as$$saint", JSON.stringify(state.saint))
+                const {displayTiers, rankMode} = Infra.store.getState().saint
+                localStorage.setItem("as$$saint", JSON.stringify({displayTiers, rankMode}))
             }
+            this.updateReact()
         })
+    }
+
+    install() {
+        this.installTimer()
+        this.updateReact()
     }
 
     installTimer() {
@@ -149,23 +235,24 @@ class SaintDisplayController {
     refreshData() {
         this.chartData.refresh().then(() => {
             console.log(this.chartData)
-            this.installDisplayBoard()
+            this.updateReact()
         })
     }
 
-    installDisplayBoard() {
-        const et = document.querySelector("#saintRankTypeSelector").dataset.eventType
-        const summaries = this.chartData.summaryForDatasets(Object.keys(this.chartData.datasets))
-        ReactDOM.render(<SaintDisplayBoard visibility={Infra.store.getState().saint.displayTiers} summaryData={summaries} />, this.canvas.querySelector("#saintCutoffBoard"))
-        ReactDOM.render(<Provider store={Infra.store}><SaintRankTypeSelector eventType={et} /></Provider>, this.canvas.querySelector("#saintRankTypeSelector"))
+    updateReact() {
+        const set = Object.keys(this.chartData.datasets).sort()
+        const summaries = this.chartData.summaryForDatasets(set)
+        ReactDOM.render(<Provider store={Infra.store}>
+            <SaintRoot availableSet={set} eventType={this.eventType} summaries={summaries}/>
+        </Provider>, this.canvas)
     }
 }
   
 let controller
 
 export function injectIntoPage() {
-    controller = new SaintDisplayController(document.getElementById("saintControl"))
+    const tgt = document.getElementById("saint-inject-target")
+    controller = new SaintDisplayController(tgt)
+    controller.install()
     controller.refreshData()
-    controller.installTimer()
-    controller.installDisplayBoard()
 }

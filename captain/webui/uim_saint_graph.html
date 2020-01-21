@@ -1,16 +1,12 @@
 <div class="kars-list-alternate">
-    <div id="saintControl" class="card-body kars-event-tracker"
+    <div id="saint-inject-target" class="card-body kars-event-tracker"
         data-server-id="{{ server }}" 
         data-event-id="{{ event["event_id"] }}"
         data-range-start="{{ event["start_t"].isoformat() }}Z"
-        data-range-end="{{ event["end_t"].isoformat() }}Z">
-        <h2 class="h4 mb-2">{{ _("EventTracker.HeaderCurrentTiers") }}</h2>
+        data-range-end="{{ event["end_t"].isoformat() }}Z"
+        data-event-type="{{ event["event_type"] }}">
 
-        <div id="saintRankTypeSelector" class="kars-sub-navbar is-left mb-3"
-            data-event-type="{{ event["event_type"] }}"></div>
-        
-        <div id="saintCutoffBoard"></div>
-
+        <p class="text-center">Please wait...</p>
         <p class="small mb-0 mt-3">
             <span class="text-danger font-weight-bold">&#9679; LIVE</span>
             Last cutoff update: <span id="saintLastUpdate">5m</span>

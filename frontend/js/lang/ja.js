@@ -53,11 +53,15 @@ export default {
         PlayerName: "（あなた）"
     },
     Saint: {
+        HeaderCurrentTiers: "ボーダー",
         DatasetNameFormat: "{0}位上 ({1})",
         DatasetFriendlyName: {
             Voltage: "ボルテージ",
             Points: "イベントP",
         },
         RankTypeSwitchLabel: "ランキング型",
+        EnterEditMode: "編集",
+        ExitEditMode: "完了",
+        PointCount: "{0} pt",
     }
 }
