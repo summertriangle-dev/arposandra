@@ -1,0 +1,49 @@
+
+.kars-sprite 
+    background: url('../images/kars-sprite.png') no-repeat top left
+    width: 44px
+    height: 44px
+    display: inline-block
+    
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) 
+        background: url('../images/kars-sprite@2x.png') no-repeat top left
+        background-size: 210px 182px
+    
+    
+    &.k-rarity-10 
+        background-position: 0 0
+        width: 57px
+        height: 43px
+    
+    &.k-rarity-20 
+        background-position: -59px 0
+        width: 57px
+        height: 43px
+    
+    &.k-rarity-30 
+        background-position: 0 -45px
+        width: 57px
+        height: 43px
+    
+    &.k-attr-1 
+        background-position: -118px 0
+    
+    &.k-attr-2 
+        background-position: 0 -90px
+    
+    &.k-attr-6 
+        background-position: -46px -90px
+    
+    &.k-attr-3 
+        background-position: -92px -90px
+    
+    &.k-attr-9 
+        background-position: -164px 0
+    
+    &.k-attr-4 
+        background-position: -164px -46px
+    
+    &.k-attr-5 
+        background-position: 0 -136px
+    
+ 

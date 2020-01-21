@@ -10,7 +10,7 @@ $body-color: hsl(0, 0%, 20%);
 $kars-navbar-item-color: lighten($body-color, 10%);
 $kars-navbar-item-hover-color: $body-color;
 
-$body-bg: #f8dbf2;
+$body-bg: hsl(311, 66%, 92%);
 
 $kars-stack-background: #fff;
 $kars-skill-bg-active: #ffd2d2;
@@ -28,7 +28,7 @@ $kars-tt-placeholder-bg: darken($card-bg, 2%);
 
 $kars-box-highlight-color: rgba(10, 10, 10, 0.1);
 
-$kars-gutter-bg: darken(desaturate($body-bg, 50%), 30%);
+$kars-gutter-bg: hsla(311, 15%, 20%, 0.5);
 $kars-gutter-text: white;
 $kars-gutter-select-bg: white;
 $kars-gutter-select-text: black;
@@ -36,8 +36,8 @@ $kars-gutter-select-text: black;
 @import "node_modules/bootstrap/scss/bootstrap";
 @import "custom-layout.sass";
 @import "stack.sass";
-@import "sprites.scss"; 
-@import "aspect-ratio.scss";
+@import "sprites.sass"; 
+@import "aspect-ratio.sass";
 @import "training-tree.sass";
 @import "news.sass";
 @import "story.sass";
