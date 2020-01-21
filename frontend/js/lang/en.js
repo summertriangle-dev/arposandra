@@ -50,7 +50,7 @@ export default {
     },
     Saint: {
         HeaderCurrentTiers: "Cutoffs",
-        DatasetNameFormat: "T{0} ({1})",
+        DatasetNameFormat: "Top {0} ({1})",
         DatasetFriendlyName: {
             Voltage: "Voltage",
             Points: "Points",
@@ -59,5 +59,9 @@ export default {
         EnterEditMode: "Edit",
         ExitEditMode: "Done",
         PointCount: "{0} pts",
+        TrendingUp: "Trending up (+{0} from last delta)",
+        TrendingDown: "Trending down ({0} from last delta)",
+        UpdateTime: "Last cutoff update: {1}. Last check-in with server: {0}",
+        UpdateTimeNote: "Updated automatically.",
     }
 }

@@ -80,22 +80,17 @@ const SaintRankTypeSelector = connect(
     })(_SaintRankTypeSelector)
 
 function SaintDisplayBoardCard(props) {
-    let sym
-    if (!props.datum.delta) {
-        sym = "-"
-    } else if (props.datum.delta > 0) {
-        sym = "↑"
-    } else {
-        sym = "↓"
-    }
-
     let diff2sym
-    if (!props.datum.diff2) {
+    if (!props.datum.delta2) {
         diff2sym = "-"
-    } else if (props.datum.diff2 > 0) {
-        diff2sym = "↑"
+    } else if (props.datum.delta2 > 0) {
+        diff2sym = <span 
+            title={Infra.strings.formatString(Infra.strings.Saint.TrendingUp, props.datum.delta2)} 
+            className="small text-success">↑</span>
     } else {
-        diff2sym = "↓"
+        diff2sym = <span 
+            title={Infra.strings.formatString(Infra.strings.Saint.TrendingDown, props.datum.delta2)} 
+            className="small text-danger">↓</span>
     }
 
     return <div className="card kars-event-cutoff-card">
@@ -104,9 +99,7 @@ function SaintDisplayBoardCard(props) {
             <p className="h5 card-title mb-1">
                 {Infra.strings.formatString(Infra.strings.Saint.PointCount, props.datum.points)}</p>
             <p className="h6 card-subtitle my-0">
-                <span className="delta-symbol">{sym}</span>
-                {" "}
-                <span className="delta-symbol small">{diff2sym}</span>
+                {diff2sym}
                 {" "}
                 <span className="delta-word">{props.datum.delta || "--"}</span>
             </p>
@@ -188,12 +181,20 @@ const SaintDisplayEditor = connect((state) => { return {
 
 const SaintRoot = connect((state) => { return {editMode: state.saint.editMode} })(
     function(props) {
+        const pad2 = (n) => n < 10? "0" + n : n
+        const checkin = `${pad2(props.lastCheckin.getHours())}:${pad2(props.lastCheckin.getMinutes())}`
+        const update = `${pad2(props.lastUpdate.getHours())}:${pad2(props.lastUpdate.getMinutes())}`
+
         return <div>
             <h2 className="h4 mb-2">{Infra.strings.Saint.HeaderCurrentTiers}</h2>
             <SaintRankTypeSelector eventType={props.eventType} />
             {props.editMode?
                 <SaintDisplayEditor eventType={props.eventType} available={props.availableSet}/> :
                 <SaintDisplayBoard eventType={props.eventType} summaryData={props.summaries} /> }
+            <p className="small mb-0 mt-3">
+                {Infra.strings.Saint.UpdateTimeNote}{" "}
+                {Infra.strings.formatString(Infra.strings.Saint.UpdateTime, checkin, update)}
+            </p>
         </div>
     }
 )
@@ -223,7 +224,7 @@ class SaintDisplayController {
     }
 
     installTimer() {
-        this.timeout = setInterval(() => this.refreshData(), 15 * 60 * 1000)
+        this.timeout = setInterval(() => this.refreshData(), 15*60*1000)
     }
 
     disableUpdates() {
@@ -243,7 +244,12 @@ class SaintDisplayController {
         const set = Object.keys(this.chartData.datasets).sort()
         const summaries = this.chartData.summaryForDatasets(set)
         ReactDOM.render(<Provider store={Infra.store}>
-            <SaintRoot availableSet={set} eventType={this.eventType} summaries={summaries}/>
+            <SaintRoot 
+                availableSet={set}
+                eventType={this.eventType}
+                summaries={summaries}
+                lastCheckin={new Date(this.chartData.lastCheckinTime * 1000)}
+                lastUpdate={new Date(this.chartData.lastUpdateTime * 1000)} />
         </Provider>, this.canvas)
     }
 }

@@ -62,6 +62,10 @@ export default {
         RankTypeSwitchLabel: "ランキング型",
         EnterEditMode: "編集",
         ExitEditMode: "完了",
-        PointCount: "{0} pt",
+        PointCount: "{0} P",
+        TrendingUp: "上昇傾向 (最後の差額から: +{0})",
+        TrendingDown: "下降傾向 (最後の差額から: {0})",
+        UpdateTime: "最終更新(ボーダー): {1}。 最終連絡(サーバー): {0}。",
+        UpdateTimeNote: "自動的に更新される。",
     }
 }
