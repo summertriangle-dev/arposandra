@@ -209,10 +209,32 @@ class _SaintDisplayEditor extends React.Component {
         return show.sort(compareDatasetKey)
     }
 
+    setAllToValue(v) {
+        let newMap = {...this.props.displayTiers[this.props.eventType]}
+
+        const prefix = `${this.props.rankMode[this.props.eventType]}.`
+        for (let key of this.props.available) {
+            if (key.startsWith(prefix)) newMap[key] = v
+        }
+
+        this.props.replaceVisFlags(this.props.eventType, newMap)
+    }
+
     render() {
         const map = this.props.displayTiers[this.props.eventType]
 
         return <div className="row">
+            <div className="col-md-4">
+                <div className="card kars-event-cutoff-card">
+                    <div className="card-body">
+                        <button className="btn btn-sm btn-primary mr-3"
+                            onClick={() => this.setAllToValue(true)}>Show All</button>          
+                        <button className="btn btn-sm btn-secondary"
+                            onClick={() => this.setAllToValue(false)}>Clear All</button>
+                    </div>
+                </div>
+            </div>
+
             {this.buttonsToShow().map((k) => {
                 return <div className="col-md-4" key={k}>
                     <div className="card kars-event-cutoff-card" 
@@ -236,6 +258,11 @@ const SaintDisplayEditor = connect((state) => { return {
     rankMode: state.saint.rankMode,
     displayTiers: state.saint.displayTiers,
 }}, (dispatch) => { return {
+    replaceVisFlags: (m, p) => dispatch({
+        type: `${SaintUserConfig.actions.replaceVisFlags}`,
+        forType: m,
+        newMap: p
+    }),
     toggleVisSet: (m, k) => dispatch({
         type: `${SaintUserConfig.actions.toggleVisFlag}`,
         forType: m,

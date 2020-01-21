@@ -71,6 +71,9 @@ export const SaintUserConfig = createSlice({
         toggleVisFlag: (state, action) => {
             state.displayTiers[action.forType][action.key] = !state.displayTiers[action.forType][action.key]
         },
+        replaceVisFlags: (state, action) => {
+            state.displayTiers[action.forType] = action.newMap
+        },
         enterEditMode: (state) => {
             if (!state.editMode)
                 state.editMode = true
