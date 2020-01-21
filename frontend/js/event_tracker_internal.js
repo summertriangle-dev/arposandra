@@ -61,7 +61,8 @@ export const SaintUserConfig = createSlice({
         rankMode: {
             marathon: "points",
             mining: "points",
-        }
+        },
+        timeScale: 24
     },
     reducers: {
         setMode: (state, action) => {
@@ -110,7 +111,8 @@ export class SaintDatasetCoordinator {
             this.lastUpdateTime = 0
         }
 
-        const api = await this.getUpdateFromAPI(this.lastUpdateTime)
+        const api = await this.getUpdateFromAPI(this.lastUpdateTime,
+            Infra.store.getState().saint.timeScale)
 
         if (!api.result) {
             this.status = 0
@@ -182,7 +184,7 @@ export class SaintDatasetCoordinator {
         return `/api/private/saint/${this.serverid}/${this.eventId}/tiers.json`
     }
 
-    async getUpdateFromAPI(last) {
+    async getUpdateFromAPI(last, timeScale) {
         const xhr = new XMLHttpRequest()
         return new Promise((resolve, reject) => {
             xhr.onreadystatechange = () => {
@@ -200,7 +202,14 @@ export class SaintDatasetCoordinator {
                     reject()
                 }
             }
-            xhr.open("GET", `${this.getUpdateURL()}?after=${last}`)
+
+            let query = "?"
+            if (last) {
+                query += `after=${last}`
+            } else {
+                query += `back=${timeScale}`
+            }
+            xhr.open("GET", this.getUpdateURL() + query)
             xhr.send()
         })
     }

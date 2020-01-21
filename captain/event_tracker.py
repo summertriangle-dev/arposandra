@@ -55,7 +55,7 @@ class EventTrackingDatabase(object):
                 event_id,
             )
 
-    async def _fetch_new_tier_recs(self, con, server_id, event_id):
+    async def _fetch_new_tier_recs(self, con, server_id, event_id, tscale):
         return await con.fetch(
             """
             WITH closest AS (
@@ -66,11 +66,12 @@ class EventTrackingDatabase(object):
 
             SELECT observation, CONCAT_WS('.', tier_type, tier_to) AS dataset, points
             FROM border_data_v3 WHERE serverid=$1 AND event_id=$2
-            AND observation > (SELECT observation FROM closest) - INTERVAL '1 day'
+            AND observation > (SELECT observation FROM closest) - make_interval(hours => $3)
             ORDER BY observation
             """,
             server_id,
             event_id,
+            tscale,
         )
 
     async def _fetch_tiers_with_afterts(self, con, server_id, event_id, ts):
@@ -89,10 +90,10 @@ class EventTrackingDatabase(object):
     async def get_tier_records(self, server_id, event_id, after_dt):
         datasets = defaultdict(lambda: [])
         async with self.coordinator.pool.acquire() as c:
-            if after_dt is not None:
+            if isinstance(after_dt, datetime):
                 recs = await self._fetch_tiers_with_afterts(c, server_id, event_id, after_dt)
             else:
-                recs = await self._fetch_new_tier_recs(c, server_id, event_id)
+                recs = await self._fetch_new_tier_recs(c, server_id, event_id, after_dt)
 
             for record in recs:
                 datasets[record["dataset"]].append(
@@ -101,7 +102,7 @@ class EventTrackingDatabase(object):
 
         return datasets
 
-    async def _fetch_new_t10_recs(self, con, server_id, event_id):
+    async def _fetch_new_t10_recs(self, con, server_id, event_id, tscale):
         return await con.fetch(
             """
             WITH closest AS (
@@ -114,11 +115,12 @@ class EventTrackingDatabase(object):
                 points_t1, points_t2, points_t3, points_t4, points_t5,
                 points_t6, points_t7, points_t8, points_t9, points_t10
             FROM border_fixed_data_v3 WHERE serverid=$1 AND event_id=$2
-            AND observation > (SELECT observation FROM closest) - INTERVAL '1 day'
+            AND observation > (SELECT observation FROM closest) - make_interval(hours => $3)
             ORDER BY observation
             """,
             server_id,
             event_id,
+            tscale,
         )
 
     async def _fetch_t10_afterts(self, con, server_id, event_id, ts):
@@ -138,7 +140,7 @@ class EventTrackingDatabase(object):
     async def get_t10_records(self, server_id, event_id, after_dt):
         datasets = defaultdict(lambda: [])
         async with self.coordinator.pool.acquire() as c:
-            if after_dt is not None:
+            if isinstance(after_dt, datetime):
                 recs = await self._fetch_t10_afterts(c, server_id, event_id, after_dt)
             else:
                 recs = await self._fetch_new_t10_recs(c, server_id, event_id)
@@ -231,6 +233,14 @@ class APISaintData(RequestHandler):
         now = datetime.utcnow()
 
         after_ts = self.get_argument("after", None)
+        tscale_hrs = self.get_argument("back", "24")
+        try:
+            tscale_hrs = int(tscale_hrs)
+            if tscale_hrs < 1:
+                tscale_hrs = 24
+        except ValueError:
+            tscale_hrs = 24
+
         if after_ts:
             try:
                 after_dt = datetime.utcfromtimestamp(int(after_ts))
@@ -247,13 +257,23 @@ class APISaintData(RequestHandler):
             # We only return up to 24 hours of past results. If you need
             # more, you should use CSV dumps.
             if (now - after_dt).total_seconds() > self.MAX_LOOK_BACK_TIME:
+                tscale_hrs = 24
                 after_dt = None
                 is_new = True
         else:
             after_dt = None
             is_new = True
 
-        out = await self.get_data_validated(sid, int(eid), after_dt)
+        if is_new:
+            out = await self.get_data_validated(sid, int(eid), tscale_hrs)
+        else:
+            out = await self.get_data_validated(sid, int(eid), after_dt)
+
+        if is_new:
+            self.set_header(
+                "Expires", (now + timedelta(minutes=15)).strftime("%a, %d %b %Y %H:%M:%S GMT")
+            )
+
         self.write({"result": {"is_new": is_new, "datasets": out}})
 
 

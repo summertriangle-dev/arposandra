@@ -202,11 +202,11 @@ const SaintRoot = connect((state) => { return {editMode: state.saint.editMode} }
 class SaintDisplayController {
     constructor(canvas) {
         this.canvas = canvas
+        this.eventType = canvas.dataset.eventType
         this.chartData = new SaintDatasetCoordinator(canvas.dataset.serverId, 
             parseInt(canvas.dataset.eventId))
         this.chart = null
         this.timeout = null
-        this.eventType = canvas.dataset.eventType
 
         Infra.store.dispatch({type: `${SaintUserConfig.actions.loadFromLocalStorage}`})
         Infra.store.subscribe(() => {
@@ -215,6 +215,9 @@ class SaintDisplayController {
                 localStorage.setItem("as$$saint", JSON.stringify({displayTiers, rankMode}))
             }
             this.updateReact()
+            if (this.chart) {
+                this.updateChart()
+            }
         })
     }
 
@@ -227,6 +230,39 @@ class SaintDisplayController {
         this.timeout = setInterval(() => this.refreshData(), 15*60*1000)
     }
 
+    installChart(chartjs) {
+        console.debug("chartjs has arrived")
+        const ctarget = document.querySelector("#saint-graph-target").getContext("2d")
+        this.chart = new chartjs.Chart(ctarget, {
+            type: "line",
+            data: {
+                datasets: []
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    yAxes: [{
+                        ticks: {beginAtZero: true, fontColor: THEME_VARS.dark.textColor, mirror: true},
+                        gridLines: {
+                            color: THEME_VARS.dark.gridLines,
+                            zeroLineColor: THEME_VARS.dark.gridLines
+                        }
+                    }],
+                    xAxes: [{
+                        type: "time",
+                        ticks: {source: "auto", fontColor: THEME_VARS.dark.textColor, maxRotation: 0},
+                        gridLines: {
+                            color: THEME_VARS.dark.gridLines,
+                            zeroLineColor: THEME_VARS.dark.gridLines
+                        }
+                    }]
+                }
+            }
+        })
+        this.updateChart()
+        console.log(this.chart)
+    }
+
     disableUpdates() {
         if (this.timeout) {
             clearInterval(this.timeout)
@@ -237,7 +273,37 @@ class SaintDisplayController {
         this.chartData.refresh().then(() => {
             console.log(this.chartData)
             this.updateReact()
+            if (this.chart) {
+                this.updateChart()
+            }
         })
+    }
+
+    updateChart() {
+        const state = Infra.store.getState().saint
+
+        const prefix = `${state.rankMode[this.eventType]}.`
+        const vset = Object.keys(state.displayTiers[this.eventType]).filter((v) => {
+            return v.startsWith(prefix) && state.displayTiers[this.eventType][v]
+        })
+        vset.sort(compareDatasetKey)
+
+        let datasets = []
+        for (let key of vset) {
+            if (!this.chartData.datasets[key]) {
+                continue
+            }
+
+            datasets.push({
+                label: localizeDatasetName(key),
+                fill: false,
+                borderColor: "red",
+                ...this.chartData.datasets[key]
+            })
+        }
+
+        this.chart.config.data.datasets = datasets
+        this.chart.update()
     }
 
     updateReact() {
@@ -256,9 +322,18 @@ class SaintDisplayController {
   
 let controller
 
+async function lazyImports() {
+    return await import("chart.js")
+}
+
 export function injectIntoPage() {
     const tgt = document.getElementById("saint-inject-target")
     controller = new SaintDisplayController(tgt)
     controller.install()
     controller.refreshData()
+
+    console.debug("Waiting for ChartJS...")
+    lazyImports().then((chart) => {
+        controller.installChart(chart)
+    })
 }
