@@ -36,11 +36,65 @@ function colourArray(n) {
 }
 
 class _SaintRankTypeSelector extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {transitioning: false}
+
+        this.fakeRef = null
+        this.currentSelRef = null
+        this.containerRef = null
+    }
+
     isSelected(m) {
         return this.props.rankMode[this.props.eventType] === m? "selected" : null
     }
 
+    selectedRef() {
+        for (let node of this.buttonRefs) {
+            if (node.className === "selected") {
+                return node
+            }
+        }
+    }
+
+    transitionState() {
+        if (this.state.transitioning) {
+            return "latched"
+        }
+        return ""
+    }
+
+    transitionAndSet(toRankingType) {
+        const containerL = this.containerRef.getBoundingClientRect().left
+        const start = this.buttonRefs[this.props.rankMode[this.props.eventType]]
+            .getBoundingClientRect().left - containerL
+        const fin = this.buttonRefs[toRankingType].getBoundingClientRect().left - containerL
+
+        this.props.setMode(this.props.eventType, toRankingType)
+        this.setState({transitioning: true, 
+            animInitialPosition: start,
+            animTargetPosition: fin
+        })
+    }
+
+    componentDidUpdate() {
+        console.debug(this.fakeRef)
+        if (this.fakeRef) {
+            this.fakeRef.addEventListener("transitionend", (e) => {
+                console.debug("Did fire transitionEnd")
+                this.fakeRef = null
+                this.setState({transitioning: false})
+            }, {passive: true})
+
+            this.fakeRef.style.marginLeft = this.state.animInitialPosition + "px"
+            requestAnimationFrame(() => {
+                this.fakeRef.style.marginLeft = this.state.animTargetPosition + "px"
+            })
+        }
+    }
+
     render() {
+        this.buttonRefs = {}
         const choices = rankTypesForEventType(this.props.eventType)
         if (choices.length < 2) {
             return <div></div>
@@ -48,13 +102,20 @@ class _SaintRankTypeSelector extends React.Component {
 
         return <div className="kars-sub-navbar is-left">
             <span className="item">{Infra.strings.Saint.RankTypeSwitchLabel}</span>
-            <div className="item kars-image-switch always-active">
+            <div className={`item kars-image-switch always-active ${this.transitionState()}`}
+                ref={(r) => this.containerRef = r}>
                 {choices.map((v) => {
-                    return <a key={v} className={this.isSelected(v)} 
-                        onClick={() => this.props.setMode(this.props.eventType, v)}>
+                    return <a key={v} 
+                        ref={(r) => this.buttonRefs[v] = r}
+                        className={this.isSelected(v)} 
+                        onClick={() => this.transitionAndSet(v)}>
                         {toRankTypeFriendlyName(v)}
                     </a>
                 })}
+
+                {this.state.transitioning? <span ref={(r) => this.fakeRef = r} className="fake">
+                    {toRankTypeFriendlyName(this.props.rankMode[this.props.eventType])}
+                </span> : null}
             </div>
             <button className="btn btn-sm btn-primary"
                 onClick={() => this.props.enterEditMode()}>{this.props.editMode? 

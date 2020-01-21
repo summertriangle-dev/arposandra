@@ -182,24 +182,32 @@ img.kars-skill-icon
         color: $e
 
 .kars-image-switch
+    position: relative
     border-radius: 999px
     padding: 2px 2px
     transition: opacity 86ms
 
     background-color: $kars-gutter-bg
 
-    a, a:hover
+    a, a:hover, span.fake
         display: inline-block
         text-decoration: none
         color: $kars-gutter-text !important
         padding: 2px 16px
         cursor: pointer
 
-    a.selected, a.selected:hover
+    &:not(.latched) > a.selected, &:not(.latched) > a.selected:hover, span.fake
         border-radius: 999px
         color: $kars-gutter-select-text !important
         background-color: $kars-gutter-select-bg
         box-shadow: 0px 3px 10px change-color(scale-color($kars-gutter-select-bg, $lightness: -40%, $saturation: -10%), $alpha: 0.3)
+
+    span.fake
+        transition: margin 0.3s ease-out
+        display: inline-block
+        position: absolute
+        margin-left: 2px
+        left: 0
 
 .kars-image-switch.neutral
     background-color: rgba(10, 10, 10, 0.7) !important
