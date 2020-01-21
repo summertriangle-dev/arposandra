@@ -5,15 +5,18 @@ import {connect, Provider} from "react-redux"
 import { SaintDatasetCoordinator, SaintUserConfig, toRankTypeFriendlyName, 
     rankTypesForEventType, localizeDatasetName, compareDatasetKey } from "./event_tracker_internal"
 
+const hslBase = (h, s, baseL) =>
+    (itr) => `hsl(${h}, ${s}%, ${baseL + (5 * itr)}%)`
+
 const COLOURS = [
-    "#007bff",
-    "#6610f2",
-    "#e83e8c",
-    "#dc3545",
-    "#fd7e14",
-    "#ffc107",
-    "#28a745",
-    "#20c997",
+    hslBase(0, 84, 64),
+    hslBase(30, 80, 60),
+    hslBase(47, 87, 51),
+    hslBase(138, 43, 51),
+    hslBase(180, 69, 40),
+    hslBase(197, 61, 46),
+    hslBase(224, 68, 50),
+    hslBase(287, 29, 50),
 ]
 
 const THEME_VARS = {
@@ -349,6 +352,7 @@ class SaintDisplayController {
         })
         vset.sort(compareDatasetKey)
 
+        let i = 0
         let datasets = []
         for (let key of vset) {
             if (!this.chartData.datasets[key]) {
@@ -358,9 +362,10 @@ class SaintDisplayController {
             datasets.push({
                 label: localizeDatasetName(key),
                 fill: false,
-                borderColor: "red",
+                borderColor: COLOURS[i % COLOURS.length]((i / COLOURS.length) | 0),
                 ...this.chartData.datasets[key]
             })
+            ++i
         }
 
         this.chart.config.data.datasets = datasets
