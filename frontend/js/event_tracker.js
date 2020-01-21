@@ -4,6 +4,7 @@ import ReactDOM from "react-dom"
 import {connect, Provider} from "react-redux"
 import { SaintDatasetCoordinator, SaintUserConfig, toRankTypeFriendlyName, 
     rankTypesForEventType, localizeDatasetName, compareDatasetKey } from "./event_tracker_internal"
+import { MultiValueSwitch } from "./ui_lib"
 
 const hslBase = (h, s, baseL) =>
     (itr) => `hsl(${h}, ${s}%, ${baseL + (5 * itr)}%)`
@@ -30,101 +31,25 @@ const THEME_VARS = {
     }
 }
 
-function colourArray(n) {
-    let a = new Array(n)
-    for (let i = 0; i < n; ++i) {
-        a[i] = COLOURS[i % COLOURS.length]
-    }
-    return a
-}
-
-class _SaintRankTypeSelector extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {transitioning: false}
-
-        this.fakeRef = null
-        this.currentSelRef = null
-        this.containerRef = null
+class _SaintRankTypeSelector extends MultiValueSwitch {
+    getChoices() {
+        return rankTypesForEventType(this.props.eventType)
     }
 
-    isSelected(m) {
-        return this.props.rankMode[this.props.eventType] === m? "selected" : null
+    showOnlyWithChoices() {
+        return true
     }
 
-    selectedRef() {
-        for (let node of this.buttonRefs) {
-            if (node.className === "selected") {
-                return node
-            }
-        }
+    getLabelForChoice(v) {
+        return toRankTypeFriendlyName(v)
     }
 
-    transitionState() {
-        if (this.state.transitioning) {
-            return "latched"
-        }
-        return ""
+    getCurrentSelection() {
+        return this.props.rankMode[this.props.eventType]
     }
 
-    transitionAndSet(toRankingType) {
-        const containerL = this.containerRef.getBoundingClientRect().left
-        const start = this.buttonRefs[this.props.rankMode[this.props.eventType]]
-            .getBoundingClientRect().left - containerL
-        const fin = this.buttonRefs[toRankingType].getBoundingClientRect().left - containerL
-
-        this.props.setMode(this.props.eventType, toRankingType)
-        this.setState({transitioning: true, 
-            animInitialPosition: start,
-            animTargetPosition: fin
-        })
-    }
-
-    componentDidUpdate() {
-        console.debug(this.fakeRef)
-        if (this.fakeRef) {
-            this.fakeRef.addEventListener("transitionend", (e) => {
-                console.debug("Did fire transitionEnd")
-                this.fakeRef = null
-                this.setState({transitioning: false})
-            }, {passive: true})
-
-            this.fakeRef.style.marginLeft = this.state.animInitialPosition + "px"
-            requestAnimationFrame(() => {
-                this.fakeRef.style.marginLeft = this.state.animTargetPosition + "px"
-            })
-        }
-    }
-
-    render() {
-        this.buttonRefs = {}
-        const choices = rankTypesForEventType(this.props.eventType)
-        if (choices.length < 2) {
-            return <div></div>
-        }
-
-        return <div className="kars-sub-navbar is-left">
-            <span className="item">{Infra.strings.Saint.RankTypeSwitchLabel}</span>
-            <div className={`item kars-image-switch always-active ${this.transitionState()}`}
-                ref={(r) => this.containerRef = r}>
-                {choices.map((v) => {
-                    return <a key={v} 
-                        ref={(r) => this.buttonRefs[v] = r}
-                        className={this.isSelected(v)} 
-                        onClick={() => this.transitionAndSet(v)}>
-                        {toRankTypeFriendlyName(v)}
-                    </a>
-                })}
-
-                {this.state.transitioning? <span ref={(r) => this.fakeRef = r} className="fake">
-                    {toRankTypeFriendlyName(this.props.rankMode[this.props.eventType])}
-                </span> : null}
-            </div>
-            <button className="btn btn-sm btn-primary"
-                onClick={() => this.props.enterEditMode()}>{this.props.editMode? 
-                    Infra.strings.Saint.ExitEditMode :
-                    Infra.strings.Saint.EnterEditMode}</button>
-        </div>
+    changeValue(toValue) {
+        this.props.setMode(this.props.eventType, toValue)
     }
 }
 
@@ -270,7 +195,14 @@ const SaintDisplayEditor = connect((state) => { return {
     })
 }})(_SaintDisplayEditor)
 
-const SaintRoot = connect((state) => { return {editMode: state.saint.editMode} })(
+const SaintRoot = connect(
+    (state) => { return {editMode: state.saint.editMode} },
+    (dispatch) => { return {
+        enterEditMode: () => dispatch({
+            type: `${SaintUserConfig.actions.enterEditMode}`
+        })
+    }}
+)(
     function(props) {
         const pad2 = (n) => n < 10? "0" + n : n
         const checkin = `${pad2(props.lastCheckin.getHours())}:${pad2(props.lastCheckin.getMinutes())}`
@@ -278,7 +210,14 @@ const SaintRoot = connect((state) => { return {editMode: state.saint.editMode} }
 
         return <div>
             <h2 className="h4 mb-2">{Infra.strings.Saint.HeaderCurrentTiers}</h2>
-            <SaintRankTypeSelector eventType={props.eventType} />
+            <div className="kars-sub-navbar is-left">
+                <span className="item">{Infra.strings.Saint.RankTypeSwitchLabel}</span>
+                <SaintRankTypeSelector eventType={props.eventType} />
+                <button className="btn btn-sm btn-primary"
+                    onClick={() => props.enterEditMode()}>{props.editMode? 
+                        Infra.strings.Saint.ExitEditMode :
+                        Infra.strings.Saint.EnterEditMode}</button>
+            </div>
             {props.editMode?
                 <SaintDisplayEditor eventType={props.eventType} available={props.availableSet}/> :
                 <SaintDisplayBoard eventType={props.eventType} summaryData={props.summaries} /> }

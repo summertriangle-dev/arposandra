@@ -1,14 +1,25 @@
 export default {
     "Card image": "Card image",
-    "CISwitch.ExitGalleryMode": "Exit Gallery Mode",
-    "CISwitch.Normal": "Normal",
-    "CISwitch.Idolized": "Idolized",
-    "CISwitch.Both": "Both",
-    "CDMSwitch.SwitchHint": "Esports mode: only show stats. Gallery mode hides stats so you can enjoy the art.",
-    "CDMSwitch.Title": "Layout",
-    "CDMOption.Normal": "Normal",
-    "CDMOption.Esports": "Esports",
-    "CDMOption.Gallery": "Gallery",
+    
+    CISwitch: {
+        ExitGalleryMode: "Exit Gallery Mode",
+        Option: {
+            Normal: "Normal",
+            Idolized: "Idolized",
+            Both: "Both",
+        }
+    },
+
+    CDM: {
+        Title: "Layout",
+        SwitchHint: "Esports mode: only show stats. Gallery mode hides stats so you can enjoy the art.",
+        Option: {
+            Normal: "Normal",
+            Esports: "Esports",
+            Gallery: "Gallery",
+        }
+    },
+    
     "TTNode.VOICE": "VOICE",
     "TTNode.STORY": "STORY",
     "TTNode.AWAKEN": "AWAKEN",
@@ -38,11 +49,16 @@ export default {
     "TLInject.SubmissionPrompt": "What is the {0} translation of \"{1}\"?",
     "TLInject.CurrentSubmissionIsMock": "This is only a demo. The phrase you submit will only be displayed for you.",
     "TLInject.localizedLanguages": {
-        en: "English"
+        en: "English",
+        ja: "Japanese",
     },
-    "NFS.Title": "Only show events/gachas?",
-    "NFSOption.No": "No",
-    "NFSOption.Yes": "Yes",
+    NewsFilter: {
+        Title: "Only show events/gachas?",
+        Option: {
+            No: "No",
+            Yes: "Yes",
+        }
+    },
     SST: {
         LoadingPleaseWait: "Please wait while the script loads...",
         Header: "Story Transcript",

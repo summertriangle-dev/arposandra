@@ -1,14 +1,23 @@
 export default {
     "Card image": "カードの映像",
-    "CISwitch.ExitGalleryMode": "ギャラリーモードを終了",
-    "CISwitch.Normal": "基本",
-    "CISwitch.Idolized": "覚醒",
-    "CISwitch.Both": "共",
-    "CDMSwitch.SwitchHint": "戦術モード: パラメータのみを表示。ギャラリーモード: 映像のみを表示",
-    "CDMSwitch.Title": "レイアウト",
-    "CDMOption.Normal": "規格",
-    "CDMOption.Esports": "戦術",
-    "CDMOption.Gallery": "ギャラリー",
+    CISwitch: {
+        ExitGalleryMode: "ギャラリーモードを終了",
+        Option: {
+            Normal: "基本",
+            Idolized: "覚醒",
+            Both: "共",
+        }
+    },
+    CDM: {
+        Title: "レイアウト",
+        SwitchHint: "戦術モード: パラメータのみを表示。ギャラリーモード: 映像のみを表示",
+        Option: {
+            Normal: "規格",
+            Esports: "戦術",
+            Gallery: "ギャラリー",
+        }
+    },
+
     "TTNode.VOICE": "ボイス",
     "TTNode.STORY": "ストーリー",
     "TTNode.AWAKEN": "覚醒",
@@ -44,9 +53,13 @@ export default {
         ja: "日本語"
     },
 
-    "NFS.Title": "イベントとガチャのみを表示",
-    "NFSOption.No": "○",
-    "NFSOption.Yes": "｜",
+    NewsFilter: {
+        Title: "イベントとガチャのみを表示",
+        Option: {
+            No: "○",
+            Yes: "｜",
+        }
+    },
     SST: {
         LoadingPleaseWait: "エピソード脚本をロード中...",
         Header: "エピソード脚本",

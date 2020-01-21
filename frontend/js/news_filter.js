@@ -3,6 +3,7 @@ import Cookies from "js-cookie"
 import React from "react"
 import Infra from "./infra"
 import { connect } from "react-redux"
+import { MultiValueSwitch } from "./ui_lib"
 
 const FilterMode = Object.freeze({
     anything: 0,
@@ -17,8 +18,9 @@ export const NewsFilter = createSlice({
     reducers: {
         setMode: (state, action) => {
             state.filterMode = action.mode
-            Cookies.set("nfm", state.filterMode)
-            setTimeout(() => window.location.reload(), 16)
+            Cookies.set("nfm", state.filterMode, {
+                expires: 90000000
+            })
         },
         loadFromCookie: (state) => {
             const p = parseInt(Cookies.get("nfm"))
@@ -31,34 +33,46 @@ export const NewsFilter = createSlice({
     }
 })
 
-class _NewsFilterSwitch extends React.Component {
-    isSelected(m) {
-        return this.props.filterMode === m? "selected" : null
+class _NewsFilterSwitchInternal extends MultiValueSwitch {
+    getChoices() {
+        return [FilterMode.anything, FilterMode.gachaAndEventsOnly]
+    }
+    
+    getLabelForChoice(v) {
+        switch(v) {
+        case FilterMode.anything:
+            return Infra.strings.NewsFilter.Option.No
+        case FilterMode.gachaAndEventsOnly:
+            return Infra.strings.NewsFilter.Option.Yes
+        }
+    }
+    
+    getCurrentSelection() {
+        return this.props.filterMode
+    }
+    
+    changeValue(toValue) {
+        this.props.setMode(parseInt(toValue))
     }
 
-    render() {
-        return <div className="kars-sub-navbar is-left">
-            <span className="item">{Infra.strings["NFS.Title"]}</span>
-            <div className="item kars-image-switch always-active">
-                <a className={this.isSelected(FilterMode.anything)} 
-                    onClick={() => this.props.setMode(FilterMode.anything)}>
-                    {Infra.strings["NFSOption.No"]}
-                </a>
-                <a className={this.isSelected(FilterMode.gachaAndEventsOnly)} 
-                    onClick={() => this.props.setMode(FilterMode.gachaAndEventsOnly)}>
-                    {Infra.strings["NFSOption.Yes"]}
-                </a>
-            </div>
-        </div>
+    animationDidFinish() {
+        window.location.reload()
     }
 }
 
-export const NewsFilterSwitch = connect((state) => { return state.newsFilter },
+const NewsFilterSwitchInternal = connect((state) => { return state.newsFilter },
     (dispatch) => {
         return {
             setMode: (m) => dispatch({type: `${NewsFilter.actions.setMode}`, mode: m})
         }
-    })(_NewsFilterSwitch)
+    })(_NewsFilterSwitchInternal)
+
+export function NewsFilterSwitch() {
+    return <div className="kars-sub-navbar is-left">
+        <span className="item">{Infra.strings.NewsFilter.Title}</span>
+        <NewsFilterSwitchInternal />
+    </div>
+}
 
 export function initWithRedux(store) {
     store.dispatch({type: `${NewsFilter.actions.loadFromCookie}`})

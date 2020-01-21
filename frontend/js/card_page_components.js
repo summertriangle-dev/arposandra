@@ -4,16 +4,43 @@ import { AspectRatio } from "react-aspect-ratio"
 
 import Infra from "./infra"
 import { Appearance } from "./appearance"
+import { MultiValueSwitch } from "./ui_lib"
+
+class ImageSwitcherInternal extends MultiValueSwitch {
+    getChoices() {
+        return ["normal", "idolized", "both"]
+    }
+
+    getLabelForChoice(v) {
+        switch(v) {
+        case "normal": return Infra.strings.CISwitch.Option.Normal
+        case "idolized": return Infra.strings.CISwitch.Option.Idolized
+        case "both": return Infra.strings.CISwitch.Option.Both
+        }
+    }
+
+    getSwitchClasses() {
+        return "kars-image-switch neutral"
+    }
+
+    getCurrentSelection() {
+        return this.props.mode
+    }
+
+    changeValue(toValue) {
+        this.props.changeState(toValue)
+    }
+}
 
 class _ImageSwitcher extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {mode: 1}
+        this.state = {mode: "normal"}
     }
 
     effectiveMode() {
         if (this.props.isGallery) {
-            return 3
+            return "both"
         } else {
             return this.state.mode
         }
@@ -26,7 +53,7 @@ class _ImageSwitcher extends React.Component {
         if (this.props.genericBackground) {
             style = {backgroundImage: `url(${this.props.genericBackground})`}
         } 
-        if (mode == 1 || mode == 3) {
+        if (mode == "normal" || mode == "both") {
             im.push(<a key="image-norm" className="kars-card-image-backing" 
                 href={this.props.normalImage} alt={Infra.strings["Card image"]} style={style}>
                 <AspectRatio ratio="2/1">
@@ -34,7 +61,7 @@ class _ImageSwitcher extends React.Component {
                 </AspectRatio>
             </a>)
         }
-        if (mode == 2 || mode == 3) {
+        if (mode == "idolized" || mode == "both") {
             im.push(<a key="image-idlz" className="kars-card-image-backing" href={this.props.idolizedImage} 
                 alt={Infra.strings["Card image"]} style={style}>
                 <AspectRatio ratio="2/1">
@@ -46,9 +73,6 @@ class _ImageSwitcher extends React.Component {
     }
 
     render() {
-        const setNorm = () => this.setState({mode: 1})
-        const setIdlz = () => this.setState({mode: 2})
-        const setBoth = () => this.setState({mode: 3})
         return [
             this.images(),
             <div key="$float" className="kars-card-image-float">
@@ -56,22 +80,12 @@ class _ImageSwitcher extends React.Component {
                     <div className="kars-image-switch neutral is-gallery-mode">
                         <a onClick={this.props.exitGalleryMode}>
                             <i className="d-md-none icon ion-md-close" 
-                                title={Infra.strings["CISwitch.ExitGalleryMode"]}></i>
-                            <span className="d-none d-md-inline">{Infra.strings["CISwitch.ExitGalleryMode"]}</span>
+                                title={Infra.strings.CISwitch.ExitGalleryMode}></i>
+                            <span className="d-none d-md-inline">{Infra.strings.CISwitch.ExitGalleryMode}</span>
                         </a>
                     </div>
                     :
-                    <div className="kars-image-switch neutral">
-                        <a onClick={setNorm} className={this.state.mode == 1? "selected" : null}>
-                            {Infra.strings["CISwitch.Normal"]}
-                        </a>
-                        <a onClick={setIdlz} className={this.state.mode == 2? "selected" : null}>
-                            {Infra.strings["CISwitch.Idolized"]}
-                        </a>
-                        <a onClick={setBoth} className={this.state.mode == 3? "selected" : null}>
-                            {Infra.strings["CISwitch.Both"]}
-                        </a>
-                    </div>
+                    <ImageSwitcherInternal mode={this.state.mode} changeState={(v) => this.setState({mode: v})}/>
                 }
             </div>
         ]
@@ -85,41 +99,60 @@ class _ImageSwitcher extends React.Component {
     }
 }
 
-class _CardDisplayModeSwitcher extends React.Component {
-    isSelected(m) {
-        return this.props.appearance.cardDisplayMode === m? "selected" : null
+class _CardDisplayModeSwitcherInternal extends MultiValueSwitch {
+    getChoices() {
+        return ["normal", "esports", "gallery"]
     }
 
-    static modeSwitcherHelp() {
-        alert(Infra.strings["CDMSwitch.SwitchHint"])
+    getLabelForChoice(v) {
+        switch(v) {
+        case "normal": 
+            return [<i key="$mobile" 
+                className="d-md-none icon ion-ios-list" 
+                title={Infra.strings.CDM.Option.Normal}></i>,
+            <span key="$desktop" 
+                className="d-none d-md-inline">{Infra.strings.CDM.Option.Normal}</span>]
+        case "esports":
+            return [<i key="$mobile" 
+                className="d-md-none icon ion-ios-baseball" 
+                title={Infra.strings.CDM.Option.Esports}></i>,
+            <span key="$desktop" 
+                className="d-none d-md-inline">{Infra.strings.CDM.Option.Esports}</span>]
+        case "gallery": 
+            return [<i key="$mobile" 
+                className="d-md-none icon ion-ios-images" 
+                title={Infra.strings.CDM.Option.Gallery}></i>,
+            <span key="$desktop" 
+                className="d-none d-md-inline">{Infra.strings.CDM.Option.Gallery}</span>]
+        }
     }
 
-    render() {
-        return <div className="kars-sub-navbar is-right">
-            <span className="item">{Infra.strings["CDMSwitch.Title"]}</span>
-            <div className="item kars-image-switch always-active">
-                <a className={this.isSelected("normal")} 
-                    onClick={() => this.props.setDisplay("normal")}>
-                    <i className="d-md-none icon ion-ios-list" title={Infra.strings["CDMOption.Normal"]}></i>
-                    <span className="d-none d-md-inline">{Infra.strings["CDMOption.Normal"]}</span>
-                </a>
-                <a className={this.isSelected("esports")} 
-                    onClick={() => this.props.setDisplay("esports")}>
-                    <i className="d-md-none icon ion-ios-baseball" title={Infra.strings["CDMOption.Esports"]}></i>
-                    <span className="d-none d-md-inline">{Infra.strings["CDMOption.Esports"]}</span>
-                </a>
-                <a className={this.isSelected("gallery")} 
-                    onClick={() => this.props.setDisplay("gallery")}>
-                    <i className="d-md-none icon ion-ios-images" title={Infra.strings["CDMOption.Gallery"]}></i>
-                    <span className="d-none d-md-inline">{Infra.strings["CDMOption.Gallery"]}</span>
-                </a>
-            </div>
-            <a className="has-icon item"
-                onClick={CardDisplayModeSwitcher.modeSwitcherHelp}>
-                <i className="icon ion-ios-help-circle"></i>
-            </a>
-        </div>
+    getCurrentSelection() {
+        return this.props.appearance.cardDisplayMode
     }
+
+    changeValue(toValue) {
+        this.props.setDisplay(toValue)
+    }
+}
+const CardDisplayModeSwitcherInternal = connect(
+    (state) => { return {appearance: state.appearance} },
+    (dispatch) => {
+        return {
+            setDisplay: (mode) => dispatch(
+                {type: `${Appearance.actions.setCardDisplayMode}`, payload: mode}),
+        }
+    })(_CardDisplayModeSwitcherInternal)
+
+export function CardDisplayModeSwitcher() {
+    return <div className="kars-sub-navbar is-right">
+        <span className="item">{Infra.strings.CDM.Title}</span>
+        <CardDisplayModeSwitcherInternal />
+        <a className="has-icon item"
+            onClick={() => alert(Infra.strings.CDM.SwitchHint)}>
+            <i className="icon ion-ios-help-circle"></i>
+        </a>
+    </div>
 }
 
 export const ImageSwitcher = connect(
@@ -134,16 +167,3 @@ export const ImageSwitcher = connect(
                 {type: `${Appearance.actions.setCardDisplayMode}`, payload: "normal"}),
         }
     })(_ImageSwitcher)
-
-export const CardDisplayModeSwitcher = connect(
-    (state) => {
-        return {
-            appearance: state.appearance,
-        }
-    },
-    (dispatch) => {
-        return {
-            setDisplay: (mode) => dispatch(
-                {type: `${Appearance.actions.setCardDisplayMode}`, payload: mode}),
-        }
-    })(_CardDisplayModeSwitcher)
