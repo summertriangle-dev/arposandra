@@ -269,6 +269,7 @@ PERCENT_VALUE_SKILL_TYPES = {
     ST.AddShieldByCardAppeal,
     ST.AddShieldByCardTechnique,
     ST.AddSquadChangeEffectHealBuff,
+    ST.AddCollaboGaugeByTechnique,
 }
 
 MIXED_VALUE_SKILL_TYPES = {ST.AddVoltageBuff, ST.AddAppealBuff}

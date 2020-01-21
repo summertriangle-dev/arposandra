@@ -242,7 +242,7 @@ EN.skill_effect[ST.AddCriticalRateBuff] = \
 EN.skill_effect[ST.AddDamage] = \
     "Take {var}{value}{end} damage"
 EN.skill_effect[ST.AddLastLeaveBuff] = \
-    "Restore {var}{value}{end} stamina if it would drop to zero"
+    "Buff. If stamina would drop to zero, restore {var}{value}{end} and continue the live"
 EN.skill_effect[ST.AddRoleMeritBuffBase] = \
     "Buff. Increase base effect of this card's role by {var}{value}{end}"
 EN.skill_effect[ST.AddShield] = \
@@ -281,7 +281,8 @@ EN.skill_effect[ST.ReduceActionSkillRateBaseBonus] = \
     "Base skill activation rate down by {var}{value}{end}"
 EN.skill_effect[ST.ReduceDamageActualBuff] = \
     "Buff. Reduce stamina drain by {var}{value}{end}"
-
+EN.skill_effect[ST.AddCollaboGaugeByTechnique] = \
+    "Add {var}{value}{end} of this card's technique to SP gauge"
 EN.skill_effect[ST.RemoveAllBuff] = \
     "Remove all active buffs"
 EN.skill_effect[ST.RemoveAllDebuff] = \
