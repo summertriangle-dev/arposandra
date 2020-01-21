@@ -6,6 +6,7 @@ module.exports = {
     },
     output: {
         filename: "[name].bundle.js",
+        chunkFilename: "[chunkhash].js",
         sourceMapFilename: "[name].bundle.js.map",
         publicPath: "http://localhost:5002/static/js/",
     },
@@ -24,6 +25,7 @@ module.exports = {
             },
         ]
     },
+    devtool: "source-map",
     devServer: {
         compress: true,
         port: 5002,
