@@ -71,7 +71,7 @@ export default {
             Voltage: "Voltage",
             Points: "Points",
         },
-        RankTypeSwitchLabel: "Ranking Type",
+        RankTypeSwitchLabel: "Ranking",
         EnterEditMode: "Edit",
         ExitEditMode: "Done",
         PointCount: "{0} pts",
@@ -80,7 +80,7 @@ export default {
         UpdateTime: "Last cutoff update: {1}. Last check-in with server: {0}",
         UpdateTimeNote: "Updated automatically.",
         UpdatesDisabled: "The event has ended.",
-        GraphPeriodLabel: "Chart Period",
+        GraphPeriodLabel: "Period",
         GraphPeriod: {
             Hours: "{0}h",
             Days: "{0}d",

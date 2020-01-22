@@ -5,6 +5,10 @@ mo:
         mkdir -p ../captain/gettext/$${f%.po}/LC_MESSAGES && \
 		msgfmt -o ../captain/gettext/$${f%.po}/LC_MESSAGES/tornado.mo $$f; done
 
+msgmerge: captain.pot
+	for f in *.po; do \
+		msgmerge -U $$f captain.pot; done
+
 # Do not touch!
 genstrings:
 	egrep -h -o -R '(_|.translate)\("([^"]+)?"\)' ../captain \

@@ -72,7 +72,7 @@ export default {
             Voltage: "ボルテージ",
             Points: "イベントP",
         },
-        RankTypeSwitchLabel: "ランキング型",
+        RankTypeSwitchLabel: "ランキング",
         EnterEditMode: "編集",
         ExitEditMode: "完了",
         PointCount: "{0} P",
@@ -81,7 +81,7 @@ export default {
         UpdateTime: "最終更新(ボーダー): {1}。 最終連絡(サーバー): {0}。",
         UpdateTimeNote: "自動的に更新される。",
         UpdatesDisabled: "イベントは終了しました。",
-        GraphPeriodLabel: "表示期間",
+        GraphPeriodLabel: "期間",
         GraphPeriod: {
             Hours: "{0}時",
             Days: "{0}日間",

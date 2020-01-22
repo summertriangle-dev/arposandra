@@ -67,6 +67,9 @@ msgstr "レベル {level}"
 msgid "More..."
 msgstr "さらに表示..."
 
+msgid "Nav.Event"
+msgstr "イベント"
+
 msgid "Nav.Idols"
 msgstr "アイドル"
 

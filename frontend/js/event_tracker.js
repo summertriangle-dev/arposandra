@@ -254,14 +254,16 @@ const SaintRoot = connect(
         const update = `${pad2(props.lastUpdate.getHours())}:${pad2(props.lastUpdate.getMinutes())}`
 
         return <div>
-            <h2 className="h4 mb-2">{Infra.strings.Saint.HeaderCurrentTiers}</h2>
-            <div className="kars-sub-navbar is-left">
-                <span className="item">{Infra.strings.Saint.RankTypeSwitchLabel}</span>
-                <SaintRankTypeSelector eventType={props.eventType} />
-                <button className="btn btn-sm btn-primary"
+            <h2 className="h4 mb-2">
+                {Infra.strings.Saint.HeaderCurrentTiers}
+                <button className="btn btn-sm btn-primary ml-3"
                     onClick={() => props.enterEditMode()}>{props.editMode? 
                         Infra.strings.Saint.ExitEditMode :
                         Infra.strings.Saint.EnterEditMode}</button>
+            </h2>
+            <div className="kars-sub-navbar is-left">
+                <span className="item">{Infra.strings.Saint.RankTypeSwitchLabel}</span>
+                <SaintRankTypeSelector eventType={props.eventType} />
             </div>
             {props.editMode?
                 <SaintDisplayEditor eventType={props.eventType} available={props.availableSet}/> :

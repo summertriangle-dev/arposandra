@@ -55,6 +55,9 @@ msgstr "Lv. {level}"
 msgid "More..."
 msgstr "More..."
 
+msgid "Nav.Event"
+msgstr "Nav.Event"
+
 msgid "Nav.Idols"
 msgstr "Nav.Idols"
 
