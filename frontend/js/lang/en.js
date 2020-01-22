@@ -79,5 +79,18 @@ export default {
         TrendingDown: "Trending down ({0} from last delta)",
         UpdateTime: "Last cutoff update: {1}. Last check-in with server: {0}",
         UpdateTimeNote: "Updated automatically.",
-    }
+        UpdatesDisabled: "The event has ended.",
+        GraphPeriodLabel: "Chart Period",
+        GraphPeriod: {
+            Hours: "{0}h",
+            Days: "{0}d",
+            All: "All",
+        }
+    },
+    SendFeedback: {
+        ModalTitle: "Send Feedback",
+        PlaceholderText: "This form is anonymous, so you won't receive a response unless you enter contact info.",
+        Send: "Send",
+        Cancel: "Cancel"
+    },
 }

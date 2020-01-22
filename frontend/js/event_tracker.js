@@ -5,6 +5,7 @@ import {connect, Provider} from "react-redux"
 import { SaintDatasetCoordinator, SaintUserConfig, toRankTypeFriendlyName, 
     rankTypesForEventType, localizeDatasetName, compareDatasetKey } from "./event_tracker_internal"
 import { MultiValueSwitch } from "./ui_lib"
+import { effectiveAppearance } from "./appearance"
 
 const hslBase = (h, s, baseL) =>
     (itr) => `hsl(${h}, ${s}%, ${baseL + (5 * itr)}%)`
@@ -19,6 +20,19 @@ const COLOURS = [
     hslBase(224, 68, 50),
     hslBase(287, 29, 50),
 ]
+
+function arraySame(a, b) {
+    if (a.length !== b.length) {
+        return false
+    }
+
+    for (let i = 0; i < a.length; ++i) {
+        if (a[i] != b[i]) {
+            return false
+        }
+    }
+    return true
+}
 
 const THEME_VARS = {
     dark: {
@@ -195,6 +209,37 @@ const SaintDisplayEditor = connect((state) => { return {
     })
 }})(_SaintDisplayEditor)
 
+class _SaintGraphRangeController extends MultiValueSwitch {
+    getChoices() {
+        return [9999, 168, 72, 24, 12]
+    }
+
+    getCurrentSelection() {
+        return this.props.timeScale
+    }
+
+    getLabelForChoice(v) {
+        if (v == 9999) {
+            return Infra.strings.Saint.GraphPeriod.All
+        }
+
+        if (v > 24) {
+            return Infra.strings.formatString(Infra.strings.Saint.GraphPeriod.Days, v / 24)
+        }
+
+        return Infra.strings.formatString(Infra.strings.Saint.GraphPeriod.Hours, v)
+    }
+
+    changeValue(v) {
+        this.props.setTimeScale(v)
+    }
+}
+const SaintGraphRangeController = connect((state) => { return {
+    timeScale: state.saint.timeScale
+}}, (dispatch) => { return {
+    setTimeScale: (s) => dispatch({type: `${SaintUserConfig.actions.setTimeScale}`, scale: s})
+}})(_SaintGraphRangeController)
+
 const SaintRoot = connect(
     (state) => { return {editMode: state.saint.editMode} },
     (dispatch) => { return {
@@ -221,10 +266,15 @@ const SaintRoot = connect(
             {props.editMode?
                 <SaintDisplayEditor eventType={props.eventType} available={props.availableSet}/> :
                 <SaintDisplayBoard eventType={props.eventType} summaryData={props.summaries} /> }
-            <p className="small mb-0 mt-3">
-                {Infra.strings.Saint.UpdateTimeNote}{" "}
+            <p className="small mb-3 mt-3">
+                {props.timerInstalled? Infra.strings.Saint.UpdateTimeNote : Infra.strings.Saint.UpdatesDisabled}
+                {" "}
                 {Infra.strings.formatString(Infra.strings.Saint.UpdateTime, checkin, update)}
             </p>
+            <div className="kars-sub-navbar is-left">
+                <span className="item">{Infra.strings.Saint.GraphPeriodLabel}</span>
+                <SaintGraphRangeController />
+            </div>
         </div>
     }
 )
@@ -238,16 +288,22 @@ class SaintDisplayController {
         this.chart = null
         this.timeout = null
 
+        this.eventStart = parseInt(canvas.dataset.rangeStart)
+        this.eventEnd = parseInt(canvas.dataset.rangeEnd)
+
         Infra.store.dispatch({type: `${SaintUserConfig.actions.loadFromLocalStorage}`})
         Infra.store.subscribe(() => {
             if (Infra.canWritebackState()) {
-                const {displayTiers, rankMode} = Infra.store.getState().saint
-                localStorage.setItem("as$$saint", JSON.stringify({displayTiers, rankMode}))
+                const {displayTiers, rankMode, timeScale} = Infra.store.getState().saint
+                localStorage.setItem("as$$saint", JSON.stringify({displayTiers, rankMode, timeScale}))
             }
-            this.updateReact()
-            if (this.chart) {
-                this.updateChart()
-            }
+            this.chartData.moreBacklog().then(() => {
+                this.updateReact()
+                if (this.chart) {
+                    this.recolor()
+                    this.updateChart(false, true)
+                }
+            })
         })
     }
 
@@ -257,7 +313,13 @@ class SaintDisplayController {
     }
 
     installTimer() {
-        this.timeout = setInterval(() => this.refreshData(), 15*60*1000)
+        this.timeout = setInterval(() => {
+            this.refreshData()
+            if (Date.now() >= (this.eventEnd * 1000)) {
+                console.debug("Event ended - disabling updates.")
+                this.disableUpdates()
+            }
+        }, 15 * 60 * 1000)
     }
 
     installChart(chartjs) {
@@ -269,10 +331,14 @@ class SaintDisplayController {
                 datasets: []
             },
             options: {
+                _saintAppearance: null,
+                animation: {duration: 0},
+                hover: {animationDuration: 0},
+                responsiveAnimationDuration: 0,
                 maintainAspectRatio: false,
                 scales: {
                     yAxes: [{
-                        ticks: {beginAtZero: true, fontColor: THEME_VARS.dark.textColor, mirror: true},
+                        ticks: {beginAtZero: true, fontColor: THEME_VARS.dark.textColor, mirror: false},
                         gridLines: {
                             color: THEME_VARS.dark.gridLines,
                             zeroLineColor: THEME_VARS.dark.gridLines
@@ -280,22 +346,44 @@ class SaintDisplayController {
                     }],
                     xAxes: [{
                         type: "time",
-                        ticks: {source: "auto", fontColor: THEME_VARS.dark.textColor, maxRotation: 0},
+                        ticks: {source: "auto", fontColor: THEME_VARS.dark.textColor, maxRotation: 0, min: new Date()},
                         gridLines: {
                             color: THEME_VARS.dark.gridLines,
                             zeroLineColor: THEME_VARS.dark.gridLines
                         }
                     }]
+                },
+                legend: {
+                    labels: {fontColor: THEME_VARS.dark.textColor}
                 }
             }
         })
+
+        this.recolor()
         this.updateChart()
         console.log(this.chart)
+    }
+
+    recolor() {
+        const appearance = effectiveAppearance()
+        // fuck this shit
+        if (this.chart && this.chart.config.options._saintAppearance != appearance) {
+            this.chart.config.options.scales.yAxes[0].ticks.fontColor = THEME_VARS[appearance].textColor
+            this.chart.config.options.scales.xAxes[0].ticks.fontColor = THEME_VARS[appearance].textColor
+            this.chart.config.options.scales.yAxes[0].gridLines.color = THEME_VARS[appearance].gridLines
+            this.chart.config.options.scales.xAxes[0].gridLines.color = THEME_VARS[appearance].gridLines
+            this.chart.config.options.scales.yAxes[0].gridLines.zeroLineColor = THEME_VARS[appearance].gridLines
+            this.chart.config.options.scales.xAxes[0].gridLines.zeroLineColor = THEME_VARS[appearance].gridLines
+            this.chart.config.options.legend.labels.fontColor = THEME_VARS[appearance].textColor
+            this.chart.config.options._saintAppearance = appearance
+            this.chart.update()
+        }
     }
 
     disableUpdates() {
         if (this.timeout) {
             clearInterval(this.timeout)
+            this.timeout = null
         }
     }
 
@@ -309,7 +397,8 @@ class SaintDisplayController {
         })
     }
 
-    updateChart() {
+    // eslint-disable-next-line no-unused-vars
+    updateChart(_allowAnimation = true, force = false) {
         const state = Infra.store.getState().saint
 
         const prefix = `${state.rankMode[this.eventType]}.`
@@ -317,24 +406,35 @@ class SaintDisplayController {
             return v.startsWith(prefix) && state.displayTiers[this.eventType][v]
         })
         vset.sort(compareDatasetKey)
+        
+        const current = this.chart.config.data.datasets.map((v) => v.key)
 
-        let i = 0
-        let datasets = []
-        for (let key of vset) {
-            if (!this.chartData.datasets[key]) {
-                continue
+        if (!arraySame(vset, current) || force) {
+            let i = 0
+            let datasets = []
+            for (let key of vset) {
+                if (!this.chartData.datasets[key]) {
+                    continue
+                }
+
+                datasets.push({
+                    key,
+                    label: localizeDatasetName(key),
+                    fill: false,
+                    borderColor: COLOURS[i % COLOURS.length]((i / COLOURS.length) | 0),
+                    ...this.chartData.datasets[key]
+                })
+                ++i
             }
 
-            datasets.push({
-                label: localizeDatasetName(key),
-                fill: false,
-                borderColor: COLOURS[i % COLOURS.length]((i / COLOURS.length) | 0),
-                ...this.chartData.datasets[key]
-            })
-            ++i
+            this.chart.config.data.datasets = datasets
         }
 
-        this.chart.config.data.datasets = datasets
+        // Update the constraints...
+        const scale = this.chartData.calcBounds(state.timeScale)
+        this.chart.config.options.scales.xAxes[0].ticks.min = scale.min
+        this.chart.config.options.scales.xAxes[0].ticks.max = scale.max
+
         this.chart.update()
     }
 
@@ -347,7 +447,8 @@ class SaintDisplayController {
                 eventType={this.eventType}
                 summaries={summaries}
                 lastCheckin={new Date(this.chartData.lastCheckinTime * 1000)}
-                lastUpdate={new Date(this.chartData.lastUpdateTime * 1000)} />
+                lastUpdate={new Date(this.chartData.lastUpdateTime * 1000)}
+                timerInstalled={this.timeout !== null} />
         </Provider>, this.canvas)
     }
 }

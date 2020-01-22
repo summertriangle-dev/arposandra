@@ -10,7 +10,17 @@
     {% module Template("uim_nav.html", current="event") %}
     
     <div class="container">
+        <h3 class="kars-negative-box">Event</h3>
         <div class="card kars-card-box">
+            <div class="kars-list-alternate">
+                <div class="card-body">
+                    <span class="kars-data-ts" data-ts="{{ event_rec["start_t"].timestamp() }}">
+                        {{ event_rec["start_t"] }} UTC</span>
+                    -
+                    <span class="kars-data-ts" data-ts="{{ event_rec["end_t"].timestamp() }}">
+                        {{ event_rec["end_t"] }} UTC</span>
+                </div>
+            </div>
             {% module Template("uim_saint_graph.html", server=server_id, event=event_rec) %}
 
             <div class="kars-list-alternate card-body kars-story-grid">

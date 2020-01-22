@@ -38,7 +38,7 @@ class EventTrackingDatabase(object):
             return await c.fetchrow(
                 """
                 SELECT event_id, banner, event_type, start_t, end_t, result_t FROM event_v2
-                WHERE serverid=$1 AND start_t <= $2 AND result_t < $2 ORDER BY end_t DESC
+                WHERE serverid=$1 AND start_t <= $2 ORDER BY end_t DESC
                 """,
                 server_id,
                 timestamp,
@@ -154,7 +154,7 @@ class EventTrackingDatabase(object):
         return datasets
 
 
-@route(r"/events")
+@route(r"/events/?")
 @route(r"/events/([0-9]+)(?:/[^/]*)")
 class EventServerRedirect(RequestHandler):
     def get(self, eid=None):
@@ -168,7 +168,7 @@ class EventServerRedirect(RequestHandler):
             self.redirect(f"/{target}/events")
 
 
-@route(r"/([a-z]+)/events")
+@route(r"/([a-z]+)/events/?")
 @route(r"/([a-z]+)/events/([0-9]+)(?:/[^/]*)?")
 class EventDash(LanguageCookieMixin):
     async def get(self, sid, eid=None):

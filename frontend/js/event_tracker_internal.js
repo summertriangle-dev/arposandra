@@ -74,6 +74,9 @@ export const SaintUserConfig = createSlice({
         replaceVisFlags: (state, action) => {
             state.displayTiers[action.forType] = action.newMap
         },
+        setTimeScale: (state, action) => {
+            state.timeScale = parseInt(action.scale)
+        },
         enterEditMode: (state) => {
             if (!state.editMode)
                 state.editMode = true
@@ -93,6 +96,9 @@ export const SaintUserConfig = createSlice({
             if (json.displayTiers && json.displayTiers.length === undefined) {
                 state.displayTiers = json.displayTiers
             }
+            if (json.timeScale) {
+                state.timeScale = parseInt(json.timeScale)
+            }
         }
     }
 })
@@ -105,6 +111,8 @@ export class SaintDatasetCoordinator {
         this.lastCheckinTime = 0
         this.status = 0
         this.lastError = null
+        this.backlogStatus = 0
+        this.inFlight = 0
 
         this.datasets = {}
     }
@@ -112,6 +120,11 @@ export class SaintDatasetCoordinator {
     async refresh(hard = false) {
         if (hard) {
             this.lastUpdateTime = 0
+        }
+
+        if (this.inFlight) {
+            console.warn("Dataset coordinator was asked to refresh with a request already in flight!")
+            return
         }
 
         const api = await this.getUpdateFromAPI(this.lastUpdateTime,
@@ -126,13 +139,14 @@ export class SaintDatasetCoordinator {
         const datasets = api.result.datasets
         if (api.result.is_new) {
             this.datasets = {}
+            this.backlogStatus = Infra.store.getState().saint.timeScale
         }
 
         let maxT = -1
         for (let name of Object.keys(datasets)) {
             const rawDS = datasets[name]
             if (Object.hasOwnProperty.call(this.datasets, name)) {
-                this.datasets[name].push(...SaintDatasetCoordinator.reshapeDataset(rawDS))
+                this.datasets[name].data.push(...SaintDatasetCoordinator.reshapeDataset(rawDS))
             } else {
                 this.datasets[name] = {
                     name: localizeDatasetName(name),
@@ -152,6 +166,13 @@ export class SaintDatasetCoordinator {
         if (maxT > 0) {
             this.lastUpdateTime = maxT
         }
+    }
+
+    async moreBacklog() {
+        if (this.backlogStatus < Infra.store.getState().saint.timeScale) {
+            return await this.refresh(true)
+        }
+        console.debug("Doing nothing, we have enough past data")
     }
 
     static reshapeDataset(dso) {
@@ -188,18 +209,19 @@ export class SaintDatasetCoordinator {
     }
 
     async getUpdateFromAPI(last, timeScale) {
+        this.inFlight = true
+
         const xhr = new XMLHttpRequest()
         return new Promise((resolve, reject) => {
             xhr.onreadystatechange = () => {
                 if (xhr.readyState !== 4) return
+                this.inFlight = false
     
                 if (xhr.status == 200) {
                     const json = JSON.parse(xhr.responseText)
                     if (!json.error) {
                         this.lastCheckinTime = (Date.now() / 1000) | 0
                     }
-
-                    console.debug("Resolving now")
                     resolve(json)
                 } else {
                     reject()
@@ -215,6 +237,29 @@ export class SaintDatasetCoordinator {
             xhr.open("GET", this.getUpdateURL() + query)
             xhr.send()
         })
+    }
+
+    calcBounds(numHours) {
+        let max
+        const k = Object.keys(this.datasets)
+        if (k.length < 1) {
+            max = null
+        } else {
+            max = this.datasets[k[0]].data[this.datasets[k[0]].data.length - 1].x
+        }
+
+        if (numHours === 9999 || !max) {
+            return {min: null, max}
+        }
+
+        let minDate = new Date(max)
+        minDate.setHours(minDate.getHours() - numHours)
+
+        if (minDate.getTime() < this.datasets[k[0]].data[0].x.getTime()) {
+            minDate = new Date(this.datasets[k[0]].data[0].x)
+        }
+
+        return {min: minDate, max}
     }
 }
 

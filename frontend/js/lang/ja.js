@@ -80,5 +80,18 @@ export default {
         TrendingDown: "下降傾向 (最後の差額から: {0})",
         UpdateTime: "最終更新(ボーダー): {1}。 最終連絡(サーバー): {0}。",
         UpdateTimeNote: "自動的に更新される。",
-    }
+        UpdatesDisabled: "イベントは終了しました。",
+        GraphPeriodLabel: "表示期間",
+        GraphPeriod: {
+            Hours: "{0}時",
+            Days: "{0}日間",
+            All: "全て",
+        }
+    },
+    SendFeedback: {
+        ModalTitle: "フィードバックを送信する",
+        PlaceholderText: "このサイトの管理者は日本語を読むことができません。しかし、それが止めさせないでください。",
+        Send: "参加する",
+        Cancel: "キャンセル"
+    },
 }

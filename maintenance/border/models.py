@@ -229,3 +229,7 @@ class DatabaseConnection(object):
                 """,
                 ((region, event_id, type_, *r) for r in rows),
             )
+
+    async def clear_norm_tiers(self, region, event_id):
+        async with self.pool.acquire() as c, c.transaction():
+            await c.execute("DELETE FROM border_data_v3")
