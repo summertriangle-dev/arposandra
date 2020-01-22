@@ -33,9 +33,6 @@ msgstr "AppendixHiramekuSkills"
 msgid "Attribute"
 msgstr "Attribute"
 
-msgid "Base stats"
-msgstr "Base stats"
-
 msgid ""
 "Be aware that external sites may contain malicious content. To continue, "
 "click the link."
@@ -48,9 +45,6 @@ msgstr "Card image"
 
 msgid "Cards of {idol_name}"
 msgstr "Cards of {idol_name}"
-
-msgid "EventTracker.HeaderCurrentTiers"
-msgstr "Tracker"
 
 msgid "EventTracker.HeaderStories"
 msgstr "Event Story"
@@ -150,10 +144,13 @@ msgid ""
 "Rows with ★ include idolization bonus, and all tree unlocks up to that limit "
 "break level."
 msgstr ""
-"Rows with ★ include idolization bonus, and all tree unlocks up to that "
-"limit break level."
+"Rows with ★ include idolization bonus, and all tree unlocks up to that limit "
+"break level."
 
 msgid "SSF.WaitingForWebpack"
+msgstr "Waiting for JavaScript components..."
+
+msgid "Saint.WaitingForWebpack"
 msgstr "Waiting for JavaScript components..."
 
 msgid "Search"
@@ -220,3 +217,9 @@ msgstr "{pts} pts"
 
 msgid "★ {star}"
 msgstr "★ {star}"
+
+#~ msgid "Base stats"
+#~ msgstr "Base stats"
+
+#~ msgid "EventTracker.HeaderCurrentTiers"
+#~ msgstr "Tracker"

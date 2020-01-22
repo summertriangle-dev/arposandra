@@ -25,9 +25,6 @@ msgstr "AppendixHiramekuSkills"
 msgid "Attribute"
 msgstr "Attribute"
 
-msgid "Base stats"
-msgstr "Base stats"
-
 msgid "Be aware that external sites may contain malicious content. To continue, click the link."
 msgstr "Be aware that external sites may contain malicious content. To continue, click the link."
 
@@ -36,9 +33,6 @@ msgstr "Card image"
 
 msgid "Cards of {idol_name}"
 msgstr "Cards of {idol_name}"
-
-msgid "EventTracker.HeaderCurrentTiers"
-msgstr "EventTracker.HeaderCurrentTiers"
 
 msgid "EventTracker.HeaderStories"
 msgstr "EventTracker.HeaderStories"
@@ -135,6 +129,9 @@ msgstr "Rows with ★ include idolization bonus, and all tree unlocks up to that
 
 msgid "SSF.WaitingForWebpack"
 msgstr "SSF.WaitingForWebpack"
+
+msgid "Saint.WaitingForWebpack"
+msgstr "Saint.WaitingForWebpack"
 
 msgid "Search"
 msgstr "Search"
