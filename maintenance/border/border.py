@@ -120,20 +120,22 @@ TRACK_INTERVAL = 3600
 
 def track_interval(current: datetime, status: models.event_status_t):
     if current < status.start_time:
-        return 999999999
+        return False
 
     since_start = current - status.start_time
     to_end = status.end_time - current
 
     if to_end.total_seconds() < TWO_MINUTES:
         logging.info("Event is ending - tracking immediately")
-        return TRACK_INTERVAL_NOW
+        return True
 
     if since_start.total_seconds() < HALF_DAY or to_end.total_seconds() < FULL_DAY:
         logging.info("On accelerated track pace")
-        return TRACK_INTERVAL_ACCELERATED
+        if current.minute in [13, 14, 15, 28, 29, 30, 43, 44, 45, 58, 59, 0]:
+            return True
 
-    return TRACK_INTERVAL
+    if current.minute in [58, 59, 0]:
+        return True
 
 
 def should_track_for_event(status: models.event_status_t):
@@ -151,7 +153,7 @@ def should_track_for_event(status: models.event_status_t):
 
     if status.last_collect_time is not None:
         since_last = current - status.last_collect_time
-        if since_last.total_seconds() < track_interval(current, status):
+        if not track_interval(current, status):
             logging.info("Not collecting data because it's not time.")
             return False
 
@@ -236,7 +238,7 @@ async def fetch_marathon_event_border(
     fixed_rows = []
     flex_rows = []
 
-    top_pt_ranking = ranking_info.get("point_top_ranking_cells")
+    top_pt_ranking = ranking_info.get("top_ranking_cells")
     if top_pt_ranking:
         top_pt_ranking = sorted(top_pt_ranking, key=lambda x: x["order"])
         fixed_rows.append(

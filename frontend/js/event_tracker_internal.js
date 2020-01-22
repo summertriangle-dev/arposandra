@@ -230,7 +230,7 @@ export class SaintDatasetCoordinator {
 
             let query = "?"
             if (last) {
-                query += `after=${last}`
+                query += `after=${Math.ceil(last)}`
             } else {
                 query += `back=${timeScale}`
             }

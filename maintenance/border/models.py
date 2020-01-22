@@ -201,6 +201,8 @@ class DatabaseConnection(object):
             )
 
     async def add_tiers(self, region, event_id, time, is_last, rows, singular):
+        time = time.replace(second=0, microsecond=0)
+
         async with self.pool.acquire() as c, c.transaction():
             await c.executemany(
                 """

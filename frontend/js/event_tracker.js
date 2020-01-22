@@ -289,6 +289,7 @@ class SaintDisplayController {
             parseInt(canvas.dataset.eventId))
         this.chart = null
         this.timeout = null
+        this.firstTime = true
 
         this.eventStart = parseInt(canvas.dataset.rangeStart)
         this.eventEnd = parseInt(canvas.dataset.rangeEnd)
@@ -315,13 +316,32 @@ class SaintDisplayController {
     }
 
     installTimer() {
-        this.timeout = setInterval(() => {
+        const tfunc = () => {
             this.refreshData()
             if (Date.now() >= (this.eventEnd * 1000)) {
                 console.debug("Event ended - disabling updates.")
                 this.disableUpdates()
             }
-        }, 15 * 60 * 1000)
+        }
+
+        const now = new Date()
+        const then = new Date(now)
+        const min = now.getMinutes()
+        if (min < 15) {
+            then.setMinutes(15)
+        } else if (min < 30) {
+            then.setMinutes(30)
+        } else if (min < 45) {
+            then.setMinutes(45)
+        } else {
+            then.setHours(then.getHours() + 1)
+            then.setMinutes(0)
+        }
+
+        this.timeout = setTimeout(() => {
+            tfunc()
+            this.timeout = setInterval(tfunc, 15 * 60 * 1000)
+        }, then.getTime() - now.getTime())
     }
 
     installChart(chartjs) {
@@ -395,6 +415,11 @@ class SaintDisplayController {
             this.updateReact()
             if (this.chart) {
                 this.updateChart()
+            }
+
+            if (this.firstTime) {
+                this.firstTime = false
+                this.refreshData()
             }
         })
     }
