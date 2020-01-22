@@ -51,7 +51,7 @@ class _SaintRankTypeSelector extends MultiValueSwitch {
     }
 
     showOnlyWithChoices() {
-        return true
+        return false
     }
 
     getLabelForChoice(v) {
