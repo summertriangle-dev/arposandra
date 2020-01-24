@@ -97,7 +97,8 @@ def tlinject_static(handler, s, escape=True):
         base = {}
         logging.warn("TLInject users should have a _tlinject_base dict")
 
-    ss = handler.settings["static_strings"].get(s)
+    gt = handler.settings["static_strings"].get(handler.locale.code, "en")
+    ss = gt.gettext(s)
     if ss is None:
         ss = base.get(s, s)
     if escape:
@@ -128,14 +129,7 @@ def format_skill_effect(handler, skill):
 
 @export
 def format_skill_target(handler, skill, card=None):
-    try:
-        base = handler._tlinject_base
-    except AttributeError:
-        base = {}
-
-    # TODO: This can be made more precise. For now we inject the entire
-    # static dictionary since it has all the strings for skill descriptions
-    base.update(handler.settings["static_strings"])
+    base = handler.settings["static_strings"].get(handler.locale.code, "en")
     return get_skill_describer(handler).format_target(skill, base, card)
 
 

@@ -1,7 +1,7 @@
 import sqlite3
 import os
 from collections import defaultdict
-from typing import Iterable, TypeVar, Callable, Dict
+from typing import Iterable, TypeVar, Callable, Dict, Optional
 from html import unescape
 
 
@@ -63,7 +63,7 @@ class DictionaryAccess(object):
         self.lookup_strings_by_key2(key, strings, a)
         return a
 
-    def lookup_strings(self, stringset: Iterable[str]) -> Iterable[str]:
+    def lookup_strings(self, stringset: Iterable[str]) -> Dict[str, str]:
         ss = set(stringset)
         bykey = bucketize(ss)
         ret = {}
@@ -71,6 +71,11 @@ class DictionaryAccess(object):
             self.lookup_strings_by_key2(key, values, ret)
 
         return ret
+
+    # Do not use this method. It is only here for the
+    # SkillEffectDescriberContext protocol.
+    def lookup_single_string(self, key) -> Optional[str]:
+        return self.lookup_strings((key,)).get(key)
 
     def close(self):
         for v in self.sqlites.values():

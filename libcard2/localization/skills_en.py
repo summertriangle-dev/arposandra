@@ -35,7 +35,7 @@ def _times(value):
 
 
 @EN.target_clause
-def _(tt: AnySkill, base: dict, context: Card = None):
+def _(tt: AnySkill, base, context: Card = None):
     if tt.self_only:
         return "Applies to: Just this card"
 
@@ -45,7 +45,7 @@ def _(tt: AnySkill, base: dict, context: Card = None):
     elif tt.owner_school:
         if context:
             synthetic = f"kars.group_{context.member.group}"
-            complex_.append(f"{base.get(synthetic, synthetic)} members")
+            complex_.append(f"{base.lookup_single_string(synthetic)} members")
         else:
             complex_.append("Same idol group")
     elif tt.owner_year:
@@ -56,38 +56,40 @@ def _(tt: AnySkill, base: dict, context: Card = None):
     elif tt.owner_subunit:
         if context:
             synthetic = f"kars.subunit_{context.member.subunit}"
-            complex_.append(f"{base.get(synthetic, synthetic)} members")
+            complex_.append(f"{base.lookup_single_string(synthetic)} members")
         else:
             complex_.append("Same subunit")
     elif tt.owner_attribute:
         if context:
             synthetic = f"kars.attribute_{context.attribute}"
-            complex_.append(f"{base.get(synthetic, synthetic)} cards")
+            complex_.append(f"{base.lookup_single_string(synthetic)} cards")
         else:
             complex_.append("Same card attribute")
     elif tt.owner_role:
         if context:
             synthetic = f"kars.role_{context.role}"
-            complex_.append(f"{base.get(synthetic, synthetic)} cards")
+            complex_.append(f"{base.lookup_single_string(synthetic)} cards")
         else:
             complex_.append("Same card role")
     elif tt.fixed_attributes:
-        c = ", ".join(base.get(f"kars.attribute_{a}") for a in tt.fixed_attributes)
+        c = ", ".join(base.lookup_single_string(f"kars.attribute_{a}") for a in tt.fixed_attributes)
         complex_.append(f"{c} cards")
     elif tt.fixed_roles:
-        c = ", ".join(base.get(f"kars.role_{a}") for a in tt.fixed_roles)
+        c = ", ".join(base.lookup_single_string(f"kars.role_{a}") for a in tt.fixed_roles)
         complex_.append(f"{c} cards")
     elif tt.fixed_schools:
-        c = ", ".join(base.get(f"kars.group_{a}") for a in tt.fixed_schools)
+        c = ", ".join(base.lookup_single_string(f"kars.group_{a}") for a in tt.fixed_schools)
         complex_.append(f"{c} members")
     elif tt.fixed_subunits:
-        c = ", ".join(base.get(f"kars.subunit_{a}") for a in tt.fixed_subunits)
+        c = ", ".join(base.lookup_single_string(f"kars.subunit_{a}") for a in tt.fixed_subunits)
         complex_.append(f"{c} members")
     elif tt.fixed_years:
         c = ", ".join(_ordinal(y) for y in tt.fixed_years)
         complex_.append(f"{c} years")
     elif tt.fixed_members:
-        c = ", ".join(base.get(f"k.m_dic_member_name_romaji_{a}") for a in tt.fixed_members)
+        c = ", ".join(
+            base.lookup_single_string(f"k.m_dic_member_name_romaji_{a}") for a in tt.fixed_members
+        )
         complex_.append(c)
     else:
         complex_.append("Everyone")

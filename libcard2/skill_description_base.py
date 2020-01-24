@@ -1,4 +1,5 @@
 from .dataclasses import PassiveSkill, ActiveSkill, SkillTargetType, Card
+from .string_mgr import DictionaryAccess
 from typing import Callable, Union
 from collections import UserDict
 
@@ -91,7 +92,7 @@ class SkillEffectDescriberContext(object):
     def format_single_value(self, level_struct):
         return self.mod_value(level_struct)
 
-    def format_target(self, tt: AnySkill, strings: dict, context: Card = None):
+    def format_target(self, tt: AnySkill, strings: DictionaryAccess, context: Card = None):
         if tt.levels[0][2] in IMPLICIT_TARGET_SKILL_TYPES:
             return ""
         return self.target(tt.target, strings, context)

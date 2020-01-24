@@ -1,6 +1,7 @@
 import os
 import sys
 import configparser
+import gettext
 from collections import namedtuple
 
 from tornado.web import Application
@@ -27,16 +28,29 @@ def create_runtime_info():
     return vi_class(os.environ.get("AS_GIT_REVISION"), os.environ.get("AS_HOST_ID"), sys.version)
 
 
-def static_strings():
-    cfg = configparser.ConfigParser()
-    cfg.add_section("Strings")
-    try:
-        with open(readonly_app_path("strings.ini"), "r") as sf:
-            cfg.read_file(sf)
-    except FileNotFoundError:
-        pass
+class DictionaryAccessProtocolImp(gettext.GNUTranslations):
+    class Fallback(object):
+        @classmethod
+        def gettext(cls, k):
+            return None
 
-    return {k: v for k, v in cfg.items("Strings")}
+    def __init__(self, fp):
+        super().__init__(fp)
+        self.add_fallback(self.Fallback)
+
+    def lookup_single_string(self, key):
+        return self.gettext(key)
+
+
+def static_strings():
+    sd = {}
+    catalog = readonly_app_path("gettext")
+    for langcode in os.listdir(catalog):
+        sd[langcode] = gettext.translation(
+            "static", catalog, [langcode], DictionaryAccessProtocolImp
+        )
+
+    return sd
 
 
 def application(master, debug):
