@@ -81,6 +81,11 @@ class SkillTargetType(object):
     fixed_years: List[int] = None
     fixed_roles: List[int] = None
 
+    def is_all_but(self):
+        return (self.fixed_attributes and len(self.fixed_attributes) >= 4) or (
+            self.fixed_roles and len(self.fixed_roles) > 3
+        )
+
 
 @dataclass
 class ActiveSkill(object):

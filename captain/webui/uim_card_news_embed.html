@@ -19,7 +19,7 @@
                         <a href="/card/{{ card.ordinal }}">#{{ card.ordinal }}</a> &bull;
                         {% raw tlinject_static(f"kars.role_{card.role}", escape=False) %} &bull;
                         {% raw tlinject_static(card.member.name_romaji) %}
-                        &bull; {{ format_ordinal(card.member.year) }} Year,
+                        &bull; {{ format_grade(card.member.year) }},
                         {% if card.member.subunit_name %}
                             {% raw tlinject_static(card.member.group_name) %}, 
                             {% raw tlinject_static(card.member.subunit_name) %}

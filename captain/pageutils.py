@@ -106,14 +106,24 @@ def tlinject_static(handler, s, escape=True):
     return ss
 
 
-@export
-def format_ordinal(handler, n):
+def _format_grade_en(n):
     SUFFIXES = {1: "st", 2: "nd", 3: "rd"}
     if 1 <= (n % 10) <= 3 and n // 10 != 1:
         suff = SUFFIXES[n % 10]
     else:
         suff = "th"
     return f"{n}{suff}"
+
+
+def _format_grade_ja(n):
+    return f"{n}年生"
+
+
+@export
+def format_grade(handler, n):
+    if handler.locale.code == "ja":
+        return _format_grade_ja(n)
+    return _format_grade_en(n)
 
 
 @export

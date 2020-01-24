@@ -7,7 +7,7 @@
                 </h1>
 
                 <h2 class="h6 mb-0">
-                    {{ format_ordinal(member.year) }} Year,
+                    {{ format_grade(member.year) }},
                     {% if member.subunit_name %}
                         <a href="/idols/group/{{ member.group }}">{% raw tlinject_static(member.group_name) %}</a>, 
                         <a href="/idols/unit/{{ member.subunit }}">{% raw tlinject_static(member.subunit_name) %}</a>

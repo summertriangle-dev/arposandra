@@ -63,7 +63,7 @@ class SkillEffectDescriberContext(object):
     def default_trigger(self, skill: AnySkill):
         return ""
 
-    def default_target(self, tt: SkillTargetType, context: Card):
+    def default_target(self, tt: SkillTargetType, strings: DictionaryAccess, context: Card):
         return ""
 
     def default_combiner(self, trigger: str, effect: str, finish: str):

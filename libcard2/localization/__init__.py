@@ -1,9 +1,9 @@
-from . import skills_en
-from . import wave_en
+from . import skills_en, skills_ja
+from . import wave_en, wave_ja
 
-_s_registry = {"en": skills_en.EN}
+_s_registry = {"en": skills_en.EN, "ja": skills_ja.JA}
 
-_w_registry = {"en": wave_en.EN}
+_w_registry = {"en": wave_en.EN, "ja": wave_ja.JA}
 
 
 def skill_describer_for_locale(lc):

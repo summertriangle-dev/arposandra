@@ -270,6 +270,13 @@ PERCENT_VALUE_SKILL_TYPES = {
     ST.AddShieldByCardTechnique,
     ST.AddSquadChangeEffectHealBuff,
     ST.AddCollaboGaugeByTechnique,
+    ST.HealLifeByMaxLife,
+    ST.AddShieldByMaxLife,
+    ST.AddAppealDebuffByNumOfVo,
+    ST.AddCriticalAppealDebuff,
+    ST.RemoveCollaboGauge,
+    ST.ReduceAppealBaseBonus,
+    ST.ReduceCollaboGaugeBaseBonus,
 }
 
 MIXED_VALUE_SKILL_TYPES = {ST.AddVoltageBuff, ST.AddAppealBuff}

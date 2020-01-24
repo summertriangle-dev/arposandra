@@ -40,7 +40,7 @@
                 <h2 class="h6 mb-0">
                     <a href="/card/{{ card.ordinal }}" title="{{ card.id }}">#{{ card.ordinal }}</a> &bull;
                     <a href="/cards/by_idol/{{ card.member.id }}/{{ card.member.ascii_name() }}">{% raw tlinject_static(card.member.name_romaji) %}</a>
-                    &bull; {{ format_ordinal(card.member.year) }} Year,
+                    &bull; {{ format_grade(card.member.year) }},
                     {% if card.member.subunit_name %}
                         <a href="/idols/group/{{ card.member.group }}">{% raw tlinject_static(card.member.group_name) %}</a>, 
                         <a href="/idols/unit/{{ card.member.subunit }}">{% raw tlinject_static(card.member.subunit_name) %}</a>

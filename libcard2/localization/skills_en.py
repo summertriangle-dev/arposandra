@@ -8,6 +8,9 @@ EN = SkillEffectDescriberContext()
 # Routines for English-language skill target descriptions.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ALL_ATTRIBUTES = range(1, 7)
+ALL_ROLES = range(1, 5)
+
 
 def _ordinal(n):
     SUFFIXES = {1: "st", 2: "nd", 3: "rd"}
@@ -72,10 +75,28 @@ def _(tt: AnySkill, base, context: Card = None):
         else:
             complex_.append("Same card role")
     elif tt.fixed_attributes:
-        c = ", ".join(base.lookup_single_string(f"kars.attribute_{a}") for a in tt.fixed_attributes)
+        if tt.is_all_but():
+            complex_.append("All except")
+            c = ", ".join(
+                base.lookup_single_string(f"kars.attribute_{a}")
+                for a in ALL_ATTRIBUTES
+                if a not in tt.fixed_attributes
+            )
+        else:
+            c = ", ".join(
+                base.lookup_single_string(f"kars.attribute_{a}") for a in tt.fixed_attributes
+            )
         complex_.append(f"{c} cards")
     elif tt.fixed_roles:
-        c = ", ".join(base.lookup_single_string(f"kars.role_{a}") for a in tt.fixed_roles)
+        if tt.is_all_but():
+            complex_.append("All except")
+            c = ", ".join(
+                base.lookup_single_string(f"kars.role_{a}")
+                for a in ALL_ROLES
+                if a not in tt.fixed_roles
+            )
+        else:
+            c = ", ".join(base.lookup_single_string(f"kars.role_{a}") for a in tt.fixed_roles)
         complex_.append(f"{c} cards")
     elif tt.fixed_schools:
         c = ", ".join(base.lookup_single_string(f"kars.group_{a}") for a in tt.fixed_schools)
@@ -185,8 +206,10 @@ def _(skill, tags):
         if a:
             return a[0].upper() + a[1:] + ": "
         return ""
-    else:
+    elif skill.trigger_probability != 10000:
         return f"{tags['let']}{_divint(skill.trigger_probability)}{tags['end']} chance: "
+    else:
+        return ""
 
 
 # fmt: off
@@ -268,7 +291,7 @@ EN.skill_effect[ST.AddTechniqueBase] = \
 EN.skill_effect[ST.AddVoltage] = \
     "Add {var}{value}{end} voltage"
 EN.skill_effect[ST.AddVoltageBuff] = \
-    "Buff. Increase voltage gain by {var}{value}{end}"
+    "Buff. Voltage gain up by {var}{value}{end}"
 EN.skill_effect[ST.AddVoltageByAppeal] = \
     "Add {var}{value}{end} of this card's appeal to voltage"
 EN.skill_effect[ST.HealLife] = \
@@ -289,5 +312,21 @@ EN.skill_effect[ST.RemoveAllBuff] = \
     "Remove all active buffs"
 EN.skill_effect[ST.RemoveAllDebuff] = \
     "Remove all debuffs"
+EN.skill_effect[ST.AddAppealDebuffByNumOfVo] = \
+    "Debuff. Reduce appeal by {var}{value}{end} for each Voltage-type card on the team"
+EN.skill_effect[ST.AddCriticalAppealDebuff] = \
+    "Debuff. Reduce critical rate by {var}{value}{end}"
+EN.skill_effect[ST.AddShieldByMaxLife] = \
+    "Add {var}{value}{end} of max stamina to shield points"
+EN.skill_effect[ST.HealLifeByMaxLife] = \
+    "Restore {var}{value}{end} stamina"
+EN.skill_effect[ST.HealLifeByNumOfSk] = \
+    "Restore {var}{value}{end} stamina for each Skill-type card on the team"
+EN.skill_effect[ST.ReduceAppealBaseBonus] = \
+    "Debuff. Reduce base appeal by {var}{value}{end}"
+EN.skill_effect[ST.ReduceCollaboGaugeBaseBonus] = \
+    "Debuff. Reduce base SP gauge fill rate by {var}{value}{end}"
+EN.skill_effect[ST.RemoveCollaboGauge] = \
+    "Remove {var}{value}{end} from SP gauge"
 
 # fmt: on
