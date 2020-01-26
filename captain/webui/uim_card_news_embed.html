@@ -3,84 +3,80 @@
     <div class="col-lg-auto" style="min-width: 80%">
         <div class="card">
             {% if card %}
-            <div class="card-body media">
-                <a href="/card/{{ card.ordinal }}" class="stretched-link">
-                    <img class="kars-mem-icon mr-3" src="{{ card_icon_url(card, card.normal_appearance) }}" />
-                </a>
-                <div class="media-body">
-                    <h3 class="kars-mem-inline-icons h5">
-                        <i class="kars-sprite k-rarity-{{ card.rarity }}"></i>
-                        <span id="card-title-norm-{{ card.id }}">
-                            {% raw tlinject(card.normal_appearance.name) %}
-                        </span>
-                    </h3>
-
-                    <h4 class="h6 mb-3">
-                        <a href="/card/{{ card.ordinal }}">#{{ card.ordinal }}</a> &bull;
-                        {% raw tlinject_static(f"kars.role_{card.role}", escape=False) %} &bull;
+            <div class="card-body">
+                <div class="media mb-1">
+                    <i class="kars-sprite k-rarity-{{ card.rarity }}"></i>
+                    <h4 class="media-body h4 mt-3">
+                        <a class="stretched-link" href="/card/{{ card.ordinal }}">#{{ card.ordinal }}</a>
                         {% raw tlinject_static(card.member.name_romaji) %}
-                        &bull; {{ format_grade(card.member.year) }},
-                        {% if card.member.subunit_name %}
-                            {% raw tlinject_static(card.member.group_name) %}, 
-                            {% raw tlinject_static(card.member.subunit_name) %}
-                        {% else %}
-                            {% raw tlinject_static(card.member.group_name) %}
-                        {% end %}
                     </h4>
-
-                    <div class="kars-stack">
-                        <div class="kars-stack-header">
-                            {{ _("TypeAndStatsHeader") }}
-                        </div>
-                        <div class="media kars-stack-member">
-                            <div class="media-body">
-                            <p class="mb-0">
-                                {{ _("Appeal") }}: 
-                                <span class="var">{{ card.stats[0].appeal }}..{{ card.stats[-1].appeal }}..{{ card.stats[-1].appeal + card.idolized_offset.appeal + card.tt_offset[-1].appeal }}</span>
-                            </p>
-                            <p class="mb-0">
-                                {{ _("Stamina") }}: 
-                                <span class="var">{{ card.stats[0].stamina }}..{{ card.stats[-1].stamina }}..{{ card.stats[-1].stamina + card.idolized_offset.stamina + card.tt_offset[-1].stamina }}</span>
-                            </p>
-                            <p class="mb-0">
-                                {{ _("Technique") }}: 
-                                <span class="var">{{ card.stats[0].technique }}..{{ card.stats[-1].technique }}..{{ card.stats[-1].technique + card.idolized_offset.technique + card.tt_offset[-1].technique }}</span>
-                            </p>
-                            </div>
-                        </div>
-
-                        {% if card.passive_skills or card.active_skill %}
-                        <div class="kars-stack-header">
-                            {{ _("PrimarySkillHeader") }}
-                        </div>
-                        <div class="media kars-stack-member">
-                            <img class="kars-skill-icon mr-3" src="{{ image_url_reify(card.active_skill.thumbnail_asset_path, "png") }}" />
-                            <div class="media-body">
-                                <p class="kars-skill-name mb-0">{% raw tlinject(card.active_skill.name) %}</p>
-                                <p class="mb-0">{% raw format_skill_effect(card.active_skill) %}</p>
-                                <p class="mb-0">{% raw format_skill_target(card.active_skill, card) %}</p>
-                            </div>
-                        </div>
-                        <div class="kars-stack-header">
-                            {{ _("IndividualSkillHeader") }}
-                        </div>
-                        {% for skill in card.passive_skills %}
-                        <div class="media kars-stack-member">
-                            <img class="kars-skill-icon mr-3" src="{{ image_url_reify(skill.thumbnail_asset_path, "png") }}" />
-                            <div class="media-body">
-                                <p class="kars-skill-name mb-0">{% raw tlinject(skill.name) %}</p>
-                                <p class="mb-0">{% raw format_skill_effect(skill) %}</p>
-                                <p class="mb-0">{% raw format_skill_target(skill, card) %}</p>
-                            </div>
-                        </div>
-                        {% end %}
-                        <div class="media kars-stack-member">
-                            <div class="media-body">
-                                <p class="mb-0">{{ _("Plus{num}UnlockableSkillSlots").format(num=card.max_passive_skill_slot) }}</p>
-                            </div>
-                        </div>
-                        {% end %}
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-6 mb-3 kars-news-card-image-container">
+                        <img width="100%" src="{{ image_url_reify(card.normal_appearance.image_asset_path, "jpg") }}" />
+                        <p class="my-0 py-1 text-center caption">{% raw tlinject(card.normal_appearance.name) %}</p>
                     </div>
+                    <div class="col-lg-6 mb-3 kars-news-card-image-container">
+                        <img class="bottom-rounded" width="100%" src="{{ image_url_reify(card.idolized_appearance.image_asset_path, "jpg") }}" />
+                        <p class="my-0 py-1 text-center caption">{% raw tlinject(card.idolized_appearance.name) %}</p>
+                    </div>
+                </div>
+
+                <div class="kars-stack">
+                    <div class="kars-stack-header">
+                        {{ _("TypeAndStatsHeader") }}
+                    </div>
+                    <div class="kars-stack-member">
+                        <p class="mb-0">
+                            {{ _("Attribute") }}: {% raw tlinject_static(f"kars.attribute_{card.attribute}", escape=False) %},
+                            {{ _("Role") }}: {% raw tlinject_static(f"kars.role_{card.role}", escape=False) %}
+                        </p>
+                        <p class="mb-0">
+                            {{ _("Appeal") }}: 
+                            <span class="var">{{ card.stats[0].appeal }}..{{ card.stats[-1].appeal }}..{{ card.stats[-1].appeal + card.idolized_offset.appeal + card.tt_offset[-1].appeal }}</span>
+                        </p>
+                        <p class="mb-0">
+                            {{ _("Stamina") }}: 
+                            <span class="var">{{ card.stats[0].stamina }}..{{ card.stats[-1].stamina }}..{{ card.stats[-1].stamina + card.idolized_offset.stamina + card.tt_offset[-1].stamina }}</span>
+                        </p>
+                        <p class="mb-0">
+                            {{ _("Technique") }}: 
+                            <span class="var">{{ card.stats[0].technique }}..{{ card.stats[-1].technique }}..{{ card.stats[-1].technique + card.idolized_offset.technique + card.tt_offset[-1].technique }}</span>
+                        </p>
+                    </div>
+
+                    {% if card.passive_skills or card.active_skill %}
+                    <div class="kars-stack-header">
+                        {{ _("PrimarySkillHeader") }}
+                    </div>
+                    <div class="media kars-stack-member">
+                        <img class="kars-skill-icon mr-3" src="{{ image_url_reify(card.active_skill.thumbnail_asset_path, "png") }}" />
+                        <div class="media-body">
+                            <p class="kars-skill-name mb-0">{% raw tlinject(card.active_skill.name) %}</p>
+                            <p class="mb-0">{% raw format_skill_effect(card.active_skill) %}</p>
+                            <p class="mb-0">{% raw format_skill_target(card.active_skill, card) %}</p>
+                        </div>
+                    </div>
+                    <div class="kars-stack-header">
+                        {{ _("IndividualSkillHeader") }}
+                    </div>
+                    {% for skill in card.passive_skills %}
+                    <div class="media kars-stack-member">
+                        <img class="kars-skill-icon mr-3" src="{{ image_url_reify(skill.thumbnail_asset_path, "png") }}" />
+                        <div class="media-body">
+                            <p class="kars-skill-name mb-0">{% raw tlinject(skill.name) %}</p>
+                            <p class="mb-0">{% raw format_skill_effect(skill) %}</p>
+                            <p class="mb-0">{% raw format_skill_target(skill, card) %}</p>
+                        </div>
+                    </div>
+                    {% end %}
+                    <div class="media kars-stack-member">
+                        <div class="media-body">
+                            <p class="mb-0">{{ _("Plus{num}UnlockableSkillSlots").format(num=card.max_passive_skill_slot) }}</p>
+                        </div>
+                    </div>
+                    {% end %}
                 </div>
             </div>
             {% else %}
