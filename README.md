@@ -11,7 +11,7 @@ the `variants` folder. Your docker-compose command will probably look like:
 
 ```
 docker-compose -f docker-compose.yml \
-    -f variants/config.dev-non-asset.yml \
+    -f variants/config.dev.yml \
     -f variants/config.postgres.yml [build/up etc...]
 ```
 
@@ -20,7 +20,7 @@ You will need to make the following edits to the configs:
 - postgres: update both instances of `AS_POSTGRES_DSN` to point at the right 
   hostname. It's usually `xxxxx_db_1`, where xxxxx is the name of the folder you
   cloned this repo into (such as `arposandra`).
-- dev-non-asset: Change `AS_IMAGE_SERVER` to point at the right hostname.
+- dev: Change `AS_IMAGE_SERVER` to point at the right hostname.
   Do not use a docker-internal host because your browser will request images
   from it.
 - General: You should also change the mounts to point at the right directories
@@ -44,49 +44,12 @@ webpack-dev-server and live sass for you. This makes it so
 - JS works in dev mode, and
 - Changes you make to sass files are automatically compiled.
 
-**IMPORTANT**: If you want the utils image to build correctly, you need to follow
-the instructions in `maintenance/README.md` to install astool. Otherwise,
-**remove it from all configs**.
+If you want to run the tools in the utils image, you need to follow the instructions
+to clone astool in the maintenance directory.
 
 ## Application Configuration
 
-Configuration is done through these environment variables:
-```bash
-# Path to the astool data directory OR a master directory.
-# It should be the directory where the astool memo or masterdata.db is.
-AS_DATA_ROOT=/external/astool
-
-# SSL is not supported - you should use nginx or server for that.
-# See xxxxx for a sample nginx config file.
-AS_WEB_ADDR=0.0.0.0
-AS_WEB_PORT=30001
-
-# Enables developer conveniences (tornado autoreload, disables template cache, t_reify, etc)
-# THIS IS INSECURE - DO NOT LEAVE IT ENABLED IN PRODUCTION.
-AS_DEV=1
-
-# URL prefix for the asset server.
-AS_IMAGE_SERVER: "http://10.252.52.102:5001"
-
-# HMAC key for signing TLInject submissions. You will want to keep this
-# fairly random.
-AS_TLINJECT_SECRET=testing
-
-# HMAC key for signing asset urls. You can set this to any random HEX string
-# if you run web only.
-AS_ASSET_JIT_SECRET="44BDF8618EAE4E6590161D37A80BB80E"
-
-# Displayed in the footer.
-AS_HOST_ID="Mari-Docker"
-
-# DB connection parameters in URL form - You can also leave this undefined
-# and use the PG* environment variables.
-AS_POSTGRES_DSN="postgres://postgres:example@allstars_db_1/postgres"
-
-# Exclusive to the asset server. You don't need them if you run web only.
-AS_ASSET_ADDR=0.0.0.0
-AS_ASSET_PORT=30001
-```
+Configuration is done through [environment variables, which are described in the wiki](https://github.com/summertriangle-dev/arposandra/wiki/Configuration-Variables).
 
 ~~You can point the image server at (insert public url here) if you're not
 running an asset server~~. Unfortunately this doesn't work anymore because the 
@@ -131,9 +94,12 @@ all files are up-to-date.
 Translations exist in two places.
 
 - The Python code uses the files in the `ui_strings` directory. To create
-  a new language, duplicate en.po to the new language code, then translate
-  it. cd into the `ui_strings` directory and type `make` to build the new
-  string files.
+  a new language, duplicate en_tornado.po and en_static.po to the new 
+  language code, then translate it. cd into the `ui_strings` directory
+  and type `make` to build the new string files.
+- To extract new strings, do `make genstrings`. To add them to the current 
+  language files, run `make msgmerge`. You will then be able to update the
+  individual translation files.
 - The frontend has its own translations in `frontend/js/lang`. To translate
   it, duplicate the en.js file, and translate it. Webpack should pick it
   up automatically. **Important: the JS code only loads languages that

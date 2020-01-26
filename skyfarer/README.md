@@ -9,45 +9,11 @@ resource usage, requests need to be accompanied by a valid HMAC.
 
 ### Setting Up the Cache
 
-Note: This section is copypasted directly from the astool documentation. Refer to it
-for details on what the commands do. 
+*Note: this section assumes you have a working astool setup.*
 
-Note 2: astool is now available standalone! Get it at
-https://howler.kirara.ca/services/astool.git
-
-Skyfarer, of course, requires assets to work. We currently need the
-`main` and `card:...` packages for the app to have all needed images. 
-
-astool and co. are used to maintain the cache:
-
-```bash
-# Virtualenv setup, etc.
-# Note: You should re-use the app server's virtualenv here. No need to create another.
-python3 -m venv rt
-source rt/bin/activate
-pip install -r requirements.txt
-export ASTOOL_STORAGE=/mnt/storage/as-cache/data
-export LIVE_MASTER_CHECK_ALLOWED=1
-
-python3 astool.py bootstrap
-# Get master
-python3 karstool.py
-# Initial download (>1GB!)
-python3 package_list_tool.py main 'card:%'
-```
-
-After bootstrapping, you can update the master using karstool:
-```bash
-# Activate the virtualenv first.
-LIVE_MASTER_CHECK_ALLOWED=1 python3 karstool.py
-```
-
-And you can download any new assets too:
-```bash
-# Activate the virtualenv first.
-# Validate (download) the "main" package, and all packages starting with card:.
-python3 package_list_tool.py main 'card:%'
-```
+Follow the steps in ["Bootstrapping from zero"](https://howler.kirara.ca/services/astool#bootstrapping-from-zero)
+to set up the cache. You can update the cache by running the `sync-cache` and `sync-cache-full`
+commands from the utils image -- or manually with package_list_tool.
 
 ### Proxying the Asset Server
 
