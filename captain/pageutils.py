@@ -112,7 +112,7 @@ def _format_grade_en(n):
         suff = SUFFIXES[n % 10]
     else:
         suff = "th"
-    return f"{n}{suff}"
+    return f"{n}{suff} Year"
 
 
 def _format_grade_ja(n):
