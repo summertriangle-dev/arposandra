@@ -304,7 +304,6 @@ class ST:
     StaminaDamageGimmickDebuff = 105
 
 
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
 # End of C# constant data.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -372,6 +371,7 @@ PERCENT_VALUE_SKILL_TYPES = {
     ST.RemoveCollaboGauge,
     ST.ReduceAppealBaseBonus,
     ST.ReduceCollaboGaugeBaseBonus,
+    ST.AddAppealBuffByNumOfVo,
 }
 
 MIXED_VALUE_SKILL_TYPES = {ST.AddVoltageBuff, ST.AddAppealBuff}

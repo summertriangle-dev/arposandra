@@ -328,5 +328,7 @@ EN.skill_effect[ST.ReduceCollaboGaugeBaseBonus] = \
     "Debuff. Reduce base SP gauge fill rate by {var}{value}{end}"
 EN.skill_effect[ST.RemoveCollaboGauge] = \
     "Remove {var}{value}{end} from SP gauge"
+EN.skill_effect[ST.AddAppealBuffByNumOfVo] = \
+    "Buff. Increase appeal by {var}{value}{end} for each Voltage-type card on the team"
 
 # fmt: on
