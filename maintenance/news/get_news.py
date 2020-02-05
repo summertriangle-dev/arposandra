@@ -10,19 +10,27 @@ import iceapi
 import ingest
 import dm_parse
 
+
 def begin_session_2(tag, cfg):
-    with open("news/test/fetchNotice.json", "r") as mock_n_list:
-        m_notices = json.load(mock_n_list)
-    with open("news/test/fetchNoticeDetail.json", "r") as mock_n_body:
-        m_single = json.load(mock_n_body)[3]
+    # with open("news/test/fetchNotice.json", "r") as mock_n_list:
+    #     m_notices = json.load(mock_n_list)
+    # with open("news/test/fetchNoticeDetail.json", "r") as mock_n_body:
+    #     m_single = json.load(mock_n_body)[3]
+    with open("news/mocks/dt_response.json", "r") as mock_dt_r:
+        m_dt = json.load(mock_dt_r)
 
     session = mock.Mock()
-    session.api.notice.fetchNotice.return_value = iceapi.api_return_t({}, 0, m_notices)
-    session.api.notice.fetchNoticeDetail.return_value = iceapi.api_return_t({}, 0, m_single)
+    # session.api.notice.fetchNotice.return_value = iceapi.api_return_t({}, 0, m_notices)
+    # session.api.notice.fetchNoticeDetail.return_value = iceapi.api_return_t({}, 0, m_single)
+    session.api.dailyTheater.fetchDailyTheater.return_value = iceapi.api_return_t(
+        {}, 0, m_dt[3], m_dt[0]
+    )
     return session
+
 
 def end_session_2(tag, ice):
     pass
+
 
 def begin_session(tag, cfg) -> iceapi.ICEBinder:
     with astool.astool_memo(tag) as memo:
@@ -44,21 +52,23 @@ def begin_session(tag, cfg) -> iceapi.ICEBinder:
 
     return ice
 
+
 def end_session(tag, ice: iceapi.ICEBinder):
     with astool.astool_memo(tag) as memo:
         memo["master_version"] = ice.master_version
         memo["auth_count"] = ice.auth_count
         memo["resume_data"] = ice.save_session()
 
+
 def get_notice_body(ice, nid: int):
-    ret = ice.api.notice.fetchNoticeDetail({
-        "notice_id": nid
-    })
+    ret = ice.api.notice.fetchNoticeDetail({"notice_id": nid})
     return ret.app_data["notice"].get("detail_text", {}).get("dot_under_text", "")
+
 
 def pairwise(iterable):
     a = iter(iterable)
     return zip(a, a)
+
 
 async def add_notice(ice, db, tag, notice):
     thumb = notice.get("banner_thumbnail", {}).get("v")
@@ -72,6 +82,7 @@ async def add_notice(ice, db, tag, notice):
 
     print("Adding notice:", nid)
     await db.insert_notice(tag, nid, title, ts, cat, thumb, body_dm, body_html, c_refs)
+
 
 async def get_new_notices(ice, db, tag):
     since = await db.get_epoch(tag)
@@ -90,6 +101,26 @@ async def get_new_notices(ice, db, tag):
 
     await db.update_visibility(list(vis_set))
 
+
+async def get_daily_convo(ice, db, tag):
+    since = await db.get_dt_epoch(tag)
+    if datetime.now() < since:
+        return
+
+    ret = ice.api.dailyTheater.fetchDailyTheater().app_data
+    next_ts = datetime.utcfromtimestamp(ret["bootstrap_daily_theater_info"]["next_opened_at"])
+
+    ent = ret["daily_theater_detail"]
+    title = ent["title"]["dot_under_text"]
+    body_dm = ent["detail_text"]["dot_under_text"]
+    ts = datetime.utcfromtimestamp(ent["date"])
+    dtid = ent["daily_theater_id"]
+
+    synth = dm_parse.dm_to_html_v2(body_dm.encode("utf8"))
+
+    await db.add_dt(tag, dtid, ts, next_ts, title, body_dm, synth.get_html())
+
+
 async def main():
     logging.basicConfig(level=logging.INFO)
     tag = sys.argv[1]
@@ -100,8 +131,10 @@ async def main():
         db = ingest.DatabaseConnection()
         await db.init_models()
         await get_new_notices(ice, db, tag)
+        await get_daily_convo(ice, db, tag)
     finally:
         end_session(tag, ice)
+
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
