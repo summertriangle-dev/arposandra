@@ -106,6 +106,9 @@ msgstr "PT.SiteName"
 msgid "PT.SongList"
 msgstr "PT.SongList"
 
+msgid "PT.SongSingle"
+msgstr "PT.SongSingle"
+
 msgid "PT.Welcome"
 msgstr "PT.Welcome"
 

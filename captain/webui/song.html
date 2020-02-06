@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="{{ handler.locale.code }}">
     <head>
-        <title>TTTTT - {{ _("PT.SiteName") }}</title>
+        <title>{{ tlinject_static(songs[0].name, escape=False) }} - {{ _("PT.SongSingle") }} - {{ _("PT.SiteName") }}</title>
         
         {% include t_preamble.html %}
     </head>

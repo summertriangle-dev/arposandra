@@ -122,6 +122,9 @@ msgstr "All Stars"
 msgid "PT.SongList"
 msgstr "Song list"
 
+msgid "PT.SongSingle"
+msgstr "Song info"
+
 msgid "PT.Welcome"
 msgstr "Welcome"
 

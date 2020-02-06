@@ -122,6 +122,9 @@ msgstr "スクスター"
 msgid "PT.SongList"
 msgstr "ライブリスト"
 
+msgid "PT.SongSingle"
+msgstr "ライブ情報"
+
 msgid "PT.Welcome"
 msgstr "Welcome"
 
