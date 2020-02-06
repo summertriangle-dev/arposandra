@@ -3,14 +3,14 @@ import re
 from .wave_cs_enums import WaveType
 
 LANGUAGE_DEFINITION_JA = {
-    WaveType.MaxVoltage: re.compile("1回で([0-9]+)ボルテージを獲得する"),
-    WaveType.UseCardUniq: re.compile("([0-9]+)人のスクールアイドルでアピールする"),
+    WaveType.MaxVoltage: re.compile("1回で([0-9,]+)ボルテージを獲得する"),
+    WaveType.UseCardUniq: re.compile("([0-9,]+)人のスクールアイドルでアピールする"),
     # hypothetical
-    WaveType.JudgeSuccessPerfect: re.compile("WONDERFUL以上の判定を([0-9]+)回出す"),
-    WaveType.JudgeSuccessGreat: re.compile("GREAT以上の判定を([0-9]+)回出す"),
-    WaveType.JudgeSuccessGood: re.compile("NICE以上の判定を([0-9]+)回出す"),
-    WaveType.TriggerSp: re.compile("SP特技で合計([0-9]+)ボルテージを獲得する"),
-    WaveType.GotVoltage: re.compile("合計([0-9]+)ボルテージを獲得する"),
+    WaveType.JudgeSuccessPerfect: re.compile("WONDERFUL以上の判定を([0-9,]+)回出す"),
+    WaveType.JudgeSuccessGreat: re.compile("GREAT以上の判定を([0-9,]+)回出す"),
+    WaveType.JudgeSuccessGood: re.compile("NICE以上の判定を([0-9,]+)回出す"),
+    WaveType.TriggerSp: re.compile("SP特技で合計([0-9,]+)ボルテージを獲得する"),
+    WaveType.GotVoltage: re.compile("合計([0-9,]+)ボルテージを獲得する"),
 }
 
 
