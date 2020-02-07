@@ -291,8 +291,8 @@ class SaintDisplayController {
         this.timeout = null
         this.firstTime = true
 
-        this.eventStart = parseInt(canvas.dataset.rangeStart)
-        this.eventEnd = parseInt(canvas.dataset.rangeEnd)
+        this.eventStart = Date.parse(canvas.dataset.rangeStart)
+        this.eventEnd = Date.parse(canvas.dataset.rangeEnd)
 
         Infra.store.dispatch({type: `${SaintUserConfig.actions.loadFromLocalStorage}`})
         Infra.store.subscribe(() => {
@@ -318,7 +318,7 @@ class SaintDisplayController {
     installTimer() {
         const tfunc = () => {
             this.refreshData()
-            if (Date.now() >= (this.eventEnd * 1000)) {
+            if (Date.now() >= this.eventEnd) {
                 console.debug("Event ended - disabling updates.")
                 this.disableUpdates()
             }
