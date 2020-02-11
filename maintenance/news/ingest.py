@@ -102,6 +102,10 @@ class DatabaseConnection(object):
                 "UPDATE news_v2 SET visible = vis.visible FROM vis WHERE vis.notice_id = news_v2.news_id"
             )
 
+    async def all_dt(self):
+        async with self.pool.acquire() as c, c.transaction():
+            return await c.fetch("SELECT serverid, dt_id, body_dm FROM dt_v1")
+
     async def get_dt_epoch(self, server_id):
         async with self.pool.acquire() as c:
             t = await c.fetchrow(
@@ -126,5 +130,21 @@ class DatabaseConnection(object):
             )
             await c.executemany(
                 "INSERT INTO dt_char_refs_v1 VALUES ($1, $2, $3) ON CONFLICT DO NOTHING",
-                ((server_id, dtid, x) for x in char_refs)
+                ((server_id, dtid, x) for x in char_refs),
+            )
+
+    async def update_dt(self, server_id, dt_id, body, char_refs):
+        async with self.pool.acquire() as c, c.transaction():
+            await c.execute(
+                "UPDATE dt_v1 SET body_html=$1 WHERE serverid=$2 AND dt_id=$3",
+                body,
+                server_id,
+                dt_id,
+            )
+            await c.execute(
+                "DELETE FROM dt_char_refs_v1 WHERE serverid=$1 AND dt_id=$2", server_id, dt_id
+            )
+            await c.executemany(
+                "INSERT INTO dt_char_refs_v1 VALUES ($1, $2, $3) ON CONFLICT DO NOTHING",
+                ((server_id, dt_id, x) for x in char_refs),
             )
