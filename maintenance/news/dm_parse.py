@@ -181,7 +181,7 @@ def dm_to_html(dmtext):
     )
 
 
-def dm_to_html_v2(dmtext):
+def dm_to_html_v2(dmtext, klass=DMWalkState):
     mark = str(uuid.uuid4())
     dmtext, has_blinds = fix_tags(dmtext)
     p = HTMLParser()
@@ -192,7 +192,7 @@ def dm_to_html_v2(dmtext):
     doc = p.close()
     root = doc.find(f".//div[@id = '{mark}']")
 
-    synth_root = DMWalkState()
+    synth_root = klass()
     synth_root.ingest_element(root)
 
     return synth_root

@@ -9,6 +9,7 @@ import astool
 import iceapi
 import ingest
 import dm_parse
+import theatre_parse
 
 
 def begin_session_2(tag, cfg):
@@ -116,9 +117,10 @@ async def get_daily_convo(ice, db, tag):
     ts = datetime.utcfromtimestamp(ent["date"])
     dtid = ent["daily_theater_id"]
 
-    synth = dm_parse.dm_to_html_v2(body_dm.encode("utf8"))
+    synth = dm_parse.dm_to_html_v2(body_dm.encode("utf8"), 
+        theatre_parse.TheatreScriptWalkState)
 
-    await db.add_dt(tag, dtid, ts, next_ts, title, body_dm, synth.get_html())
+    await db.add_dt(tag, dtid, ts, next_ts, title, body_dm, synth.get_json(), synth.char_refs)
 
 
 async def main():

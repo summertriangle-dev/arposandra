@@ -44,6 +44,7 @@ class DatabaseConnection(object):
                     serverid varchar(8),
                     dt_id int,
                     char_id int,
+                    UNIQUE (serverid, dt_id, char_id),
                     FOREIGN KEY (serverid, dt_id) REFERENCES dt_v1 (serverid, dt_id)
                         ON UPDATE CASCADE ON DELETE CASCADE
                 );
@@ -111,7 +112,7 @@ class DatabaseConnection(object):
                 return datetime.utcfromtimestamp(0)
             return t[0]
 
-    async def add_dt(self, server_id, dtid, ts, next_ts, title, body_dm, body_html):
+    async def add_dt(self, server_id, dtid, ts, next_ts, title, body_dm, body_html, char_refs):
         async with self.pool.acquire() as c, c.transaction():
             await c.execute(
                 "INSERT INTO dt_v1 VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT DO NOTHING",
@@ -122,4 +123,8 @@ class DatabaseConnection(object):
                 title,
                 body_html,
                 body_dm,
+            )
+            await c.executemany(
+                "INSERT INTO dt_char_refs_v1 VALUES ($1, $2, $3) ON CONFLICT DO NOTHING",
+                ((server_id, dtid, x) for x in char_refs)
             )
