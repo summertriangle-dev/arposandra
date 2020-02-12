@@ -7,6 +7,7 @@ import * as TLInject from "./tlinject"
 import * as Album from "./album"
 import * as NewsFilter from "./news_filter"
 import * as EventTracker from "./event_tracker"
+import * as Experiments from "./experiments"
 import { SaintUserConfig } from "./event_tracker_internal"
 import { CardDisplayModeSwitcher, ImageSwitcher } from "./card_page_components"
 import SkillTree from "./skill_tree"
@@ -31,6 +32,9 @@ function initializeContextDependentModules() {
     }
     if (wantModules.indexOf("saint") != -1) {
         EventTracker.injectIntoPage()
+    }
+    if (wantModules.indexOf("experiments") != -1) {
+        Experiments.injectIntoPage()
     }
 }
 

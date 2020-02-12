@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    {# Do not translate anything on this page. #}
+    <head>
+        <title>Experiments - {{ _("PT.SiteName") }}</title>
+
+        {% include t_preamble.html %}
+    </head>
+    <body data-inject="experiments">
+        {% module Template("uim_nav.html", current="") %}
+
+        <div class="container">
+            <div class="card kars-card-box">
+                <div class="card-body">
+                    {% raw tlinject("Click me for the old TLInject modal") %}
+                </div>
+                <div class="card-body">
+                    <button id="uilib-modal-button">Click this for the UILib modal</button>
+                </div>
+            </div>
+        </div>
+
+        {% include t_footer.html %}
+    </body>
+</html>

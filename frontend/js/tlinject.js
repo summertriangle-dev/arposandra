@@ -1,6 +1,6 @@
 import React from "react"
-import ReactDOM from "react-dom"
 import Infra from "./infra"
+import { ModalManager } from "./modals"
 
 let config = {
     language: null,
@@ -102,15 +102,11 @@ async function getSupportedLanguages() {
 class TLInjectInputPromptModal extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {modalClass: "is-hidden"}
-    }
-
-    componentDidMount() {
-        setTimeout(() => this.setState({modalClass: "is-shown"}))
+        this.state = {}
     }
 
     submit() {
-        this.props.submitString(this, this.state.tstring || "")
+        this.props.submitString(this, this.state.tstring || "", this.props.abort)
     }
 
     cancel() {
@@ -118,7 +114,7 @@ class TLInjectInputPromptModal extends React.Component {
     }
 
     submitExplicitClear() {
-        this.props.submitString(this, null)
+        this.props.submitString(this, null, this.props.abort)
     }
 
     bottomText() {
@@ -135,8 +131,8 @@ class TLInjectInputPromptModal extends React.Component {
                 {Infra.strings["TLInject.HelpLinkPlaceholder"]}</a>)
     }
 
-    form() {
-        return <section className="modal-body">
+    render() {
+        return <section className="modal-body tlinject-modal">
             <p>
                 {Infra.strings.formatString(Infra.strings["TLInject.SubmissionPrompt"],
                     this.props.langName, <b>{this.props.originalText}</b>)}
@@ -164,17 +160,6 @@ class TLInjectInputPromptModal extends React.Component {
             </div>
         </section>
     }
-
-    render() {
-        return <div className={`modal kars-css-modal ${this.state.modalClass}`} tabIndex="-1" role="dialog">
-            <div className="kars-css-modal-backdrop" onClick={() => this.cancel()}></div>
-            <div className="modal-dialog">
-                <div className="modal-content">
-                    {this.form()}
-                </div>
-            </div>
-        </div>
-    }
 }
 
 
@@ -185,18 +170,7 @@ function displayStringSubmissionUI(forNode) {
     const assr = forNode.dataset.assr
     const isMock = forNode.dataset.mock? true : false
 
-    let modal = document.querySelector("#tli-ui-modal")
-    if (!modal) {
-        modal = document.createElement("div")
-        modal.id = "tli-ui-modal"
-        document.body.appendChild(modal)
-    }
-
-    const dismiss = (theComponent) => {
-        theComponent.setState({modalClass: "is-hidden"})
-        setTimeout(() => ReactDOM.unmountComponentAtNode(modal), 150)
-    }
-    const submitString = (component, string) => {
+    const submitString = (component, string, dismiss) => {
         let p
         if (isMock) {
             console.debug("Mock TLInject submissions are not sent to the server.")
@@ -207,21 +181,21 @@ function displayStringSubmissionUI(forNode) {
 
         p.then((stringDict) => {
             insertTranslations(stringDict)
-            dismiss(component)
+            dismiss()
         }).catch((errorString) => {
             component.setState({displayError: errorString})
         })
     }
 
-
-    ReactDOM.unmountComponentAtNode(modal)
-    ReactDOM.render(<TLInjectInputPromptModal 
-        originalText={orig}
-        langName={Infra.strings["TLInject.localizedLanguages"][config.language]}
-        submitString={submitString}
-        abort={dismiss}
-        isMock={isMock}
-    />, modal)
+    ModalManager.pushModal((dismiss) => 
+        <TLInjectInputPromptModal 
+            originalText={orig}
+            langName={Infra.strings["TLInject.localizedLanguages"][config.language]}
+            submitString={submitString}
+            abort={dismiss}
+            isMock={isMock}
+        />
+    )
 }
 
 function insertTranslations(table) {

@@ -96,6 +96,12 @@ class Hirameku(LanguageCookieMixin):
         self.render("accessories.html", skills=skills)
 
 
+@route("/experiments")
+class ExperimentPage(LanguageCookieMixin):
+    def get(self):
+        self.render("experiments.html")
+
+
 @route(r"/([a-z]+)/story/(.+)")
 class StoryViewerScaffold(LanguageCookieMixin):
     def get(self, region, script):
