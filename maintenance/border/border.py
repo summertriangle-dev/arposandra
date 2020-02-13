@@ -6,12 +6,11 @@ from datetime import datetime
 import logging
 import time
 
-import astool
-import iceapi
+from astool import ctx, iceapi
 import models
 
 
-def begin_session_2(tag, cfg):
+def begin_session_2(context):
     with open("border/tests/fetchBootstrap.json", "r") as ff:
         bs_t, _1, _2, m_bootstrap, _3 = json.load(ff)
     with open("border/tests/fetchEventMining.json", "r") as ff:
@@ -41,36 +40,16 @@ def begin_session_2(tag, cfg):
     return session
 
 
-def end_session_2(tag, ice):
+def end_session_2(context, ice):
     pass
 
 
-def begin_session(tag, cfg) -> iceapi.ICEBinder:
-    with astool.astool_memo(tag) as memo:
-        uid = memo.get("user_id")
-        pwd = memo.get("password")
-        auc = memo.get("auth_count")
-        fast_resume = memo.get("resume_data")
-
-    if not all((uid, pwd)):
-        raise ValueError("You need an account to do that.")
-
-    ice = iceapi.ICEBinder(cfg, "iOS", uid, pwd, auc)
-    if not ice.resume_session(fast_resume):
-        ret = ice.api.login.login()
-        if ret.return_code != 0:
-            logging.info("Login failed, trying to reset auth count...")
-            ice.set_login(uid, pwd, ret.app_data.get("authorization_count") + 1)
-            ice.api.login.login()
-
-    return ice
+def begin_session(context) -> iceapi.ICEBinder:
+    return context.get_iceapi()
 
 
-def end_session(tag, ice: iceapi.ICEBinder):
-    with astool.astool_memo(tag) as memo:
-        memo["master_version"] = ice.master_version
-        memo["auth_count"] = ice.auth_count
-        memo["resume_data"] = ice.save_session()
+def end_session(context, ice: iceapi.ICEBinder):
+    context.release_iceapi(ice)
 
 
 #####################################################################
@@ -366,15 +345,15 @@ async def get_event_border(ice, region, db):
 async def main():
     logging.basicConfig(level=logging.INFO)
     tag = sys.argv[1]
-    cfg = astool.resolve_server_config(astool.SERVER_CONFIG[tag])
 
-    ice = begin_session(tag, cfg)
+    context = ctx.ASContext(tag, None, None)
+    ice = begin_session(context)
     try:
         db = models.DatabaseConnection()
         await db.init_models()
         await get_event_border(ice, tag, db)
     finally:
-        end_session(tag, ice)
+        end_session(context, ice)
 
 
 if __name__ == "__main__":
