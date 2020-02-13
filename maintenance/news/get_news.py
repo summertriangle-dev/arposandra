@@ -5,14 +5,13 @@ from unittest import mock
 from datetime import datetime
 import logging
 
-import astool
-import iceapi
+from astool import ctx, iceapi
 import ingest
 import dm_parse
 import theatre_parse
 
 
-def begin_session_2(tag, cfg):
+def begin_session_2(context):
     # with open("news/test/fetchNotice.json", "r") as mock_n_list:
     #     m_notices = json.load(mock_n_list)
     # with open("news/test/fetchNoticeDetail.json", "r") as mock_n_body:
@@ -29,36 +28,16 @@ def begin_session_2(tag, cfg):
     return session
 
 
-def end_session_2(tag, ice):
+def end_session_2(context, ice):
     pass
 
 
-def begin_session(tag, cfg) -> iceapi.ICEBinder:
-    with astool.astool_memo(tag) as memo:
-        uid = memo.get("user_id")
-        pwd = memo.get("password")
-        auc = memo.get("auth_count")
-        fast_resume = memo.get("resume_data")
-
-    if not all((uid, pwd)):
-        raise ValueError("You need an account to do that.")
-
-    ice = iceapi.ICEBinder(cfg, "iOS", uid, pwd, auc)
-    if not ice.resume_session(fast_resume):
-        ret = ice.api.login.login()
-        if ret.return_code != 0:
-            print("Login failed, trying to reset auth count...")
-            ice.set_login(uid, pwd, ret.app_data.get("authorization_count") + 1)
-            ice.api.login.login()
-
-    return ice
+def begin_session(context) -> iceapi.ICEBinder:
+    return context.get_iceapi()
 
 
-def end_session(tag, ice: iceapi.ICEBinder):
-    with astool.astool_memo(tag) as memo:
-        memo["master_version"] = ice.master_version
-        memo["auth_count"] = ice.auth_count
-        memo["resume_data"] = ice.save_session()
+def end_session(context, ice: iceapi.ICEBinder):
+    context.release_iceapi(ice)
 
 
 def get_notice_body(ice, nid: int):
@@ -117,8 +96,7 @@ async def get_daily_convo(ice, db, tag):
     ts = datetime.utcfromtimestamp(ent["date"])
     dtid = ent["daily_theater_id"]
 
-    synth = dm_parse.dm_to_html_v2(body_dm.encode("utf8"), 
-        theatre_parse.TheatreScriptWalkState)
+    synth = dm_parse.dm_to_html_v2(body_dm.encode("utf8"), theatre_parse.TheatreScriptWalkState)
 
     await db.add_dt(tag, dtid, ts, next_ts, title, body_dm, synth.get_json(), synth.char_refs)
 
@@ -126,16 +104,16 @@ async def get_daily_convo(ice, db, tag):
 async def main():
     logging.basicConfig(level=logging.INFO)
     tag = sys.argv[1]
-    cfg = astool.resolve_server_config(astool.SERVER_CONFIG[tag])
+    context = ctx.ASContext(tag, None, None)
 
-    ice = begin_session(tag, cfg)
+    ice = begin_session(context)
     try:
         db = ingest.DatabaseConnection()
         await db.init_models()
         await get_new_notices(ice, db, tag)
         await get_daily_convo(ice, db, tag)
     finally:
-        end_session(tag, ice)
+        end_session(context, ice)
 
 
 if __name__ == "__main__":
