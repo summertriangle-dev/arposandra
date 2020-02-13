@@ -4,7 +4,7 @@
             <img class="item" width="210" src="{{ image_url_reify(news_item.thumbnail_asset_path, "jpg") }}" />
         {% end %}
         <div class="item">
-            <h1 class="h4">
+            <h1 class="h5 {% if news_item.thumbnail_asset_path %} mt-2 {% end %}">
                 {% if not expand %}
                 <a href="/{{ server }}/news/{{ news_item.id }}">{{ news_item.display_title() }}</a>
                 {% else %}
