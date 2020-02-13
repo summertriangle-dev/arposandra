@@ -2,6 +2,8 @@ import os
 import sys
 import configparser
 import gettext
+import logging
+import json
 from collections import namedtuple
 
 from tornado.web import Application
@@ -16,6 +18,7 @@ from . import tlinject
 from . import news
 from . import card_tracking
 from . import event_tracker
+from . import dict_aggregator
 import libcard2
 
 
@@ -53,7 +56,30 @@ def static_strings():
     return sd
 
 
-def application(master, debug):
+def find_astool_master_version(in_base):
+    with open(os.path.join(in_base, "astool_store.json"), "r") as jsf:
+        return json.load(jsf)["master_version"]
+
+
+def create_dict_aggregator(master, language):
+    choices = {}
+    extra = os.environ.get("AS_EXTRA_DICTIONARIES")
+    if extra:
+        for tag in extra.split(";"):
+            rgn_tag, lang_code, name = tag.split(":")
+            region_root = os.path.join(os.environ.get("AS_DATA_ROOT", "."), rgn_tag)
+            base = os.path.join(region_root, "masters", find_astool_master_version(region_root))
+            logging.debug("Loading dictionary: %s", base)
+
+            choices[lang_code] = dict_aggregator.Alternative(
+                name, lang_code, libcard2.string_mgr.DictionaryAccess(base, lang_code)
+            )
+
+    fallback = libcard2.string_mgr.DictionaryAccess(master, language)
+    return dict_aggregator.DictionaryAggregator(fallback, choices)
+
+
+def application(master, language, debug):
     if os.environ.get("AS_TLINJECT_SECRET", ""):
         print("TLInject is enabled for this server.")
 
@@ -66,7 +92,7 @@ def application(master, debug):
         dispatch.ROUTES,
         db_coordinator=db_coordinator,
         master=libcard2.master.MasterData(master),
-        string_access=libcard2.string_mgr.DictionaryAccess(master),
+        string_access=create_dict_aggregator(master, language),
         image_server=os.environ.get("AS_IMAGE_SERVER"),
         tlinject_context=tlinject.TLInjectContext(db_coordinator),
         news_context=news.NewsDatabase(db_coordinator),

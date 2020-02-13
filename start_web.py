@@ -37,13 +37,13 @@ def main():
 
     debug = int(os.environ.get("AS_DEV", "0"))
     cfg.start_logging("web", debug)
-    master_root = cfg.get_master_version()
+    master_root, master_lang = cfg.get_master_version()
     logging.info(f"Master: {master_root}")
 
     ioloop = tornado.ioloop.IOLoop.current()
     ioloop.add_future(
         asyncio.ensure_future(
-            async_main(captain.application(master_root, debug), kr_addr, kr_port)
+            async_main(captain.application(master_root, master_lang, debug), kr_addr, kr_port)
         ),
         lambda _: None,
     )

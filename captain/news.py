@@ -184,7 +184,9 @@ class NewsSingle(LanguageCookieMixin):
         for card in cards:
             tlbatch.update(card.get_tl_set())
 
-        self._tlinject_base = self.settings["string_access"].lookup_strings(tlbatch)
+        self._tlinject_base = self.settings["string_access"].lookup_strings(
+            tlbatch, self.get_user_dict_preference()
+        )
         self.had_blinds = False
 
         item.card_refs = cards

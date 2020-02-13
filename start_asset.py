@@ -19,11 +19,11 @@ def main():
 
     debug = int(os.environ.get("AS_DEV", "0"))
     cfg.start_logging("asset", debug)
-    master_root = cfg.get_master_version()
+    master_root, master_lang = cfg.get_master_version()
     logging.info(f"Master: {master_root}")
 
     logging.info(f"Asset server listening on {as_addr}:{as_port}")
-    skyfarer.application(master_root, debug).listen(as_port, as_addr, xheaders=True)
+    skyfarer.application(master_root, master_lang, debug).listen(as_port, as_addr, xheaders=True)
 
     logging.debug("Entering the IOLoop...")
     tornado.ioloop.IOLoop.current().start()

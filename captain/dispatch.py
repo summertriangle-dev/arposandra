@@ -44,3 +44,9 @@ class LanguageCookieMixin(tornado.web.RequestHandler):
         if preferred_lang not in locale.get_supported_locales():
             return None
         return locale.get(preferred_lang)
+
+    def get_user_dict_preference(self):
+        preferred_lang = self.get_cookie("mdic", None)
+        if not preferred_lang:
+            return self.locale.code.split("_")[0]
+        return preferred_lang

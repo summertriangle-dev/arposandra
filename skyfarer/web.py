@@ -26,9 +26,10 @@ if _test_for_ffd8 not in imghdr.tests:
     imghdr.tests.append(_test_for_ffd8)
 
 
-def application(master, debug):
+def application(master, language, debug):
     application = AssetServerApplication(
         master,
+        language,
         [
             (r"/i/((?:[0-9a-f][0-9a-f])+)/([^/\.]+)(?:\.(?:png|jpg))?", ReifyHandler),
             (
@@ -53,11 +54,11 @@ def application(master, debug):
 
 
 class AssetServerApplication(Application):
-    def __init__(self, masters, *args, **kwargs):
+    def __init__(self, masters, language, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        master = os.path.join(masters, "asset_i_ja_0.db")
-        cache = os.path.join(os.environ.get("AS_DATA_ROOT"), "cache")
+        master = os.path.join(masters, f"asset_i_{language}_0.db")
+        cache = os.path.join(masters, "..", "..", "cache")
         secret = binascii.unhexlify(os.environ.get("AS_ASSET_JIT_SECRET"))
 
         if not all((master, cache)):
@@ -69,6 +70,7 @@ class AssetServerApplication(Application):
 
     def change_asset_db(self, newdb):
         self.settings["extract_context"].change_asset_db(newdb)
+
 
 ######################################################
 # HANDLERS
@@ -108,6 +110,7 @@ class BareReifyHandler(RequestHandler):
             self.write(bytes(buf[:size]))
             await self.flush()
 
+
 class ReifyHandler(BareReifyHandler):
     async def get(self, key, assr=None):
         try:
@@ -117,6 +120,7 @@ class ReifyHandler(BareReifyHandler):
             return
 
         await super().get(key, assr)
+
 
 class BaseAssrValidating(RequestHandler):
     def validate_assr(self, value, given):
@@ -131,6 +135,7 @@ class BaseAssrValidating(RequestHandler):
             return False
 
         return hmac.compare_digest(my[:10], given)
+
 
 class SyntheticCardIconHandler(BaseAssrValidating):
     async def get(self, frame_info, asset_hex, assr, filetype):
@@ -163,6 +168,7 @@ class SyntheticCardIconHandler(BaseAssrValidating):
 
         self.write(image)
 
+
 class AdvScriptHandler(BaseAssrValidating):
     def get(self, scpt_name, assr):
         self.set_header("Access-Control-Allow-Origin", "*")
@@ -181,24 +187,26 @@ class AdvScriptHandler(BaseAssrValidating):
 
         script = adv_script_parser.load_script(scpt_bundle)
 
-        self.write(json.dumps({
-            "result": {
-                "rsrc": script.res_seg,
-                "data": script.data_seg,
-            } 
-        }, ensure_ascii=False))
+        self.write(
+            json.dumps(
+                {"result": {"rsrc": script.res_seg, "data": script.data_seg,}}, ensure_ascii=False
+            )
+        )
+
 
 class AdvScriptGraphicHandler(RequestHandler):
     async def get(self, scpt_name, idx):
         did_headers = False
         buf = bytearray(65536)
 
-        for buf, size in self.settings["extract_context"].get_script_texture(scpt_name, int(idx), buf):
+        for buf, size in self.settings["extract_context"].get_script_texture(
+            scpt_name, int(idx), buf
+        ):
             if not did_headers:
                 img_type = imghdr.what(None, buf)
                 if img_type:
                     self.set_header("Content-Type", f"image/{img_type}")
                 did_headers = True
-            
+
             self.write(bytes(buf[:size]))
             await self.flush()

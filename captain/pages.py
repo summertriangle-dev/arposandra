@@ -36,7 +36,9 @@ class IdolsRoot(LanguageCookieMixin):
                 groups[mem.group_name] = [mem]
             tlbatch.update(mem.get_tl_set())
 
-        self._tlinject_base = self.settings["string_access"].lookup_strings(tlbatch)
+        self._tlinject_base = self.settings["string_access"].lookup_strings(
+            tlbatch, self.get_user_dict_preference()
+        )
 
         self.render("member_list.html", member_groups=groups, nav_crumb_level=nav_crumb_level)
 
@@ -55,7 +57,9 @@ class LiveRoot(LanguageCookieMixin):
                 groups[s.member_group_name] = [s]
             tlbatch.update(s.get_tl_set())
 
-        self._tlinject_base = self.settings["string_access"].lookup_strings(tlbatch)
+        self._tlinject_base = self.settings["string_access"].lookup_strings(
+            tlbatch, self.get_user_dict_preference()
+        )
         self.render("song_list.html", live_groups=groups, nav_crumb_level=0)
 
 
@@ -65,7 +69,9 @@ class LiveSingle(LanguageCookieMixin):
         song = self.settings["master"].lookup_song_difficulties(int(live_id))
 
         tlbatch = song.get_tl_set()
-        self._tlinject_base = self.settings["string_access"].lookup_strings(tlbatch)
+        self._tlinject_base = self.settings["string_access"].lookup_strings(
+            tlbatch, self.get_user_dict_preference()
+        )
 
         self.render("song.html", songs=[song])
 
@@ -78,7 +84,9 @@ class Accessories(LanguageCookieMixin):
         for skill in skills:
             tlbatch.update(skill.get_tl_set())
 
-        self._tlinject_base = self.settings["string_access"].lookup_strings(tlbatch)
+        self._tlinject_base = self.settings["string_access"].lookup_strings(
+            tlbatch, self.get_user_dict_preference()
+        )
         self.render("accessories.html", skills=skills)
 
 
@@ -92,7 +100,9 @@ class Hirameku(LanguageCookieMixin):
         for skill in skills:
             tlbatch.update(skill.get_tl_set())
 
-        self._tlinject_base = self.settings["string_access"].lookup_strings(tlbatch)
+        self._tlinject_base = self.settings["string_access"].lookup_strings(
+            tlbatch, self.get_user_dict_preference()
+        )
         self.render("accessories.html", skills=skills)
 
 

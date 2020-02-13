@@ -18,7 +18,9 @@ class CardPageByMemberID(LanguageCookieMixin):
         tlbatch = member.get_tl_set()
         for card in cards:
             tlbatch.update(card.get_tl_set())
-        self._tlinject_base = self.settings["string_access"].lookup_strings(tlbatch)
+        self._tlinject_base = self.settings["string_access"].lookup_strings(
+            tlbatch, self.get_user_dict_preference()
+        )
         self.render(
             "cards.html",
             cards=cards,
@@ -62,7 +64,9 @@ class CardPage(LanguageCookieMixin):
         for card in cards:
             tlbatch.update(card.get_tl_set())
 
-        self._tlinject_base = self.settings["string_access"].lookup_strings(tlbatch)
+        self._tlinject_base = self.settings["string_access"].lookup_strings(
+            tlbatch, self.get_user_dict_preference()
+        )
 
         if len(cards) == 1:
             ct = self.locale.translate("#{card_no}: {idol_name}").format(

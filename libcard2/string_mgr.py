@@ -30,8 +30,9 @@ def bucketize(iterable: Iterable[str]) -> Dict[str, Iterable[str]]:
 
 
 class DictionaryAccess(object):
-    def __init__(self, master_path):
+    def __init__(self, master_path, language):
         self.master_path = master_path
+        self.language = language
         self.sqlites = {}
 
     def get_dictionary_handle(self, key: str) -> sqlite3.Connection:
@@ -39,7 +40,7 @@ class DictionaryAccess(object):
         if not r:
             r = sqlite3.connect(
                 "file:{0}?mode=ro".format(
-                    os.path.join(self.master_path, f"dictionary_ja_{key}.db")
+                    os.path.join(self.master_path, f"dictionary_{self.language}_{key}.db")
                 ),
                 uri=True,
             )

@@ -54,6 +54,7 @@ class ExtractFailure(Exception):
 
 class ExtractContext(object):
     def __init__(self, master, cache):
+        logging.info("%s %s", master, cache)
         self.asset_db = sqlite3.connect(f"file:{master}?mode=ro", uri=True)
         self.cache = cache
         self.pool = None
@@ -159,7 +160,6 @@ class ExtractContext(object):
                 else:
                     yield (intobuf, nread)
                 size -= nread
-
 
     async def get_cardicon(self, image_asset_id, format, frame_num, role_num, attr_num):
         pack, *texinfo = self.get_texture_info(image_asset_id)

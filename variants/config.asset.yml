@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile-asset
     environment:
-      AS_DATA_ROOT: /external/astool
+      AS_DATA_ROOT: /external/astool_storage
       AS_ASSET_ADDR: 0.0.0.0
       AS_ASSET_PORT: 30001
   utils:
