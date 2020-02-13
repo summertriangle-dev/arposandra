@@ -330,5 +330,7 @@ EN.skill_effect[ST.RemoveCollaboGauge] = \
     "Remove {var}{value}{end} from SP gauge"
 EN.skill_effect[ST.AddAppealBuffByNumOfVo] = \
     "Buff. Increase appeal by {var}{value}{end} for each Voltage-type card on the team"
+EN.skill_effect[ST.HealLifeByCardTechnique] = \
+    "Restore {var}{value}{end} of this card's technique as stamina"
 
 # fmt: on
