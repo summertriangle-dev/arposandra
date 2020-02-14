@@ -34,6 +34,9 @@ $kars-gutter-select-bg: white;
 $kars-gutter-select-text: black;
 
 @import "node_modules/bootstrap/scss/bootstrap";
+
+$input-bg: #ced4da;
+
 @import "custom-layout.sass";
 @import "stack.sass";
 @import "sprites.sass"; 

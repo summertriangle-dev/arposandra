@@ -19,15 +19,18 @@ export default {
             Gallery: "Gallery",
         }
     },
-    
-    "TTNode.VOICE": "VOICE",
-    "TTNode.STORY": "STORY",
-    "TTNode.AWAKEN": "AWAKEN",
-    "TTNode.COSTUME": "COSTUME",
-    "TTNode.ACTIVE": "SKILL",
-    "TTNode.INSPIRE": "INSPIRE",
-    "TTNode.PASSIVE": "INDIV.",
-    "TTNode.START": "START",
+
+    TTNode: {
+        VOICE: "VOICE",
+        STORY: "STORY",
+        AWAKEN: "AWAKEN",
+        COSTUME: "COSTUME",
+        ACTIVE: "SKILL",
+        INSPIRE: "INSPIRE",
+        PASSIVE: "ABILITY",
+        START: "START",
+    },
+
     "TTWrapper.NIntermediates": "{0} intermediates",
     "Unlock Requirements:": "Unlock Requirements:",
     "TTWrapper.CardRank": "Limit Break: {0}",
@@ -92,5 +95,13 @@ export default {
         PlaceholderText: "This form is anonymous, so you won't receive a response unless you enter contact info.",
         Send: "Send",
         Cancel: "Cancel"
+    },
+    LangMenu: {
+        DictionaryFormat: "{0} ({1})",
+        ModalTitle: "Language Settings",
+        UILanguageSelectLabel: "Use this language for site navigation:",
+        DictionarySelectLabel: "Use this language for game data:",
+        Save: "Save",
+        Cancel: "Cancel",
     },
 }

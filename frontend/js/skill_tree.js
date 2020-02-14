@@ -68,19 +68,19 @@ function classFromNodeType(t) {
 function labelFromNodeType(t) {
     switch(t) {
     case 3: // VOICE
-        return Infra.strings["TTNode.VOICE"]
+        return Infra.strings.TTNode.VOICE
     case 4: // STORY
-        return Infra.strings["TTNode.STORY"]
+        return Infra.strings.TTNode.STORY
     case 5: // AWAKENING
-        return Infra.strings["TTNode.AWAKEN"]
+        return Infra.strings.TTNode.AWAKEN
     case 6: // SUIT
-        return Infra.strings["TTNode.COSTUME"]
+        return Infra.strings.TTNode.COSTUME
     case 7: // ACTIVE LEVEL
-        return Infra.strings["TTNode.ACTIVE"]
+        return Infra.strings.TTNode.ACTIVE
     case 8: // HIRAMEKU SLOT
-        return Infra.strings["TTNode.INSPIRE"]
+        return Infra.strings.TTNode.INSPIRE
     case 9: // PASSIVE LEVEL
-        return Infra.strings["TTNode.PASSIVE"]
+        return Infra.strings.TTNode.PASSIVE
     }
 }
 
@@ -129,9 +129,9 @@ const TTNode = React.memo(function TTNode(props) {
         return <g className={`stt-node stt-node-start ${highlight}`}>
             <circle cx={cx} cy={cy} r={Math.ceil(r * 0.5)} />
             <text className="tt-s" x={cx + smallNodeTextOffset.x} y={cy + smallNodeTextOffset.y}>
-                {Infra.strings["TTNode.START"]}</text>
+                {Infra.strings.TTNode.START}</text>
             <text className="tt-t" x={cx + smallNodeTextOffset.x} y={cy + smallNodeTextOffset.y}>
-                {Infra.strings["TTNode.START"]}</text>
+                {Infra.strings.TTNode.START}</text>
         </g>
     case 2: { // PARAMETER
         let cs
