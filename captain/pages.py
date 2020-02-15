@@ -138,23 +138,6 @@ class APISkillTree(RequestHandler):
         self.write({"id": int(i), "tree": shape, "lock_levels": locks, "item_sets": items})
 
 
-@route(r"/api/private/search/bootstrap.json")
-class APISearchBootstrap(RequestHandler):
-    def gen_sd(self):
-        sd = libcard2.localization.skill_describer_for_locale(self.locale.code)
-        desc_fmt_args = {"var": "", "let": "", "end": "", "value": "X"}
-
-        word_set = {}
-        for skill_id, formatter in sd.skill_effect.data.items():
-            if callable(formatter):
-                wl = formatter(**desc_fmt_args)
-            else:
-                wl = formatter.format(**desc_fmt_args)
-
-    def get(self):
-        return
-
-
 @route(r"/api/private/change_experiment_flags")
 class APIChangeExperimentFlags(RequestHandler):
     FLAG_SHOW_DEV_TEXT = 1 << 1
