@@ -19,7 +19,7 @@ export const NewsFilter = createSlice({
         setMode: (state, action) => {
             state.filterMode = action.mode
             Cookies.set("nfm", state.filterMode, {
-                expires: 90000000
+                expires: 1333337
             })
         },
         loadFromCookie: (state) => {

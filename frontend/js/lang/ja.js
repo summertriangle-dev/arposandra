@@ -17,15 +17,16 @@ export default {
             Gallery: "ギャラリー",
         }
     },
-
-    "TTNode.VOICE": "ボイス",
-    "TTNode.STORY": "ストーリー",
-    "TTNode.AWAKEN": "覚醒",
-    "TTNode.COSTUME": "衣装",
-    "TTNode.ACTIVE": "特技",
-    "TTNode.INSPIRE": "ひらめき",
-    "TTNode.PASSIVE": "個性",
-    "TTNode.START": "スタート",
+    TTNode: {
+        VOICE: "ボイス",
+        STORY: "ストーリー",
+        AWAKEN: "覚醒",
+        COSTUME: "衣装",
+        ACTIVE: "特技",
+        INSPIRE: "ひらめき",
+        PASSIVE: "個性",
+        START: "スタート",
+    },
     "TTWrapper.NIntermediates": "{0}個の追加獲得",
     "Unlock Requirements:": "取得原価:",
     "TTWrapper.CardRank": "限界突破: {0}",
@@ -93,5 +94,13 @@ export default {
         PlaceholderText: "このサイトの管理者は日本語を読むことができません。しかし、それが止めさせないでください。",
         Send: "参加する",
         Cancel: "キャンセル"
+    },
+    LangMenu: {
+        DictionaryFormat: "{0} ({1})",
+        ModalTitle: "言語設定",
+        UILanguageSelectLabel: "Use this language for site navigation:",
+        DictionarySelectLabel: "Use this language for game data:",
+        Save: "Save",
+        Cancel: "キャンセル",
     },
 }

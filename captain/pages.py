@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from tornado.web import RequestHandler
+from tornado.locale import get_supported_locales
 
 from .dispatch import route, LanguageCookieMixin
 from . import pageutils
@@ -151,3 +152,20 @@ class APISearchBootstrap(RequestHandler):
 
     def get(self):
         return
+
+@route(r"/api/private/langmenu.json")
+class APILanguageMenu(RequestHandler):
+    def get(self):
+        dicts = [{
+            "code": self.settings["string_access"].master.language,
+            "name": self.locale.translate("DefaultDictionaryName")
+        }]
+        dicts.extend([{
+            "code": x.code,
+            "name": x.name,
+        } for x in self.settings["string_access"].choices])
+
+        self.write({
+            "languages": list(get_supported_locales()),
+            "dictionaries": dicts
+        })

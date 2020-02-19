@@ -12,6 +12,7 @@ import { SaintUserConfig } from "./event_tracker_internal"
 import { CardDisplayModeSwitcher, ImageSwitcher } from "./card_page_components"
 import SkillTree from "./skill_tree"
 import { StoryViewer } from "./transcript"
+import { initLangMenu } from "./lang_menu"
 
 const ReactComponentClassRegistry = {    
     CardDisplayModeSwitcher,
@@ -67,6 +68,7 @@ function init() {
     })
     TLInject.initialize()
     NewsFilter.initWithRedux(Infra.store)
+    initLangMenu()
 
     Infra.initialize().then(() => {
         console.debug("Localizations have arrived. Continuing...")

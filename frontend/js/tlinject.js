@@ -146,7 +146,6 @@ class TLInjectInputPromptModal extends React.Component {
                 <small className="form-text text-muted">
                     {this.bottomText()}
                 </small>
-            
             </div>
             <div className="form-row kars-fieldset-naturalorder">
                 <button className="item btn btn-primary"

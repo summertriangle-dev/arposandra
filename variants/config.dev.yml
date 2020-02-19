@@ -23,7 +23,7 @@ services:
       AS_ASSET_JIT_SECRET: B10E7DBB0B7E462398879E649DCE3C09
       AS_HOST_ID: mari-dev
       AS_CANONICAL_REGION: "jp:ja"
-      AS_EXTRA_DICTIONARIES: "pr:en:Test Alternative"
+      AS_EXTRA_DICTIONARIES: ""
   utils:
     volumes:
       - .:/usr/kars
