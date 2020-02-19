@@ -12,11 +12,19 @@
         <div class="container">
             <div class="card kars-card-box">
                 <div class="card-body">
-                    {% raw tlinject("Click me for the old TLInject modal") %}
+                    {% raw tlinject("Click me for the old TLInject modal", mock=True) %}
                 </div>
                 <div class="card-body">
                     <button id="uilib-modal-button">Click this for the UILib modal</button>
                 </div>
+
+                <div class="card-body form-inline">
+                    <div class="form-group">
+                        <input type="text" id="cs-input" class="form-control form-control-sm mr-3" />
+                        <button id="cs-submit-button" class="btn btn-sm btn-primary">Submit</button>
+                    </div>
+                </div>
+                
             </div>
         </div>
 
