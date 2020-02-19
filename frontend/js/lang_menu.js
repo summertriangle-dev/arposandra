@@ -17,7 +17,7 @@ function loadLanguages() {
                 reject()
             }
         }
-        xhr.open("GET", `/api/private/langmenu.json`)
+        xhr.open("GET", "/api/private/langmenu.json")
         xhr.send()
     })
 }

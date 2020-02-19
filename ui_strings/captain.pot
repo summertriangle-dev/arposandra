@@ -34,6 +34,9 @@ msgstr "Card image"
 msgid "Cards of {idol_name}"
 msgstr "Cards of {idol_name}"
 
+msgid "DefaultDictionaryName"
+msgstr "Default"
+
 msgid "EventTracker.HeaderStories"
 msgstr "EventTracker.HeaderStories"
 

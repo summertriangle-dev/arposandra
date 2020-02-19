@@ -46,6 +46,9 @@ msgstr "カードの映像"
 msgid "Cards of {idol_name}"
 msgstr "{idol_name}のカード"
 
+msgid "DefaultDictionaryName"
+msgstr "既定"
+
 msgid "EventTracker.HeaderStories"
 msgstr "エピソード"
 
