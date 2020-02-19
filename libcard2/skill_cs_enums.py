@@ -379,6 +379,7 @@ PERCENT_VALUE_SKILL_TYPES = {
     ST.ReduceCollaboGaugeBaseBonus,
     ST.AddAppealBuffByNumOfVo,
     ST.HealLifeByCardTechnique,
+    ST.AddCollaboVoltageBuffByTechnique,
 }
 
 MIXED_VALUE_SKILL_TYPES = {ST.AddVoltageBuff, ST.AddAppealBuff}
