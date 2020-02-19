@@ -64,10 +64,10 @@ $table-border-color:          $gray-700 !default;
 
 // Forms
 
-$input-bg: $gray-700;
+$input-bg: $gray-800;
 $input-color: $gray-300;
 
-$input-border-color:                    transparent !default;
+$input-border-color:                    change-color($gray-700, $alpha: 0.6) !default;
 
 $input-group-addon-color:               $gray-500 !default;
 $input-group-addon-bg:                  $gray-700 !default;
