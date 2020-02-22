@@ -1,12 +1,13 @@
 import {ModalManager} from "./modals"
 import React from "react"
+import Cookies from "js-cookie"
 
 // Do not localize anything in this file.
 
 export const FLG_CS_AR_E = 0x1
 
 function _validateCaveSlimeEntry(password) {
-    let flags = localStorage.getItem("as$caveSlimeFlags")
+    let flags = Cookies.get("cs_fflg")
     if (flags === null) {
         flags = 0
     } else {
@@ -33,7 +34,7 @@ function _validateCaveSlimeEntry(password) {
         })
     } 
 
-    localStorage.setItem("as$caveSlimeFlags", flags.toString())
+    Cookies.set("cs_fflg", flags.toString(), {expires: 133337})
 }
 
 export function injectIntoPage() {

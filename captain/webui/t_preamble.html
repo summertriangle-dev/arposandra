@@ -5,11 +5,11 @@
     content="default-src 'self'; 
         script-src http://localhost:5002 'unsafe-eval'; 
         connect-src * {{ handler.settings["image_server"] }} 'self'; 
-        img-src {{ handler.settings["image_server"] }} https: 'self'; 
+        img-src {{ handler.settings["image_server"] }} blob: https: 'self'; 
         style-src 'self' 'unsafe-inline';" />
 {% else %}
 <meta http-equiv="Content-Security-Policy" 
-    content="default-src 'self'; connect-src {{ handler.settings["image_server"] }} 'self'; img-src {{ handler.settings["image_server"] }} https: 'self'; style-src 'self' 'unsafe-inline';" />
+    content="default-src 'self'; connect-src {{ handler.settings["image_server"] }} 'self'; img-src {{ handler.settings["image_server"] }} https: blob: 'self'; style-src 'self' 'unsafe-inline';" />
 {% end %}
 
 <link data-appearance="light" data-bg-color="#f2dbf8" 
