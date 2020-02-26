@@ -153,19 +153,21 @@ class APISearchBootstrap(RequestHandler):
     def get(self):
         return
 
+
 @route(r"/api/private/langmenu.json")
 class APILanguageMenu(RequestHandler):
     def get(self):
-        dicts = [{
+        dicts = [
+            {
             "code": self.settings["string_access"].master.language,
-            "name": self.locale.translate("DefaultDictionaryName")
-        }]
-        dicts.extend([{
-            "code": x.code,
-            "name": x.name,
-        } for x in self.settings["string_access"].choices])
+                "name": self.locale.translate("DefaultDictionaryName"),
+            }
+        ]
+        dicts.extend(
+            [
+                {"code": x.code, "name": x.name,}
+                for x in self.settings["string_access"].choices.values()
+            ]
+        )
 
-        self.write({
-            "languages": list(get_supported_locales()),
-            "dictionaries": dicts
-        })
+        self.write({"languages": list(get_supported_locales()), "dictionaries": dicts})
