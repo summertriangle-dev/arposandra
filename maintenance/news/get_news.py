@@ -11,6 +11,9 @@ import dm_parse
 import theatre_parse
 
 
+DT_DISABLED_REGIONS = {"en"}
+
+
 def begin_session_2(context):
     # with open("news/test/fetchNotice.json", "r") as mock_n_list:
     #     m_notices = json.load(mock_n_list)
@@ -111,7 +114,9 @@ async def main():
         db = ingest.DatabaseConnection()
         await db.init_models()
         await get_new_notices(ice, db, tag)
-        await get_daily_convo(ice, db, tag)
+
+        if tag not in DT_DISABLED_REGIONS:
+            await get_daily_convo(ice, db, tag)
     finally:
         end_session(context, ice)
 
