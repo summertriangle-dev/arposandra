@@ -13,10 +13,11 @@ class DictionaryAggregator(object):
 
         alt = self.choices.get(preferred_language)
         if not alt:
-            return self.master.lookup_strings(ss)
+            return self.master.lookup_strings(ss), set()
 
         stage1 = alt.access.lookup_strings(ss)
+        alt_set = set(stage1.keys())
         stage2 = self.master.lookup_strings(ss - set(stage1.keys()))
         stage2.update(stage1)
 
-        return stage2
+        return stage2, alt_set

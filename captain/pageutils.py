@@ -49,12 +49,17 @@ def get_skill_describer(handler):
     return libcard2.localization.skill_describer_for_locale(code)
 
 
+TLINJECT_EMPTY = {}
+TLINJECT_ALT_EMPTY = set()
+
+
 @export
 def tlinject(handler, s, key_is_pt=False, *, mock=False):
     try:
-        base = handler._tlinject_base
+        base, alt_set = handler._tlinject_base
     except AttributeError:
-        base = {}
+        base = TLINJECT_EMPTY
+        alt_set = TLINJECT_ALT_EMPTY
         logging.warn("TLInject users should have a _tlinject_base dict")
 
     secret = handler.settings.get("tlinject_context").secret
@@ -64,37 +69,32 @@ def tlinject(handler, s, key_is_pt=False, *, mock=False):
     else:
         my = ""
 
+    data = []
+
     if mock:
-        extra = 'data-mock="1"'
-    else:
-        extra = ""
+        data.append('data-mock="1"')
+
+    if s in alt_set:
+        data.append('data-overlay="1"')
 
     pretranslated = base.get(s, None)
     if pretranslated:
-        if key_is_pt:
-            return squeeze(
-                f"""<span class="tlinject" data-assr="{my}" {extra}>
-                {xhtml_escape(pretranslated)}
-            </span>"""
-            )
+        if not key_is_pt:
+            data.append(f'data-tlik="{xhtml_escape(s)}"')
+        s = pretranslated
 
-        return squeeze(
-            f"""<span class="tlinject" data-assr="{my}" data-tlik="{xhtml_escape(s)}" {extra}>
-            {xhtml_escape(pretranslated)}
-        </span>"""
-        )
-    else:
-        return squeeze(
-            f"""<span class="tlinject" data-assr="{my}" {extra}>{xhtml_escape(s)}</span>"""
-        )
+    all_data = " ".join(data)
+    return squeeze(
+        f"""<span class="tlinject" data-assr="{my}" {all_data}>{xhtml_escape(s)}</span>"""
+    )
 
 
 @export
 def tlinject_static(handler, s, escape=True):
     try:
-        base = handler._tlinject_base
+        base = handler._tlinject_base[0]
     except AttributeError:
-        base = {}
+        base = TLINJECT_EMPTY
         logging.warn("TLInject users should have a _tlinject_base dict")
 
     gt = handler.settings["static_strings"].get(handler.locale.code, "en")

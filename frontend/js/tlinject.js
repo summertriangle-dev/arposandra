@@ -217,11 +217,17 @@ const tli_click_handler = (e) => {
 }
 function setupDOM() {
     let tls = []
+    let prune = []
     const strings = document.getElementsByClassName("tlinject")
     if (strings.length === 0) return []
 
     for (let i = 0; i < strings.length; i++) {
         const element = strings[i]
+
+        if (element.hasAttribute("data-overlay")) {
+            prune.push(element)
+            continue
+        }
 
         const key = element.dataset.tlik || element.textContent
         if (!element.hasAttribute("data-tlik")) {
@@ -240,6 +246,10 @@ function setupDOM() {
             element.setAttribute("data-bound", "1")
             element.addEventListener("click", tli_click_handler, false)
         }
+    }
+
+    for (let i = 0; i < prune.length; ++i) {
+        prune[i].classList.remove("tlinject")
     }
     return tls
 }
