@@ -26,7 +26,7 @@ export default {
         AWAKEN: "AWAKEN",
         COSTUME: "COSTUME",
         ACTIVE: "SKILL",
-        INSPIRE: "INSPIRE",
+        INSPIRE: "INSIGHT",
         PASSIVE: "ABILITY",
         START: "START",
     },
