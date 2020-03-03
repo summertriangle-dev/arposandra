@@ -146,7 +146,7 @@ def format_skill_target(handler, skill, card=None):
 @export
 def format_wave_desc(handler, wave):
     try:
-        base = handler._tlinject_base
+        base = handler._tlinject_base[0]
     except AttributeError:
         base = {}
         logging.warn("TLInject users should have a _tlinject_base dict")
