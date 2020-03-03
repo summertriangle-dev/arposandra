@@ -50,9 +50,10 @@ class NewsDatabase(object):
             items = await c.fetch(
                 """SELECT news_id, title, thumbnail, ts, internal_category, NULL, card_refs 
                     FROM news_v2 WHERE ts < $1 AND (visible = TRUE OR internal_category IN (2, 3))
-                    ORDER BY ts DESC, news_id LIMIT $2""",
+                    AND serverid=$3 ORDER BY ts DESC, news_id LIMIT $2""",
                 before_time,
                 limit,
+                for_server,
             )
 
         return [NewsItem(*i, json.loads(crefs) if crefs else []) for *i, crefs in items]
@@ -62,9 +63,10 @@ class NewsDatabase(object):
             items = await c.fetch(
                 """SELECT news_id, title, thumbnail, ts, internal_category, NULL, card_refs
                     FROM news_v2 WHERE ts < $1 AND internal_category IN (2, 3) AND card_refs IS NOT NULL
-                    ORDER BY ts DESC, news_id LIMIT $2""",
+                    AND serverid=$3 ORDER BY ts DESC, news_id LIMIT $2""",
                 before_time,
                 limit,
+                for_server,
             )
 
         return [NewsItem(*i, json.loads(crefs)) for *i, crefs in items]

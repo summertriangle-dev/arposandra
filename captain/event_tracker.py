@@ -12,7 +12,7 @@ def to_utc_timestamp(naive):
 
 
 class EventTrackingDatabase(object):
-    SERVER_IDS = ["jp"]
+    SERVER_IDS = ["jp", "en"]
 
     def __init__(self, coordinator):
         self.coordinator = coordinator
