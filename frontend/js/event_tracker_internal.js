@@ -245,7 +245,7 @@ export class SaintDatasetCoordinator {
         if (k.length < 1) {
             max = null
         } else {
-            max = this.datasets[k[0]].data[this.datasets[k[0]].data.length - 1].x
+            max = Math.max(...k.map((v) => this.datasets[v].data[this.datasets[v].data.length - 1].x.getTime()))
         }
 
         if (numHours === 9999 || !max) {
@@ -255,8 +255,9 @@ export class SaintDatasetCoordinator {
         let minDate = new Date(max)
         minDate.setHours(minDate.getHours() - numHours)
 
-        if (minDate.getTime() < this.datasets[k[0]].data[0].x.getTime()) {
-            minDate = new Date(this.datasets[k[0]].data[0].x)
+        const realMin = Math.min(...k.map((v) => this.datasets[v].data[0].x.getTime()))
+        if (minDate.getTime() < realMin) {
+            minDate = new Date(realMin)
         }
 
         return {min: minDate, max}

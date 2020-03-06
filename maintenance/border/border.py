@@ -95,6 +95,7 @@ FULL_DAY = 86400
 TRACK_INTERVAL_NOW = 1
 TRACK_INTERVAL_ACCELERATED = 900
 TRACK_INTERVAL = 3600
+MIN_ENTRIES_FOR_T100 = 100
 
 
 def track_interval(current: datetime, status: models.event_status_t):
@@ -223,9 +224,10 @@ async def fetch_marathon_event_border(
         fixed_rows.append(
             make_common_top10_row(top_pt_ranking, "points", "event_marathon_ranking_user")
         )
-        flex_rows.append(
-            ("points", top_pt_ranking[-1]["event_point"], 0, top_pt_ranking[-1]["order"])
-        )
+        if len(top_pt_ranking) >= MIN_ENTRIES_FOR_T100:
+            flex_rows.append(
+                ("points", top_pt_ranking[-1]["event_point"], 0, top_pt_ranking[-1]["order"])
+            )
 
     pt_ranking = ranking_info.get("ranking_border_info")
     if pt_ranking:
@@ -278,9 +280,10 @@ async def fetch_mining_event_border(
         fixed_rows.append(
             make_common_top10_row(top_pt_ranking, "points", "event_mining_ranking_user")
         )
-        flex_rows.append(
-            ("points", top_pt_ranking[-1]["event_point"], 0, top_pt_ranking[-1]["order"])
-        )
+        if len(top_pt_ranking) >= MIN_ENTRIES_FOR_T100:
+            flex_rows.append(
+                ("points", top_pt_ranking[-1]["event_point"], 0, top_pt_ranking[-1]["order"])
+            )
 
     top_score_ranking = ranking_info.get("voltage_top_ranking_cells")
     if top_score_ranking:
@@ -288,9 +291,10 @@ async def fetch_mining_event_border(
         fixed_rows.append(
             make_common_top10_row(top_score_ranking, "voltage", "event_mining_ranking_user")
         )
-        flex_rows.append(
-            ("voltage", top_score_ranking[-1]["event_point"], 0, top_score_ranking[-1]["order"])
-        )
+        if len(top_score_ranking) >= MIN_ENTRIES_FOR_T100:
+            flex_rows.append(
+                ("voltage", top_score_ranking[-1]["event_point"], 0, top_score_ranking[-1]["order"])
+            )
 
     pt_ranking = ranking_info.get("point_ranking_border_info")
     if pt_ranking:
