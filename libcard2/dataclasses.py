@@ -45,6 +45,8 @@ class Member(object):
         }
 
 
+CardCostumeInfo = namedtuple("CardCostumeInfo", ("thumbnail", "costume_id", "name", "variants"))
+
 CardLevelValues = namedtuple("CardLevelValues", ("level", "appeal", "stamina", "technique"))
 
 CardAppearance = namedtuple("CardAppearance", ("name", "image_asset_path", "thumbnail_asset_path"))
@@ -170,6 +172,7 @@ class Card(object):
     stats: List[CardLevelValues] = None
     idolized_offset: CardLevelValues = None
     tt_offset: CardLevelValues = None
+    costume_info: CardCostumeInfo = None
 
     def get_tl_set(self):
         se = {self.normal_appearance[0], self.idolized_appearance[0],} | self.member.get_tl_set()

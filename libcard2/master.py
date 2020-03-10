@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
 from functools import lru_cache
 from typing import Iterable, Sequence
 
@@ -149,13 +149,15 @@ class MasterData(object):
 
         da = self.connection.execute(
             """
-        SELECT member_m_id, id, school_idol_no, card_rarity_type, max_level, card_attribute,
+        SELECT m_card.member_m_id, m_card.id, school_idol_no, card_rarity_type, max_level, card_attribute,
         role, training_tree_m_id, sp_point, exchange_item_id, max_passive_skill_slot,
-        m_card_attribute.background_asset_path, 0, parameter2, parameter1, parameter3
+        m_card_attribute.background_asset_path, 0, parameter2, parameter1, parameter3,
+        m_suit.thumbnail_image_asset_path, m_suit.id
         FROM m_card
         LEFT JOIN m_card_rarity USING (card_rarity_type)
         LEFT JOIN m_card_attribute USING (card_attribute)
         LEFT JOIN m_card_awaken_parameter ON (card_master_id == m_card.id)
+        LEFT JOIN m_suit ON (m_suit.suit_release_value == m_card.id AND m_suit.suit_release_route = 1)
         WHERE m_card.id = ? LIMIT 1
         """,
             (card_id,),
@@ -168,7 +170,10 @@ class MasterData(object):
         card.member = self.lookup_member_by_id(member_id)
         card.active_skill = self.lookup_active_skill_by_card_id(card.id)
         card.passive_skills = self.lookup_passive_skills_by_card_id(card.id)
-        card.idolized_offset = D.CardLevelValues(*da[11:])
+        card.idolized_offset = D.CardLevelValues(*da[11:15])
+        if da[15]:
+            card.costume_info = D.CardCostumeInfo(da[15], da[16], None, None)
+
         card.tt_offset = self.tt_stat_increases.get(card.id)
         card.role_effect = self.lookup_role_effect(card.role)
 
@@ -613,3 +618,15 @@ class MasterData(object):
             return path[0]
 
         return None
+
+    def lookup_costumes(self, member_id):
+        rets = OrderedDict()
+        suits = self.connection.execute(
+            "SELECT name, id, thumbnail_image_asset_path FROM m_suit WHERE member_m_id = ? ORDER BY display_order",
+            (member_id,),
+        )
+
+        for name, id, thumb in suits:
+            rets[id] = D.CardCostumeInfo(thumb, id, name, None)
+
+        return rets
