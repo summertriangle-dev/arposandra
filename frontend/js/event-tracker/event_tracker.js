@@ -1,11 +1,12 @@
-import Infra from "./infra"
+import Infra from "../infra"
 import React from "react"
 import ReactDOM from "react-dom"
+import Chart from "chart.js"
 import {connect, Provider} from "react-redux"
 import { SaintDatasetCoordinator, SaintUserConfig, toRankTypeFriendlyName, 
     rankTypesForEventType, localizeDatasetName, compareDatasetKey } from "./event_tracker_internal"
-import { MultiValueSwitch } from "./ui_lib"
-import { effectiveAppearance } from "./appearance"
+import { MultiValueSwitch } from "../ui_lib"
+import { effectiveAppearance } from "../appearance"
 
 const hslBase = (h, s, baseL) =>
     (itr) => `hsl(${h}, ${s}%, ${baseL + (5 * itr)}%)`
@@ -344,10 +345,9 @@ class SaintDisplayController {
         }, then.getTime() - now.getTime())
     }
 
-    installChart(chartjs) {
-        console.debug("chartjs has arrived")
+    installChart() {
         const ctarget = document.querySelector("#saint-graph-target").getContext("2d")
-        this.chart = new chartjs.Chart(ctarget, {
+        this.chart = new Chart.Chart(ctarget, {
             type: "line",
             data: {
                 datasets: []
@@ -482,18 +482,10 @@ class SaintDisplayController {
   
 let controller
 
-async function lazyImports() {
-    return await import("chart.js")
-}
-
 export function injectIntoPage() {
     const tgt = document.getElementById("saint-inject-target")
     controller = new SaintDisplayController(tgt)
     controller.install()
     controller.refreshData()
-
-    console.debug("Waiting for ChartJS...")
-    lazyImports().then((chart) => {
-        controller.installChart(chart)
-    })
+    controller.installChart()
 }

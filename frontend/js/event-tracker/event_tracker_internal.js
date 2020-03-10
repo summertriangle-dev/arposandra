@@ -1,4 +1,4 @@
-import Infra from "./infra"
+import Infra from "../infra"
 import {createSlice} from "@reduxjs/toolkit"
 
 const DEFAULT_DATASETS_TO_SHOW_MARATHON = {
@@ -264,8 +264,3 @@ export class SaintDatasetCoordinator {
     }
 }
 
-class SaintTop10DatasetCoordinator extends SaintDatasetCoordinator {
-    getUpdateURL() {
-        return `/api/private/saint/${this.serverid}/${this.eventId}/top10.json`
-    }
-}

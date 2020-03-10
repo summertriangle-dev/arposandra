@@ -1,3 +1,5 @@
+const webpack = require("webpack")
+
 module.exports = {
     mode: "development",
     entry: {
@@ -33,5 +35,8 @@ module.exports = {
     },
     optimization: {
         splitChunks: { chunks: "all" }
-    }
+    },
+    plugins: [
+        new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en|ja/)
+    ]
 }
