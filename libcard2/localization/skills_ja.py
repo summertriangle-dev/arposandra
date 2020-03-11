@@ -1,5 +1,5 @@
 from ..dataclasses import Card
-from ..skill_description_base import SkillEffectDescriberContext, AnySkill
+from ..skill_description_base import SkillEffectDescriberContext
 from ..skill_cs_enums import ST, TT, CT, FT
 
 JA = SkillEffectDescriberContext()

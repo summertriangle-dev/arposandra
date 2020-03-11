@@ -1,8 +1,10 @@
 import struct
 from collections import namedtuple
-from dataclasses import dataclass
-from typing import List
+from dataclasses import dataclass, field
+from typing import List, Tuple
 from weakref import ref
+
+from .skill_cs_enums import TT
 
 
 @dataclass
@@ -25,7 +27,7 @@ class Member(object):
     signature_asset_path: str
     member_icon_asset_path: str
 
-    card_brief: list = None
+    card_brief: List = field(default_factory=list)
 
     def css_color(self):
         if self.theme_color < 0:
@@ -45,110 +47,93 @@ class Member(object):
         }
 
 
-CardCostumeInfo = namedtuple("CardCostumeInfo", ("thumbnail", "costume_id", "name", "variants"))
-
-CardLevelValues = namedtuple("CardLevelValues", ("level", "appeal", "stamina", "technique"))
-
-CardAppearance = namedtuple("CardAppearance", ("name", "image_asset_path", "thumbnail_asset_path"))
-
-
 @dataclass
-class CardRoleEffect(object):
-    change_effect_type: int
-    change_effect_value: int
-    positive_type: int
-    positive_value: int
-    negative_type: int
-    negative_value: int
+class Skill(object):
+    @dataclass
+    class TargetType(object):
+        id: int
+        self_only: bool
+        not_self: bool
+        apply_count: int
 
+        owner_party: bool
+        owner_school: bool
+        owner_year: bool
+        owner_subunit: bool
+        owner_attribute: bool
+        owner_role: bool
 
-@dataclass
-class SkillTargetType(object):
-    id: int
-    self_only: bool
-    not_self: bool
-    apply_count: int
+        fixed_attributes: List[int] = field(default_factory=list)
+        fixed_members: List[int] = field(default_factory=list)
+        fixed_subunits: List[int] = field(default_factory=list)
+        fixed_schools: List[int] = field(default_factory=list)
+        fixed_years: List[int] = field(default_factory=list)
+        fixed_roles: List[int] = field(default_factory=list)
 
-    owner_party: bool
-    owner_school: bool
-    owner_year: bool
-    owner_subunit: bool
-    owner_attribute: bool
-    owner_role: bool
+        def is_all_but(self):
+            return (self.fixed_attributes and len(self.fixed_attributes) >= 4) or (
+                self.fixed_roles and len(self.fixed_roles) > 3
+            )
 
-    fixed_attributes: List[int] = None
-    fixed_members: List[int] = None
-    fixed_subunits: List[int] = None
-    fixed_schools: List[int] = None
-    fixed_years: List[int] = None
-    fixed_roles: List[int] = None
+    @dataclass
+    class Condition(object):
+        condition_type: int
+        condition_value: int
 
-    def is_all_but(self):
-        return (self.fixed_attributes and len(self.fixed_attributes) >= 4) or (
-            self.fixed_roles and len(self.fixed_roles) > 3
-        )
+    Effect = namedtuple(
+        "Effect",
+        (
+            "target_parameter",
+            "effect_type",
+            "effect_value",
+            "scale_type",
+            "calc_type",
+            "timing",
+            "finish_type",
+            "finish_value",
+        ),
+    )
 
-
-@dataclass
-class ActiveSkill(object):
     id: int
     name: str
     description: str
+
     skill_type: int
-    trigger_probability: int
     sp_gauge_point: int
     icon_asset_path: str
     thumbnail_asset_path: str
-
-    target: SkillTargetType = None
-    levels: list = None
-
-    def has_complex_trigger(self):
-        return False
-
-    def get_tl_set(self):
-        a = {self.name, self.description}
-        return a
-
-
-@dataclass
-class PassiveSkill(object):
-    id: int
-    name: str
-    description: str
     rarity: int
+
     trigger_type: int
     trigger_probability: int
-    icon_asset_path: str
-    thumbnail_asset_path: str
 
-    condition_type: int
-    condition_value: int
-
-    target: SkillTargetType = None
-    levels: list = None
+    target: TargetType
+    conditions: List[Condition] = field(default_factory=list)
+    levels: List[Effect] = field(default_factory=list)
 
     def has_complex_trigger(self):
-        return True
+        return self.trigger_type != TT.Non
 
     def get_tl_set(self):
         a = {self.name, self.description}
         return a
-
-
-@dataclass
-class CardLite(object):
-    id: int
-    ordinal: int
-    rarity: int
-    attribute: int
-    role: int
-    normal_appearance: CardAppearance = None
-    idolized_appearance: CardAppearance = None
 
 
 @dataclass
 class Card(object):
+    CostumeInfo = namedtuple("CostumeInfo", ("thumbnail", "costume_id", "name", "variants"))
+    LevelValues = namedtuple("LevelValues", ("level", "appeal", "stamina", "technique"))
+    Appearance = namedtuple("Appearance", ("name", "image_asset_path", "thumbnail_asset_path"))
+
+    @dataclass
+    class RoleEffect(object):
+        change_effect_type: int
+        change_effect_value: int
+        positive_type: int
+        positive_value: int
+        negative_type: int
+        negative_value: int
+
     id: int
     ordinal: int
     rarity: int
@@ -161,18 +146,18 @@ class Card(object):
     max_passive_skill_slot: int
     background_asset_path: str
 
-    member: Member = None
-    role_effect: CardRoleEffect = None
-    normal_appearance: CardAppearance = None
-    idolized_appearance: CardAppearance = None
+    member: Member
+    role_effect: RoleEffect
+    normal_appearance: Appearance
+    idolized_appearance: Appearance
 
-    active_skill: ActiveSkill = None
-    passive_skills: List[PassiveSkill] = None
+    active_skill: Skill
+    passive_skills: List[Skill]
+    idolized_offset: LevelValues
+    tt_offset: LevelValues
 
-    stats: List[CardLevelValues] = None
-    idolized_offset: CardLevelValues = None
-    tt_offset: CardLevelValues = None
-    costume_info: CardCostumeInfo = None
+    stats: List[LevelValues] = None
+    costume_info: CostumeInfo = None
 
     def get_tl_set(self):
         se = {self.normal_appearance[0], self.idolized_appearance[0],} | self.member.get_tl_set()
@@ -184,7 +169,18 @@ class Card(object):
         return se
 
 
-# -*- -*-
+@dataclass
+class CardLite(object):
+    id: int
+    ordinal: int
+    rarity: int
+    attribute: int
+    role: int
+    normal_appearance: Card.Appearance
+    idolized_appearance: Card.Appearance
+
+
+# -*- LIVEs -*-
 
 
 @dataclass
@@ -206,9 +202,9 @@ class LiveDifficulty(object):
     b_score: int
     c_score: int
 
-    stage_gimmicks: List[ActiveSkill] = None
-    note_gimmicks: List[PassiveSkill] = None
-    wave_missions: List = None
+    stage_gimmicks: List[Skill] = None
+    note_gimmicks: List[Skill] = None
+    wave_missions: List[LiveWaveMission] = None
 
     def get_tl_set(self):
         s = set()

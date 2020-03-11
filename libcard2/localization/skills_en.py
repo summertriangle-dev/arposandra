@@ -1,5 +1,5 @@
-from ..dataclasses import Card
-from ..skill_description_base import SkillEffectDescriberContext, AnySkill
+from ..dataclasses import Card, Skill
+from ..skill_description_base import SkillEffectDescriberContext
 from ..skill_cs_enums import ST, TT, CT, FT
 
 EN = SkillEffectDescriberContext()
@@ -38,7 +38,7 @@ def _times(value):
 
 
 @EN.target_clause
-def _(tt: AnySkill, base, context: Card = None):
+def _(tt: Skill, base, context: Card = None):
     if tt.self_only:
         return "Applies to: Just this card"
 
@@ -136,7 +136,7 @@ def _(effect1, effect2):
 
 @EN.finish_clause
 def _(skill, tags):
-    finish_type, finish_value = skill.levels[0][8], skill.levels[0][9]
+    finish_type, finish_value = skill.levels[0].finish_type, skill.levels[0].finish_value
     if finish_type == FT.Turn:
         return f" for {tags['let']}{finish_value}{tags['end']} notes"
     if finish_type == FT.SpExecuteCount:
@@ -152,59 +152,63 @@ def _(skill, tags):
     return ""
 
 
+def to_trigger_phrase(trigger_type):
+    if trigger_type == TT.LiveStart:
+        return "when live starts"
+    elif trigger_type == TT.WaveStart:
+        return "when appeal starts"
+    elif trigger_type == TT.WaveSuccess:
+        return "after passing an appeal"
+    elif trigger_type == TT.WaveFail:
+        return "after failing an appeal"
+    elif trigger_type in {TT.OnChangeLife, TT.OnDamage}:
+        return "when taking damage"
+    elif trigger_type == TT.OnGotVoltage:
+        return "when gaining voltage"
+    elif trigger_type == TT.OnChangeSquad:
+        return "on party rotation"
+    elif trigger_type == TT.OnCollaboSkill:
+        return "on SP burst"
+    elif trigger_type == TT.BeforeLive:
+        return None
+    elif trigger_type is not None:
+        return f"when an undocumented event ({trigger_type}) occurs"
+
+
+def to_condition_phrase(trigger_type, condition_type, condition_value, tags):
+    if condition_type == CT.HpLessThanPercent:
+        return f"if stamina below {tags['let']}{_divint(condition_value)}{tags['end']}"
+    elif condition_type == CT.LimitCount:
+        return f"only {tags['let']}{_times(condition_value)}{tags['end']} per live"
+    elif condition_type == CT.VoltageMoreThanValue:
+        return f"if voltage is over {tags['let']}{condition_value}{tags['end']}"
+    elif condition_type == CT.TriggerLessThanValue:
+        return f"{tags['let']}{condition_value}{tags['end']} or more"
+    else:
+        return f"undocumented condition {condition_type}, {condition_value}"
+
+
 @EN.trigger_clause
 def _(skill, tags):
     if skill.has_complex_trigger():
         phrases = []
         if skill.trigger_probability != 10000:
             phrases.append(f"{tags['let']}{_divint(skill.trigger_probability)}{tags['end']} chance")
-        if skill.trigger_type == TT.LiveStart:
-            phrases.append("when live starts")
-        elif skill.trigger_type == TT.WaveStart:
-            phrases.append("when appeal starts")
-        elif skill.trigger_type == TT.WaveSuccess:
-            phrases.append("after passing an appeal")
-        elif skill.trigger_type == TT.WaveFail:
-            phrases.append("after failing an appeal")
-        elif skill.trigger_type in {TT.OnChangeLife, TT.OnDamage}:
-            phrases.append("when taking damage")
-        elif skill.trigger_type == TT.OnGotVoltage:
-            phrases.append("when gaining voltage")
-        elif skill.trigger_type == TT.OnChangeSquad:
-            phrases.append("on party rotation")
-        elif skill.trigger_type == TT.OnCollaboSkill:
-            phrases.append("on SP burst")
-        elif skill.trigger_type == TT.Non or skill.trigger_type == TT.BeforeLive:
-            pass
-        else:
-            phrases.append(f"when an undocumented event ({skill.trigger_type}) occurs")
 
-        if skill.condition_type == CT.HpLessThanPercent:
-            phrases.append(
-                f"(if stamina below {tags['let']}{_divint(skill.condition_value)}{tags['end']})"
-            )
-        elif skill.condition_type == CT.LimitCount:
-            phrases.append(
-                f"(only {tags['let']}{_times(skill.condition_value)}{tags['end']} per live)"
-            )
-        elif skill.condition_type == CT.VoltageMoreThanValue:
-            phrases.append(
-                f"(if voltage is over {tags['let']}{skill.condition_value}{tags['end']})"
-            )
-        elif skill.condition_type == CT.TriggerLessThanValue:
-            phrases.append(
-                f"(if SP gauge below {tags['let']}{_divint(skill.condition_value)}{tags['end']} full)"
-            )
-        elif skill.condition_type == CT.Non:
-            pass
-        else:
-            phrases.append(
-                f"(undocumented condition {skill.condition_type}, {skill.condition_value})"
-            )
+        have_trigger = to_trigger_phrase(skill.trigger_type)
+        if have_trigger:
+            phrases.append(have_trigger)
+
+        conditions = [
+            to_condition_phrase(skill.trigger_type, c.condition_type, c.condition_value, tags)
+            for c in skill.conditions
+        ]
+        if conditions:
+            phrases.append(f"({' and '.join(conditions)})")
 
         a = " ".join(phrases)
         if a:
-            return a[0].upper() + a[1:] + ": "
+            return "".join((a[0].upper(), a[1:], ": "))
         return ""
     elif skill.trigger_probability != 10000:
         return f"{tags['let']}{_divint(skill.trigger_probability)}{tags['end']} chance: "
