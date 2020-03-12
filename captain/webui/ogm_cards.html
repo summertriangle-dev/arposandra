@@ -1,8 +1,9 @@
 <meta property="og:type" content="website" />
+<meta property="og:title" content="{{ custom_title }}" />
 
 {% for card in cards[:4] %}
 {% set Lext = "jpg" if card_has_full_bg(card) else "png" %}
-<meta property="og:image" content="{{ image_url_reify(card.normal_appearance.image_asset_path, Lext) }}" />
+<meta property="og:image" content="{{ card_icon_url(card, card.normal_appearance) }}" />
 {% end %}
 
 {% if context.get("type") == "member" %}
