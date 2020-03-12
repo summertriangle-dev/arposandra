@@ -114,11 +114,19 @@ msgid ""
 "OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:"
 "{group}:{subunit}:{grade}"
 msgstr ""
-"Base stats at max level (Appeal/Stamina/Tech): {appeal}/{stamina}/{technique}. "
-"A {role} {attribute} card with {group} / {subunit} / {grade} affiliations."
+"Base stats at max level (Appeal/Stamina/Tech): {appeal}/{stamina}/"
+"{technique}. A {role} {attribute} card with {group} / {subunit} / {grade} "
+"affiliations."
 
 msgid "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
-msgstr "One idol with {group} / {subunit} / {grade} affiliations, and {num} cards."
+msgstr ""
+"One idol with {group} / {subunit} / {grade} affiliations, and {num} cards."
+
+msgid "OpengraphNewsItem:{category}"
+msgstr "{category} news post."
+
+msgid "OpengraphNewsItem:{category}:{num_assoc_cards}"
+msgstr "{category} news post, featuring {num_assoc_cards} cards."
 
 msgid "PT.CardReleases"
 msgstr "PT.CardReleases"

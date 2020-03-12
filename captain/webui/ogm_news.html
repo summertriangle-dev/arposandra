@@ -1,0 +1,26 @@
+<meta property="og:type" content="website" />
+
+{% if len(items) == 1 %}
+<meta property="og:title" content="{{ items[0].title }}" />
+
+{% if items[0].thumbnail_asset_path %}
+<meta property="og:image" content="{{ image_url_reify(items[0].thumbnail_asset_path, "jpg") }}" />
+{% end %}
+
+{% if items[0].card_refs %}
+<meta property="og:description" content="{{ 
+    _("OpengraphNewsItem:{category}:{num_assoc_cards}").format(
+        num_assoc_cards=len(items[0].card_refs),
+        category=_(f"NewsType.{items[0].category}")
+    )
+ }}" />
+{% else %}
+<meta property="og:description" content="{{ 
+    _("OpengraphNewsItem:{category}").format(
+        category=_(f"NewsType.{items[0].category}")
+    )
+ }}" />
+{% end %}
+
+<meta property="og:updated_time" content="{{ items[0].timestamp() }}" />
+{% end %}

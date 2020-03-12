@@ -100,6 +100,12 @@ msgstr "OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribut
 msgid "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
 msgstr "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
 
+msgid "OpengraphNewsItem:{category}"
+msgstr "OpengraphNewsItem:{category}"
+
+msgid "OpengraphNewsItem:{category}:{num_assoc_cards}"
+msgstr "OpengraphNewsItem:{category}:{num_assoc_cards}"
+
 msgid "PT.CardReleases"
 msgstr "PT.CardReleases"
 
