@@ -27,6 +27,7 @@ class CardPageByMemberID(LanguageCookieMixin):
             custom_title=self.locale.translate("Cards of {idol_name}").format(
                 idol_name=tlinject_static(self, member.name_romaji, escape=False)
             ),
+            og_context={"type": "member", "member": member},
         )
 
 
@@ -76,7 +77,7 @@ class CardPage(LanguageCookieMixin):
         else:
             ct = self.locale.translate("{num_cards} cards").format(num_cards=len(cards))
 
-        self.render("cards.html", cards=cards, custom_title=ct)
+        self.render("cards.html", cards=cards, custom_title=ct, og_context={})
 
 
 @route("/cards/history")

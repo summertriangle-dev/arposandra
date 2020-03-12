@@ -1,0 +1,34 @@
+<meta property="og:type" content="website" />
+
+{% for card in cards[:4] %}
+{% set Lext = "jpg" if card_has_full_bg(card) else "png" %}
+<meta property="og:image" content="{{ image_url_reify(card.normal_appearance.image_asset_path, Lext) }}" />
+{% end %}
+
+{% if context.get("type") == "member" %}
+    {% set member = context["member"] %}
+    <meta property="og:description" content="
+        {{ _("OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}") \
+            .format(num=len(cards), 
+                grade=format_grade(member.year), 
+                subunit=tlinject_static(member.subunit_name, escape=False), 
+                group=tlinject_static(member.group_name, escape=False)) }}" />
+{% else %}
+    {% if len(cards) == 1 %}
+        {% set card = cards[0] %}
+        {% set lb_appeal = card.stats[-1].appeal %}
+        {% set lb_stamina = card.stats[-1].stamina %}
+        {% set lb_tech = card.stats[-1].technique %}
+        <meta property="og:description" content="
+        {{ _("OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:{group}:{subunit}:{grade}") \
+            .format(appeal=lb_appeal, stamina=lb_stamina, technique=lb_tech, 
+                role=tlinject_static(f"kars.clean_role_{card.role}", escape=False),
+                attribute=tlinject_static(f"kars.clean_attribute_{card.attribute}", escape=False),
+                grade=format_grade(card.member.year), 
+                subunit=tlinject_static(card.member.subunit_name, escape=False), 
+                group=tlinject_static(card.member.group_name, escape=False)) }}
+        " />
+    {% else %}
+        <meta property="og:description" content="{{ _("Interesting choice of cards...") }}" />
+    {% end %}
+{% end %}

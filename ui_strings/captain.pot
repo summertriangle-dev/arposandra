@@ -35,7 +35,7 @@ msgid "Cards of {idol_name}"
 msgstr "Cards of {idol_name}"
 
 msgid "DefaultDictionaryName"
-msgstr "Default"
+msgstr "DefaultDictionaryName"
 
 msgid "EventTracker.HeaderStories"
 msgstr "EventTracker.HeaderStories"
@@ -45,6 +45,9 @@ msgstr "Fork me on GitHub"
 
 msgid "IndividualSkillHeader"
 msgstr "IndividualSkillHeader"
+
+msgid "Interesting choice of cards..."
+msgstr "Interesting choice of cards..."
 
 msgid "Language Options"
 msgstr "Language Options"
@@ -90,6 +93,12 @@ msgstr "NewsType.4"
 
 msgid "Note Gimmicks"
 msgstr "Note Gimmicks"
+
+msgid "OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:{group}:{subunit}:{grade}"
+msgstr "OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:{group}:{subunit}:{grade}"
+
+msgid "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
+msgstr "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
 
 msgid "PT.CardReleases"
 msgstr "PT.CardReleases"

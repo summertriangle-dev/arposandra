@@ -58,6 +58,9 @@ msgstr "Fork me on GitHub"
 msgid "IndividualSkillHeader"
 msgstr "Individual Skills"
 
+msgid "Interesting choice of cards..."
+msgstr "And an interesting choice of cards, I might add..."
+
 msgid "Language Options"
 msgstr "Language Options"
 
@@ -106,6 +109,16 @@ msgstr "Shop"
 
 msgid "Note Gimmicks"
 msgstr "Note Gimmicks"
+
+msgid ""
+"OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:"
+"{group}:{subunit}:{grade}"
+msgstr ""
+"Base stats at max level (Appeal/Stamina/Tech): {appeal}/{stamina}/{technique}. "
+"A {role} {attribute} card with {group} / {subunit} / {grade} affiliations."
+
+msgid "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
+msgstr "One idol with {group} / {subunit} / {grade} affiliations, and {num} cards."
 
 msgid "PT.CardReleases"
 msgstr "PT.CardReleases"
@@ -226,9 +239,3 @@ msgstr "{pts} pts"
 
 msgid "★ {star}"
 msgstr "★ {star}"
-
-#~ msgid "Base stats"
-#~ msgstr "Base stats"
-
-#~ msgid "EventTracker.HeaderCurrentTiers"
-#~ msgstr "Tracker"

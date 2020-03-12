@@ -58,6 +58,9 @@ msgstr "ソースコードへ"
 msgid "IndividualSkillHeader"
 msgstr "個性"
 
+msgid "Interesting choice of cards..."
+msgstr "Interesting choice of cards..."
+
 msgid "Language Options"
 msgstr "Language Options"
 
@@ -106,6 +109,16 @@ msgstr "ショップ"
 
 msgid "Note Gimmicks"
 msgstr "ノーツギミック"
+
+msgid ""
+"OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:"
+"{group}:{subunit}:{grade}"
+msgstr ""
+"Base stats at max level (Appeal/Stamina/Tech): {appeal}/{stamina}/{technique}. "
+"A {role} {attribute} card with {group} / {subunit} / {grade} affiliations."
+
+msgid "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
+msgstr "One idol with {group} / {subunit} / {grade} affiliations, and {num} cards."
 
 msgid "PT.CardReleases"
 msgstr "リリース履歴"
@@ -225,6 +238,9 @@ msgstr "{pts}ポイント"
 
 msgid "★ {star}"
 msgstr "★ {star}"
+
+#~ msgid "One idol and {num} cards."
+#~ msgstr "One idol and {num} cards."
 
 #~ msgid "Base stats"
 #~ msgstr "Base stats"

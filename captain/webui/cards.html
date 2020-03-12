@@ -4,6 +4,8 @@
         <title>{{ custom_title }} - {{ _("PT.SiteName") }}</title>
         
         {% include t_preamble.html %}
+
+        {% module Template("ogm_cards.html", cards=cards, context=og_context) %}
     </head>
     <body class="kars-dark" data-master="{{ handler.settings["master"].version }}" data-inject="card">
         {% module Template("uim_nav.html", current="cards") %}
