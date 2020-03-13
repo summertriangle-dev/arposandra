@@ -175,8 +175,8 @@ $close-text-shadow:                 none !default;
 $pre-color:                         inherit !default;
 
 
-$body-bg: hsl(252, 27%, 21%);
-$body-color: #eee;
+$body-bg: hsl(252, 23%, 21%);
+$body-color: hsl(0, 0%, 95%);
 
 $link-color: rgb(116, 155, 240);
 $link-hover-color: rgb(116, 155, 240);
@@ -187,9 +187,9 @@ $subtitle-color: darken($body-color, 15%);
 $kars-navbar-item-color: darken($body-color, 10%);
 $kars-navbar-item-hover-color: $body-color;
 
-$main_content_background_dark: hsl(252, 13%, 24%);
-$card-bg: $main_content_background_dark;
-$card-bg-alt: darken($main_content_background_dark, 3%);
+$main_content_background_dark: scale-color($body-bg, $saturation: -40%);
+$card-bg: scale-color($main_content_background_dark, $lightness: +6%);
+$card-bg-alt: scale-color($main_content_background_dark, $lightness: +2%);
 
 $kars-stack-background: lighten($card-bg, 5%);
 $kars-skill-bg-active: #772929;
@@ -201,7 +201,7 @@ $kars-role-colors: lighten(#fe4646, 10%) #00aeff #05c159 #ffb400;
 $kars-role-bg-colors: darken(#fe4646, 30%) darken(#00aeff, 30%) darken(#05c159, 30%) darken(#ffb400, 30%); 
 $kars-stat-colors: #ff3fb6 #05c159 #ffb400;
 
-$kars-tt-placeholder-bg: darken($main_content_background_dark, 5%);
+$kars-tt-placeholder-bg: $card-bg-alt;
 
 $kars-box-highlight-color: rgba(255, 255, 255, 0.1);
 

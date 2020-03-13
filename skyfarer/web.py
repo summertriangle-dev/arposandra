@@ -36,8 +36,6 @@ def application(master, language, debug):
                 r"/s/ci/([sgrz][vpuky][mpcanex])/([0-9a-f]+)/([^/]+)\.(jpg|png)",
                 SyntheticCardIconHandler,
             ),
-            # legacy urls with ?assr= argument
-            (r"/i/((?:[0-9a-f][0-9a-f])+)(?:\.(?:png|jpg))?", ReifyHandler),
             (r"/adv/(.+)/([^/\.]+)\.json", AdvScriptHandler),
             (r"/advg/(.+)/([0-9]+)\.(?:png|jpg)", AdvScriptGraphicHandler),
             (r"/if/(.+)/([^/\.]+)(?:\.(?:png|jpg))?", BareReifyHandler),
@@ -80,11 +78,8 @@ ERR_REQUEST_NOAUTH = "Your request was declined because it was not properly auth
 
 
 class BareReifyHandler(RequestHandler):
-    async def get(self, key, assr=None):
+    async def get(self, key, assr):
         my = hmac.new(self.settings["jit_secret"], key.encode("utf8"), hashlib.sha224).digest()
-
-        if not assr:
-            assr = self.get_argument("assr")
 
         try:
             assr = base64.urlsafe_b64decode(assr + "====")
@@ -101,7 +96,20 @@ class BareReifyHandler(RequestHandler):
 
         did_headers = False
         buf = bytearray(65536)
-        for buf, size in self.settings["extract_context"].get_texture(key, buf):
+
+        try:
+            file_gen = self.settings["extract_context"].get_texture(key, buf)
+        except ExtractFailure as e:
+            if e.reason == 1:
+                self.set_status(404)
+                self.write(str(e))
+                return
+            else:
+                self.set_status(503)
+                self.write(str(e))
+                return
+
+        for buf, size in file_gen:
             if not did_headers:
                 img_type = imghdr.what(None, buf)
                 if img_type:
@@ -112,7 +120,7 @@ class BareReifyHandler(RequestHandler):
 
 
 class ReifyHandler(BareReifyHandler):
-    async def get(self, key, assr=None):
+    async def get(self, key, assr):
         try:
             key = binascii.unhexlify(key).decode("utf8")
         except UnicodeDecodeError:
@@ -184,6 +192,7 @@ class AdvScriptHandler(BaseAssrValidating):
         except ExtractFailure:
             self.set_status(404)
             self.write({"error": "Script not found."})
+            return
 
         script = adv_script_parser.load_script(scpt_bundle)
 
@@ -199,9 +208,13 @@ class AdvScriptGraphicHandler(RequestHandler):
         did_headers = False
         buf = bytearray(65536)
 
-        for buf, size in self.settings["extract_context"].get_script_texture(
-            scpt_name, int(idx), buf
-        ):
+        try:
+            file_gen = self.settings["extract_context"].get_script_texture(scpt_name, int(idx), buf)
+        except ExtractFailure as e:
+            self.set_status(404)
+            self.write(str(e))
+
+        for buf, size in file_gen:
             if not did_headers:
                 img_type = imghdr.what(None, buf)
                 if img_type:

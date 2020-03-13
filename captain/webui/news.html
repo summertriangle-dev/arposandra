@@ -19,8 +19,6 @@
             <h1 class="h3 mb-3 kars-negative-box">
                 {% if has_offset or is_single %}
                 <a href="/{{ server }}/news">{{ _("PT.News") }}</a>
-                {% else %}
-                {{ _("PT.News") }}
                 {% end %}
             </h1>
 
@@ -32,14 +30,15 @@
             {% for news_item in news_items %}
                 {% module Template("uim_news_item.html", news_item=news_item, server=server, expand=expand, show_ts_msg=show_ts_msg, time_offset=time_offset) %}
             {% end %}
-            </div>
+
             {% if has_next_page %}
-            <div class="kars-negative-box">
-                <a class="btn btn-primary" href="/{{ server }}/news/?before={{ news_items[-1].timestamp() }}">
-                    {{ _("More...") }}
-                </a>
+            <div class="kars-list-alternate">
+                <div class="card-body">
+                    <a class="btn btn-primary" href="/{{ server }}/news/?before={{ news_items[-1].timestamp() }}">{{ _("More...") }}</a>
+                </div>
             </div>
             {% end %}
+            </div>
         </div>
 
         {% include t_footer.html %}

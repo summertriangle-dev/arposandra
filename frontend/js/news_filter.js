@@ -68,7 +68,7 @@ const NewsFilterSwitchInternal = connect((state) => { return state.newsFilter },
     })(_NewsFilterSwitchInternal)
 
 export function NewsFilterSwitch() {
-    return <div className="kars-sub-navbar is-left">
+    return <div className="kars-sub-navbar is-right">
         <span className="item">{Infra.strings.NewsFilter.Title}</span>
         <NewsFilterSwitchInternal />
     </div>
