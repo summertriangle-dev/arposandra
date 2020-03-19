@@ -31,6 +31,8 @@ class TT:
     OnGotVoltage = 8
     OnChangeSquad = 9
     OnCollaboSkill = 10
+    OnAppealCritical = 11
+    OnNoteScore = 12
     Non = 255
 
 
@@ -42,6 +44,7 @@ class CT:
     LimitCount = 3
     VoltageMoreThanValue = 4
     TriggerLessThanValue = 5
+    OnlyOwner = 6
     Non = 255
 
 
