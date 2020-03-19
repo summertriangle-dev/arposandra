@@ -22,10 +22,10 @@ msgid "All..."
 msgstr "すべてを表示..."
 
 msgid "Appeal Chances"
-msgstr "アーピルチャンス"
+msgstr "アピールチャンス"
 
 msgid "Appeal"
-msgstr "アーピル"
+msgstr "アピール"
 
 msgid "AppendixHiramekuSkills"
 msgstr "AppendixHiramekuSkills"
@@ -41,7 +41,7 @@ msgstr ""
 "click the link."
 
 msgid "Card image"
-msgstr "カードの映像"
+msgstr "カードの画像"
 
 msgid "Cards of {idol_name}"
 msgstr "{idol_name}のカード"
@@ -93,10 +93,10 @@ msgstr ""
 "your browser supports it."
 
 msgid "NewsType.1"
-msgstr "通告"
+msgstr "運営"
 
 msgid "NewsType.2"
-msgstr "ガシャ"
+msgstr "ガチャ"
 
 msgid "NewsType.3"
 msgstr "イベント"
@@ -132,10 +132,10 @@ msgid "PT.Welcome"
 msgstr "Welcome"
 
 msgid "Persistent Gimmick"
-msgstr "ライブの特徴"
+msgstr "ライブのギミック"
 
 msgid "Plus{num}UnlockableSkillSlots"
-msgstr "+{num}ひらめきスキル枠"
+msgstr "+{num}ひきスキル枠"
 
 msgid "PrimarySkillHeader"
 msgstr "特技"
@@ -162,10 +162,10 @@ msgid "Saint.WaitingForWebpack"
 msgstr "追加のコンポーネントを待っています..."
 
 msgid "Search"
-msgstr "サーチ"
+msgstr "検索"
 
 msgid "Show All Limit Breaks"
-msgstr "全ての限界突破を広がって"
+msgstr "全ての限界突破を表示する"
 
 msgid "SkillValueShort"
 msgstr "値"
@@ -190,25 +190,25 @@ msgid "TTWrapper.WaitingForWebpack"
 msgstr "追加のコンポーネントを待っています..."
 
 msgid "Tech."
-msgstr "テクニーク"
+msgstr "テクニック"
 
 msgid "Technique"
-msgstr "テクニーク"
+msgstr "テクニック"
 
 msgid "This site is open source:"
 msgstr "このサイトはオープンソースです。"
 
 msgid "Toggle Appearance"
-msgstr "外観を取り替えて"
+msgstr "外観を切り替える"
 
 msgid "TypeAndStatsHeader"
-msgstr "基本パラメター"
+msgstr "基本パラメータ"
 
 msgid "Version:"
-msgstr "バション:"
+msgstr "バージョン:"
 
 msgid "Warning"
-msgstr "ワーニング"
+msgstr "警告"
 
 msgid "You are about to leave this site and visit the following external link:"
 msgstr ""
