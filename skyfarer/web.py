@@ -55,7 +55,7 @@ class AssetServerApplication(Application):
     def __init__(self, masters, language, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        master = os.path.join(masters, f"asset_i_{language}_0.db")
+        master = os.path.join(masters, f"asset_i_{language}.db")
         cache = os.path.join(masters, "..", "..", "cache")
         secret = binascii.unhexlify(os.environ.get("AS_ASSET_JIT_SECRET"))
 
