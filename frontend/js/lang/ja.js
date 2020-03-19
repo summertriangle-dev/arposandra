@@ -1,18 +1,18 @@
 export default {
-    "Card image": "カードの映像",
+    "Card image": "カード画像",
     CISwitch: {
         ExitGalleryMode: "ギャラリーモードを終了",
         Option: {
             Normal: "基本",
             Idolized: "覚醒",
-            Both: "共",
+            Both: "両方",
         }
     },
     CDM: {
         Title: "レイアウト",
-        SwitchHint: "戦術モード: パラメータのみを表示。ギャラリーモード: 映像のみを表示",
+        SwitchHint: "戦術モード: パラメータのみを表示。ギャラリーモード: 画像のみを表示",
         Option: {
-            Normal: "規格",
+            Normal: "通常",
             Esports: "戦術",
             Gallery: "ギャラリー",
         }
@@ -28,7 +28,7 @@ export default {
         START: "スタート",
     },
     "TTWrapper.NIntermediates": "{0}個の追加獲得",
-    "Unlock Requirements:": "取得原価:",
+    "Unlock Requirements:": "解放条件:",
     "TTWrapper.CardRank": "限界突破: {0}",
     "TTWrapper.CardRankShort": "限界突破: {0}",
     "Really?": "リセットしてもよろしいですか?",
@@ -36,9 +36,9 @@ export default {
     "Cancel": "キャンセル",
     "TTWrapper.UnlockHint": "パネルをダブルクリックして取得します。進行状況はブラウザに保存されます",
     "Reset All Nodes...": "全てのパネルをリセット...",
-    "TTWrapper.ExpandSkillTree": "特訓地図を広がって",
-    "TTWrapper.WaitingOnServerForTTData": "特訓地図をロード中...",
-    "TTWrapper.FailedToRetrieveTTFromServer": "特訓地図をロードに失敗しました。ページをリロードしてみてください",
+    "TTWrapper.ExpandSkillTree": "育成ツリーを広げる",
+    "TTWrapper.WaitingOnServerForTTData": "育成ツリーをロード中...",
+    "TTWrapper.FailedToRetrieveTTFromServer": "育成ツリーをロードに失敗しました。ページをリロードしてみてください",
 
     // Not needed?
     "TLInject.InputFieldPlaceholder": "Translation...",
