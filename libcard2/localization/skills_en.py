@@ -169,6 +169,8 @@ def to_trigger_phrase(trigger_type):
         return "on party rotation"
     elif trigger_type == TT.OnCollaboSkill:
         return "on SP burst"
+    elif trigger_type == TT.OnNoteScore:
+        return "on tap"
     elif trigger_type == TT.BeforeLive:
         return None
     elif trigger_type is not None:
@@ -184,6 +186,8 @@ def to_condition_phrase(trigger_type, condition_type, condition_value, tags):
         return f"if voltage is over {tags['let']}{condition_value}{tags['end']}"
     elif condition_type == CT.TriggerLessThanValue:
         return f"{tags['let']}{condition_value}{tags['end']} or more"
+    elif condition_type == CT.OnlyOwner:
+        return "this card's turn"
     else:
         return f"undocumented condition {condition_type}, {condition_value}"
 
@@ -338,5 +342,7 @@ EN.skill_effect[ST.HealLifeByCardTechnique] = \
     "Restore {var}{value}{end} of this card's technique as stamina"
 EN.skill_effect[ST.AddCollaboVoltageBuffByTechnique] = \
     "Buff. Increase voltage gain from SP burst by {var}{value}{end} of this card's technique"
+EN.skill_effect[ST.AddVoltageByStamina] = \
+    "Add {var}{value}{end} of this card's stamina to voltage"
 
 # fmt: on
