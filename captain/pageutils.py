@@ -133,7 +133,7 @@ def format_skill_effect(handler, skill):
         format_args={"let": "<span class='let'>", "var": "<span class='var'>", "end": "</span>"},
     )
     if not es:
-        return f"{tlinject_static(handler, skill.description)} ({skill.levels[0][2]})"
+        return f"{tlinject_static(handler, skill.description)} ({skill.levels[0].effect_type})"
     return es
 
 
