@@ -335,6 +335,8 @@ IMPLICIT_TARGET_SKILL_TYPES = {
     ST.AddCollaboGaugeByTechnique,
     ST.HealLifeByMaxLife,
     ST.AddShieldByMaxLife,
+    ST.AddVoltageByStamina,
+    ST.AddVoltageByTechnique,
 }
 
 PERCENT_VALUE_SKILL_TYPES = {
@@ -384,6 +386,7 @@ PERCENT_VALUE_SKILL_TYPES = {
     ST.HealLifeByCardTechnique,
     ST.AddCollaboVoltageBuffByTechnique,
     ST.AddVoltageByStamina,
+    ST.AddVoltageByTechnique,
 }
 
 MIXED_VALUE_SKILL_TYPES = {ST.AddVoltageBuff, ST.AddAppealBuff}

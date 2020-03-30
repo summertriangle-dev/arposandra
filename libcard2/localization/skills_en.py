@@ -344,5 +344,7 @@ EN.skill_effect[ST.AddCollaboVoltageBuffByTechnique] = \
     "Buff. Increase voltage gain from SP burst by {var}{value}{end} of this card's technique"
 EN.skill_effect[ST.AddVoltageByStamina] = \
     "Add {var}{value}{end} of this card's stamina to voltage"
+EN.skill_effect[ST.AddVoltageByTechnique] = \
+    "Add {var}{value}{end} of this card's technique to voltage"
 
 # fmt: on
