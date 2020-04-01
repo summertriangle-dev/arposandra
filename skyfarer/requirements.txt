@@ -1,5 +1,5 @@
-tornado==6.0.3
-Pillow==6.2.0
+tornado==6.0.4
+Pillow==7.1.0
 cachetools==3.1.1
-lz4==2.1.6
+lz4==3.0.2
 newrelic==5.4.1.134

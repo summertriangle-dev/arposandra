@@ -1,4 +1,4 @@
-tornado==6.0.3
+tornado==6.0.4
 cachetools==3.1.1
-asyncpg==0.19.0
+asyncpg==0.20.0
 newrelic==5.4.1.134
