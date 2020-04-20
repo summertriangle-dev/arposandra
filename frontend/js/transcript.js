@@ -162,7 +162,7 @@ class ScriptWalker {
             case "cg":
                 if (this.cgBlacklist.indexOf(cmd.cgKey) === -1) {
                     rep.push(ADVImageRenderObj({
-                        imageUrlBase: this.urlBase, 
+                        imageUrlBase: this.urlBase,
                         ik: this.cgReferences[cmd.cgKey]
                     }))
                 }
@@ -195,12 +195,12 @@ class ScriptData {
                 continue
             }
 
-            let m = cmd.match(/(?<kwd>[^\s]+)/)
+            let m = cmd.match(/([^\s]+)/)
             if (!m) {
                 continue
             }
 
-            const handler = keywords[m.groups.kwd]
+            const handler = keywords[m[1]]
             if (handler === undefined) {
                 commandStream.push(new ADVTalkCommand(cmd.split(" ")))
                 continue
@@ -229,7 +229,7 @@ class ScriptData {
         return new Promise((resolve, reject) => {
             xhr.onreadystatechange = () => {
                 if (xhr.readyState !== 4) return
-    
+
                 if (xhr.status == 200) {
                     const json = JSON.parse(xhr.responseText)
                     resolve(new ScriptData(json.result))
@@ -251,7 +251,7 @@ export class StoryViewer extends React.Component {
 
     componentDidMount() {
         ScriptData.initWithURL(this.props.scriptName).then((s) => {
-            this.setState({scriptData: s, 
+            this.setState({scriptData: s,
                 scriptRender: (new ScriptWalker(this.props.scriptBasename)).walk(s.commands) })
         })
     }
@@ -286,9 +286,9 @@ export class StoryViewer extends React.Component {
         const titleTag = document.querySelector("title")
         titleTag.textContent = `${Infra.strings.SST.Header} - ${titleTag.textContent}`
         const url = new URL(frozen.dataset.signedUrl)
-        return <Klass 
+        return <Klass
             scriptBasename={`${url.origin}/advg/${frozen.dataset.name}`}
-            scriptName={frozen.dataset.signedUrl} 
+            scriptName={frozen.dataset.signedUrl}
             scriptRegion={frozen.dataset.scriptRegion} />
     }
 }

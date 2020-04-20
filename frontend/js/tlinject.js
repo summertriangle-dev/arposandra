@@ -92,7 +92,7 @@ async function getSupportedLanguages() {
     } else {
         const results = await bootstrapAPI()
         localStorage.setItem("as$tliLang", JSON.stringify({
-            l: results.languages, 
+            l: results.languages,
             t: Date.now()
         }))
         return results.languages
@@ -186,8 +186,8 @@ function displayStringSubmissionUI(forNode) {
         })
     }
 
-    ModalManager.pushModal((dismiss) => 
-        <TLInjectInputPromptModal 
+    ModalManager.pushModal((dismiss) =>
+        <TLInjectInputPromptModal
             originalText={orig}
             langName={Infra.strings["TLInject.localizedLanguages"][config.language]}
             submitString={submitString}
