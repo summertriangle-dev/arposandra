@@ -10,7 +10,7 @@
         {{ _("Version:") }} {{ handler.settings["runtime_info"].app_revision }} hosting 
         {{ handler.settings["master"].version }} on
         {{ handler.settings["runtime_info"].host_id }} <br>
-        {{ _("Render time (so far):") }} {{ request.request_time() * 1000 }} ms.
+        {{ _("Render time (so far):") }} {{ "{0:.4f}".format(request.request_time() * 1000) }} ms.
 
         <div class="kars-debug-footer-only">
             {% try %}
