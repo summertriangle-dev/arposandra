@@ -1,5 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit"
 import Infra from "./infra"
+import Cookies from "js-cookie"
+
+const FLG_CS_SHOW_DEV_INFO_E = 0x2
 
 function valueIn(it, choices, def) {
     if (choices.indexOf(it) === -1) {
@@ -134,4 +137,14 @@ export function initWithRedux(store) {
 
     document.querySelector("#bind-appearance-toggle")
         .addEventListener("click", dmToggleAppearance, false)
+
+    const flagS = Cookies.get("cs_fflg")
+    console.debug(flagS)
+    let flagI
+    if (flagS && (flagI = parseInt(flagS))) {
+        console.debug(flagI)
+        if (flagI & FLG_CS_SHOW_DEV_INFO_E) {
+            document.querySelector("body").dataset.developer = true
+        }
+    }
 }

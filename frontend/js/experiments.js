@@ -5,6 +5,7 @@ import Cookies from "js-cookie"
 // Do not localize anything in this file.
 
 export const FLG_CS_AR_E = 0x1
+export const FLG_CS_SHOW_DEV_INFO_E = 0x2
 
 function _validateCaveSlimeEntry(password) {
     let flags = Cookies.get("cs_fflg")
@@ -32,7 +33,25 @@ function _validateCaveSlimeEntry(password) {
                 </div>
             </section>
         })
-    } 
+    } else if (password === "yaldabaoth") {
+        let msg
+        if (flags & FLG_CS_SHOW_DEV_INFO_E) {
+            msg = "Pages will no longer show developer-only information."
+        } else {
+            msg = "Pages will now show developer-only information."
+        }
+
+        flags ^= FLG_CS_SHOW_DEV_INFO_E
+
+        ModalManager.pushModal((dismiss) => {
+            return <section className="modal-body tlinject-modal">
+                <p>{msg}</p>
+                <div className="form-row kars-fieldset-naturalorder">
+                    <button className="item btn btn-primary" onClick={dismiss}>Dismiss</button>
+                </div>
+            </section>
+        })
+    }
 
     Cookies.set("cs_fflg", flags.toString(), {expires: 133337})
 }

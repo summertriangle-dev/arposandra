@@ -102,5 +102,6 @@ export default {
         DictionarySelectLabel: "Use this language for game data:",
         Save: "Save",
         Cancel: "キャンセル",
+        GoToExperiments: "実験",
     },
 }

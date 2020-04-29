@@ -65,6 +65,10 @@ class LanguageMenu extends React.Component {
         setTimeout(() => window.location.reload(), 200)
     }
 
+    goToExperiments() {
+        window.location.href = "/experiments"
+    }
+
     render() {
         return <section className="modal-body tlinject-modal">
             <h2 className="h5 mb-1">{Infra.strings.LangMenu.ModalTitle}</h2>
@@ -95,6 +99,10 @@ class LanguageMenu extends React.Component {
                     onClick={() => this.save()}>{Infra.strings.LangMenu.Save}</button>
                 <button className="item btn btn-secondary" 
                     onClick={this.props.dismiss}>{Infra.strings.LangMenu.Cancel}</button>
+                <span className="item flexible-space"></span>
+                <button className="item btn btn-secondary"
+                    onClick={() => this.goToExperiments()}>
+                    {Infra.strings.LangMenu.GoToExperiments}</button>
             </div>
         </section>
     }

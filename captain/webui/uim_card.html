@@ -62,7 +62,6 @@
                         <div class="kars-stack-member">
                             <a class="btn btn-sm btn-primary" href="/card/{{ card.ordinal - 1 }}">Prev. card</a>
                             <a class="btn btn-sm btn-primary" href="/card/{{ card.ordinal + 1 }}">Next card</a>
-                            <a class="btn btn-sm btn-primary" href="{{ handler.settings["image_server"] }}/inspector/group/card:{{ card.id }}">Inspect</a>
                             <a class="btn btn-sm btn-primary" href="/api/v1/{{ handler.settings["master"].version }}/card/{{ card.ordinal }}.json">API</a>
                         </div>
                     </div>
@@ -82,6 +81,10 @@
                                 <p class="mb-0">{% raw format_skill_target(card.active_skill, card) %}</p>
 
                                 {% module Template("uim_skill_prog_box.html", skill=card.active_skill) %}
+
+                                <div class="dev-only small text-muted">
+                                    {{ card.active_skill.levels[0] }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -98,6 +101,10 @@
                                 <p class="mb-0">{% raw format_skill_target(skill, card) %}</p>
 
                                 {% module Template("uim_skill_prog_box.html", skill=skill) %}
+
+                                <div class="dev-only small text-muted">
+                                    {{ skill.levels[0] }}
+                                </div>
                             </div>
                         </div>
                         {% end %}
