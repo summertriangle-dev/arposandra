@@ -149,6 +149,8 @@ def _(skill, tags):
             return " until the next party switch"
         else:
             return f" for the next {tags['let']}{finish_value}{tags['end']} party changes"
+    if finish_type == FT.WaveEnd:
+        return " until appeal ends"
     return ""
 
 
