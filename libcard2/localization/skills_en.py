@@ -173,6 +173,8 @@ def to_trigger_phrase(trigger_type):
         return "on SP burst"
     elif trigger_type == TT.OnNoteScore:
         return "on tap"
+    elif trigger_type == TT.OnAppealCritical:
+        return "on critical notes"
     elif trigger_type == TT.BeforeLive:
         return None
     elif trigger_type is not None:
