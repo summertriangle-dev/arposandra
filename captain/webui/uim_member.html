@@ -20,7 +20,8 @@
 
         <div class="card-body kars-card-brief-list position-relative">
             <div class="kars-ornament-top-left" style="border-top-color: {{ member.css_color() }}; border-left-color: {{ member.css_color() }}"></div>
-            {% for cl in member.card_brief[-9:] %}
+            {# get 9 newest cards, most recent left #}
+            {% for cl in member.card_brief[-1:-10:-1] %}
             <a href="/card/{{ cl.ordinal }}" class="card-icon">
                 <img width="64" height="64" src="{{ card_icon_url(cl, cl.normal_appearance) }}"
                     alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">

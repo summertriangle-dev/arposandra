@@ -91,7 +91,7 @@ class MasterData(object):
                 role, thumbnail_asset_path
                 FROM m_card
                 LEFT JOIN m_card_appearance ON (card_m_id = m_card.id AND appearance_type == 1)
-                WHERE member_m_id = ? ORDER BY m_card.school_idol_no DESC""",
+                WHERE member_m_id = ? ORDER BY m_card.school_idol_no""",
             (member_id,),
         )
 
