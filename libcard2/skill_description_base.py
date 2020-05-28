@@ -1,6 +1,6 @@
 from .dataclasses import Skill, Card
 from .string_mgr import DictionaryAccess
-from typing import Callable, Union
+from typing import Callable, Union, Optional
 from collections import UserDict
 
 from .skill_cs_enums import (
@@ -40,15 +40,17 @@ class SkillEffectDescriberContext(object):
         elif vs.effect_type in PERCENT_VALUE_SKILL_TYPES:
             eff_d_type = 2
 
-        if eff_d_type == 2:
+        if eff_d_type > 1:
             vf = vs.effect_value / 100
             vi = vs.effect_value // 100
+
             if vf == vi:
-                return f"{vi}%"
+                vf = vi
+
             return f"{vf}%"
         return str(vs.effect_value)
 
-    def default_birdseye(self, effect1, effect2, mod):
+    def default_birdseye(self, effect1, effect2=None):
         return ""
 
     def default_finish(self, skill: Skill):
@@ -67,7 +69,7 @@ class SkillEffectDescriberContext(object):
         self.finish = f
         return f
 
-    def birdseye_clause(self, f: Callable[[tuple, tuple], str]):
+    def birdseye_clause(self, f: Callable[[tuple, Optional[tuple]], str]):
         self.birdseye = f
         return f
 
@@ -103,7 +105,7 @@ class SkillEffectDescriberContext(object):
             level = 0
 
         if level is not None:
-            value = self.mod_value(skill.levels[level])
+            value = self.birdseye(skill.levels[level])
         else:
             value = self.birdseye(skill.levels[0], skill.levels[-1])
 

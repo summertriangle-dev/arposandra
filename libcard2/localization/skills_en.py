@@ -129,9 +129,18 @@ def _(tt: Skill, base, context: Card = None):
 
 
 @EN.birdseye_clause
-def _(effect1, effect2):
+def _(effect1, effect2=None):
     m = SkillEffectDescriberContext.mod_value
-    return f"{m(effect1)}..{m(effect2)}"
+    if effect2:
+        one = f"{m(effect1)}..{m(effect2)}"
+    else:
+        one = m(effect1)
+
+    if effect1.calc_type == 3:
+        # TODO: ScaleB calc type, possibly late calc?
+        return f"{one} (SP)"
+    else:
+        return f"{one}"
 
 
 @EN.finish_clause
