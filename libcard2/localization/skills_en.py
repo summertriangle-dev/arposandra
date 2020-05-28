@@ -138,7 +138,7 @@ def _(effect1, effect2=None):
 
     if effect1.calc_type == 3:
         # TODO: ScaleB calc type, possibly late calc?
-        return f"{one} (SP)"
+        return f"{one} (EX)"
     else:
         return f"{one}"
 
