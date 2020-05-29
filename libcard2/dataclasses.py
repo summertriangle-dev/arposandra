@@ -4,23 +4,31 @@ from dataclasses import dataclass, field
 from typing import List, Tuple
 from weakref import ref
 
+from dataclasses_json import dataclass_json, config as JSONConfig
+
 from .skill_cs_enums import TT
+from .utils import get_coding_context
 
 
+def _load_tl(string):
+    return get_coding_context().get(string, string)
+
+
+@dataclass_json
 @dataclass
 class Member(object):
     id: int
     group: int
     subunit: int
     year: int
-    name: str
-    name_romaji: str
+    name: str = field(metadata=JSONConfig(encoder=_load_tl))
+    name_romaji: str = field(metadata=JSONConfig(encoder=_load_tl))
     birth_month: int
     birth_day: int
     theme_color: int
 
-    group_name: str
-    subunit_name: str
+    group_name: str = field(metadata=JSONConfig(encoder=_load_tl))
+    subunit_name: str = field(metadata=JSONConfig(encoder=_load_tl))
 
     thumbnail_image_asset_path: str
     standing_image_asset_path: str
@@ -47,6 +55,7 @@ class Member(object):
         }
 
 
+@dataclass_json
 @dataclass
 class Skill(object):
     @dataclass
@@ -95,8 +104,8 @@ class Skill(object):
     )
 
     id: int
-    name: str
-    description: str
+    name: str = field(metadata=JSONConfig(encoder=_load_tl))
+    description: str = field(metadata=JSONConfig(encoder=_load_tl))
 
     skill_type: int
     sp_gauge_point: int
@@ -119,11 +128,17 @@ class Skill(object):
         return a
 
 
+@dataclass_json
 @dataclass
 class Card(object):
     CostumeInfo = namedtuple("CostumeInfo", ("thumbnail", "costume_id", "name", "variants"))
     LevelValues = namedtuple("LevelValues", ("level", "appeal", "stamina", "technique"))
-    Appearance = namedtuple("Appearance", ("name", "image_asset_path", "thumbnail_asset_path"))
+
+    @dataclass
+    class Appearance(object):
+        name: str = field(metadata=JSONConfig(encoder=_load_tl))
+        image_asset_path: str
+        thumbnail_asset_path: str
 
     @dataclass
     class RoleEffect(object):
@@ -146,7 +161,7 @@ class Card(object):
     max_passive_skill_slot: int
     background_asset_path: str
 
-    member: Member
+    member: Member = field(metadata=JSONConfig(encoder=lambda member: member["id"]))
     role_effect: RoleEffect
     normal_appearance: Appearance
     idolized_appearance: Appearance
@@ -160,7 +175,7 @@ class Card(object):
     costume_info: CostumeInfo = None
 
     def get_tl_set(self):
-        se = {self.normal_appearance[0], self.idolized_appearance[0],} | self.member.get_tl_set()
+        se = {self.normal_appearance.name, self.idolized_appearance.name} | self.member.get_tl_set()
         if self.active_skill:
             se |= self.active_skill.get_tl_set()
         if self.passive_skills:

@@ -1,4 +1,23 @@
 from typing import Tuple, List, Iterable, Callable, TypeVar, Optional, Dict
+from contextlib import contextmanager
+
+_coding_contexts = []
+
+
+@contextmanager
+def coding_context(it):
+    _coding_contexts.append(it)
+    try:
+        yield
+    finally:
+        _coding_contexts.pop()
+
+
+def get_coding_context():
+    return _coding_contexts[-1]
+
+
+## TT
 
 T = TypeVar("T")
 
@@ -59,6 +78,8 @@ def construct_tt_from_sql_shape(t: Tuple[List[Tuple[int, int, int]], List[Tuple[
 
     return stack, list(locks.items())
 
+
+## Icon generation
 
 IFI_FRAME = {
     1: "s",

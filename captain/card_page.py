@@ -3,6 +3,7 @@ from datetime import datetime
 
 from tornado.web import RequestHandler
 
+from libcard2.utils import coding_context
 from .dispatch import route, LanguageCookieMixin
 from .pageutils import tlinject_static
 
@@ -95,3 +96,70 @@ class CardHistory(LanguageCookieMixin):
         for item in items:
             cards = self.settings["master"].lookup_multiple_cards_by_id(item.card_refs)
             item.card_refs = [c for c in cards if c]
+
+
+@route(r"/api/private/cards/id_list\.json")
+class CardListAPI(RequestHandler):
+    def get(self):
+        ordinals = self.settings["master"].all_ordinals()
+        ids = self.settings["master"].card_ordinals_to_ids(ordinals)
+
+        self.write({"result": [{"ordinal": ord, "id": id} for ord, id, in zip(ordinals, ids)]})
+
+
+@route(r"/api/private/cards/(id|ordinal)/([0-9,]+)\.json")
+class CardPageAPI(CardPage):
+    def get(self, mode, spec):
+        id_list = self.card_spec(spec)
+
+        if mode == "ordinal":
+            id_list = self.settings["master"].card_ordinals_to_ids(id_list)
+
+        cards = self.settings["master"].lookup_multiple_cards_by_id(id_list)
+
+        tlbatch = set()
+        for card in cards:
+            tlbatch.update(card.get_tl_set())
+
+        if self.get_argument("with_accept_language", False):
+            dict_pref = self.get_user_dict_preference()
+        else:
+            dict_pref = None
+
+        sd = self.settings["string_access"].lookup_strings(tlbatch, dict_pref)
+
+        if cards:
+            with coding_context(sd[0]):
+                cards = [c.to_dict() for c in cards if c]
+                self.write({"result": cards})
+        else:
+            self.set_status(404)
+            self.write({"error": "No results."})
+
+
+@route(r"/api/private/cards/member/([0-9]+)\.json")
+class CardPageAPIByMemberID(LanguageCookieMixin):
+    def get(self, member_id):
+        member = self.settings["master"].lookup_member_by_id(member_id)
+
+        card_ids = [cl.id for cl in reversed(member.card_brief)]
+        cards = self.settings["master"].lookup_multiple_cards_by_id(card_ids)
+
+        tlbatch = set()
+        for card in cards:
+            tlbatch.update(card.get_tl_set())
+
+        if self.get_argument("with_accept_language", False):
+            dict_pref = self.get_user_dict_preference()
+        else:
+            dict_pref = None
+
+        sd = self.settings["string_access"].lookup_strings(tlbatch, dict_pref)
+
+        if cards:
+            with coding_context(sd[0]):
+                cards = [c.to_dict() for c in cards if c]
+                self.write({"result": cards})
+        else:
+            self.set_status(404)
+            self.write({"error": "No results."})

@@ -11,7 +11,7 @@
                 data-generic-bg="{{ image_url_reify(card.background_asset_path, "jpg") }}"
                 {% end %}
             >
-            <a href="{{ image_url_reify(card.normal_appearance[1]) }}"
+            <a href="{{ image_url_reify(card.normal_appearance.image_asset_path) }}"
                 class="kars-card-image-backing"
                 {% if not card_has_full_bg(card) %}
                 style="background-image: url({{ image_url_reify(card.background_asset_path, "jpg") }})"
@@ -62,7 +62,6 @@
                         <div class="kars-stack-member">
                             <a class="btn btn-sm btn-primary" href="/card/{{ card.ordinal - 1 }}">Prev. card</a>
                             <a class="btn btn-sm btn-primary" href="/card/{{ card.ordinal + 1 }}">Next card</a>
-                            <a class="btn btn-sm btn-primary" href="/api/v1/{{ handler.settings["master"].version }}/card/{{ card.ordinal }}.json">API</a>
                         </div>
                     </div>
                 </div>

@@ -193,7 +193,7 @@ class MasterData(object):
             idolized_appearance,
             self.lookup_active_skill_by_card_id(da[1]),
             self.lookup_passive_skills_by_card_id(da[1]),
-            D.Card.LevelValues(0, *da[12:15]),
+            D.Card.LevelValues(1, *da[12:15]),
             self.tt_stat_increases.get(da[1]),
         )
 
@@ -208,7 +208,7 @@ class MasterData(object):
             card.costume_info = D.Card.CostumeInfo(da[15], da[16], None, None)
 
         if not card.tt_offset:
-            card.tt_offset = D.Card.LevelValues(0, 0, 0, 0)
+            card.tt_offset = [D.Card.LevelValues(0, 0, 0, 0)]
 
         if use_cache:
             self.card_id_cache[card.id] = card

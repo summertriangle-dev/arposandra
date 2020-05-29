@@ -8,7 +8,7 @@ class DictionaryAggregator(object):
         self.master = master_dict
         self.choices = choices
 
-    def lookup_strings(self, stringset, preferred_language):
+    def lookup_strings(self, stringset, preferred_language=None):
         ss = set(stringset)
 
         alt = self.choices.get(preferred_language)
