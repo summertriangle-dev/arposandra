@@ -49,6 +49,9 @@ msgstr "{idol_name}のカード"
 msgid "DefaultDictionaryName"
 msgstr "既定"
 
+msgid "ErrorMessage.ItemNotFound"
+msgstr "I couldn't find the item(s) you requested. Sorry."
+
 msgid "EventTracker.HeaderStories"
 msgstr "エピソード"
 

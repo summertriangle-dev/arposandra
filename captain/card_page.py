@@ -13,15 +13,22 @@ class CardPageByMemberID(LanguageCookieMixin):
     def get(self, member_id, _):
         member = self.settings["master"].lookup_member_by_id(member_id)
 
+        if not member:
+            self.set_status(404)
+            self.render("error.html", message=self.locale.translate("ErrorMessage.ItemNotFound"))
+            return
+
         card_ids = [cl.id for cl in reversed(member.card_brief)]
         cards = self.settings["master"].lookup_multiple_cards_by_id(card_ids)
 
         tlbatch = member.get_tl_set()
         for card in cards:
             tlbatch.update(card.get_tl_set())
+
         self._tlinject_base = self.settings["string_access"].lookup_strings(
             tlbatch, self.get_user_dict_preference()
         )
+
         self.render(
             "cards.html",
             cards=cards,
@@ -62,15 +69,22 @@ class CardPage(LanguageCookieMixin):
         cards = self.settings["master"].lookup_multiple_cards_by_id(
             self.settings["master"].card_ordinals_to_ids(ordinals)
         )
+        cards = [c for c in cards if c]
+
         tlbatch = set()
         for card in cards:
-            tlbatch.update(card.get_tl_set())
+            if card:
+                tlbatch.update(card.get_tl_set())
 
         self._tlinject_base = self.settings["string_access"].lookup_strings(
             tlbatch, self.get_user_dict_preference()
         )
 
-        if len(cards) == 1:
+        if len(cards) == 0:
+            self.set_status(404)
+            self.render("error.html", message=self.locale.translate("ErrorMessage.ItemNotFound"))
+            return
+        elif len(cards) == 1:
             ct = self.locale.translate("#{card_no}: {idol_name}").format(
                 idol_name=tlinject_static(self, cards[0].member.name_romaji, escape=False),
                 card_no=cards[0].ordinal,
@@ -116,6 +130,7 @@ class CardPageAPI(CardPage):
             id_list = self.settings["master"].card_ordinals_to_ids(id_list)
 
         cards = self.settings["master"].lookup_multiple_cards_by_id(id_list)
+        cards = [c for c in cards if c]
 
         tlbatch = set()
         for card in cards:
@@ -130,7 +145,7 @@ class CardPageAPI(CardPage):
 
         if cards:
             with coding_context(sd[0]):
-                cards = [c.to_dict() for c in cards if c]
+                cards = [c.to_dict() for c in cards]
                 self.write({"result": cards})
         else:
             self.set_status(404)
@@ -142,8 +157,14 @@ class CardPageAPIByMemberID(LanguageCookieMixin):
     def get(self, member_id):
         member = self.settings["master"].lookup_member_by_id(member_id)
 
+        if not member:
+            self.set_status(404)
+            self.write({"error": "No results."})
+            return
+
         card_ids = [cl.id for cl in reversed(member.card_brief)]
         cards = self.settings["master"].lookup_multiple_cards_by_id(card_ids)
+        cards = [c for c in cards if c]
 
         tlbatch = set()
         for card in cards:
@@ -158,7 +179,7 @@ class CardPageAPIByMemberID(LanguageCookieMixin):
 
         if cards:
             with coding_context(sd[0]):
-                cards = [c.to_dict() for c in cards if c]
+                cards = [c.to_dict() for c in cards]
                 self.write({"result": cards})
         else:
             self.set_status(404)

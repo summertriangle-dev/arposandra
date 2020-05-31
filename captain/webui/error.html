@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>{{ handler.get_status() }} - {{ _("PT.SiteName") }}</title>
+        {% include t_preamble.html %}
+    </head>
+    <body class="kars-dark" data-master="{{ handler.settings["master"].version }}">
+        {% module Template("uim_nav.html", current="error") %}
+
+        <div class="container">
+            <div class="card kars-card-box">
+                <div class="card-body">
+                    {{ message }}
+                </div>
+            </div>
+        </div>
+
+        {% include t_footer.html %}
+    </body>
+</html>

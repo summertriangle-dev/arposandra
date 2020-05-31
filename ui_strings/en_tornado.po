@@ -49,6 +49,9 @@ msgstr "Cards of {idol_name}"
 msgid "DefaultDictionaryName"
 msgstr "Default"
 
+msgid "ErrorMessage.ItemNotFound"
+msgstr "I couldn't find the item(s) you requested. Sorry."
+
 msgid "EventTracker.HeaderStories"
 msgstr "Event Story"
 
