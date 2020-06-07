@@ -387,7 +387,7 @@ class TTMiniToolbar extends React.Component {
                 <a onClick={() => this.setState({confirming: true})} className="text-danger">
                     {Infra.strings["Reset All Nodes..."]}
                 </a>
-                {this.props.path? <span>Debug: tail node ID: {this.props.node[0]} Highlight set: {this.props.path.toString()}</span> : null}
+                {this.props.path? <span className="dev-only">Debug: tail node ID: {this.props.node[0]} Highlight set: {this.props.path.toString()}</span> : null}
             </p>
         }
         return <div className="kars-tt-thing">
