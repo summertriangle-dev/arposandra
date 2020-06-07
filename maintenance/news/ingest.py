@@ -91,15 +91,18 @@ class DatabaseConnection(object):
                 nid,
             )
 
-    async def update_visibility(self, vis_list):
+    async def update_visibility(self, server_id, vis_list):
+        tmp_table_name = f"vis_{server_id}"
         async with self.pool.acquire() as c, c.transaction():
             await c.execute(
-                "CREATE TEMPORARY TABLE vis(notice_id int, visible bool) ON COMMIT DROP"
+                f"CREATE TEMPORARY TABLE {tmp_table_name}(notice_id int, visible bool) ON COMMIT DROP"
             )
-            await c.copy_records_to_table("vis", records=[(id, True) for id in vis_list])
-            await c.execute("UPDATE news_v2 SET visible = FALSE")
+            await c.copy_records_to_table(tmp_table_name, records=[(id, True) for id in vis_list])
+            await c.execute("UPDATE news_v2 SET visible = FALSE WHERE serverid = $1", server_id)
             await c.execute(
-                "UPDATE news_v2 SET visible = vis.visible FROM vis WHERE vis.notice_id = news_v2.news_id"
+                f"""UPDATE news_v2 SET visible = {tmp_table_name}.visible FROM {tmp_table_name} 
+                WHERE {tmp_table_name}.notice_id = news_v2.news_id AND serverid = $1""",
+                server_id,
             )
 
     async def all_dt(self):

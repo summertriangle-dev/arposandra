@@ -82,7 +82,7 @@ async def get_new_notices(ice, db, tag):
             await add_notice(ice, db, tag, no)
             seen.add(no["notice_id"])
 
-    await db.update_visibility(list(vis_set))
+    await db.update_visibility(tag, list(vis_set))
 
 
 async def get_daily_convo(ice, db, tag):
