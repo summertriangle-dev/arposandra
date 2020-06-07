@@ -205,6 +205,15 @@ msgstr "Version:"
 msgid "Warning"
 msgstr "Warning"
 
+msgid "WaveSkillActivateType.2"
+msgstr "WaveSkillActivateType.2"
+
+msgid "WaveSkillActivateType.3"
+msgstr "WaveSkillActivateType.3"
+
+msgid "WaveSkillActivateType.4"
+msgstr "WaveSkillActivateType.4"
+
 msgid "You are about to leave this site and visit the following external link:"
 msgstr "You are about to leave this site and visit the following external link:"
 

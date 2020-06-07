@@ -365,8 +365,12 @@ class MasterData(object):
 
         da = self.connection.execute(
             """SELECT live_difficulty_id, live_difficulty_type,
-                evaluation_s_score, evaluation_a_score, evaluation_b_score, evaluation_c_score
+                evaluation_s_score, evaluation_a_score, evaluation_b_score, evaluation_c_score,
+                recommended_score, recommended_stamina, 
+                sp_gauge_length, note_stamina_reduce, note_voltage_upper_limit
+
                 FROM m_live_difficulty
+                LEFT JOIN m_live_difficulty_const ON (live_difficulty_id = m_live_difficulty_const.id)
                 WHERE m_live_difficulty.live_id = ?
                 ORDER BY live_difficulty_type""",
             (for_song_id,),
@@ -442,7 +446,7 @@ class MasterData(object):
                 LEFT JOIN m_skill_condition AS _Cd2 ON (m_live_difficulty_gimmick.condition_master_id2 == _Cd2.id)
 
                 LEFT JOIN m_skill_effect ON (m_skill.skill_effect_master_id1 == m_skill_effect.id)
-                WHERE m_live_difficulty_gimmick.live_difficulty_master_id = ?""",
+                WHERE m_live_difficulty_gimmick.live_difficulty_master_id = ? AND trigger_type < 255""",
             (live_diff_id,),
         )
 
@@ -472,15 +476,65 @@ class MasterData(object):
 
         return skills
 
+    def _lookup_generic_skill_info(self, skill_id: int, cons: type):
+        FIRST_EFFECT_PARAM = 2
+        da = self.connection.execute(
+            """SELECT m_skill.id,
+                skill_target_master_id1,
+
+                m_skill_effect.target_parameter,
+                m_skill_effect.effect_type, m_skill_effect.effect_value,
+                m_skill_effect.scale_type, m_skill_effect.calc_type,
+                m_skill_effect.timing, m_skill_effect.finish_type, m_skill_effect.finish_value
+
+                FROM m_skill
+                LEFT JOIN m_skill_effect ON (m_skill.skill_effect_master_id1 == m_skill_effect.id)
+                WHERE m_skill.id = ? LIMIT 1""",
+            (skill_id,),
+        )
+        row = da.fetchone()
+
+        if not row:
+            return None
+
+        c_skill = cons(
+            row[0],
+            "DUMMY",
+            "DUMMY",
+            None,
+            None,
+            None,
+            None,
+            None,
+            TriggerType.Non,
+            10000,
+            self.lookup_skill_target_type(row[1]),
+        )
+
+        c_skill.levels.append(D.Skill.Effect(*row[FIRST_EFFECT_PARAM:]))
+        return c_skill
+
     def lookup_wave_descriptions_for_live_id(self, live_diff_id: int):
         da = self.connection.execute(
-            """SELECT wave_id, name, description
+            """SELECT wave_id, name, description, skill_id, state
                 FROM m_live_note_wave_gimmick_group
                 WHERE live_difficulty_id = ?
                 ORDER BY wave_id""",
             (live_diff_id,),
         )
-        return [D.LiveWaveMission(*x, LANGUAGE_DEFINITION_JA) for x in da.fetchall()]
+
+        rlist = []
+        for id, name, desc, skillid, state in da.fetchall():
+            mission = D.LiveWaveMission(id, name, desc, LANGUAGE_DEFINITION_JA)
+
+            if state < 255:
+                gimmick = self._lookup_generic_skill_info(skillid, D.LiveWaveMission.Gimmick)
+                gimmick.wave_state = state
+                mission.gimmick = gimmick
+
+            rlist.append(mission)
+
+        return rlist
 
     def lookup_all_accessory_skills(self):
         FIRST_EFFECT_PARAM = 13

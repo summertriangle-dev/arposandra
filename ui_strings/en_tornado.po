@@ -235,6 +235,15 @@ msgstr "Version:"
 msgid "Warning"
 msgstr "Warning"
 
+msgid "WaveSkillActivateType.2"
+msgstr "On Appeal Chance success"
+
+msgid "WaveSkillActivateType.3"
+msgstr "On Appeal Chance failure"
+
+msgid "WaveSkillActivateType.4"
+msgstr "When Appeal Chance ends"
+
 msgid "You are about to leave this site and visit the following external link:"
 msgstr ""
 "You are about to leave this site and visit the following external link:"

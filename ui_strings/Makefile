@@ -1,12 +1,15 @@
-.phony: mo genstrings
+.phony: mo genstrings msgfmt
 
-mo:
+msgfmt:
 	for f in *_tornado.po; do \
         mkdir -p ../captain/gettext/$${f%_tornado.po}/LC_MESSAGES && \
 		msgfmt -o ../captain/gettext/$${f%_tornado.po}/LC_MESSAGES/tornado.mo $$f; done
 	for f in *_static.po; do \
         mkdir -p ../captain/gettext/$${f%_static.po}/LC_MESSAGES && \
 		msgfmt -o ../captain/gettext/$${f%_static.po}/LC_MESSAGES/static.mo $$f; done
+
+# use msgfmt instead, this is just an alias
+mo: msgfmt
 
 msgmerge: captain.pot
 	for f in *_tornado.po; do \

@@ -307,7 +307,6 @@ class ST:
     RemoveAccessoryPassiveSkillRateDebuff = 254
 
 
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
 # End of C# constant data.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -388,6 +387,19 @@ PERCENT_VALUE_SKILL_TYPES = {
     ST.AddCollaboVoltageBuffByTechnique,
     ST.AddVoltageByStamina,
     ST.AddVoltageByTechnique,
+    ST.AddCollaboGaugeGimmickBuff,
+    ST.AddCriticalRateGimmickBuff,
+    ST.AddCriticalAppealGimmickBuff,
+    ST.AddActionSkillRateGimmickBuff,
+    ST.AddAppealGimmickBuff,
+    ST.AddCollaboVoltageGimmickBuff,
+    ST.AddVoltageGimmickBuff,
+    ST.AddActionSkillRateGimmickDebuff,
+    ST.AddVoltageGimmickDebuff,
+    ST.AddCriticalAppealGimmickDebuff,
+    ST.AddAppealGimmickDebuff,
+    ST.AddCriticalRateGimmickDebuff,
+    ST.AddCollaboGaugeGimmickDebuff,
 }
 
 MIXED_VALUE_SKILL_TYPES = {ST.AddVoltageBuff, ST.AddAppealBuff}

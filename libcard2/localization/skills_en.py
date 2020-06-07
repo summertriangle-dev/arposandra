@@ -302,7 +302,7 @@ EN.skill_effect[ST.AddShieldByCardTechnique] = \
 EN.skill_effect[ST.AddShieldByComboCount] = \
     "Add shield points based on current combo (max. {var}{value}{end} at 150 combo)"
 EN.skill_effect[ST.AddSquadChangeEffectHealBuff] = \
-    "Increase the stamina restored by Guard-type cards' rotation effect by {var}{value}{end}"
+    "Buff. Increase the stamina restored by Guard-type cards' rotation effect by {var}{value}{end}"
 EN.skill_effect[ST.AddStaminaBase] = \
     "Base stamina up by {var}{value}{end}"
 EN.skill_effect[ST.AddStaminaDamageBaseBonusChangingHpRateMax] = \
@@ -330,7 +330,7 @@ EN.skill_effect[ST.ReduceDamageActualBuff] = \
 EN.skill_effect[ST.AddCollaboGaugeByTechnique] = \
     "Add {var}{value}{end} of this card's technique to SP gauge"
 EN.skill_effect[ST.RemoveAllBuff] = \
-    "Remove all active buffs"
+    "Remove all buffs"
 EN.skill_effect[ST.RemoveAllDebuff] = \
     "Remove all debuffs"
 EN.skill_effect[ST.AddAppealDebuffByNumOfVo] = \
@@ -344,9 +344,9 @@ EN.skill_effect[ST.HealLifeByMaxLife] = \
 EN.skill_effect[ST.HealLifeByNumOfSk] = \
     "Restore {var}{value}{end} stamina for each Skill-type card on the team"
 EN.skill_effect[ST.ReduceAppealBaseBonus] = \
-    "Debuff. Reduce base appeal by {var}{value}{end}"
+    "Reduce base appeal by {var}{value}{end}"
 EN.skill_effect[ST.ReduceCollaboGaugeBaseBonus] = \
-    "Debuff. Reduce base SP gauge fill rate by {var}{value}{end}"
+    "Reduce base SP gauge fill rate by {var}{value}{end}"
 EN.skill_effect[ST.RemoveCollaboGauge] = \
     "Remove {var}{value}{end} from SP gauge"
 EN.skill_effect[ST.AddAppealBuffByNumOfVo] = \
@@ -359,5 +359,33 @@ EN.skill_effect[ST.AddVoltageByStamina] = \
     "Add {var}{value}{end} of this card's stamina to voltage"
 EN.skill_effect[ST.AddVoltageByTechnique] = \
     "Add {var}{value}{end} of this card's technique to voltage"
+
+EN.skill_effect[ST.AddCollaboGaugeGimmickBuff] = \
+    EN.skill_effect[ST.AddCollaboGaugeBaseBonus]
+EN.skill_effect[ST.AddCriticalRateGimmickBuff] = \
+    "Increase base critical rate by {var}{value}{end}"
+EN.skill_effect[ST.AddCriticalAppealGimmickBuff] = \
+    EN.skill_effect[ST.AddCriticalAppealBaseBonus] 
+EN.skill_effect[ST.AddActionSkillRateGimmickBuff] = \
+    EN.skill_effect[ST.AddActionSkillRateBaseBonus]
+EN.skill_effect[ST.AddAppealGimmickBuff] = \
+    EN.skill_effect[ST.AddAppealBaseBonus]
+EN.skill_effect[ST.AddCollaboVoltageGimmickBuff] = \
+    "Increase voltage gain from SP burst by {var}{value}{end}"
+EN.skill_effect[ST.AddVoltageGimmickBuff] = \
+    "Voltage gain up by {var}{value}{end}"
+
+EN.skill_effect[ST.AddActionSkillRateGimmickDebuff] = \
+    "Reduce skill activation rate by {var}{value}{end}"
+EN.skill_effect[ST.AddVoltageGimmickDebuff] = \
+    "Voltage gain down by {var}{value}{end}"
+EN.skill_effect[ST.AddCriticalAppealGimmickDebuff] = \
+    "Reduce voltage gain from critical notes by {var}{value}{end}"
+EN.skill_effect[ST.AddAppealGimmickDebuff] = \
+    "Reduce base appeal by {var}{value}{end}"
+EN.skill_effect[ST.AddCriticalRateGimmickDebuff] = \
+    "Reduce base critical rate by {var}{value}{end}"
+EN.skill_effect[ST.AddCollaboGaugeGimmickDebuff] = \
+    "Reduce base SP gain by {var}{value}{end}"
 
 # fmt: on

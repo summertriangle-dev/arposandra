@@ -18,29 +18,43 @@
         </div>
         {% for difficulty in song.difficulties %}
         <div class="card-body kars-list-alternate">
-            <p>Diff {{ difficulty.level }}, {{difficulty.id}}</p>
-            <div class="row">
-                <div class="col-md">
+            <div class="row mb-4">
+                <div class="col">
                     <div class="kars-stack kars-skill-stack">
                         <div class="kars-stack-header">
-                            {{ _("Appeal Chances") }}
+                            {{ _("Basic Information") }}
                         </div>
-                        {% for mission in difficulty.wave_missions %}
                         <div class="kars-stack-member">
-                            <p class="kars-skill-name mb-0">{{ format_wave_desc(mission) }}</p>
+                            <p class="mb-0">
+                                Recommended: <span class="var">{{ difficulty.expect_show_power }}</span> Show Power
+                                / <span class="var">{{ difficulty.expect_stamina }}</span> Stamina
+                            </p>
                         </div>
-                        {% end %}
+                        <div class="kars-stack-member">
+                            <p class="mb-0">
+                                Voltage Requirement: S {{ difficulty.s_score }} 
+                                / A {{ difficulty.a_score }} 
+                                / B {{ difficulty.b_score }} 
+                                / C {{ difficulty.c_score }}
+                            </p>
+                        </div>
+                        <div class="kars-stack-member">
+                            <p class="mb-0">Voltage Cap: {{ difficulty.note_score_cap }}</p>
+                            <p class="mb-0">Damage: {{ difficulty.note_damage }}</p>
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="row">
                 <div class="col-md">
                 {% if difficulty.stage_gimmicks %}
-                    <div class="kars-stack kars-skill-stack kars-bg-active-skills">
+                    <div class="kars-stack kars-skill-stack kars-bg-persistent-gimmick">
                         <div class="kars-stack-header">
                             {{ _("Persistent Gimmick") }}
                         </div>
                         {% for gimmick in difficulty.stage_gimmicks %}
                         <div class="kars-stack-member">
-                            <p class="kars-skill-name mb-0">{% raw tlinject(gimmick.name) %}</p>
                             <p class="mb-0">{% raw format_skill_effect(gimmick) %}</p>
                             <p class="mb-0">{% raw format_skill_target(gimmick) %}</p>
                         </div>
@@ -49,7 +63,7 @@
                 {% end %}
 
                 {% if difficulty.note_gimmicks %}
-                    <div class="kars-stack kars-skill-stack kars-bg-passive-skills">
+                    <div class="kars-stack kars-skill-stack kars-bg-note-gimmick">
                         <div class="kars-stack-header">
                             {{ _("Note Gimmicks") }}
                         </div>
@@ -62,6 +76,32 @@
                         {% end %}
                     </div>
                 {% end %}
+                </div>
+
+                <div class="col-md">
+                    <div class="kars-stack kars-skill-stack kars-bg-appeal-chance">
+                        <div class="kars-stack-header">
+                            {{ _("Appeal Chances") }}
+                        </div>
+                        {% for mission in difficulty.wave_missions %}
+                        <div class="kars-stack-member">
+                            <p class="kars-skill-name mb-0">{{ format_wave_desc(mission) }}</p>
+
+                            {% if mission.gimmick %}
+                            <p class="mb-0">{% raw format_skill_effect(mission.gimmick) %}</p>
+                            <p class="mb-0">{% raw format_skill_target(mission.gimmick) %}</p>
+                            {% if mission.gimmick.requires_temporal_descriptor() %}
+                                {# _("WaveSkillActivateType.2") #}
+                                {# _("WaveSkillActivateType.3") #}
+                                {# _("WaveSkillActivateType.4") #}
+                                <p class="mb-0">{{ _(f"WaveSkillActivateType.{mission.gimmick.wave_state}") }}</p>
+                            {% end %}
+                            {% else %}
+                            <p class="mb-0"><i>No Effect</i></p>
+                            {% end %}
+                        </div>
+                        {% end %}
+                    </div>
                 </div>
             </div>
         </div>

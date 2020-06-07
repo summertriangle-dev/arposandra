@@ -206,6 +206,15 @@ class LiveWaveMission(object):
 
     origin_lang: dict
 
+    @dataclass
+    class Gimmick(Skill):
+        wave_state: int = None
+
+        def requires_temporal_descriptor(self):
+            return 2 <= self.wave_state <= 4
+
+    gimmick: Gimmick = None
+
 
 @dataclass
 class LiveDifficulty(object):
@@ -216,6 +225,12 @@ class LiveDifficulty(object):
     a_score: int
     b_score: int
     c_score: int
+
+    expect_show_power: int
+    expect_stamina: int
+    sp_gauge_size: int
+    note_damage: int
+    note_score_cap: int
 
     stage_gimmicks: List[Skill] = None
     note_gimmicks: List[Skill] = None
@@ -229,6 +244,7 @@ class LiveDifficulty(object):
             s |= g.get_tl_set()
         for g in self.wave_missions:
             s.add(g.name)
+            s.add(g.description)
         return s
 
 
