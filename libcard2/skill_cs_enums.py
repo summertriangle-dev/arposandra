@@ -305,6 +305,12 @@ class ST:
     AddAccessoryPassiveSkillRateGimmickDebuff = 252
     RemoveAccessoryPassiveSkillRateBuff = 253
     RemoveAccessoryPassiveSkillRateDebuff = 254
+    AddNoteScoreUpLimitBuff = 255
+    AddNoteScoreUpLimitDebuff = 256
+    AddNoteScoreBaseBonusUpLimitBuff = 257
+    AddNoteScoreBaseBonusUpLimitDebuff = 258
+    AddNoteScoreUpLimitGimmickBuff = 259
+    AddNoteScoreUpLimitGimmickDebuff = 260
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
