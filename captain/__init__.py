@@ -88,6 +88,16 @@ def application(master, language, debug):
     strings = static_strings()
     db_coordinator = database.DatabaseCoordinator()
 
+    if os.path.exists(readonly_app_path("webui", "t_preamble_extra.html")):
+        have_preamble_extra = True
+    else:
+        have_preamble_extra = False
+
+    if os.path.exists(readonly_app_path("webui", "t_footer_extra.html")):
+        have_footer_extra = True
+    else:
+        have_footer_extra = False
+
     application = Application(
         dispatch.ROUTES,
         db_coordinator=db_coordinator,
@@ -106,5 +116,7 @@ def application(master, language, debug):
         static_strings=strings,
         debug=debug,
         autoreload=debug,
+        have_preamble_extra=have_preamble_extra,
+        have_footer_extra=have_footer_extra,
     )
     return application

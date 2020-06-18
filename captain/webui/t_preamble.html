@@ -22,3 +22,7 @@
 <script type="text/javascript" src="{{ handler.static_url('js/vendors~main.bundle.js') }}" async></script>
 <script type="text/javascript" src="{{ handler.static_url('js/main.bundle.js') }}" async></script>
 {% end %}
+
+{% if handler.settings["have_preamble_extra"] %}
+{% module Template("t_preamble_extra.html") %}
+{% end %}

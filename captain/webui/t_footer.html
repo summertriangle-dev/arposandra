@@ -22,5 +22,9 @@
             {% except %}
             {% end %}
         </div>
+
+        {% if handler.settings["have_footer_extra"] %}
+        {% module Template("t_footer_extra.html") %}
+        {% end %}
     </footer>
 </div>
