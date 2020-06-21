@@ -1,3 +1,4 @@
+{% set max_level_id = card.max_level - 1 %}
 <div class="kars-stack kars-card-base-stats" data-cid="{{ card.id }}">
     <div class="kars-stack-header">
         {{ _("TypeAndStatsHeader") }}
@@ -27,14 +28,14 @@
                     <td class="let">{{ card.stats[0].technique }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">{{ _("Lv. {level}").format(level=len(card.stats)) }}</th>
-                    <td class="let">{{ card.stats[-1].appeal }}</td>
-                    <td class="let">{{ card.stats[-1].stamina }}</td>
-                    <td class="let">{{ card.stats[-1].technique }}</td>
+                    <th scope="row">{{ _("Lv. {level}").format(level=card.max_level) }}</th>
+                    <td class="let">{{ card.stats[max_level_id].appeal }}</td>
+                    <td class="let">{{ card.stats[max_level_id].stamina }}</td>
+                    <td class="let">{{ card.stats[max_level_id].technique }}</td>
                 </tr>
-                {% set lb_appeal_base = card.stats[-1].appeal + card.idolized_offset.appeal %}
-                {% set lb_stamina_base = card.stats[-1].stamina + card.idolized_offset.stamina %}
-                {% set lb_tech_base = card.stats[-1].technique + card.idolized_offset.technique %}
+                {% set lb_appeal_base = card.stats[max_level_id].appeal + card.idolized_offset.appeal %}
+                {% set lb_stamina_base = card.stats[max_level_id].stamina + card.idolized_offset.stamina %}
+                {% set lb_tech_base = card.stats[max_level_id].technique + card.idolized_offset.technique %}
 
                 {% for lb_level in card.tt_offset %}
                 <tr class="

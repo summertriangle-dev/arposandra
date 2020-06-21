@@ -3,6 +3,7 @@
     <div class="col-lg-auto" style="min-width: 80%">
         <div class="card">
             {% if card %}
+            {% set max_level_id = card.max_level - 1 %}
             <div class="card-body">
                 <div class="media mb-1">
                     <i class="kars-sprite k-rarity-{{ card.rarity }}"></i>
@@ -34,15 +35,15 @@
                         </p>
                         <p class="mb-0">
                             {{ _("Appeal") }}: 
-                            <span class="var">{{ card.stats[0].appeal }}..{{ card.stats[-1].appeal }}..{{ card.stats[-1].appeal + card.idolized_offset.appeal + card.tt_offset[-1].appeal }}</span>
+                            <span class="var">{{ card.stats[0].appeal }}..{{ card.stats[max_level_id].appeal }}..{{ card.stats[max_level_id].appeal + card.idolized_offset.appeal + card.tt_offset[-1].appeal }}</span>
                         </p>
                         <p class="mb-0">
                             {{ _("Stamina") }}: 
-                            <span class="var">{{ card.stats[0].stamina }}..{{ card.stats[-1].stamina }}..{{ card.stats[-1].stamina + card.idolized_offset.stamina + card.tt_offset[-1].stamina }}</span>
+                            <span class="var">{{ card.stats[0].stamina }}..{{ card.stats[max_level_id].stamina }}..{{ card.stats[max_level_id].stamina + card.idolized_offset.stamina + card.tt_offset[-1].stamina }}</span>
                         </p>
                         <p class="mb-0">
                             {{ _("Technique") }}: 
-                            <span class="var">{{ card.stats[0].technique }}..{{ card.stats[-1].technique }}..{{ card.stats[-1].technique + card.idolized_offset.technique + card.tt_offset[-1].technique }}</span>
+                            <span class="var">{{ card.stats[0].technique }}..{{ card.stats[max_level_id].technique }}..{{ card.stats[max_level_id].technique + card.idolized_offset.technique + card.tt_offset[-1].technique }}</span>
                         </p>
                     </div>
 

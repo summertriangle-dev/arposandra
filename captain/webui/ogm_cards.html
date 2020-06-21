@@ -17,9 +17,10 @@
 {% else %}
     {% if len(cards) == 1 %}
         {% set card = cards[0] %}
-        {% set lb_appeal = card.stats[-1].appeal %}
-        {% set lb_stamina = card.stats[-1].stamina %}
-        {% set lb_tech = card.stats[-1].technique %}
+        {% set max_level_id = card.max_level - 1 %}
+        {% set lb_appeal = card.stats[max_level_id].appeal %}
+        {% set lb_stamina = card.stats[max_level_id].stamina %}
+        {% set lb_tech = card.stats[max_level_id].technique %}
         <meta property="og:description" content="
         {{ _("OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:{group}:{subunit}:{grade}") \
             .format(appeal=lb_appeal, stamina=lb_stamina, technique=lb_tech, 
