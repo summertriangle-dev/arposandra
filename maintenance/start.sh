@@ -16,7 +16,7 @@ case $executable in
         ;;
     sync-cache)
         SERVER=$1; shift
-        exec python3 -m astool ${SERVER} --quiet pkg_sync main card:% 
+        exec python3 -m astool ${SERVER} --quiet pkg_sync main card:%
         ;;
     sync-cache-full)
         SERVER=$1; shift
@@ -24,13 +24,13 @@ case $executable in
         ;;
     sync-both)
         SERVER=$1; shift
-        python3 -m astool ${SERVER} dl_master && \
-            python3 -m astool ${SERVER} --quiet pkg_sync main card:% 
+        python3 -m astool ${SERVER} --quiet dl_master && \
+            python3 -m astool ${SERVER} --quiet pkg_sync main card:%
         ;;
     astool_command)
         exec python3 -m astool $@
         ;;
-    mtrack) 
+    mtrack)
         exec python3 mtrack/mtrack.py $@
         ;;
     border-ingest)
