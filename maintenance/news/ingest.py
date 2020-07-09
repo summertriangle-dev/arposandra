@@ -100,7 +100,7 @@ class DatabaseConnection(object):
             await c.copy_records_to_table(tmp_table_name, records=[(id, True) for id in vis_list])
             await c.execute("UPDATE news_v2 SET visible = FALSE WHERE serverid = $1", server_id)
             await c.execute(
-                f"""UPDATE news_v2 SET visible = {tmp_table_name}.visible FROM {tmp_table_name} 
+                f"""UPDATE news_v2 SET visible = {tmp_table_name}.visible FROM {tmp_table_name}
                 WHERE {tmp_table_name}.notice_id = news_v2.news_id AND serverid = $1""",
                 server_id,
             )
@@ -122,7 +122,9 @@ class DatabaseConnection(object):
     async def add_dt(self, server_id, dtid, ts, next_ts, title, body_dm, body_html, char_refs):
         async with self.pool.acquire() as c, c.transaction():
             await c.execute(
-                "INSERT INTO dt_v1 VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT DO NOTHING",
+                """INSERT INTO dt_v1 VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (serverid, dt_id)
+                    DO UPDATE SET next_ts = excluded.next_ts, body_html = excluded.body_html,
+                    body_dm = excluded.body_dm""",
                 server_id,
                 dtid,
                 ts,

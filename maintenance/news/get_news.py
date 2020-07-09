@@ -91,7 +91,11 @@ async def get_daily_convo(ice, db, tag):
         return
 
     ret = ice.api.dailyTheater.fetchDailyTheater().app_data
-    next_ts = datetime.utcfromtimestamp(ret["bootstrap_daily_theater_info"]["next_opened_at"])
+    next_info = ret.get("bootstrap_daily_theater_info")
+    if not next_info or "next_opened_at" not in next_info:
+        next_ts = datetime.utcfromtimestamp(0)
+    else:
+        next_ts = datetime.utcfromtimestamp(next_info["next_opened_at"])
 
     ent = ret["daily_theater_detail"]
     title = ent["title"]["dot_under_text"]
