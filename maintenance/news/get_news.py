@@ -63,7 +63,7 @@ async def add_notice(ice, db, tag, notice):
     body_dm = get_notice_body(ice, nid)
     body_html, c_refs, _ = dm_parse.dm_to_html(body_dm.encode("utf8"))
 
-    print("Adding notice:", nid)
+    logging.info("Adding notice: %s", nid)
     await db.insert_notice(tag, nid, title, ts, cat, thumb, body_dm, body_html, c_refs)
 
 
