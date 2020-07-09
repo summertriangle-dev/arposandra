@@ -101,7 +101,7 @@ def audit(lang, mdb, da):
 
 def main():
     master_db = master.MasterData(os.getenv("ASTOOL_MASTER"))
-    da = string_mgr.DictionaryAccess(os.getenv("ASTOOL_MASTER"))
+    da = string_mgr.DictionaryAccess(os.getenv("ASTOOL_MASTER"), "ja")
 
     langs = [l.lower() for l in sys.argv[1:]]
     for lang in langs:
