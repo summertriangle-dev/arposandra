@@ -182,7 +182,7 @@ $link-color: rgb(116, 155, 240);
 $link-hover-color: rgb(116, 155, 240);
 
 $title-color: darken($body-color, 10%);
-$subtitle-color: darken($body-color, 15%);
+$subtitle-color: darken($body-color, 15%); 
 
 $kars-navbar-item-color: darken($body-color, 10%);
 $kars-navbar-item-hover-color: $body-color;
@@ -195,7 +195,9 @@ $kars-stack-background: lighten($card-bg, 5%);
 $kars-skill-bg-active: #772929;
 $kars-skill-bg-passive: #304581;
 
-$kars-var-color: desaturate(lighten(green, 30%), 50%);
+$kars-var-color: hsl(120, 50%, 55%);
+$kars-var-color-alt: hsl(182, 50%, 55%);
+
 $kars-attr-colors: #ff3fb6 #05c159 #00aeff #fe4646 #ffb400 lighten(#bc4dd6, 10%);
 $kars-role-colors: lighten(#fe4646, 10%) #00aeff #05c159 #ffb400; 
 $kars-role-bg-colors: darken(#fe4646, 30%) darken(#00aeff, 30%) darken(#05c159, 30%) darken(#ffb400, 30%); 

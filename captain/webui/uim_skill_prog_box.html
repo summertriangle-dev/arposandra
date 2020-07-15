@@ -13,5 +13,13 @@
         <td class="let">{{ describer.format_single_value(lv) }}</td>
         {% end %}
     </tr>
+    {% if skill.levels_2 %}
+    <tr>
+        <th>{{ _("SkillValueShort") }}</th>
+        {% for lv in skill.levels_2 %}
+        <td class="let2">{{ describer.format_single_value(lv) }}</td>
+        {% end %}
+    </tr>
+    {% end %}
 </table>
 {% end %}

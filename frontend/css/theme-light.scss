@@ -19,7 +19,9 @@ $kars-skill-bg-passive: #cbd9ff;
 $card-bg: hsl(313, 100%, 99%);
 $card-bg-alt: darken($card-bg, 2%);
 
-$kars-var-color: green;
+$kars-var-color: hsl(120, 100%, 25%);
+$kars-var-color-alt: hsl(197, 100%, 25%);
+
 $kars-attr-colors: darken(#ff3fb6, 10%) darken(#05c159, 10%) darken(#00aeff, 10%) darken(#fe4646, 10%) darken(#ffb400, 10%) darken(#bc4dd6, 10%);
 $kars-role-colors: darken(#fe4646, 10%) darken(#00aeff, 10%) darken(#05c159, 10%) darken(#ffb400, 10%); 
 $kars-stat-colors: #ff3fb6 #05c159 #ffb400;

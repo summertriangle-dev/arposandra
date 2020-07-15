@@ -131,6 +131,11 @@ def format_skill_effect(handler, skill):
     es = get_skill_describer(handler).format_effect(
         skill,
         format_args={"let": "<span class='let'>", "var": "<span class='var'>", "end": "</span>"},
+        format_args_sec={
+            "let": "<span class='let2'>",
+            "var": "<span class='var2'>",
+            "end": "</span>",
+        },
     )
     if not es:
         return f"{tlinject_static(handler, skill.description)} ({skill.levels[0].effect_type})"

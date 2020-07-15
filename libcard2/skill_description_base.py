@@ -93,27 +93,54 @@ class SkillEffectDescriberContext(object):
             return ""
         return self.target(tt.target, strings, context)
 
-    def format_effect(self, skill: Skill, level: int = None, format_args: dict = None):
-        if format_args is None:
-            format_args = {"var": "", "let": "", "end": ""}
-
-        desc = self.skill_effect.get(skill.levels[0].effect_type)
+    def find_formatter(self, effect_type):
+        desc = self.skill_effect.get(effect_type)
         if not desc:
             return None
+
+        if callable(desc):
+            return desc
+
+        return desc.format
+
+    def display_value(self, levels, at_level):
+        if at_level is not None:
+            value = self.birdseye(levels[at_level])
+        else:
+            value = self.birdseye(levels[0], levels[-1])
+        return value
+
+    def format_effect(
+        self,
+        skill: Skill,
+        level: int = None,
+        format_args: dict = None,
+        format_args_sec: dict = None,
+    ):
+        if format_args is None:
+            format_args = {"var": "", "let": "", "end": ""}
+        if format_args_sec is None:
+            format_args_sec = format_args
+
+        formatter = self.find_formatter(skill.levels[0].effect_type)
+
+        if skill.levels_2:
+            formatter_sec = self.find_formatter(skill.levels_2[0].effect_type)
+        else:
+            formatter_sec = None
 
         if len(skill.levels) == 1:
             level = 0
 
-        if level is not None:
-            value = self.birdseye(skill.levels[level])
-        else:
-            value = self.birdseye(skill.levels[0], skill.levels[-1])
-
+        value = self.display_value(skill.levels, level)
         trigger = self.trigger(skill, format_args)
-        if callable(desc):
-            formatter = desc
-        else:
-            formatter = desc.format
         effect = formatter(value=value, **format_args)
+
+        if skill.levels_2:
+            value_2 = self.display_value(skill.levels_2, level)
+            effect_2 = formatter_sec(value=value_2, **format_args_sec)
+            # FIXME: Not happy with this formatting but will do for now
+            effect = " / ".join((effect, effect_2))
+
         finish = self.finish(skill, format_args)
         return self.combiner(trigger, effect, finish)

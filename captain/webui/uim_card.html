@@ -83,6 +83,9 @@
 
                                 <div class="dev-only small text-muted">
                                     {{ card.active_skill.levels[0] }}
+                                    {% if card.active_skill.levels_2 %}
+                                    {{ card.active_skill.levels_2[0] }}
+                                    {% end %}
                                 </div>
                             </div>
                         </div>
@@ -103,6 +106,9 @@
 
                                 <div class="dev-only small text-muted">
                                     {{ skill.levels[0] }}
+                                    {% if skill.levels_2 %}
+                                    {{ skill.levels_2[0] }}
+                                    {% end %}
                                 </div>
                             </div>
                         </div>
