@@ -129,6 +129,9 @@ class SkillEffectDescriberContext(object):
         else:
             formatter_sec = None
 
+        if formatter is None or (skill.levels_2 and formatter_sec is None):
+            return None
+
         if len(skill.levels) == 1:
             level = 0
 
