@@ -276,15 +276,17 @@ class MasterData(object):
         )
 
         # Levels
-        skill.levels.append(D.Skill.Effect(*first[EFFECT_1:EFFECT_1 + EFFECT_COUNT]))
+        skill.levels.append(D.Skill.Effect(*first[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
         has_secondary_effect = first[9]
         if has_secondary_effect:
-            skill.levels_2 = [D.Skill.Effect(*first[EFFECT_2:EFFECT_2 + EFFECT_COUNT])]
+            skill.levels_2 = [D.Skill.Effect(*first[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])]
 
         for remaining_row in da:
-            skill.levels.append(D.Skill.Effect(*remaining_row[EFFECT_1:EFFECT_1 + EFFECT_COUNT]))
+            skill.levels.append(D.Skill.Effect(*remaining_row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
             if has_secondary_effect:
-                skill.levels_2.append(D.Skill.Effect(*remaining_row[EFFECT_2:EFFECT_2 + EFFECT_COUNT]))
+                skill.levels_2.append(
+                    D.Skill.Effect(*remaining_row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])
+                )
 
         return skill
 
@@ -358,9 +360,9 @@ class MasterData(object):
 
                 c_demux_key = demux_key
 
-            c_skill.levels.append(D.Skill.Effect(*row[EFFECT_1:EFFECT_1 + EFFECT_COUNT]))
+            c_skill.levels.append(D.Skill.Effect(*row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
             if row[13]:
-                c_skill.levels_2.append(D.Skill.Effect(*row[EFFECT_2:EFFECT_2 + EFFECT_COUNT]))
+                c_skill.levels_2.append(D.Skill.Effect(*row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT]))
 
         if c_skill:
             skills.append(c_skill)
@@ -433,7 +435,7 @@ class MasterData(object):
                 _Se2.target_parameter,
                 _Se2.effect_type, _Se2.effect_value,
                 _Se2.scale_type, _Se2.calc_type,
-                _Se2.timing, _Se2.finish_type, _Se2.finish_value,
+                _Se2.timing, _Se2.finish_type, _Se2.finish_value
 
                 FROM m_live_difficulty_note_gimmick
                 LEFT JOIN m_skill ON (m_live_difficulty_note_gimmick.skill_master_id == m_skill.id)
@@ -459,9 +461,9 @@ class MasterData(object):
                 10000,
                 self.lookup_skill_target_type(row[3]),
             )
-            c_skill.levels.append(D.Skill.Effect(*row[EFFECT_1:EFFECT_1 + EFFECT_COUNT]))
-            if row[5]:
-                c_skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2:EFFECT_2 + EFFECT_COUNT])]
+            c_skill.levels.append(D.Skill.Effect(*row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
+            if row[4]:
+                c_skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])]
             skills.append(c_skill)
 
         return skills
@@ -486,7 +488,7 @@ class MasterData(object):
                 _Se2.target_parameter,
                 _Se2.effect_type, _Se2.effect_value,
                 _Se2.scale_type, _Se2.calc_type,
-                _Se2.timing, _Se2.finish_type, _Se2.finish_value,
+                _Se2.timing, _Se2.finish_type, _Se2.finish_value
 
                 FROM m_live_difficulty_gimmick
                 LEFT JOIN m_skill ON (m_live_difficulty_gimmick.skill_master_id == m_skill.id)
@@ -519,9 +521,9 @@ class MasterData(object):
             if row[6] and row[6] != ConditionType.Non:
                 c_skill.conditions.append(D.Skill.Condition(row[6], row[7]))
 
-            c_skill.levels.append(D.Skill.Effect(*row[EFFECT_1:EFFECT_1 + EFFECT_COUNT]))
+            c_skill.levels.append(D.Skill.Effect(*row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
             if row[9]:
-                c_skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2:EFFECT_2 + EFFECT_COUNT])]
+                c_skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])]
             skills.append(c_skill)
 
         return skills
@@ -542,7 +544,7 @@ class MasterData(object):
                 _Se2.target_parameter,
                 _Se2.effect_type, _Se2.effect_value,
                 _Se2.scale_type, _Se2.calc_type,
-                _Se2.timing, _Se2.finish_type, _Se2.finish_value,
+                _Se2.timing, _Se2.finish_type, _Se2.finish_value
 
                 FROM m_skill
                 LEFT JOIN m_skill_effect AS _Se1 ON (m_skill.skill_effect_master_id1 == _Se1.id)
@@ -569,9 +571,9 @@ class MasterData(object):
             self.lookup_skill_target_type(row[1]),
         )
 
-        c_skill.levels.append(D.Skill.Effect(*row[EFFECT_1:EFFECT_1 + EFFECT_COUNT]))
+        c_skill.levels.append(D.Skill.Effect(*row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
         if row[2]:
-            c_skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2:EFFECT_2 + EFFECT_COUNT])]
+            c_skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])]
         return c_skill
 
     def lookup_wave_descriptions_for_live_id(self, live_diff_id: int):
@@ -616,7 +618,7 @@ class MasterData(object):
                 _Se2.target_parameter,
                 _Se2.effect_type, _Se2.effect_value,
                 _Se2.scale_type, _Se2.calc_type,
-                _Se2.timing, _Se2.finish_type, _Se2.finish_value,
+                _Se2.timing, _Se2.finish_type, _Se2.finish_value
                 
                 FROM m_accessory_passive_skill
                 LEFT JOIN m_accessory_passive_skill_level ON
@@ -650,9 +652,9 @@ class MasterData(object):
             if row[10] and row[10] != ConditionType.Non:
                 skill.conditions.append(D.Skill.Condition(row[10], row[11]))
 
-            skill.levels.append(D.Skill.Effect(*row[EFFECT_1:EFFECT_1 + EFFECT_COUNT]))
+            skill.levels.append(D.Skill.Effect(*row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
             if row[13]:
-                skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2:EFFECT_2 + EFFECT_COUNT])]
+                skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])]
             skills.append(skill)
 
         return skills
@@ -677,7 +679,7 @@ class MasterData(object):
                 _Se2.target_parameter,
                 _Se2.effect_type, _Se2.effect_value,
                 _Se2.scale_type, _Se2.calc_type,
-                _Se2.timing, _Se2.finish_type, _Se2.finish_value,
+                _Se2.timing, _Se2.finish_type, _Se2.finish_value
 
                 FROM m_passive_skill
                 LEFT JOIN m_skill ON (m_passive_skill.skill_master_id == m_skill.id)
@@ -709,9 +711,9 @@ class MasterData(object):
             if row[10] and row[10] != ConditionType.Non:
                 skill.conditions.append(D.Skill.Condition(row[10], row[11]))
 
-            skill.levels.append(D.Skill.Effect(*row[EFFECT_1:EFFECT_1 + EFFECT_COUNT]))
+            skill.levels.append(D.Skill.Effect(*row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
             if row[13]:
-                skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2:EFFECT_2 + EFFECT_COUNT])]
+                skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])]
             skills.append(skill)
 
         return skills
