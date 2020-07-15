@@ -119,6 +119,7 @@ class Skill(object):
     target: TargetType
     conditions: List[Condition] = field(default_factory=list)
     levels: List[Effect] = field(default_factory=list)
+    levels_2: List[Effect] = None
 
     def has_complex_trigger(self):
         return self.trigger_type != TT.Non
