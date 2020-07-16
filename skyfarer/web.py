@@ -26,12 +26,16 @@ if _test_for_ffd8 not in imghdr.tests:
     imghdr.tests.append(_test_for_ffd8)
 
 
-def application(master, language, debug):
+def application(master, language, extras, debug):
     application = AssetServerApplication(
         master,
         language,
+        extras,
         [
-            (r"/i/((?:[0-9a-f][0-9a-f])+)/([^/\.]+)(?:\.(?:png|jpg))?", ReifyHandler),
+            (
+                r"/i(?:/([a-z]+))?/((?:[0-9a-f][0-9a-f])+)/([^/\.]+)(?:\.(?:png|jpg))?",
+                ReifyHandler,
+            ),
             (
                 r"/s/ci/([sgrz][vpuky][mpcanex])/([0-9a-f]+)/([^/]+)\.(jpg|png)",
                 SyntheticCardIconHandler,
@@ -52,7 +56,7 @@ def application(master, language, debug):
 
 
 class AssetServerApplication(Application):
-    def __init__(self, masters, language, *args, **kwargs):
+    def __init__(self, masters, language, extras, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         master = os.path.join(masters, f"asset_i_{language}.db")
@@ -62,12 +66,26 @@ class AssetServerApplication(Application):
         if not all((master, cache)):
             raise ValueError("Configuration incomplete")
 
-        self.settings["extract_context"] = ExtractContext(master, cache)
+        contexts = {"": ExtractContext(master, cache)}
+        contexts.update(
+            {
+                k: ExtractContext(
+                    os.path.join(root, f"asset_i_{lang}.db"),
+                    os.path.join(root, "..", "..", "cache"),
+                )
+                for k, (root, lang) in extras.items()
+            }
+        )
+
+        primary_tag = os.environ.get("AS_CANONICAL_REGION", "jp:ja").split(":", 1)[0]
+        contexts[primary_tag] = contexts[""]
+
+        self.settings["extract_contexts"] = contexts
         self.settings["jit_secret"] = secret
         # self.settings["inspect_context"] = InspectState(masters, cache, storage)
 
     def change_asset_db(self, newdb):
-        self.settings["extract_context"].change_asset_db(newdb)
+        self.settings["extract_contexts"][""].change_asset_db(newdb)
 
 
 ######################################################
@@ -75,13 +93,14 @@ class AssetServerApplication(Application):
 ######################################################
 
 ERR_REQUEST_NOAUTH = "Your request was declined because it was not properly authenticated."
+ERR_REQUEST_NO_REGION = "Resources from this region are not available."
 
 
 class BareReifyHandler(RequestHandler):
     def compute_etag(self):
         return None
 
-    async def get(self, key, assr):
+    async def get(self, region, key, assr):
         my = hmac.new(self.settings["jit_secret"], key.encode("utf8"), hashlib.sha224).digest()
 
         try:
@@ -97,11 +116,33 @@ class BareReifyHandler(RequestHandler):
                 self.write(ERR_REQUEST_NOAUTH)
                 return
 
+        ec = self.settings["extract_contexts"].get(region or "")
+        if not ec:
+            self.set_status(404)
+            self.write(ERR_REQUEST_NO_REGION)
+            return
+
         did_headers = False
         buf = bytearray(65536)
 
         try:
-            file_gen = self.settings["extract_context"].get_texture(key, buf)
+            file_gen = ec.get_texture(key, buf)
+            file_info = next(file_gen)
+            etag = hashlib.sha224(file_info["file_id"].encode("utf8")).hexdigest()[:32]
+            self.set_header("Etag", f'W/"{etag}"')
+
+            if self.check_etag_header():
+                self.set_status(304)
+                return
+
+            for buf, size in file_gen:
+                if not did_headers:
+                    img_type = imghdr.what(None, buf)
+                    if img_type:
+                        self.set_header("Content-Type", f"image/{img_type}")
+                    did_headers = True
+                self.write(bytes(buf[:size]))
+                await self.flush()
         except ExtractFailure as e:
             if e.reason == 1:
                 self.set_status(404)
@@ -112,33 +153,16 @@ class BareReifyHandler(RequestHandler):
                 self.write(str(e))
                 return
 
-        file_info = next(file_gen)
-        etag = hashlib.sha224(file_info["file_id"].encode("utf8")).hexdigest()[:32]
-        self.set_header("Etag", f'W/"{etag}"')
-
-        if self.check_etag_header():
-            self.set_status(304)
-            return
-
-        for buf, size in file_gen:
-            if not did_headers:
-                img_type = imghdr.what(None, buf)
-                if img_type:
-                    self.set_header("Content-Type", f"image/{img_type}")
-                did_headers = True
-            self.write(bytes(buf[:size]))
-            await self.flush()
-
 
 class ReifyHandler(BareReifyHandler):
-    async def get(self, key, assr):
+    async def get(self, region, key, assr):
         try:
             key = binascii.unhexlify(key).decode("utf8")
         except UnicodeDecodeError:
             self.set_status(400)
             return
 
-        await super().get(key, assr)
+        await super().get(region, key, assr)
 
 
 class BaseAssrValidating(RequestHandler):
@@ -167,7 +191,9 @@ class SyntheticCardIconHandler(BaseAssrValidating):
         fsp = from_frame_info(frame_info)
 
         try:
-            image = await self.settings["extract_context"].get_cardicon(asset_id, filetype, *fsp)
+            image = await self.settings["extract_contexts"][""].get_cardicon(
+                asset_id, filetype, *fsp
+            )
         except ExtractFailure as e:
             if e.reason == 1:
                 self.set_status(404)
@@ -189,7 +215,7 @@ class SyntheticCardIconHandler(BaseAssrValidating):
 
 
 class AdvScriptHandler(BaseAssrValidating):
-    def get(self, scpt_name, assr):
+    def get(self, scpt_name, assr, region=""):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Content-Type", "application/json")
 
@@ -198,8 +224,14 @@ class AdvScriptHandler(BaseAssrValidating):
             self.write({"error": ERR_REQUEST_NOAUTH})
             return
 
+        ec = self.settings["extract_contexts"].get(region)
+        if not ec:
+            self.set_status(404)
+            self.write({"error": ERR_REQUEST_NO_REGION})
+            return
+
         try:
-            scpt_bundle = self.settings["extract_context"].get_script(scpt_name)
+            scpt_bundle = ec.get_script(scpt_name)
         except ExtractFailure:
             self.set_status(404)
             self.write({"error": "Script not found."})
@@ -220,25 +252,26 @@ class AdvScriptGraphicHandler(RequestHandler):
         buf = bytearray(65536)
 
         try:
-            file_gen = self.settings["extract_context"].get_script_texture(scpt_name, int(idx), buf)
+            file_gen = self.settings["extract_contexts"][""].get_script_texture(
+                scpt_name, int(idx), buf
+            )
+            file_info = next(file_gen)
+            etag = hashlib.sha224(file_info["file_id"].encode("utf8")).hexdigest()[:32]
+            self.set_header("Etag", f'W/"{etag}"')
+
+            if self.check_etag_header():
+                self.set_status(304)
+                return
+
+            for buf, size in file_gen:
+                if not did_headers:
+                    img_type = imghdr.what(None, buf)
+                    if img_type:
+                        self.set_header("Content-Type", f"image/{img_type}")
+                    did_headers = True
+
+                self.write(bytes(buf[:size]))
+                await self.flush()
         except ExtractFailure as e:
             self.set_status(404)
             self.write(str(e))
-
-        file_info = next(file_gen)
-        etag = hashlib.sha224(file_info["file_id"].encode("utf8")).hexdigest()[:32]
-        self.set_header("Etag", f'W/"{etag}"')
-
-        if self.check_etag_header():
-            self.set_status(304)
-            return
-
-        for buf, size in file_gen:
-            if not did_headers:
-                img_type = imghdr.what(None, buf)
-                if img_type:
-                    self.set_header("Content-Type", f"image/{img_type}")
-                did_headers = True
-
-            self.write(bytes(buf[:size]))
-            await self.flush()

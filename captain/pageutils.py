@@ -210,7 +210,7 @@ def card_has_full_bg(handler, card):
 
 
 @export
-def image_url_reify(handler, asset_tag, ext=None):
+def image_url_reify(handler, asset_tag, ext=None, region=None):
     try:
         base = handler._reified_tags
     except AttributeError:
@@ -223,10 +223,11 @@ def image_url_reify(handler, asset_tag, ext=None):
     my = base64.urlsafe_b64encode(my).decode("ascii").rstrip("=")
     isr = handler.settings["image_server"]
     url_asset_tag = binascii.hexlify(asset_tag.encode("utf8")).decode("ascii")
+    rtag = f"/{region}" if region else ""
     if ext:
-        signed = f"{isr}/i/{url_asset_tag}/{my}.{ext}"
+        signed = f"{isr}/i{rtag}/{url_asset_tag}/{my}.{ext}"
     else:
-        signed = f"{isr}/i/{url_asset_tag}/{my}"
+        signed = f"{isr}/i{rtag}/{url_asset_tag}/{my}"
 
     base[asset_tag] = signed
     return signed

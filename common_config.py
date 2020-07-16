@@ -10,9 +10,11 @@ def start_logging(who, debug):
     )
 
 
-def get_master_version():
+def get_master_version(tag=None):
     env = os.environ.get("AS_DATA_ROOT", ".")
-    tag = os.environ.get("AS_CANONICAL_REGION", None)
+    if not tag:
+        tag = os.environ.get("AS_CANONICAL_REGION", None)
+
     if not tag:
         logging.warn("You need to set AS_CANONICAL_REGION. Defaulting to jp for now.")
         tag = "jp:ja"

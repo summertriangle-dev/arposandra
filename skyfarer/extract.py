@@ -119,7 +119,10 @@ class ExtractContext(object):
         k1 = to_unsigned(key1)
         k2 = to_unsigned(key2)
 
-        file_id = f"{pack_name}${os.path.getmtime(pack)}"
+        try:
+            file_id = f"{pack_name}${os.path.getmtime(pack)}"
+        except FileNotFoundError:
+            raise ExtractFailure(1)
         yield {"file_id": file_id}
 
         keyset = hwdecrypt.Keyset(k1, k2)
@@ -151,7 +154,11 @@ class ExtractContext(object):
         k1 = to_unsigned(key1)
         k2 = to_unsigned(key2)
 
-        file_id = f"{pack_name}${os.path.getmtime(pack)}"
+        try:
+            file_id = f"{pack_name}${os.path.getmtime(pack)}"
+        except FileNotFoundError:
+            raise ExtractFailure(1)
+
         yield {"file_id": file_id}
 
         keyset = hwdecrypt.Keyset(k1, k2)
