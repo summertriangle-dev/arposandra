@@ -78,6 +78,9 @@ ERR_REQUEST_NOAUTH = "Your request was declined because it was not properly auth
 
 
 class BareReifyHandler(RequestHandler):
+    def compute_etag(self):
+        return None
+
     async def get(self, key, assr):
         my = hmac.new(self.settings["jit_secret"], key.encode("utf8"), hashlib.sha224).digest()
 
@@ -108,6 +111,14 @@ class BareReifyHandler(RequestHandler):
                 self.set_status(503)
                 self.write(str(e))
                 return
+
+        file_info = next(file_gen)
+        etag = hashlib.sha224(file_info["file_id"].encode("utf8")).hexdigest()[:32]
+        self.set_header("Etag", f'W/"{etag}"')
+
+        if self.check_etag_header():
+            self.set_status(304)
+            return
 
         for buf, size in file_gen:
             if not did_headers:
@@ -213,6 +224,14 @@ class AdvScriptGraphicHandler(RequestHandler):
         except ExtractFailure as e:
             self.set_status(404)
             self.write(str(e))
+
+        file_info = next(file_gen)
+        etag = hashlib.sha224(file_info["file_id"].encode("utf8")).hexdigest()[:32]
+        self.set_header("Etag", f'W/"{etag}"')
+
+        if self.check_etag_header():
+            self.set_status(304)
+            return
 
         for buf, size in file_gen:
             if not did_headers:

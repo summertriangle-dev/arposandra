@@ -119,6 +119,9 @@ class ExtractContext(object):
         k1 = to_unsigned(key1)
         k2 = to_unsigned(key2)
 
+        file_id = f"{pack_name}${os.path.getmtime(pack)}"
+        yield {"file_id": file_id}
+
         keyset = hwdecrypt.Keyset(k1, k2)
         with open(pack, "rb") as f:
             f.seek(head)
@@ -147,6 +150,9 @@ class ExtractContext(object):
         pack = os.path.join(self.cache, f"pkg{pack_name[0]}", pack_name)
         k1 = to_unsigned(key1)
         k2 = to_unsigned(key2)
+
+        file_id = f"{pack_name}${os.path.getmtime(pack)}"
+        yield {"file_id": file_id}
 
         keyset = hwdecrypt.Keyset(k1, k2)
         with open(pack, "rb") as f:
