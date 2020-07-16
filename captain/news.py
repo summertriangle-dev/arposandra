@@ -220,10 +220,19 @@ class InlineImageResolver(RequestHandler):
             self.write({"error": "A URL must be provided."})
             return
 
-        asset_path = self.settings["master"].lookup_inline_image(imp)
+        region = self.get_argument("n", None)
+        if region and region != "jp":
+            sub = self.settings["more_masters"].get(region)
+            if not sub:
+                self.set_status(404)
+                self.write({"error": "No such region."})
+            asset_path = sub.lookup_inline_image(imp)
+        else:
+            asset_path = self.settings["master"].lookup_inline_image(imp)
+            region = None
 
         if asset_path:
-            self.redirect(pageutils.image_url_reify(self, asset_path, "jpg"))
+            self.redirect(pageutils.image_url_reify(self, asset_path, "jpg", region))
         else:
             self.set_status(404)
             self.write({"error": "The image could not be resolved."})

@@ -33,10 +33,11 @@ class DMWalkState(object):
         "size": ("font-size", font_size_norm),
     }
 
-    def __init__(self, tag="article"):
+    def __init__(self, tag="article", for_region=None):
         self.root = Element(tag)
         self.image_references = set()
         self.card_master_references = set()
+        self.for_region = for_region
 
     def ingest_text_internal(self, t_i):
         if len(self.root) == 0:
@@ -57,7 +58,7 @@ class DMWalkState(object):
                 t = "div"
             else:
                 t = "span"
-            sub = DMWalkState(t).ingest_element(element).commit()
+            sub = DMWalkState(t, for_region=self.for_region).ingest_element(element).commit()
             csstag, transform = self.INLINE_TAGS.get(element.tag, (element.tag, lambda x: x))
             sub.set("style", f"{csstag}: {transform(element.get('value'))}")
             self.root.append(sub)
@@ -69,12 +70,16 @@ class DMWalkState(object):
             SubElement(sbe, "h3").text = element.get("title")
             SubElement(sbe, "p").text = element.get("message")
         elif element.tag in {"sprite", "img"}:
+            src = f"/api/private/ii?p={element.get('src')}"
+            if self.for_region:
+                src += f"&n={self.for_region}"
+
             sbe = SubElement(
                 self.root,
                 "img",
                 {
                     "class": f"dm-src-{element.tag}",
-                    "src": f"/api/private/ii?p={element.get('src')}",
+                    "src": src,
                     "width": element.get("width"),
                     # Removed for good reason
                     # "height": element.get("height")
@@ -156,7 +161,7 @@ def fix_tags(dmtext):
     return tagged, has_blinds
 
 
-def dm_to_html(dmtext):
+def dm_to_html(dmtext, tag=None):
     mark = str(uuid.uuid4())
     dmtext, has_blinds = fix_tags(dmtext)
     p = HTMLParser()
@@ -167,7 +172,7 @@ def dm_to_html(dmtext):
     doc = p.close()
     root = doc.find(f".//div[@id = '{mark}']")
 
-    synth_root = DMWalkState()
+    synth_root = DMWalkState(for_region=tag)
     synth_root.ingest_element(root)
 
     text = synth_root.get_html()
@@ -181,7 +186,7 @@ def dm_to_html(dmtext):
     )
 
 
-def dm_to_html_v2(dmtext, klass=DMWalkState):
+def dm_to_html_v2(dmtext, klass=DMWalkState, tag=None):
     mark = str(uuid.uuid4())
     dmtext, has_blinds = fix_tags(dmtext)
     p = HTMLParser()
@@ -192,7 +197,7 @@ def dm_to_html_v2(dmtext, klass=DMWalkState):
     doc = p.close()
     root = doc.find(f".//div[@id = '{mark}']")
 
-    synth_root = klass()
+    synth_root = klass(for_region=tag)
     synth_root.ingest_element(root)
 
     return synth_root

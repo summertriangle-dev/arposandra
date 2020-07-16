@@ -17,7 +17,7 @@ def dig_text_into_buffer(elem, buf):
 
 
 class TheatreScriptWalkState(dm_parse.DMWalkState):
-    def __init__(self, tag="article"):
+    def __init__(self, tag="article", for_region=None):
         self.lines = []
         self.title = None
         self.char_refs = set()

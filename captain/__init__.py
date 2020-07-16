@@ -78,6 +78,21 @@ def create_dict_aggregator(master, language):
     fallback = libcard2.string_mgr.DictionaryAccess(master, language)
     return dict_aggregator.DictionaryAggregator(fallback, choices)
 
+def create_more_masters():
+    choices = {}
+    extra = os.environ.get("AS_EXTRA_DICTIONARIES")
+    if extra:
+        for tag in extra.split(";"):
+            rgn_tag = tag.split(":", 1)[0]
+            if rgn_tag in choices:
+                continue
+        
+            region_root = os.path.join(os.environ.get("AS_DATA_ROOT", "."), rgn_tag)
+            base = os.path.join(region_root, "masters", find_astool_master_version(region_root))
+            logging.debug("Loading sub master: %s", base)
+            choices[rgn_tag] = libcard2.master.MasterDataLite(base)
+
+    return choices
 
 def application(master, language, debug):
     if os.environ.get("AS_TLINJECT_SECRET", ""):
@@ -102,6 +117,7 @@ def application(master, language, debug):
         dispatch.ROUTES,
         db_coordinator=db_coordinator,
         master=libcard2.master.MasterData(master),
+        more_masters=create_more_masters(),
         string_access=create_dict_aggregator(master, language),
         image_server=os.environ.get("AS_IMAGE_SERVER"),
         tlinject_context=tlinject.TLInjectContext(db_coordinator),

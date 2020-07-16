@@ -61,7 +61,7 @@ async def add_notice(ice, db, tag, notice):
     cat = notice["category"]
 
     body_dm = get_notice_body(ice, nid)
-    body_html, c_refs, _ = dm_parse.dm_to_html(body_dm.encode("utf8"))
+    body_html, c_refs, _ = dm_parse.dm_to_html(body_dm.encode("utf8"), tag)
 
     logging.info("Adding notice: %s", nid)
     await db.insert_notice(tag, nid, title, ts, cat, thumb, body_dm, body_html, c_refs)
@@ -103,7 +103,9 @@ async def get_daily_convo(ice, db, tag):
     ts = datetime.utcfromtimestamp(ent["date"])
     dtid = ent["daily_theater_id"]
 
-    synth = dm_parse.dm_to_html_v2(body_dm.encode("utf8"), theatre_parse.TheatreScriptWalkState)
+    synth = dm_parse.dm_to_html_v2(
+        body_dm.encode("utf8"), theatre_parse.TheatreScriptWalkState, tag
+    )
 
     await db.add_dt(tag, dtid, ts, next_ts, title, body_dm, synth.get_json(), synth.char_refs)
 

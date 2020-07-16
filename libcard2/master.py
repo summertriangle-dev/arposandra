@@ -12,13 +12,34 @@ from .utils import construct_tt_from_sql_shape
 from .wave_description_base import LANGUAGE_DEFINITION_JA
 
 
-class MasterData(object):
+class MasterDataLite(object):
     def __init__(self, master_path):
         self.version = os.path.basename(master_path.rstrip("/"))
         self.connection = sqlite3.connect(
             "file:{0}?mode=ro".format(os.path.join(master_path, "masterdata.db")), uri=True
         )
         self.connection.row_factory = sqlite3.Row
+
+    def lookup_inline_image(self, iip):
+        path = self.connection.execute(
+            "SELECT path FROM m_inline_image WHERE id=?", (iip,)
+        ).fetchone()
+        if path:
+            return path[0]
+
+        # ???
+        path = self.connection.execute(
+            "SELECT path FROM m_decoration_texture WHERE id=?", (iip,)
+        ).fetchone()
+        if path:
+            return path[0]
+
+        return None
+
+
+class MasterData(MasterDataLite):
+    def __init__(self, master_path):
+        super().__init__(master_path)
         self.card_id_cache = LFUCache(256)
         self.member_cache = {}
 
@@ -852,22 +873,6 @@ class MasterData(object):
         if entries:
             item_sets = self.lookup_batch_item_req_set(e[-1] for e in entries if e)
             return (item_sets, *construct_tt_from_sql_shape(entries))
-
-        return None
-
-    def lookup_inline_image(self, iip):
-        path = self.connection.execute(
-            "SELECT path FROM m_inline_image WHERE id=?", (iip,)
-        ).fetchone()
-        if path:
-            return path[0]
-
-        # ???
-        path = self.connection.execute(
-            "SELECT path FROM m_decoration_texture WHERE id=?", (iip,)
-        ).fetchone()
-        if path:
-            return path[0]
 
         return None
 

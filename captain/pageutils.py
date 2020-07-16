@@ -216,8 +216,9 @@ def image_url_reify(handler, asset_tag, ext=None, region=None):
     except AttributeError:
         handler._reified_tags = base = {}
 
-    if asset_tag in base:
-        return base[asset_tag]
+    cache_key = f"{region}${asset_tag}"
+    if cache_key in base:
+        return base[cache_key]
 
     my = hmac.new(get_as_secret(), asset_tag.encode("utf8"), hashlib.sha224).digest()[:10]
     my = base64.urlsafe_b64encode(my).decode("ascii").rstrip("=")
@@ -229,7 +230,7 @@ def image_url_reify(handler, asset_tag, ext=None, region=None):
     else:
         signed = f"{isr}/i{rtag}/{url_asset_tag}/{my}"
 
-    base[asset_tag] = signed
+    base[cache_key] = signed
     return signed
 
 

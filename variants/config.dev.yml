@@ -10,6 +10,7 @@ services:
       AS_DEV: 1
       AS_ASSET_JIT_SECRET: B10E7DBB0B7E462398879E649DCE3C09
       AS_CANONICAL_REGION: "jp:ja"
+      AS_EXTRA_REGIONS: "en:en"
   web:
     ports:
       - "5000:30001"

@@ -16,14 +16,16 @@ async def main():
 
     num = 0
     for server, post_id, post_body in await db.all_posts():
-        body_html, c_refs, _ = dm_parse.dm_to_html(post_body.encode("utf8"))
+        body_html, c_refs, _ = dm_parse.dm_to_html(post_body.encode("utf8"), server)
         await db.update_post(server, post_id, body_html, c_refs)
         num += 1
     logging.info("Reparsed %d news items.", num)
 
     num = 0
     for server, dt_id, dt_body in await db.all_dt():
-        synth = dm_parse.dm_to_html_v2(dt_body.encode("utf8"), theatre_parse.TheatreScriptWalkState)
+        synth = dm_parse.dm_to_html_v2(
+            dt_body.encode("utf8"), theatre_parse.TheatreScriptWalkState, server
+        )
         await db.update_dt(server, dt_id, synth.get_json(), synth.char_refs)
         num += 1
     logging.info("Reparsed %d daily convos.", num)
