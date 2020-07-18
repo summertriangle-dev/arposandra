@@ -40,6 +40,10 @@ case $executable in
     border-ingest2)
         exec python3 border/et_fake.py "$@"
         ;;
+    astool-extra-command)
+        SUBCMD=$1; shift
+        exec python3 -m "astool_extra.${SUBCMD}" "$@"
+        ;;
     none)
         exit 0
         ;;
