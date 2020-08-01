@@ -11,4 +11,5 @@ asset)
 *)
     >&2 echo "Usage: docker ... [web|asset] [args ...]"
     exit 1
+    ;;
 esac

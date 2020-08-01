@@ -1,53 +1,53 @@
 #!/bin/sh
+set -e
 
 export PYTHONPATH=/usr/kars:./lib:$PYTHONPATH
 executable=$1; shift
 
+help() {
+    echo "Welcome to the maintenance image, version 0.2.0."
+    echo "Refer to maintenance/start.sh for the available commands."
+    echo "You can also drop to a shell with the 'sh' command."
+}
+
 case $executable in
-    news)
-        exec python3 news/get_news.py "$@"
+    cron)
+        JOBNAME=$1; shift
+        if [[ -x "cron/${JOBNAME}.sh" && -f "cron/${JOBNAME}.sh" ]]; then
+            exec "cron/${JOBNAME}.sh" "$@"
+        else
+            echo "job ${JOBNAME} doesn't exist"
+            exit 1
+        fi
         ;;
-    reparse)
-        exec python3 news/reparse_news.py "$@"
-        ;;
-    sync-master) # ... sync-master [rgn] [karstool args...]
-        SERVER=$1; shift
-        exec python3 -m astool "${SERVER}" --quiet dl_master
-        ;;
-    sync-cache)
-        SERVER=$1; shift
-        exec python3 -m astool "${SERVER}" --quiet pkg_sync main card:%
-        ;;
-    sync-cache-full)
-        SERVER=$1; shift
-        exec python3 -m astool "${SERVER}" --quiet pkg_sync everything
-        ;;
-    sync-both)
-        SERVER=$1; shift
-        python3 -m astool "${SERVER}" --quiet dl_master && \
-            python3 -m astool "${SERVER}" --quiet pkg_sync main card:%
-        ;;
-    astool_command)
+    ##### ADMIN COMMANDS #####
+    astool)
         exec python3 -m astool "$@"
-        ;;
-    mtrack)
-        exec python3 mtrack/mtrack.py "$@"
-        ;;
-    border-ingest)
-        SERVER=$1; shift
-        exec python3 border/border.py "$SERVER" "$@"
-        ;;
-    border-ingest2)
-        exec python3 border/et_fake.py "$@"
         ;;
     astool-extra-command)
         SUBCMD=$1; shift
         exec python3 -m "astool_extra.${SUBCMD}" "$@"
         ;;
+
+    ##### DEBUG COMMANDS #####
+    reparse-news)
+        exec python3 news/reparse_news.py "$@"
+        ;;
+    add-fake-saint-data)
+        exec python3 border/et_fake.py "$@"
+        ;;
+    sh)
+        exec sh "$@"
+        ;;
+
+    become-host-for-cron-execs)
+        sleep infinity
+        ;;
     none)
         exit 0
         ;;
     *)
-        echo "Unrecognized command: $1 $*."
+        help
         exit 1
+        ;;
 esac
