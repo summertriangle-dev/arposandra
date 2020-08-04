@@ -175,6 +175,9 @@ msgstr "エマ・ヴェルデ"
 msgid "k.m_dic_member_name_romaji_209"
 msgstr "天王寺 璃奈"
 
+msgid "k.m_dic_member_name_romaji_210"
+msgstr "三船 栞子"
+
 # Get rid of the fullwidth ! mark
 msgid "k.m_dic_unit_name_cyaron"
 msgstr "CYaRon!"

@@ -126,6 +126,8 @@ msgid "k.m_dic_member_name_romaji_208"
 msgstr "Emma Verde"
 msgid "k.m_dic_member_name_romaji_209"
 msgstr "Rina Tennoji"
+msgid "k.m_dic_member_name_romaji_210"
+msgstr "Shioriko Mifune"
 
 # Get rid of the fullwidth ! mark
 msgid "k.m_dic_unit_name_cyaron"
