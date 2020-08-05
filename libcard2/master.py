@@ -138,7 +138,7 @@ class MasterData(MasterDataLite):
                 LEFT JOIN m_member_unit_detail ON (m_member_unit_detail.member_m_id == m_member.id)
                 LEFT JOIN m_member_unit ON (m_member_unit_detail.member_unit == m_member_unit.member_unit)
                 {where}
-                ORDER BY m_member.display_order""",
+                ORDER BY m_member.id""",
             {"unit": subunit, "group": group},
         )
 
