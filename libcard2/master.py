@@ -54,9 +54,9 @@ class MasterData(MasterDataLite):
             """SELECT m_card.id AS demux, training_content_type, required_grade, SUM(value)
                 FROM m_card
                 LEFT JOIN m_training_tree ON (m_training_tree.id = m_card.training_tree_m_id)
-                LEFT JOIN m_training_tree_card_param ON 
+                LEFT JOIN m_training_tree_card_param ON
                     (m_training_tree.training_tree_card_param_m_id = m_training_tree_card_param.id)
-                LEFT JOIN m_training_tree_mapping ON 
+                LEFT JOIN m_training_tree_mapping ON
                     (m_training_tree.training_tree_mapping_m_id = m_training_tree_mapping.id)
                 LEFT JOIN m_training_tree_cell_content ON (
                     m_training_tree_mapping.training_tree_cell_content_m_id = m_training_tree_cell_content.id AND
@@ -138,7 +138,7 @@ class MasterData(MasterDataLite):
                 LEFT JOIN m_member_unit_detail ON (m_member_unit_detail.member_m_id == m_member.id)
                 LEFT JOIN m_member_unit ON (m_member_unit_detail.member_unit == m_member_unit.member_unit)
                 {where}
-                ORDER BY member_group, m_member_unit.member_unit, m_member.id""",
+                ORDER BY m_member.display_order""",
             {"unit": subunit, "group": group},
         )
 
@@ -219,7 +219,7 @@ class MasterData(MasterDataLite):
         )
 
         stats = self.connection.execute(
-            """SELECT level, appeal, stamina, technique FROM m_card_parameter 
+            """SELECT level, appeal, stamina, technique FROM m_card_parameter
                 WHERE card_m_id = ? ORDER BY level""",
             (card_id,),
         )
@@ -266,7 +266,7 @@ class MasterData(MasterDataLite):
                 _Se2.scale_type, _Se2.calc_type,
                 _Se2.timing,
                 _Se2.finish_type, _Se2.finish_value
-                
+
                 FROM m_card_active_skill
                 LEFT JOIN m_active_skill ON (active_skill_master_id == m_active_skill.id)
                 LEFT JOIN m_skill ON (m_active_skill.skill_master_id == m_skill.id)
@@ -336,7 +336,7 @@ class MasterData(MasterDataLite):
                 _Se2.scale_type, _Se2.calc_type,
                 _Se2.timing,
                 _Se2.finish_type, _Se2.finish_value
-                
+
                 FROM m_card_passive_skill_original
                 LEFT JOIN m_passive_skill ON (passive_skill_master_id == m_passive_skill.id)
                 LEFT JOIN m_skill ON (m_passive_skill.skill_master_id == m_skill.id)
@@ -419,7 +419,7 @@ class MasterData(MasterDataLite):
         da = self.connection.execute(
             """SELECT live_difficulty_id, live_difficulty_type,
                 evaluation_s_score, evaluation_a_score, evaluation_b_score, evaluation_c_score,
-                recommended_score, recommended_stamina, 
+                recommended_score, recommended_stamina,
                 sp_gauge_length, note_stamina_reduce, note_voltage_upper_limit
 
                 FROM m_live_difficulty
@@ -640,7 +640,7 @@ class MasterData(MasterDataLite):
                 _Se2.effect_type, _Se2.effect_value,
                 _Se2.scale_type, _Se2.calc_type,
                 _Se2.timing, _Se2.finish_type, _Se2.finish_value
-                
+
                 FROM m_accessory_passive_skill
                 LEFT JOIN m_accessory_passive_skill_level ON
                     (m_accessory_passive_skill_level.accessory_passive_skill_master_id
