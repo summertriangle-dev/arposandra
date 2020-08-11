@@ -82,23 +82,23 @@ def construct_tt_from_sql_shape(t: Tuple[List[Tuple[int, int, int]], List[Tuple[
 ## Icon generation
 
 IFI_FRAME = {
-    1: "s",
-    2: "g",
-    3: "r",
+    1: "s",  # R "silver"
+    2: "g",  # SR "gold"
+    3: "r",  # UR "rainbow"
 }
 IFI_ATTR = {
-    1: "m",
-    2: "p",
-    3: "c",
-    4: "a",
-    5: "n",
-    6: "e",
+    1: "m",  # Smile
+    2: "p",  # Pure
+    3: "c",  # Cool
+    4: "a",  # Active
+    5: "n",  # Natural
+    6: "e",  # Elegant
 }
 IFI_ROLE = {
-    1: "v",
-    2: "p",
-    3: "u",
-    4: "k",
+    1: "v",  # Vo
+    2: "p",  # Sp
+    3: "u",  # Gd
+    4: "k",  # Sk
 }
 
 IFI_FRAME_REV = {v: k for k, v in IFI_FRAME.items()}

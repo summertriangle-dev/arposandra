@@ -32,22 +32,18 @@ def application(master, language, extras, debug):
         language,
         extras,
         [
+            (r"/i(?:/([a-z]+))?/([^/]+)/([^/\.]+)(?:\.(?:png|jpg))?", ReifyHandler,),
             (
-                r"/i(?:/([a-z]+))?/((?:[0-9a-f][0-9a-f])+)/([^/\.]+)(?:\.(?:png|jpg))?",
-                ReifyHandler,
-            ),
-            (
-                r"/s/ci/([sgrz][vpuky][mpcanex])/([0-9a-f]+)/([^/]+)\.(jpg|png)",
+                # The 3 letters encode the type of frame and icons the image should have.
+                # See libcard2/utils.py for the definitions.
+                # Replace a letter with z, y, or x depending on position to omit
+                # that element.
+                r"/s/ci/([sgrz][vpuky][mpcanex])/([^/]+)/([^/]+)\.(jpg|png)",
                 SyntheticCardIconHandler,
             ),
             (r"/adv/(.+)/([^/\.]+)\.json", AdvScriptHandler),
             (r"/advg/(.+)/([0-9]+)\.(?:png|jpg)", AdvScriptGraphicHandler),
             (r"/if/(.+)/([^/\.]+)(?:\.(?:png|jpg))?", BareReifyHandler),
-            # (r"/api/inspect/hello", InspectServerInfo),
-            # (r"/api/inspect/lookup", InspectLookupAsset),
-            # (r"/api/inspect/texture", InspectRealizeTexture),
-            # (r"/api/inspect/bundle/((?:[0-9a-f][0-9a-f])+)", InspectOpenUnityBundle),
-            # (r"/api/inspect/bundle/((?:[0-9a-f][0-9a-f])+)/([0-9a-f]{16})", InspectGetUnityBundleData),
         ],
         debug=debug,
         disable_security=debug,
@@ -157,8 +153,11 @@ class BareReifyHandler(RequestHandler):
 class ReifyHandler(BareReifyHandler):
     async def get(self, region, key, assr):
         try:
-            key = binascii.unhexlify(key).decode("utf8")
-        except UnicodeDecodeError:
+            if key.startswith("-"):
+                key = base64.urlsafe_b64decode("".join((key[1:], "===="))).decode("utf8")
+            else:
+                key = binascii.unhexlify(key).decode("utf8")
+        except ValueError:
             self.set_status(400)
             return
 
@@ -187,7 +186,10 @@ class SyntheticCardIconHandler(BaseAssrValidating):
             self.write(ERR_REQUEST_NOAUTH)
             return
 
-        asset_id = binascii.unhexlify(asset_hex).decode("utf8")
+        if asset_hex.startswith("-"):
+            asset_id = base64.urlsafe_b64decode("".join((asset_hex[1:], "===="))).decode("utf8")
+        else:
+            asset_id = binascii.unhexlify(asset_hex).decode("utf8")
         fsp = from_frame_info(frame_info)
 
         try:

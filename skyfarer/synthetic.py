@@ -69,11 +69,11 @@ def load_image(packid, head, size, k1, k2, k3):
 def stack_card(image_load_args, fmt, frame_num, role_num, attr_num):
     global G_CARD_ICON_ATLAS
 
-    if not 0 < frame_num < 4:
+    if not frame_num < 4:
         return (1, None)
-    if not 0 < role_num < 5:
+    if not role_num < 5:
         return (1, None)
-    if not 0 < attr_num < 7:
+    if not attr_num < 7:
         return (1, None)
 
     if not G_CARD_ICON_ATLAS:
@@ -91,9 +91,12 @@ def stack_card(image_load_args, fmt, frame_num, role_num, attr_num):
 
     icon = Image.new("RGBA", (128, 128))
     icon.paste(face, ((icon.size[0] - face.size[0]) // 2, (icon.size[1] - face.size[1]) // 2))
-    icon.alpha_composite(G_CARD_ICON_ATLAS, source=frame_coordinate[frame_num])
-    icon.alpha_composite(G_CARD_ICON_ATLAS, (97, 3), attribute_coordinate[attr_num])
-    icon.alpha_composite(G_CARD_ICON_ATLAS, (2, 98), role_coordinate[role_num])
+    if frame_num:
+        icon.alpha_composite(G_CARD_ICON_ATLAS, source=frame_coordinate[frame_num])
+    if attr_num:
+        icon.alpha_composite(G_CARD_ICON_ATLAS, (97, 3), attribute_coordinate[attr_num])
+    if role_num:
+        icon.alpha_composite(G_CARD_ICON_ATLAS, (2, 98), role_coordinate[role_num])
 
     bio = io.BytesIO()
     try:

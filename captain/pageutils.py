@@ -223,12 +223,12 @@ def image_url_reify(handler, asset_tag, ext=None, region=None):
     my = hmac.new(get_as_secret(), asset_tag.encode("utf8"), hashlib.sha224).digest()[:10]
     my = base64.urlsafe_b64encode(my).decode("ascii").rstrip("=")
     isr = handler.settings["image_server"]
-    url_asset_tag = binascii.hexlify(asset_tag.encode("utf8")).decode("ascii")
+    url_asset_tag = base64.urlsafe_b64encode(asset_tag.encode("utf8")).decode("ascii").rstrip("=")
     rtag = f"/{region}" if region else ""
     if ext:
-        signed = f"{isr}/i{rtag}/{url_asset_tag}/{my}.{ext}"
+        signed = f"{isr}/i{rtag}/-{url_asset_tag}/{my}.{ext}"
     else:
-        signed = f"{isr}/i{rtag}/{url_asset_tag}/{my}"
+        signed = f"{isr}/i{rtag}/-{url_asset_tag}/{my}"
 
     base[cache_key] = signed
     return signed
@@ -246,8 +246,12 @@ def card_icon_url(handler, card, appearance):
     attr_num = card.attribute
 
     fspec = icon_frame_info(frame_num, role_num, attr_num)
-    first = binascii.hexlify(appearance.thumbnail_asset_path.encode("utf8")).decode("ascii")
-    key = f"ci/{fspec}/{first}"
+    first = (
+        base64.urlsafe_b64encode(appearance.thumbnail_asset_path.encode("utf8"))
+        .decode("ascii")
+        .rstrip("=")
+    )
+    key = f"ci/{fspec}/-{first}"
 
     if key in base:
         return base[key]
@@ -255,7 +259,7 @@ def card_icon_url(handler, card, appearance):
     assr = hmac.new(get_as_secret(), key.encode("utf8"), hashlib.sha224).digest()[:10]
     assr = base64.urlsafe_b64encode(assr).decode("ascii").rstrip("=")
     isr = handler.settings["image_server"]
-    signed = f"{isr}/s/ci/{fspec}/{first}/{assr}.jpg"
+    signed = f"{isr}/s/ci/{fspec}/-{first}/{assr}.jpg"
 
     base[key] = signed
     return signed
