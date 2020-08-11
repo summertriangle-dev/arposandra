@@ -96,6 +96,10 @@ def create_more_masters():
     return choices
 
 
+# Some private packages might require readonly_app_path - so we'll import this late.
+from . import private
+
+
 def application(master, language, debug):
     if os.environ.get("AS_TLINJECT_SECRET", ""):
         print("TLInject is enabled for this server.")
