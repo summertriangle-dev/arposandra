@@ -7,6 +7,7 @@ if "NEW_RELIC_CONFIG_FILE" in os.environ:
 
 import asyncio
 import logging
+import signal
 
 import tornado.ioloop
 from asyncpg.exceptions import CannotConnectNowError
@@ -16,7 +17,7 @@ import common_config as cfg
 
 
 async def async_main(app, kr_addr, kr_port):
-    for _ in range(5):
+    while True:
         try:
             await app.settings["db_coordinator"].prepare()
             break
@@ -31,6 +32,11 @@ async def async_main(app, kr_addr, kr_port):
     app.listen(kr_port, kr_addr, xheaders=True)
 
 
+def handle_sigterm(signum, frame):
+    runloop = tornado.ioloop.IOLoop.current()
+    runloop.add_callback_from_signal(lambda: runloop.stop())
+
+
 def main():
     kr_addr = os.environ.get("AS_WEB_ADDR", "0.0.0.0")
     kr_port = int(os.environ.get("AS_WEB_PORT", 5000))
@@ -41,6 +47,7 @@ def main():
     logging.info(f"Master: {master_root}")
 
     ioloop = tornado.ioloop.IOLoop.current()
+    ioloop.add_callback(signal.signal, signal.SIGTERM, handle_sigterm)
     ioloop.add_future(
         asyncio.ensure_future(
             async_main(captain.application(master_root, master_lang, debug), kr_addr, kr_port)

@@ -1,7 +1,8 @@
 const webpack = require("webpack")
+const process = require("process")
 
 module.exports = {
-    mode: "development",
+    mode: "production",
     entry: {
         "early": "./js/entry.js",
         "main": "./js/late_entry.js",
@@ -10,7 +11,7 @@ module.exports = {
         filename: "[name].bundle.js",
         chunkFilename: "[name].bundle.js?v=[chunkhash:8]",
         sourceMapFilename: "[name].bundle.js.map",
-        publicPath: "http://localhost:5002/static/js/",
+        publicPath: process.env["WDS_PUBLIC_PATH"] || "/static/js/",
     },
     module: {
         rules: [
@@ -30,8 +31,10 @@ module.exports = {
     devtool: "source-map",
     devServer: {
         compress: true,
+        host: "0.0.0.0",
         port: 5002,
         headers: {"Access-Control-Allow-Origin": "*"},
+        disableHostCheck: true,
     },
     optimization: {
         splitChunks: { chunks: "all" }

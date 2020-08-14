@@ -1,14 +1,15 @@
 # 1. css/js needs to be built with Webpack
 FROM node:12-alpine AS js-builder
-RUN apk add make
 
-COPY ./frontend/package.json ./frontend/yarn.lock /usr/kars-fe-build/
+COPY ./frontend/yarn.lock /usr/kars-fe-build/
 WORKDIR /usr/kars-fe-build
 RUN yarn
 
 COPY ./frontend /usr/kars-fe-build
-RUN mkdir static
-RUN CSS_TARGET_DIR=./static/css JS_TARGET_DIR=./static/js make all
+RUN mkdir -p static/css static/js
+RUN yarn run node-sass css/theme-dark.scss static/css/theme-dark.css \
+    && yarn run node-sass css/theme-light.scss static/css/theme-light.css
+RUN yarn run webpack --display-modules --output-path static/js
 
 # 3. Copy all in
 FROM python:3.7-slim

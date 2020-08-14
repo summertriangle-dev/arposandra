@@ -6,6 +6,7 @@ if "NEW_RELIC_CONFIG_FILE" in os.environ:
     newrelic.agent.initialize()
 
 import logging
+import signal
 
 import tornado.ioloop
 
@@ -29,12 +30,18 @@ def other_masters():
     return ret
 
 
+def handle_sigterm(signum, frame):
+    runloop = tornado.ioloop.IOLoop.current()
+    runloop.add_callback_from_signal(lambda: runloop.stop())
+
+
 def main():
     as_addr = os.environ.get("AS_ASSET_ADDR", "0.0.0.0")
     as_port = int(os.environ.get("AS_ASSET_PORT", 5001))
 
     debug = int(os.environ.get("AS_DEV", "0"))
     cfg.start_logging("asset", debug)
+
     master_root, master_lang = cfg.get_master_version()
     logging.info(f"Master: {master_root}")
 
@@ -45,8 +52,12 @@ def main():
         as_port, as_addr, xheaders=True
     )
 
+    runloop = tornado.ioloop.IOLoop.current()
+    # We want to make sure the callback is only run if there's an ioloop.
+    # So only register it after the ioloop has already started.
+    runloop.add_callback(signal.signal, signal.SIGTERM, handle_sigterm)
     logging.debug("Entering the IOLoop...")
-    tornado.ioloop.IOLoop.current().start()
+    runloop.start()
 
 
 if __name__ == "__main__":

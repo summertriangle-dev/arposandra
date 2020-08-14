@@ -29,3 +29,12 @@ services:
     volumes:
       - .:/usr/kars
       - ./arena/astool:/external/astool_storage:rw
+  js-dev:
+    image: "node:12-alpine"
+    command: ["sh", "-c", "(cd /usr/fe && exec ./wds_image.sh)"]
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./frontend:/usr/fe
+    environment:
+      WDS_PUBLIC_PATH: http://localhost:5002/static/js

@@ -78,6 +78,7 @@ def create_dict_aggregator(master, language):
     fallback = libcard2.string_mgr.DictionaryAccess(master, language)
     return dict_aggregator.DictionaryAggregator(fallback, choices)
 
+
 def create_more_masters():
     choices = {}
     extra = os.environ.get("AS_EXTRA_DICTIONARIES")
@@ -86,13 +87,14 @@ def create_more_masters():
             rgn_tag = tag.split(":", 1)[0]
             if rgn_tag in choices:
                 continue
-        
+
             region_root = os.path.join(os.environ.get("AS_DATA_ROOT", "."), rgn_tag)
             base = os.path.join(region_root, "masters", find_astool_master_version(region_root))
             logging.debug("Loading sub master: %s", base)
             choices[rgn_tag] = libcard2.master.MasterDataLite(base)
 
     return choices
+
 
 def application(master, language, debug):
     if os.environ.get("AS_TLINJECT_SECRET", ""):
@@ -132,6 +134,7 @@ def application(master, language, debug):
         static_strings=strings,
         debug=debug,
         autoreload=debug,
+        wds_host=os.environ.get("AS_WDS_HOST", "//localhost:5002") if debug else None,
         have_preamble_extra=have_preamble_extra,
         have_footer_extra=have_footer_extra,
     )
