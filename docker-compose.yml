@@ -1,13 +1,25 @@
-version: '3'
+version: '3.3'
+
+# This file is used to configure the image build. You shouldn't edit it -
+# overlay your own config on top with something like
+#   docker-compose -f docker-compose.yml -f variants/config.dev.yml ...
+# instead.
 
 services:
   web:
+    image: arposandra_app
     build:
       context: .
       dockerfile: Dockerfile
       args:
+        # The comment on the next line is used by insert-git-ref.sh.
         AS_GIT_REVISION: b4117a9 # @exp_as_git_rev@
-    environment:
-      AS_DATA_ROOT: /external/astool_storage
-      AS_WEB_ADDR: 0.0.0.0
-      AS_WEB_PORT: 30001
+    command: ["web"]
+  asset:
+    image: arposandra_app
+    command: ["asset"]
+  utils:
+    image: arposandra_app
+    working_dir: /usr/kars/maintenance
+    entrypoint: ["./start.sh"]
+    command: ["none"]

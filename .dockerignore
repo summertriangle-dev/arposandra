@@ -1,8 +1,31 @@
+*/.git/*
+.vscode/
 rt
+*/__pycache__
+*/.DS_Store
+
+# JS
+*/node_modules/*
+frontend/yarn-error.log
+
+# Local non-docker setup...
+env.sh
+# Postgres data and (used to be) asset cache
+arena
+# New Relic configs
+nr/*.ini
+
 skyfarer/hwdecrypt/dist
 skyfarer/hwdecrypt/build
-*/__pycache/*
-*/node_modules/*
-arena
-
+# sometimes pip will leave these around
 *.o
+*.so
+
+skyfarer/assets/cardicons.psd
+
+inspector
+
+maintenance/border/tests
+maintenance/news/mocks
+
+ui_strings/*.po~

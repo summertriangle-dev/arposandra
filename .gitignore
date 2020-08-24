@@ -4,7 +4,7 @@ __pycache__
 .DS_Store
 
 # JS
-frontend/node_modules
+node_modules
 frontend/yarn-error.log
 
 # Local non-docker setup...

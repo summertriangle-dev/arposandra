@@ -10,6 +10,13 @@ ROUTES = []
 H = TypeVar("H", bound=tornado.web.RequestHandler)
 
 
+def add_route(regex: str, handler: Type[H], inits: Optional[dict] = None):
+    if inits:
+        ROUTES.append((regex, handler, inits))
+    else:
+        ROUTES.append((regex, handler))
+
+
 def route(*regexes: Iterable[str], **kwargs: dict) -> Callable[[Type[H]], Type[H]]:
     def wrapper(handler: Type[H]) -> Type[H]:
         for regex in regexes:

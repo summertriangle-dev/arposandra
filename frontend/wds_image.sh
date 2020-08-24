@@ -1,10 +1,12 @@
 #!/bin/sh
 set -e
 
+yarn install
+
 # The container runs both sass and wds processes concurrently. We want to
 # shut the container down if either process crashes/exits, and wait -n doesn't
 # exist in the alpine shell, so we:
-# - Spawn a canary subprocess whose pid is known to the subshells running 
+# - Spawn a canary subprocess whose pid is known to the subshells running
 #   sass/wds.
 # - Each subprocess kills the canary on the way out.
 # - The main shell waits for the canary and exits when it dies.
@@ -17,8 +19,7 @@ canary() {
 canary &
 CANARYPID=$!
 
-# create a dir for node-sass to dump its content
-CONTENT_BASE=$(mktemp -d /tmp/wds.XXXXXXX)
+CONTENT_BASE="/usr/fe/css_cache"
 
 # Compile the CSS to the new temp dir (because node-sass --watch won't do it
 # until the file is first modified)

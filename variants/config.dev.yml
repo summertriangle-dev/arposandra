@@ -1,4 +1,4 @@
-version: '3'
+version: '3.3'
 services:
   asset:
     ports:
@@ -7,7 +7,7 @@ services:
       - .:/usr/kars
       - ./arena/astool:/external/astool_storage:ro
     environment:
-      AS_DEV: 1
+      AS_DEV: "1"
       AS_ASSET_JIT_SECRET: B10E7DBB0B7E462398879E649DCE3C09
       AS_CANONICAL_REGION: "jp:ja"
       AS_EXTRA_REGIONS: "en:en"
@@ -18,17 +18,32 @@ services:
       - .:/usr/kars
       - ./arena/astool:/external/astool_storage:ro
     environment:
-      AS_DEV: 1
+      AS_DEV: "1"
       AS_IMAGE_SERVER: "http://mari.local:5001"
       AS_TLINJECT_SECRET: A3EAEE7BDC584150A9E2CCC03CD64ED4
       AS_ASSET_JIT_SECRET: B10E7DBB0B7E462398879E649DCE3C09
       AS_HOST_ID: mari-dev
       AS_CANONICAL_REGION: "jp:ja"
       AS_EXTRA_DICTIONARIES: "en:en:Official Translations"
+      AS_POSTGRES_DSN: "postgres://postgres:example@db/postgres"
+      ### Change this or js-dev will not work
+      AS_WDS_HOST: "//mari.local:5002"
   utils:
     volumes:
       - .:/usr/kars
       - ./arena/astool:/external/astool_storage:rw
+    environment:
+      AS_POSTGRES_DSN: "postgres://postgres:example@db/postgres"
+  db:
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_PASSWORD: example
+    volumes:
+      - ./arena/pgdata:/var/lib/postgresql/data
   js-dev:
     image: "node:12-alpine"
     command: ["sh", "-c", "(cd /usr/fe && exec ./wds_image.sh)"]
@@ -36,5 +51,12 @@ services:
       - "5002:5002"
     volumes:
       - ./frontend:/usr/fe
+      - fe_node_modules:/usr/fe/node_modules
+      - fe_css_cache:/usr/fe/css_cache
     environment:
-      WDS_PUBLIC_PATH: http://localhost:5002/static/js
+      ### Change this or js-dev will not work
+      WDS_PUBLIC_PATH: http://mari.local:5002/static/js
+
+volumes:
+  fe_node_modules:
+  fe_css_cache:
