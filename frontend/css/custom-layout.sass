@@ -22,10 +22,10 @@ $kars-card-radius: 16px
             margin-right: 20px
         &.kars-navbar-trailing .item
             margin-left: 20px
-        
-        .item    
+
+        .item
             color: $kars-navbar-item-color
-        a.item:hover 
+        a.item:hover
             color: $kars-navbar-item-hover-color
     .kars-navbar-leading
         overflow-x: scroll
@@ -33,7 +33,7 @@ $kars-card-radius: 16px
         &::-webkit-scrollbar
             width: 0
             height: 0
-    .icon 
+    .icon
         font-size: 1.33rem
 
 html[lang=ja] .kars-navbar-list
@@ -43,7 +43,7 @@ html[lang=ja] .kars-navbar-list
     display: flex
     flex-direction: row
     align-items: center
-    
+
     &.is-right
         justify-content: flex-end
     &.is-right > .item
@@ -60,7 +60,7 @@ html[lang=ja] .kars-navbar-list
 
 .kars-footer
     font-size: 0.8rem
-    margin: $card-spacer-y $card-spacer-x 
+    margin: $card-spacer-y $card-spacer-x
     padding-bottom: env(safe-area-inset-bottom)
 
 /* cards */
@@ -79,7 +79,7 @@ html[lang=ja] .kars-navbar-list
 
     &>*:first-child
         border-radius: $kars-card-radius $kars-card-radius 0 0
-        
+
     &>*:last-child
         border-radius: 0 0 $kars-card-radius $kars-card-radius
 
@@ -98,8 +98,11 @@ html[lang=ja] .kars-navbar-list
     left: 0
     padding: 8px
     display: flex
-    align-items: center
+    align-items: flex-end
     font-size: 0.9rem
+
+    & > *
+      padding-right: 8px
 
 .kars-mem-padding
     padding: 35px 20px 20px 20px
@@ -175,15 +178,15 @@ img.kars-skill-icon
     font-weight: bold
 
 @for $i from 1 through 6
-    .kars-attr-#{$i} 
+    .kars-attr-#{$i}
         color: nth($kars-attr-colors, $i)
 
 @each $e in $kars-role-colors
-    .kars-role-#{index($kars-role-colors, $e)} 
+    .kars-role-#{index($kars-role-colors, $e)}
         color: $e
 
 @each $e in $kars-stat-colors
-    .kars-stat-#{index($kars-stat-colors, $e)} 
+    .kars-stat-#{index($kars-stat-colors, $e)}
         color: $e
 
 .kars-image-switch
@@ -223,14 +226,14 @@ img.kars-skill-icon
         background: #fff
         box-shadow: 0px 3px 10px change-color(scale-color(#fff, $lightness: -40%, $saturation: -10%), $alpha: 0.3)
 
-.card-image .kars-image-switch.is-gallery-mode
+.card-image .kars-card-image-float.is-gallery-mode
     visibility: hidden
 
 @include media-breakpoint-down(sm)
-    .card-image .kars-image-switch.is-gallery-mode
+    .card-image .kars-card-image-float.is-gallery-mode
         visibility: visible
 
-.card-image:hover .kars-image-switch.is-gallery-mode
+.card-image:hover .kars-card-image-float.is-gallery-mode
     visibility: visible
 
 .kars-card-brief-list
@@ -268,7 +271,7 @@ img.kars-skill-icon
 
     &:nth-child(even)
         background-color: $card-bg-alt
-    
+
     &:first-child
         border-radius: 16px 16px 0 0
     &:last-child

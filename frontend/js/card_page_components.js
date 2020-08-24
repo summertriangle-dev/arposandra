@@ -52,9 +52,9 @@ class _ImageSwitcher extends React.Component {
         let style = null
         if (this.props.genericBackground) {
             style = {backgroundImage: `url(${this.props.genericBackground})`}
-        } 
+        }
         if (mode == "normal" || mode == "both") {
-            im.push(<a key="image-norm" className="kars-card-image-backing" 
+            im.push(<a key="image-norm" className="kars-card-image-backing"
                 href={this.props.normalImage} alt={Infra.strings["Card image"]} style={style}>
                 <AspectRatio ratio="2/1">
                     <img className="kars-card-spread" src={this.props.normalImage} />
@@ -62,7 +62,7 @@ class _ImageSwitcher extends React.Component {
             </a>)
         }
         if (mode == "idolized" || mode == "both") {
-            im.push(<a key="image-idlz" className="kars-card-image-backing" href={this.props.idolizedImage} 
+            im.push(<a key="image-idlz" className="kars-card-image-backing" href={this.props.idolizedImage}
                 alt={Infra.strings["Card image"]} style={style}>
                 <AspectRatio ratio="2/1">
                     <img className="kars-card-spread" src={this.props.idolizedImage} />
@@ -72,28 +72,50 @@ class _ImageSwitcher extends React.Component {
         return im
     }
 
+    renderClickableCostume() {
+        if (this.props.costumeId) {
+            return <a href={`/costumes/by_idol/${this.props.memberID}/${this.props.costumeId}`}>
+                <img src={this.props.costumeThumb} width="48" alt={Infra.strings.CostumeThumbAlt} />
+            </a>
+        }
+    }
+
+    renderFloat() {
+        if (this.props.isGallery) {
+            return <>
+                {this.renderClickableCostume()}
+                <div className="kars-image-switch neutral is-gallery-mode">
+                    <a onClick={this.props.exitGalleryMode}>
+                        <i className="d-md-none icon ion-md-close"
+                            title={Infra.strings.CISwitch.ExitGalleryMode}></i>
+                        <span className="d-none d-md-inline">{Infra.strings.CISwitch.ExitGalleryMode}</span>
+                    </a>
+                </div>
+            </>
+        } else {
+            return <>
+                {this.renderClickableCostume()}
+                <ImageSwitcherInternal mode={this.state.mode} changeState={(v) => this.setState({mode: v})}/>
+            </>
+        }
+    }
+
     render() {
+
         return [
             this.images(),
-            <div key="$float" className="kars-card-image-float">
-                {this.props.isGallery?
-                    <div className="kars-image-switch neutral is-gallery-mode">
-                        <a onClick={this.props.exitGalleryMode}>
-                            <i className="d-md-none icon ion-md-close" 
-                                title={Infra.strings.CISwitch.ExitGalleryMode}></i>
-                            <span className="d-none d-md-inline">{Infra.strings.CISwitch.ExitGalleryMode}</span>
-                        </a>
-                    </div>
-                    :
-                    <ImageSwitcherInternal mode={this.state.mode} changeState={(v) => this.setState({mode: v})}/>
-                }
+            <div key="$float" className={`kars-card-image-float ${this.props.isGallery? "is-gallery-mode" : ""}`}>
+                {this.renderFloat()}
             </div>
         ]
     }
 
     static defrost(Klass, frozen) {
-        return <Klass 
-            normalImage={frozen.dataset.normalImage} 
+        return <Klass
+            memberID={frozen.dataset.idol}
+            costumeId={frozen.dataset.costumeId}
+            costumeThumb={frozen.dataset.costumeThumb}
+            normalImage={frozen.dataset.normalImage}
             idolizedImage={frozen.dataset.idolizedImage}
             genericBackground={frozen.dataset.genericBg} />
     }
@@ -106,23 +128,23 @@ class _CardDisplayModeSwitcherInternal extends MultiValueSwitch {
 
     getLabelForChoice(v) {
         switch(v) {
-        case "normal": 
-            return [<i key="$mobile" 
-                className="d-md-none icon ion-ios-list" 
+        case "normal":
+            return [<i key="$mobile"
+                className="d-md-none icon ion-ios-list"
                 title={Infra.strings.CDM.Option.Normal}></i>,
-            <span key="$desktop" 
+            <span key="$desktop"
                 className="d-none d-md-inline">{Infra.strings.CDM.Option.Normal}</span>]
         case "esports":
-            return [<i key="$mobile" 
-                className="d-md-none icon ion-ios-baseball" 
+            return [<i key="$mobile"
+                className="d-md-none icon ion-ios-baseball"
                 title={Infra.strings.CDM.Option.Esports}></i>,
-            <span key="$desktop" 
+            <span key="$desktop"
                 className="d-none d-md-inline">{Infra.strings.CDM.Option.Esports}</span>]
-        case "gallery": 
-            return [<i key="$mobile" 
-                className="d-md-none icon ion-ios-images" 
+        case "gallery":
+            return [<i key="$mobile"
+                className="d-md-none icon ion-ios-images"
                 title={Infra.strings.CDM.Option.Gallery}></i>,
-            <span key="$desktop" 
+            <span key="$desktop"
                 className="d-none d-md-inline">{Infra.strings.CDM.Option.Gallery}</span>]
         }
     }

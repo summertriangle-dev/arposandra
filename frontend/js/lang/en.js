@@ -1,6 +1,7 @@
 export default {
     "Card image": "Card image",
-    
+    CostumeThumbAlt: "Costume icon",
+
     CISwitch: {
         ExitGalleryMode: "Exit Gallery Mode",
         Option: {

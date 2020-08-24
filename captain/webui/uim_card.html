@@ -6,6 +6,12 @@
                 data-component-class="ImageSwitcher"
                 data-normal-image="{{ image_url_reify(card.normal_appearance.image_asset_path, Lext) }}"
                 data-idolized-image="{{ image_url_reify(card.idolized_appearance.image_asset_path, Lext) }}"
+                data-idol="{{ card.member.id }}"
+
+                {% if card.costume_info %}
+                data-costume-id="{{ card.costume_info.costume_id }}"
+                data-costume-thumb="{{ image_url_reify(card.costume_info.thumbnail, "png") }}"
+                {% end %}
 
                 {% if not card_has_full_bg(card) %}
                 data-generic-bg="{{ image_url_reify(card.background_asset_path, "jpg") }}"
@@ -42,7 +48,7 @@
                     <a href="/cards/by_idol/{{ card.member.id }}/{{ card.member.ascii_name() }}">{% raw tlinject_static(card.member.name_romaji) %}</a>
                     &bull; {{ format_grade(card.member.year) }},
                     {% if card.member.subunit_name %}
-                        <a href="/idols/group/{{ card.member.group }}">{% raw tlinject_static(card.member.group_name) %}</a>, 
+                        <a href="/idols/group/{{ card.member.group }}">{% raw tlinject_static(card.member.group_name) %}</a>,
                         <a href="/idols/unit/{{ card.member.subunit }}">{% raw tlinject_static(card.member.subunit_name) %}</a>
                     {% else %}
                         <a href="/idols/group/{{ card.member.group }}">{% raw tlinject_static(card.member.group_name) %}</a>
