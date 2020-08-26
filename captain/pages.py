@@ -159,7 +159,7 @@ class APILanguageMenu(RequestHandler):
     def get(self):
         dicts = [
             {
-            "code": self.settings["string_access"].master.language,
+                "code": self.settings["string_access"].master.language,
                 "name": self.locale.translate("DefaultDictionaryName"),
             }
         ]
@@ -169,5 +169,7 @@ class APILanguageMenu(RequestHandler):
                 for x in self.settings["string_access"].choices.values()
             ]
         )
+        regions = ["jp", "en"]
 
-        self.write({"languages": list(get_supported_locales()), "dictionaries": dicts})
+        self.write({"languages": list(get_supported_locales()), "dictionaries": dicts,
+            "regions": regions})

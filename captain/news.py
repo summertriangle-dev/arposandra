@@ -42,13 +42,20 @@ class NewsItem(object):
 
 
 class NewsDatabase(object):
+    SERVER_IDS = ["jp", "en"]
+
     def __init__(self, coordinator):
         self.coordinator = coordinator
+
+    def validate_server_id(self, server_id):
+        if server_id not in self.SERVER_IDS:
+            return self.SERVER_IDS[0]
+        return server_id
 
     async def get_news_items(self, for_server, before_time, limit):
         async with self.coordinator.pool.acquire() as c:
             items = await c.fetch(
-                """SELECT news_id, title, thumbnail, ts, internal_category, NULL, card_refs 
+                """SELECT news_id, title, thumbnail, ts, internal_category, NULL, card_refs
                     FROM news_v2 WHERE ts < $1 AND (visible = TRUE OR internal_category IN (2, 3))
                     AND serverid=$3 ORDER BY ts DESC, news_id LIMIT $2""",
                 before_time,
@@ -94,6 +101,13 @@ class NewsList(LanguageCookieMixin):
     NUM_ITEMS_PER_PAGE = 20
 
     async def get(self, region=None):
+        if not region:
+            server = self.settings["news_context"].validate_server_id(self.get_cookie("dsid", "jp"))
+            self.redirect(f"/{server}/news/")
+            return
+        else:
+            server = self.settings["news_context"].validate_server_id(region)
+
         before = self.get_argument("before", None)
         has_offset = False
         if not before:
@@ -105,7 +119,6 @@ class NewsList(LanguageCookieMixin):
             except ValueError:
                 before = datetime.utcnow()
 
-        server = region or "jp"
         count = await self.settings["news_context"].count_news_items(server)
         items = await self.get_items(server, before, self.NUM_ITEMS_PER_PAGE + 1)
         has_next_page = len(items) > self.NUM_ITEMS_PER_PAGE

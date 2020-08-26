@@ -38,10 +38,21 @@ function localizeReturnedLanguageList(langs) {
                     ob.code, ob.name
                 )
             }
-        })
+        }),
+        regions: langs.regions
     }
 }
 
+function regionAwareReload() {
+    const regionedPaths = ["news", "events"]
+    const paths = window.location.pathname.split("/")
+    if (paths.length > 2 && regionedPaths.includes(paths[2])) {
+        window.location.href = `/${paths[2]}`
+        return
+    }
+
+    window.location.reload()
+}
 
 class LanguageMenu extends React.Component {
     constructor(props) {
@@ -49,20 +60,33 @@ class LanguageMenu extends React.Component {
         this.state = {
             lang: document.querySelector("html").lang,
             dictionary: Cookies.get("mdic"),
+            region: Cookies.get("dsid"),
             fullListAvailable: false,
             siteLangs: [],
             dataLangs: [],
+            regions: []
         }
 
-        loadLanguages().then((l) => this.setState(localizeReturnedLanguageList(l)))
+        loadLanguages().then((l) => {
+            this.setState(localizeReturnedLanguageList(l))
+            this.setState(this.fixDefaults())
+        })
+    }
+
+    fixDefaults() {
+        return {
+            dictionary: Cookies.get("mdic") || this.state.dataLangs[0].code,
+            region: Cookies.get("dsid") || this.state.regions[0],
+        }
     }
 
     save() {
         Cookies.set("lang", this.state.lang, {expires: 1333337})
         Cookies.set("mdic", this.state.dictionary, {expires: 1333337})
+        Cookies.set("dsid", this.state.region, {expires: 1333337})
         this.props.dismiss()
 
-        setTimeout(() => window.location.reload(), 200)
+        setTimeout(regionAwareReload, 200)
     }
 
     goToExperiments() {
@@ -76,10 +100,10 @@ class LanguageMenu extends React.Component {
                 <label htmlFor="ui-language-select">
                     {Infra.strings.LangMenu.UILanguageSelectLabel}
                 </label>
-                <select name="ui-language-select" className="form-control" 
+                <select name="ui-language-select" className="form-control"
                     value={this.state.lang}
                     onChange={(e) => this.setState({lang: e.target.value})}>
-                    {this.state.siteLangs.map((l) => 
+                    {this.state.siteLangs.map((l) =>
                         <option key={l.code} value={l.code}>{l.name}</option>)}
                 </select>
             </div>
@@ -87,17 +111,28 @@ class LanguageMenu extends React.Component {
                 <label htmlFor="dict-select">
                     {Infra.strings.LangMenu.DictionarySelectLabel}
                 </label>
-                <select name="dict-select" className="form-control" 
+                <select name="dict-select" className="form-control"
                     value={this.state.dictionary}
                     onChange={(e) => this.setState({dictionary: e.target.value})}>
-                    {this.state.dataLangs.map((l) => 
+                    {this.state.dataLangs.map((l) =>
                         <option key={l.code} value={l.code}>{l.name}</option>)}
                 </select>
             </div>
+            <div className="form-group">
+                <label htmlFor="region-select">
+                    {Infra.strings.LangMenu.RegionSelectLabel}
+                </label>
+                <select name="region-select" className="form-control"
+                    value={this.state.region}
+                    onChange={(e) => this.setState({region: e.target.value})}>
+                    {this.state.regions.map((rgnCode) =>
+                        <option key={rgnCode} value={rgnCode}>{rgnCode}</option>)}
+                </select>
+            </div>
             <div className="form-row kars-fieldset-naturalorder">
-                <button className="item btn btn-primary" 
+                <button className="item btn btn-primary"
                     onClick={() => this.save()}>{Infra.strings.LangMenu.Save}</button>
-                <button className="item btn btn-secondary" 
+                <button className="item btn btn-secondary"
                     onClick={this.props.dismiss}>{Infra.strings.LangMenu.Cancel}</button>
                 <span className="item flexible-space"></span>
                 <button className="item btn btn-secondary"

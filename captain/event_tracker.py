@@ -59,8 +59,8 @@ class EventTrackingDatabase(object):
         return await con.fetch(
             """
             WITH closest AS (
-                SELECT observation FROM border_data_v3 
-                WHERE serverid=$1 AND event_id=$2 
+                SELECT observation FROM border_data_v3
+                WHERE serverid=$1 AND event_id=$2
                 ORDER BY observation DESC LIMIT 1
             )
 
@@ -106,12 +106,12 @@ class EventTrackingDatabase(object):
         return await con.fetch(
             """
             WITH closest AS (
-                SELECT observation FROM border_fixed_data_v3 
-                WHERE serverid=$1 AND event_id=$2 
+                SELECT observation FROM border_fixed_data_v3
+                WHERE serverid=$1 AND event_id=$2
                 ORDER BY observation DESC LIMIT 1
             )
 
-            SELECT observation, tier_type AS dataset, 
+            SELECT observation, tier_type AS dataset,
                 points_t1, points_t2, points_t3, points_t4, points_t5,
                 points_t6, points_t7, points_t8, points_t9, points_t10
             FROM border_fixed_data_v3 WHERE serverid=$1 AND event_id=$2
@@ -126,7 +126,7 @@ class EventTrackingDatabase(object):
     async def _fetch_t10_afterts(self, con, server_id, event_id, ts):
         return await con.fetch(
             """
-            SELECT observation, tier_type AS dataset, 
+            SELECT observation, tier_type AS dataset,
                 points_t1, points_t2, points_t3, points_t4, points_t5,
                 points_t6, points_t7, points_t8, points_t9, points_t10
             FROM border_fixed_data_v3 WHERE serverid=$1 AND event_id=$2 AND observation > $3
@@ -179,9 +179,11 @@ class EventDash(LanguageCookieMixin):
             event = await self.settings["event_tracking"].get_current_event(sid, current)
         else:
             event = await self.settings["event_tracking"].get_event_info(sid, int(eid))
-            if not event:
-                self.set_status(404)
-                return "I don't remember an event with this ID."
+
+        if not event:
+            self.set_status(404)
+            self.render("error.html", message="There's no event with this ID.")
+            return
 
         stories_list = await self.settings["event_tracking"].get_stories(sid, event["event_id"])
         self.render("event_scaffold.html", server_id=sid, event_rec=event, stories=stories_list)
