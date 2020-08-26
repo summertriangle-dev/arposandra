@@ -105,5 +105,6 @@ export default {
         Save: "Save",
         Cancel: "Cancel",
         GoToExperiments: "Experiments",
+        RegionSelectLabel: "Prefer this server when viewing news or the event tracker:",
     },
 }
