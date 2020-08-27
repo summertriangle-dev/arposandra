@@ -3,6 +3,7 @@ import Infra from "./infra"
 import Cookies from "js-cookie"
 
 import { ModalManager } from "./modals"
+import { requestStoragePermission } from "./storage_permission"
 
 function loadLanguages() {
     const xhr = new XMLHttpRequest()
@@ -68,8 +69,7 @@ class LanguageMenu extends React.Component {
         }
 
         loadLanguages().then((l) => {
-            this.setState(localizeReturnedLanguageList(l))
-            this.setState(this.fixDefaults())
+            this.setState(localizeReturnedLanguageList(l), () => this.fixDefaults())
         })
     }
 
@@ -81,12 +81,16 @@ class LanguageMenu extends React.Component {
     }
 
     save() {
-        Cookies.set("lang", this.state.lang, {expires: 1333337})
-        Cookies.set("mdic", this.state.dictionary, {expires: 1333337})
-        Cookies.set("dsid", this.state.region, {expires: 1333337})
-        this.props.dismiss()
+        requestStoragePermission().then((canProceed) => {
+            if (canProceed) {
+                Cookies.set("lang", this.state.lang, {expires: 1333337})
+                Cookies.set("mdic", this.state.dictionary, {expires: 1333337})
+                Cookies.set("dsid", this.state.region, {expires: 1333337})
+                setTimeout(regionAwareReload, 200)
+            }
 
-        setTimeout(regionAwareReload, 200)
+            this.props.dismiss()
+        })        
     }
 
     goToExperiments() {

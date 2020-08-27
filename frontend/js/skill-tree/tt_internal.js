@@ -36,7 +36,7 @@ class WFCBitSet {
 export class TTDataAccess {
     constructor(stack) {
         this.ttID = stack.id
-        
+
         const construct = TTDataAccess.createShape(stack)
         this.graph = construct.nodes
         this.startNode = construct.start
@@ -47,24 +47,6 @@ export class TTDataAccess {
         this.matrixHeight = stack.tree[0].length
 
         this.lockMap.sort((a, b) => a[0] - b[0])
-    }
-
-    static async requestTT(masterVersion, ttID) {
-        const xhr = new XMLHttpRequest()
-        return new Promise((resolve, reject) => {
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState !== 4) return
-    
-                if (xhr.status == 200) {
-                    const json = JSON.parse(xhr.responseText)
-                    resolve(new TTDataAccess(json))
-                } else {
-                    reject()
-                }
-            }
-            xhr.open("GET", `/api/v1/${masterVersion}/skill_tree/${ttID}.json`)
-            xhr.send()
-        })
     }
 
     static createShape(stack) {
@@ -90,7 +72,7 @@ export class TTDataAccess {
                 if (cur[k][1] == kNodeConnectionUp && k - 1 > 0 && cur[k - 1]) {
                     thisNode.push(cur[k - 1][0])
                 }
-                
+
                 if (cur[k][2].type == 1) {
                     start = cur[k][0]
                     if (thisNode.length < 3) {
@@ -102,7 +84,7 @@ export class TTDataAccess {
                 if (thisNode.length < 3) {
                     console.warn(thisNode, "no parent?")
                 }
-                
+
                 thisNode.push(k)
                 nodes.push(thisNode)
             }
@@ -256,6 +238,10 @@ export class TTUserConfiguration {
         }
     }
 
+    _clearFromLocalStorage() {
+        localStorage.removeItem(`as$trainingtree$${this.dataAccess.ttID}`)
+    }
+
     isNodeActive(depth, vert) {
         return this.state.active.bit(depth * this.dataAccess.matrixHeight + vert) == 1
     }
@@ -273,7 +259,7 @@ export class TTUserConfiguration {
             const nI = this.dataAccess.graph[i]
             const depth = nI[kNodeDepthSlot]
             const vert = nI[kNodeVerticalSlot]
-            
+
             if (!this.isNodeActive(depth, vert)) {
                 continue
             }
@@ -302,11 +288,11 @@ export class TTUserConfiguration {
         const depth = nI[kNodeDepthSlot]
         const vert = nI[kNodeVerticalSlot]
 
-        const nodeForward = depth + 1 < this.dataAccess.tree.length? 
+        const nodeForward = depth + 1 < this.dataAccess.tree.length?
             this.dataAccess.tree[depth + 1][nI[kNodeVerticalSlot]] : undefined
-        const nodeUp = vert > 0? 
+        const nodeUp = vert > 0?
             this.dataAccess.tree[depth][vert - 1] : undefined
-        const nodeDown = vert + 1 < this.dataAccess.tree[depth].length? 
+        const nodeDown = vert + 1 < this.dataAccess.tree[depth].length?
             this.dataAccess.tree[depth][vert + 1] : undefined
 
         let nChild = 0
@@ -383,7 +369,7 @@ export class TTUserConfiguration {
 
     resetState(needSave = true) {
         this.state = {
-            /* Heads are all active nodes where you can reach inactive children by traversing through them. 
+            /* Heads are all active nodes where you can reach inactive children by traversing through them.
              * In other words, any active node whose children aren't all active.
              */
             heads: [this.dataAccess.startNode],
@@ -392,7 +378,7 @@ export class TTUserConfiguration {
             /* (Cells are rendered staggered as they appear in game, so the representation
              *  looks more like this...)
              *  SkillTree rendering:          Matrix representation
-             *    A B C D                     A E I M Q  depth 
+             *    A B C D                     A E I M Q  depth
              *   E F G H                      B F J N R   |
              *  I J K L                       C G K O S   V
              *   M N O P                      D H L P T
@@ -406,10 +392,10 @@ export class TTUserConfiguration {
         const d = TTDataAccess.fastFind(this.dataAccess.graph, this.dataAccess.startNode, (x) => x[kNodeIDSlot])
         this.state.active.set((d[kNodeDepthSlot] * this.dataAccess.tree[0].length) + d[kNodeVerticalSlot], 1)
         console.debug("TTUserConfiguration: init fresh for", this.dataAccess.ttID)
-    
+
         if (needSave) {
-            this.dirty = true
-            this._saveToLocalStorage()
-        }   
+            this._clearFromLocalStorage()
+            this.dirty = false
+        }
     }
 }

@@ -3,7 +3,15 @@ import LocalizedStrings from "react-localization"
 import { Appearance } from "./appearance"
 import { env } from "process"
 
-function initializeStore() {
+function initializeShared(name, newFunc) {
+    if (window[name] === undefined) {
+        window[name] = newFunc()
+    }
+
+    return window[name]
+}
+
+const store = initializeShared("_infraStore", () => {
     // Only page-critical reducers go here.
     const reducers = {
         appearance: Appearance.reducer, 
@@ -21,12 +29,13 @@ function initializeStore() {
     }
 
     return store
-}
+})
 
-const store = window._infraStore? window._infraStore : initializeStore()
-const strings = window._infraStrings? window._infraStrings : new LocalizedStrings({dummy: {}})
-window._infraStore = store
-window._infraStrings = strings
+const strings = initializeShared("_infraStrings", () => new LocalizedStrings({dummy: {}}))
+
+const componentRegistry = initializeShared("_infraComponents", () => {
+    return {}
+})
 
 function getDocumentLocale() {
     const lang = document.querySelector("html").lang
@@ -60,10 +69,21 @@ function isDevelopmentEnv() {
     return env.NODE_ENV === "development"
 }
 
+function registerComponent(name, aClass) {
+    componentRegistry[name] = aClass
+}
+
+function registerComponents(cMap) {
+    Object.assign(componentRegistry, cMap)
+}
+
 export default {
     initialize,
     store,
     strings,
+    componentRegistry,
+    registerComponent,
+    registerComponents,
     canWritebackState,
     enableStateWriteback,
     isDevelopmentEnv,

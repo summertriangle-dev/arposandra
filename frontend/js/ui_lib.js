@@ -3,7 +3,7 @@ import React from "react"
 export class MultiValueSwitch extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {transitioning: false}
+        this.state = {transitioning: false, lastSelection: this.getCurrentSelection()}
 
         this.fakeRef = null
         this.containerRef = null
@@ -52,24 +52,30 @@ export class MultiValueSwitch extends React.Component {
     }
 
     transitionAndSet(toValue) {
-        if (toValue === this.getCurrentSelection()) {
+        if (toValue === this.state.lastSelection) {
             return
         }
 
         const containerL = this.containerRef.getBoundingClientRect().left
-        const start = this.buttonRefs[this.getCurrentSelection()]
+        const start = this.buttonRefs[this.state.lastSelection]
             .getBoundingClientRect().left - containerL
         const fin = this.buttonRefs[toValue].getBoundingClientRect().left - containerL
 
-        this.changeValue(toValue)
+        // this.changeValue(toValue)
 
         this.setState({transitioning: true, 
             animInitialPosition: start,
-            animTargetPosition: fin
+            animTargetPosition: fin,
+            lastSelection: toValue
         })
     }
 
     componentDidUpdate() {
+        const next = this.getCurrentSelection()
+        if (this.state.lastSelection !== next) {
+            this.transitionAndSet(next)
+        }
+
         if (this.fakeRef) {
             this.fakeRef.addEventListener("transitionend", () => {
                 this.fakeRef = null
@@ -98,7 +104,7 @@ export class MultiValueSwitch extends React.Component {
                 return <a key={v} 
                     ref={(r) => this.buttonRefs[v] = r}
                     className={this._selectionClass(v)} 
-                    onClick={() => this.transitionAndSet(v)}>
+                    onClick={() => this.changeValue(v)}>
                     {this.getLabelForChoice(v)}
                 </a>
             })}

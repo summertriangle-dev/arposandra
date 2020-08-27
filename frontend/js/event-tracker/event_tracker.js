@@ -7,6 +7,7 @@ import { SaintDatasetCoordinator, SaintUserConfig, toRankTypeFriendlyName,
     rankTypesForEventType, localizeDatasetName, compareDatasetKey } from "./event_tracker_internal"
 import { MultiValueSwitch } from "../ui_lib"
 import { effectiveAppearance } from "../appearance"
+import { hasStoragePermission, requestStoragePermission } from "../storage_permission"
 
 const hslBase = (h, s, baseL) =>
     (itr) => `hsl(${h}, ${s}%, ${baseL + (5 * itr)}%)`
@@ -157,7 +158,15 @@ class _SaintDisplayEditor extends React.Component {
             if (key.startsWith(prefix)) newMap[key] = v
         }
 
-        this.props.replaceVisFlags(this.props.eventType, newMap)
+        requestStoragePermission("saint-settings").then(() => {
+            this.props.replaceVisFlags(this.props.eventType, newMap)
+        })
+    }
+
+    toggleSingle(k) {
+        requestStoragePermission("saint-settings").then(() => {
+            this.props.toggleVisSet(this.props.eventType, k)
+        })   
     }
 
     render() {
@@ -178,7 +187,7 @@ class _SaintDisplayEditor extends React.Component {
             {this.buttonsToShow().map((k) => {
                 return <div className="col-md-4" key={k}>
                     <div className="card kars-event-cutoff-card" 
-                        onClick={() => this.props.toggleVisSet(this.props.eventType, k)}>
+                        onClick={() => this.toggleSingle(k)}>
                         <div className="card-body">
                             <p className="card-text h6">
                                 {localizeDatasetName(k)} {" "}
@@ -232,7 +241,9 @@ class _SaintGraphRangeController extends MultiValueSwitch {
     }
 
     changeValue(v) {
-        this.props.setTimeScale(v)
+        requestStoragePermission("saint-settings").then(() => {
+            this.props.setTimeScale(v)
+        })
     }
 }
 const SaintGraphRangeController = connect((state) => { return {
@@ -297,7 +308,7 @@ class SaintDisplayController {
 
         Infra.store.dispatch({type: `${SaintUserConfig.actions.loadFromLocalStorage}`})
         Infra.store.subscribe(() => {
-            if (Infra.canWritebackState()) {
+            if (Infra.canWritebackState() && hasStoragePermission()) {
                 const {displayTiers, rankMode, timeScale} = Infra.store.getState().saint
                 localStorage.setItem("as$$saint", JSON.stringify({displayTiers, rankMode, timeScale}))
             }
@@ -483,6 +494,7 @@ class SaintDisplayController {
 let controller
 
 export function injectIntoPage() {
+    Infra.store.injectReducers({saint: SaintUserConfig.reducer})
     const tgt = document.getElementById("saint-inject-target")
     controller = new SaintDisplayController(tgt)
     controller.install()

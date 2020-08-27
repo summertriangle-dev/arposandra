@@ -1,7 +1,8 @@
 import React from "react"
-import Infra from "./infra"
+import Infra from "../infra"
 import { TTUserConfiguration, TTDataAccess } from "./tt_internal"
-import { AlbumStore } from "./album"
+import { AlbumStore } from "../album"
+import { requestStoragePermission } from "../storage_permission"
 
 const toRadians = (i) => Math.PI / 180 * i
 
@@ -53,7 +54,7 @@ function classFromNodeType(t) {
     case 4: // STORY
         return "stt-node-story"
     case 5: // AWAKENING
-        return "stt-node-awake" 
+        return "stt-node-awake"
     case 6: // SUIT
         return "stt-node-suit"
     case 7: // ACTIVE LEVEL
@@ -163,10 +164,10 @@ const TTNode = React.memo(function TTNode(props) {
             <polygon points={hexPoints(cx, cy, sr)} />
             <use href={`/static/images/tt-base.svg#g-${classFromNodeType(cellPayload.type)}`}
                 x={cx + effectiveBigNodeIconOffset.x} y={cy + effectiveBigNodeIconOffset.y}/>
-            {props.skipTextForBigNodes? null : 
+            {props.skipTextForBigNodes? null :
                 <text className="tt-s" x={cx + bigNodeTextOffset.x} y={cy + bigNodeTextOffset.y}>
                     {labelFromNodeType(cellPayload.type)}</text>}
-            {props.skipTextForBigNodes? null : 
+            {props.skipTextForBigNodes? null :
                 <text className="tt-t" x={cx + bigNodeTextOffset.x} y={cy + bigNodeTextOffset.y}>
                     {labelFromNodeType(cellPayload.type)}</text>}
         </g>
@@ -178,7 +179,7 @@ const TTNode = React.memo(function TTNode(props) {
 
 function TTStackConnections(props) {
     const centerIndex = 2
-    const contentHeight = props.nodes.length * props.nodeHeight + 
+    const contentHeight = props.nodes.length * props.nodeHeight +
         (props.nodes.length - 1) * props.nodePadding
     const cellHeight = props.nodeHeight + props.nodePadding
 
@@ -201,13 +202,13 @@ function TTStackConnections(props) {
         switch(v[1]) {
         case 100:
             connections.push(<line className={clz} key={i}
-                x1={pX - props.columnWidth} y1={pY} 
+                x1={pX - props.columnWidth} y1={pY}
                 x2={pX} y2={pY} />)
             break
         case 101: {
             const bX = pX - props.columnWidth / 2
             connections.push(<polyline className={clz} key={i} points={
-                `${bX},${y + ((i + 1) * cellHeight)} 
+                `${bX},${y + ((i + 1) * cellHeight)}
                 ${bX},${pY} ${pX},${pY}`
             } />)
             break
@@ -215,7 +216,7 @@ function TTStackConnections(props) {
         case 102: {
             const bX = pX - props.columnWidth / 2
             connections.push(<polyline className={clz} key={i} points={
-                `${bX},${y + ((i - 1) * cellHeight)} 
+                `${bX},${y + ((i - 1) * cellHeight)}
                 ${bX},${pY} ${pX},${pY}`
             } />)
             break
@@ -239,7 +240,7 @@ function TTStackConnections(props) {
 
 function TTStackNodes(props) {
     const centerIndex = 2
-    const contentHeight = props.nodes.length * props.nodeHeight + 
+    const contentHeight = props.nodes.length * props.nodeHeight +
         (props.nodes.length - 1) * props.nodePadding
     const cellHeight = props.nodeHeight + props.nodePadding
 
@@ -253,7 +254,7 @@ function TTStackNodes(props) {
         const pY = y + (i * cellHeight)
         const pX = Math.abs(i - centerIndex) * (props.columnWidth / 2)
         graphics.push(<TTNode key={v[0]}
-            x={pX + props.nodeWidth / 2} y={pY + props.nodeHeight / 2} 
+            x={pX + props.nodeWidth / 2} y={pY + props.nodeHeight / 2}
             squareSize={props.nodeWidth} description={v}
             displayNodeInfo={props.displayNodeInfo}
             highlighted={props.isHighlighted(v[0])}
@@ -287,12 +288,12 @@ function TTNodeCostInfo(props) {
                         {props.withIntermediates.gold} G
                     </span>
                 </div>
-                {props.withIntermediates.grade > 0? 
+                {props.withIntermediates.grade > 0?
                     <p className="mb-0 mt-0">
-                        {Infra.strings.formatString(Infra.strings["TTWrapper.CardRank"], 
+                        {Infra.strings.formatString(Infra.strings["TTWrapper.CardRank"],
                             starScale(props.withIntermediates.grade))}
                     </p> : null}
-                
+
                 <p className="mb-1 small text-muted">
                     {Infra.strings.formatString(Infra.strings["TTWrapper.NIntermediates"], props.intermediateCount - 1)}
                 </p>
@@ -310,7 +311,7 @@ function SkillTree(props) {
     const imageWidth = (columnWidth * props.treeData.tree.length) + (2 * imageXPadding)
 
     return <div className="kars-tt-window">
-        <svg width={imageWidth} height={imageHeight} 
+        <svg width={imageWidth} height={imageHeight}
             viewBox={`0 0 ${imageWidth} ${imageHeight}`}>
             <defs>
                 <linearGradient id="stt-awaken-node-fill"
@@ -320,26 +321,26 @@ function SkillTree(props) {
                 </linearGradient>
             </defs>
             {props.treeData.tree.map((v, i) =>
-                <TTStackConnections 
+                <TTStackConnections
                     depth={i}
-                    nodeWidth={nodeSize} nodeHeight={nodeSize} nodePadding={nodePadding} 
-                    columnHeight={imageHeight} x={imageXPadding + (i * columnWidth)} 
-                    columnWidth={columnWidth} 
+                    nodeWidth={nodeSize} nodeHeight={nodeSize} nodePadding={nodePadding}
+                    columnHeight={imageHeight} x={imageXPadding + (i * columnWidth)}
+                    columnWidth={columnWidth}
                     key={i} nodes={v}
                     isHighlighted={props.isHighlighted}
-                    isActive={props.isActive} 
+                    isActive={props.isActive}
                     unlockLevel={props.treeData.lockGradeForLevel(i)}/>
             )}
             {props.treeData.tree.map((v, i) =>
-                <TTStackNodes 
+                <TTStackNodes
                     depth={i}
-                    nodeWidth={nodeSize} nodeHeight={nodeSize} nodePadding={nodePadding} 
-                    columnHeight={imageHeight} x={imageXPadding + (i * columnWidth)} 
-                    columnWidth={columnWidth} 
+                    nodeWidth={nodeSize} nodeHeight={nodeSize} nodePadding={nodePadding}
+                    columnHeight={imageHeight} x={imageXPadding + (i * columnWidth)}
+                    columnWidth={columnWidth}
                     key={i} nodes={v}
                     displayNodeInfo={props.focusNode}
                     isHighlighted={props.isHighlighted}
-                    isActive={props.isActive} /> 
+                    isActive={props.isActive} />
             )}
         </svg>
     </div>
@@ -361,7 +362,7 @@ class TTMiniToolbar extends React.Component {
         if (this.props.path) {
             const cumulativeCost = this.props.path? this.props.dataAccess.sumCostForPath(this.props.path) : null
             const onlyTargetCost = this.props.path? this.props.dataAccess.sumCostForPath([this.props.node[0]]) : null
-            costInfo = <TTNodeCostInfo node={this.props.node} cost={onlyTargetCost} 
+            costInfo = <TTNodeCostInfo node={this.props.node} cost={onlyTargetCost}
                 withIntermediates={cumulativeCost} intermediateCount={this.props.path.length} />
         }
 
@@ -387,7 +388,8 @@ class TTMiniToolbar extends React.Component {
                 <a onClick={() => this.setState({confirming: true})} className="text-danger">
                     {Infra.strings["Reset All Nodes..."]}
                 </a>
-                {this.props.path? <span className="dev-only">Debug: tail node ID: {this.props.node[0]} Highlight set: {this.props.path.toString()}</span> : null}
+                {this.props.path? <span className="dev-only">
+                    Debug: tail node ID: {this.props.node[0]} Highlight set: {this.props.path.toString()}</span> : null}
             </p>
         }
         return <div className="kars-tt-thing">
@@ -397,14 +399,12 @@ class TTMiniToolbar extends React.Component {
     }
 }
 
-export default class WrapSkillTree extends React.Component {
+export class SkillTreeUI extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            treeData: null,
-            displayType: 0,
             focusNodeInfo: null,
-            userConfig: null,
+            userConfig: new TTUserConfiguration(props.treeData),
             highlightPath: null,
         }
     }
@@ -423,7 +423,7 @@ export default class WrapSkillTree extends React.Component {
     proposedLB() {
         let max = 0
         for (let i = 0; i < this.state.highlightPath.length; ++i) {
-            const p = this.state.treeData.getNodeByID(this.state.highlightPath[i])
+            const p = this.props.treeData.getNodeByID(this.state.highlightPath[i])
             if (p.req_grade > max) {
                 max = p.req_grade
             }
@@ -431,31 +431,38 @@ export default class WrapSkillTree extends React.Component {
         return max
     }
 
+    updateInfluence() {
+        const limitBreak = this.proposedLB()
+        const influence = this.state.userConfig.calculateStatContributionOfActiveNodes()
+        Infra.store.dispatch({
+            type: `${AlbumStore.actions.setCardTTInfluence}`,
+            cid: this.props.cardId,
+            influence
+        })
+
+        const currentLevels = Infra.store.getState().album.cardLevel[this.props.cardId]
+        if (!currentLevels || limitBreak > currentLevels.limitBreak) {
+            Infra.store.dispatch({
+                type: `${AlbumStore.actions.setCardLimitBreak}`,
+                cid: this.props.cardId,
+                limitBreak
+            })
+        }
+    }
+
     nodeClicked(node) {
         if (this.state.focusNodeInfo && node[0] === this.state.focusNodeInfo[0]) {
             // naughty but we're going to dispose of it momentarily...
-            this.state.userConfig.activateSet(this.state.highlightPath)
-            this.setState({
-                focusNodeInfo: null,
-                highlightPath: null
+            requestStoragePermission().then((canProceed) => {
+                if (canProceed) {
+                    this.state.userConfig.activateSet(this.state.highlightPath)
+                    this.setState({
+                        focusNodeInfo: null,
+                        highlightPath: null
+                    })
+                    this.updateInfluence()
+                }
             })
-
-            const limitBreak = this.proposedLB()
-            const influence = this.state.userConfig.calculateStatContributionOfActiveNodes()
-            Infra.store.dispatch({
-                type: `${AlbumStore.actions.setCardTTInfluence}`, 
-                cid: this.props.cardId,
-                influence
-            })
-
-            const currentLevels = Infra.store.getState().album.cardLevel[this.props.cardId]
-            if (!currentLevels || limitBreak > currentLevels.limitBreak) {
-                Infra.store.dispatch({
-                    type: `${AlbumStore.actions.setCardLimitBreak}`, 
-                    cid: this.props.cardId,
-                    limitBreak
-                })
-            }
         } else {
             if (this.state.userConfig.isNodeActiveByID(node[0])) {
                 this.setState({focusNodeInfo: null, highlightPath: null})
@@ -471,58 +478,21 @@ export default class WrapSkillTree extends React.Component {
 
     resetAndReload() {
         this.state.userConfig.resetState()
-        this.setState({treeData: this.state.treeData, userConfig: this.state.userConfig})
-    }
-
-    expand() {
-        this.setState({displayType: 1})
-        TTDataAccess.requestTT(this.props.master, this.props.typeid).then((tree) => {
-            const progress = new TTUserConfiguration(tree)
-            this.setState({treeData: tree, displayType: 2, userConfig: progress})
-        }).catch((exception) => {
-            if (!exception) {
-                this.setState({displayType: 3})
-            } else {
-                throw exception
-            }
-        })
+        this.setState({userConfig: this.state.userConfig, focusNodeInfo: null, highlightPath: null})
     }
 
     render() {
-        switch (this.state.displayType) {
-        case 0: // Collapsed and no data
-            return <div className="kars-tt-placeholder text-center" onClick={() => this.expand()}>
-                <i className="icon ion-ios-expand"></i>
-                <span className="link-like">{Infra.strings["TTWrapper.ExpandSkillTree"]}</span>
-            </div>
-        case 1: // Expanded and loading
-            return <div className="kars-tt-placeholder text-center">
-                <i className="icon ion-ios-hourglass"></i>
-                {Infra.strings["TTWrapper.WaitingOnServerForTTData"]}
-            </div>
-        case 3:
-            return <div className="kars-tt-placeholder text-center" onClick={() => this.expand()}>
-                <i className="icon ion-ios-hammer"></i>
-                {Infra.strings["TTWrapper.FailedToRetrieveTTFromServer"]}
-            </div>
-        case 2: // Expanded
-            return <div>
-                <SkillTree treeData={this.state.treeData} 
-                    focusNode={(n) => this.nodeClicked(n)}
-                    isHighlighted={(nid) => this.checkHighlight(nid)}
-                    isActive={(depth, vert) => this.checkActive(depth, vert)} />
-                <TTMiniToolbar resetAll={() => this.resetAndReload()}
-                    node={this.state.focusNodeInfo}
-                    path={this.state.highlightPath}
-                    dataAccess={this.state.treeData} />
-            </div>
-        }
+        return <div>
+            <SkillTree treeData={this.props.treeData}
+                focusNode={(n) => this.nodeClicked(n)}
+                isHighlighted={(nid) => this.checkHighlight(nid)}
+                isActive={(depth, vert) => this.checkActive(depth, vert)} />
+            <TTMiniToolbar resetAll={() => this.resetAndReload()}
+                node={this.state.focusNodeInfo}
+                path={this.state.highlightPath}
+                dataAccess={this.props.treeData} />
+        </div>
     }
+}
 
-    static defrost(Klass, frozen) {
-        return <Klass 
-            master={document.body.dataset.master} 
-            typeid={frozen.dataset.ttId}
-            cardId={frozen.dataset.cardId} />
-    }
-} 
+export {TTDataAccess}

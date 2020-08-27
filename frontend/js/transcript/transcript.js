@@ -1,5 +1,5 @@
 import React from "react"
-import Infra from "./infra"
+import Infra from "../infra"
 import {AspectRatio} from "react-aspect-ratio"
 
 let hackForUnescapingHTML = null

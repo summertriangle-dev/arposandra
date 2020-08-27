@@ -1,8 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
 import Infra from "./infra"
-import Cookies from "js-cookie"
-
-const FLG_CS_SHOW_DEV_INFO_E = 0x2
 
 function valueIn(it, choices, def) {
     if (choices.indexOf(it) === -1) {
@@ -85,23 +82,6 @@ function dmSetAppearance(appearanceStore, initial) {
     DM_CURRENT_THEME = name
 }
 
-function dmToggleAppearance() {
-    const theme = Infra.store.getState().appearance.theme
-    let nextAppearance
-
-    if (theme === "system") {
-        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-            nextAppearance = "light"
-        } else {
-            nextAppearance = "dark"
-        }
-    } else {
-        nextAppearance = theme === "dark"? "light" : "dark"
-    }
-
-    Infra.store.dispatch({type: `${Appearance.actions.setTheme}`, payload: nextAppearance})
-}
-
 export function effectiveAppearance() {
     const theme = Infra.store.getState().appearance.theme
     if (theme === "system") {
@@ -119,32 +99,15 @@ export function initWithRedux(store) {
     dmInitThemeRegistry()
 
     store.subscribe(() => {
-        const state = store.getState().appearance
+        const state = Infra.store.getState().appearance
         console.debug("Appearance: did change...")
         console.debug(`The theme is ${state.theme}. The CDM is ${state.cardDisplayMode}.`)
         dmSetAppearance(state, true)
         document.body.className = `kars-${state.cardDisplayMode}-config`
-
-        if (Infra.canWritebackState()) {
-            localStorage.setItem("as$$appearance", JSON.stringify(state))
-        }
     })
 
     const sers = JSON.parse(localStorage.getItem("as$$appearance"))
     if (sers !== undefined) {
         store.dispatch({type: `${Appearance.actions.loadFromLocalStorage}`, payload: sers})
-    }
-
-    document.querySelector("#bind-appearance-toggle")
-        .addEventListener("click", dmToggleAppearance, false)
-
-    const flagS = Cookies.get("cs_fflg")
-    console.debug(flagS)
-    let flagI
-    if (flagS && (flagI = parseInt(flagS))) {
-        console.debug(flagI)
-        if (flagI & FLG_CS_SHOW_DEV_INFO_E) {
-            document.querySelector("body").dataset.developer = true
-        }
     }
 }

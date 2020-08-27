@@ -4,6 +4,7 @@ import React from "react"
 import Infra from "./infra"
 import { connect } from "react-redux"
 import { MultiValueSwitch } from "./ui_lib"
+import { requestStoragePermission } from "./storage_permission"
 
 const FilterMode = Object.freeze({
     anything: 0,
@@ -52,7 +53,11 @@ class _NewsFilterSwitchInternal extends MultiValueSwitch {
     }
     
     changeValue(toValue) {
-        this.props.setMode(parseInt(toValue))
+        const nextVal = parseInt(toValue)
+        requestStoragePermission().then((canProceed) => {
+            if (canProceed)
+                this.props.setMode(nextVal)
+        })
     }
 
     animationDidFinish() {

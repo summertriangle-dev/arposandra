@@ -107,4 +107,16 @@ export default {
         GoToExperiments: "Experiments",
         RegionSelectLabel: "Prefer this server when viewing news or the event tracker:",
     },
+    StoragePermission: {
+        RequestTitle: "Storage Permission Required",
+        RequestBody: [
+            `In order for this feature to work, I need to store some information (commonly known as \"cookies\")
+                in your browser. The stored information is for technical purposes only and cannot be used to 
+                identify you, and it is not shared with third parties.`,
+            `If you deny permission, the site will still work. 
+                I'll ask again next time you use a feature that requires storage.`
+        ],
+        AllowButton: "Allow",
+        DenyButton: "Deny",
+    }
 }

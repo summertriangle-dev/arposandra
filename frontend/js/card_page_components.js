@@ -5,6 +5,7 @@ import { AspectRatio } from "react-aspect-ratio"
 import Infra from "./infra"
 import { Appearance } from "./appearance"
 import { MultiValueSwitch } from "./ui_lib"
+import { requestStoragePermission } from "./storage_permission"
 
 class ImageSwitcherInternal extends MultiValueSwitch {
     getChoices() {
@@ -28,7 +29,9 @@ class ImageSwitcherInternal extends MultiValueSwitch {
     }
 
     changeValue(toValue) {
-        this.props.changeState(toValue)
+        requestStoragePermission("card-page").then(() => {
+            this.props.changeState(toValue)
+        })
     }
 }
 
@@ -101,7 +104,6 @@ class _ImageSwitcher extends React.Component {
     }
 
     render() {
-
         return [
             this.images(),
             <div key="$float" className={`kars-card-image-float ${this.props.isGallery? "is-gallery-mode" : ""}`}>
@@ -154,7 +156,9 @@ class _CardDisplayModeSwitcherInternal extends MultiValueSwitch {
     }
 
     changeValue(toValue) {
-        this.props.setDisplay(toValue)
+        requestStoragePermission("cdm-switch").then(() => {
+            this.props.setDisplay(toValue)
+        })
     }
 }
 const CardDisplayModeSwitcherInternal = connect(
@@ -189,3 +193,78 @@ export const ImageSwitcher = connect(
                 {type: `${Appearance.actions.setCardDisplayMode}`, payload: "normal"}),
         }
     })(_ImageSwitcher)
+
+async function requestTT(masterVersion, ttID) {
+    const xhr = new XMLHttpRequest()
+    return new Promise((resolve, reject) => {
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState !== 4) return
+    
+            if (xhr.status == 200) {
+                const json = JSON.parse(xhr.responseText)
+                resolve(json)
+            } else {
+                reject()
+            }
+        }
+        xhr.open("GET", `/api/v1/${masterVersion}/skill_tree/${ttID}.json`)
+        xhr.send()
+    })
+}
+    
+export class SkillTreeLoader extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            treeData: null,
+            displayType: 0,
+            nextComponent: null
+        }
+    }
+    
+    expand() {
+        this.setState({displayType: 1})
+    
+        Promise.all([import("./skill-tree/skill_tree"), requestTT(this.props.master, this.props.typeid)])
+            .then(([ttMod, ttJson]) => {
+                const tree = new ttMod.TTDataAccess(ttJson)
+                this.setState({treeData: tree, displayType: 2, nextComponent: ttMod.SkillTreeUI})
+            }).catch((exception) => {
+                if (!exception) {
+                    this.setState({displayType: 3})
+                } else {
+                    throw exception
+                }
+            })
+    }
+    
+    render() {
+        switch (this.state.displayType) {
+        case 0: // Collapsed and no data
+            return <div className="kars-tt-placeholder text-center" onClick={() => this.expand()}>
+                <i className="icon ion-ios-expand"></i>
+                <span className="link-like">{Infra.strings["TTWrapper.ExpandSkillTree"]}</span>
+            </div>
+        case 1: // Expanded and loading
+            return <div className="kars-tt-placeholder text-center">
+                <i className="icon ion-ios-hourglass"></i>
+                {Infra.strings["TTWrapper.WaitingOnServerForTTData"]}
+            </div>
+        case 3:
+            return <div className="kars-tt-placeholder text-center" onClick={() => this.expand()}>
+                <i className="icon ion-ios-hammer"></i>
+                {Infra.strings["TTWrapper.FailedToRetrieveTTFromServer"]}
+            </div>
+        case 2: // Expanded
+            const SkillTreeUI = this.state.nextComponent
+            return <SkillTreeUI treeData={this.state.treeData} cardId={this.props.cardId} />
+        }
+    }
+    
+    static defrost(Klass, frozen) {
+        return <Klass
+            master={document.body.dataset.master}
+            typeid={frozen.dataset.ttId}
+            cardId={frozen.dataset.cardId} />
+    }
+}
