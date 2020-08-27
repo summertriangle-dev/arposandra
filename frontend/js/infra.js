@@ -1,5 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit"
-import LocalizedStrings from "react-localization"
+import LocalizedStrings from "localized-strings"
 import { Appearance } from "./appearance"
 import { env } from "process"
 
@@ -11,7 +11,7 @@ function initializeShared(name, newFunc) {
     return window[name]
 }
 
-const store = initializeShared("_infraStore", () => {
+const store = (() => {
     // Only page-critical reducers go here.
     const reducers = {
         appearance: Appearance.reducer, 
@@ -29,13 +29,11 @@ const store = initializeShared("_infraStore", () => {
     }
 
     return store
-})
+})()
 
-const strings = initializeShared("_infraStrings", () => new LocalizedStrings({dummy: {}}))
+const strings = new LocalizedStrings({dummy: {}})
 
-const componentRegistry = initializeShared("_infraComponents", () => {
-    return {}
-})
+const componentRegistry = {}
 
 function getDocumentLocale() {
     const lang = document.querySelector("html").lang

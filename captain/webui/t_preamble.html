@@ -12,6 +12,7 @@
     class="theme" rel="stylesheet" type="text/css" 
     media="(prefers-color-scheme: dark)" 
     href="{{ handler.settings["wds_host"] }}/static/css/theme-dark.css">
+<script type="text/javascript" src="{{ handler.settings["wds_host"] }}/static/js/runtime.bundle.js"></script>
 <script type="text/javascript" src="{{ handler.settings["wds_host"] }}/static/js/vendors~early~main.bundle.js"></script>
 <script type="text/javascript" src="{{ handler.settings["wds_host"] }}/static/js/early.bundle.js"></script>
 <script type="text/javascript" src="{{ handler.settings["wds_host"] }}/static/js/vendors~main.bundle.js" async></script>
@@ -24,6 +25,7 @@
     class="theme" rel="stylesheet" type="text/css" 
     media="(prefers-color-scheme: dark)" 
     href="{{ handler.static_url('css/theme-dark.css') }}">
+<script type="text/javascript" src="{{ handler.static_url('js/runtime.bundle.js') }}"></script>
 <script type="text/javascript" src="{{ handler.static_url('js/vendors~early~main.bundle.js') }}"></script>
 <script type="text/javascript" src="{{ handler.static_url('js/early.bundle.js') }}"></script>
 <script type="text/javascript" src="{{ handler.static_url('js/vendors~main.bundle.js') }}" async></script>

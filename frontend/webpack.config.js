@@ -51,7 +51,8 @@ module.exports = {
     optimization: {
         splitChunks: {
             chunks: "all"
-        }
+        },
+        runtimeChunk: "single",
     },
     plugins: [
         new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en|ja/)

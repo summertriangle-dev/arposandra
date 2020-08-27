@@ -3,6 +3,8 @@ import ReactDOM from "react-dom"
 import {Provider} from "react-redux"
 
 import Infra from "./infra"
+// This will automatically patch Infra.strings to support JSX placeholders. Neat!
+import "react-localization"
 import * as TLInject from "./tlinject"
 import * as Album from "./album"
 import * as NewsFilter from "./news_filter"
