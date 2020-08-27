@@ -22,6 +22,7 @@ from . import event_tracker
 from . import dict_aggregator
 import libcard2
 
+
 class DictionaryAccessProtocolImp(gettext.GNUTranslations):
     class Fallback(object):
         @classmethod
@@ -95,6 +96,9 @@ def application(master, language, debug):
     if os.environ.get("AS_TLINJECT_SECRET", ""):
         print("TLInject is enabled for this server.")
 
+    if not os.environ.get("AS_COOKIE_SECRET"):
+        raise ValueError("You need to set AS_COOKIE_SECRET in the environment.")
+
     locale.set_default_locale("en")
     locale.load_gettext_translations(readonly_app_path("gettext"), "tornado")
     strings = static_strings()
@@ -128,5 +132,6 @@ def application(master, language, debug):
         wds_host=os.environ.get("AS_WDS_HOST", "//localhost:5002") if debug else None,
         have_preamble_extra=have_preamble_extra,
         have_footer_extra=have_footer_extra,
+        cookie_secret=os.environ.get("AS_COOKIE_SECRET"),
     )
     return application

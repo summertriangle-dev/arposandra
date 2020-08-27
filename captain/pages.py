@@ -1,3 +1,4 @@
+import json
 from collections import OrderedDict
 from tornado.web import RequestHandler
 from tornado.locale import get_supported_locales
@@ -154,6 +155,39 @@ class APISearchBootstrap(RequestHandler):
         return
 
 
+@route(r"/api/private/change_experiment_flags")
+class APIChangeExperimentFlags(RequestHandler):
+    FLAG_SHOW_DEV_TEXT = 1 << 1
+
+    def post(self):
+        try:
+            req = json.loads(self.request.body.decode("utf8"))
+        except ValueError:
+            self.set_status(400)
+            return
+
+        try:
+            cookie = self.get_secure_cookie("cs_fflg_v2", max_age_days=1000000)
+            current_flags = int(cookie or 0)
+        except ValueError:
+            current_flags = 0
+
+        password = req.get("password")
+        if password == "yaldabaoth":
+            current_flags ^= self.FLAG_SHOW_DEV_TEXT
+            if current_flags & self.FLAG_SHOW_DEV_TEXT:
+                ret_s = "You will now see debug text in places that have it."
+            else:
+                ret_s = "You will no longer see debug text in places that had it."
+        else:
+            self.set_status(400)
+            return
+
+        self.set_secure_cookie("cs_fflg_v2", str(current_flags), expires_days=1000000)
+        self.write({"message": ret_s})
+        return
+
+
 @route(r"/api/private/langmenu.json")
 class APILanguageMenu(RequestHandler):
     def get(self):
@@ -171,5 +205,7 @@ class APILanguageMenu(RequestHandler):
         )
         regions = ["jp", "en"]
 
-        self.write({"languages": list(get_supported_locales()), "dictionaries": dicts,
-            "regions": regions})
+        self.write(
+            {"languages": list(get_supported_locales()), "dictionaries": dicts, "regions": regions}
+        )
+

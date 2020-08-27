@@ -26,6 +26,7 @@ services:
       AS_CANONICAL_REGION: "jp:ja"
       AS_EXTRA_DICTIONARIES: "en:en:Official Translations"
       AS_POSTGRES_DSN: "postgres://postgres:example@db/postgres"
+      AS_COOKIE_SECRET: "8nM1zysPo+vimew9DAPEvSi4EOAazwaBa09NYvKUls4="
       ### Change this or js-dev will not work
       AS_WDS_HOST: "//mari.local:5002"
   utils:
