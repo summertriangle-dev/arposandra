@@ -54,6 +54,10 @@ TLINJECT_ALT_EMPTY = set()
 
 
 @export
+def tlinject_supported_languages(handler):
+    return " ".join(handler.settings["tlinject_context"].supported_languages)
+
+@export
 def tlinject(handler, s, key_is_pt=False, *, mock=False):
     try:
         base, alt_set = handler._tlinject_base

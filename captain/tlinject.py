@@ -33,7 +33,7 @@ class TLInjectContext(object):
     def __init__(self, coordinator):
         self.coordinator = coordinator
         self.secret = os.environ.get("AS_TLINJECT_SECRET").encode("utf8")
-        self.supported_languages = set()
+        self.supported_languages = []
 
     async def init_models(self):
         async with self.coordinator.pool.acquire() as c:
@@ -61,9 +61,10 @@ class TLInjectContext(object):
                     """
                 )
 
-            self.supported_languages = set(
-                row[0] for row in await c.fetch("SELECT langid FROM tlinject_languages_v1")
-            )
+            self.supported_languages = [
+                lang for lang, in await c.fetch("SELECT langid FROM tlinject_languages_v1")
+            ]
+            self.supported_languages.sort(key=lambda x: 0 if x == "en" else 1)
 
     def is_language_valid(self, langid):
         return langid in self.supported_languages
@@ -120,13 +121,6 @@ class TLInjectContext(object):
                     ret[record["key"]] = record["translated"]
 
         return (0, ret)
-
-
-@route(r"/api/private/tlinject/bootstrap.json")
-class TLInjectBootstrapAPI(RequestHandler):
-    def get(self):
-        langs = self.settings["tlinject_context"].supported_languages
-        self.write({"result": {"languages": sorted(langs, key=lambda x: 0 if x == "en" else 1)}})
 
 
 @route(r"/api/private/tlinject/([a-z_A-Z]+)/strings.json")

@@ -8,24 +8,6 @@ let config = {
     isEnabledNow: false
 }
 
-function bootstrapAPI() {
-    return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest()
-        xhr.open("GET", "/api/private/tlinject/bootstrap.json", true)
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState == 4) {
-                const j = JSON.parse(xhr.responseText)
-                if (xhr.status == 200) {
-                    resolve(j.result)
-                } else {
-                    reject(j.error)
-                }
-            }
-        }
-        xhr.send()
-    })
-}
-
 function sendStringAPI(key, translated, assr) {
     if (!config.language) {
         return Promise.reject("TLInject was invoked before it was ready. You should never see this message.")
@@ -70,33 +52,6 @@ function loadStringsAPI(trans) {
         }
         xhr.send(JSON.stringify(trans))
     })
-}
-
-async function getSupportedLanguages() {
-    const cached = localStorage.getItem("as$tliLang")
-    let values
-    if (cached) {
-        try {
-            values = JSON.parse(cached)
-        } catch {
-            values = null
-        }
-    }
-
-    if (values && Date.now() - values.t > 86400000) {
-        values = null
-    }
-
-    if (values) {
-        return values.l
-    } else {
-        const results = await bootstrapAPI()
-        localStorage.setItem("as$tliLang", JSON.stringify({
-            l: results.languages,
-            t: Date.now()
-        }))
-        return results.languages
-    }
 }
 
 class TLInjectInputPromptModal extends React.Component {
@@ -298,14 +253,13 @@ export function initialize() {
         applyConfigChange()
     }
 
-    getSupportedLanguages().then((langs) => {
-        if (langs.indexOf(Infra.getDocumentLocale()) !== -1) {
-            config.language = Infra.getDocumentLocale()
-        } else {
-            config.language = langs[0]
-        }
+    const langs = document.querySelector("meta[name='x-tlinject-langs']").getAttribute("content").split(" ")
+    if (langs.indexOf(Infra.getDocumentLocale()) !== -1) {
+        config.language = Infra.getDocumentLocale()
+    } else {
+        config.language = langs[0]
+    }
 
-        updateConfigFromRedux()
-        Infra.store.subscribe(updateConfigFromRedux)
-    })
+    updateConfigFromRedux()
+    Infra.store.subscribe(updateConfigFromRedux)
 }
