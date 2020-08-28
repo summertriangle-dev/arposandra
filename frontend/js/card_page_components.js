@@ -29,9 +29,7 @@ class ImageSwitcherInternal extends MultiValueSwitch {
     }
 
     changeValue(toValue) {
-        requestStoragePermission("card-page").then(() => {
-            this.props.changeState(toValue)
-        })
+        this.props.changeState(toValue)
     }
 }
 
