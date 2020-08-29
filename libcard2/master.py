@@ -879,11 +879,20 @@ class MasterData(MasterDataLite):
     def lookup_costumes(self, member_id):
         rets = OrderedDict()
         suits = self.connection.execute(
-            "SELECT name, id, thumbnail_image_asset_path FROM m_suit WHERE member_m_id = ? ORDER BY display_order",
+            """SELECT name, id, thumbnail_image_asset_path FROM m_suit 
+            WHERE member_m_id = ? ORDER BY display_order""",
             (member_id,),
         )
-
         for name, id, thumb in suits:
-            rets[id] = D.Card.CostumeInfo(thumb, id, name, None)
+            rets[id] = D.Card.CostumeInfo(thumb, id, name, [])
+
+        suit_alt_views = self.connection.execute(
+            """SELECT suit_master_id, view_status FROM m_suit_view 
+            LEFT JOIN m_suit ON (suit_master_id = id)
+            WHERE member_m_id = ? ORDER BY view_status""",
+            (member_id,),
+        )
+        for id, variant in suit_alt_views:
+            rets[id].variants.append(variant)
 
         return rets
