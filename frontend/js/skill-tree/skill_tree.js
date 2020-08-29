@@ -3,6 +3,7 @@ import Infra from "../infra"
 import { TTUserConfiguration, TTDataAccess } from "./tt_internal"
 import { AlbumStore } from "../album"
 import { requestStoragePermission } from "../storage_permission"
+import { ModalManager } from "../modals"
 
 const toRadians = (i) => Math.PI / 180 * i
 
@@ -346,15 +347,36 @@ function SkillTree(props) {
     </div>
 }
 
+function TTResetConfirmModal(props) {
+    return <section className="modal-body">
+        <p>{Infra.strings["TTWrapper.ResetWarning"]}</p>
+        <div className="form-row kars-fieldset-naturalorder">
+            <button className="item btn btn-danger" onClick={props.confirm}>
+                {Infra.strings["TTWrapper.ResetConfirm"]}</button>
+            <button className="item btn btn-secondary" onClick={props.cancel}>
+                {Infra.strings["TTWrapper.ResetCancel"]}</button>
+        </div>
+    </section>
+}
+
 class TTMiniToolbar extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {confirming: false}
     }
 
     commitReset() {
         this.props.resetAll()
-        this.setState({confirming: false})
+    }
+
+    confirmAndResetData() {
+        ModalManager.pushModal((dismiss) => {
+            const confirm = () => {
+                this.commitReset()
+                dismiss()
+            }
+
+            return <TTResetConfirmModal cancel={dismiss} confirm={confirm} />
+        })
     }
 
     render() {
@@ -366,35 +388,17 @@ class TTMiniToolbar extends React.Component {
                 withIntermediates={cumulativeCost} intermediateCount={this.props.path.length} />
         }
 
-        let content
-        if (this.state.confirming) {
-            content = <p className="m-0 small">
-                <span>
-                    {Infra.strings["Really?"]}
-                </span>
-                {" \u2022 "}
-                <a onClick={() => this.commitReset()} className="text-danger">
-                    {Infra.strings["Reset"]}
-                </a>
-                {" - "}
-                <a onClick={() => this.setState({confirming: false})} className="text-primary">
-                    {Infra.strings["Cancel"]}
-                </a>
-            </p>
-        } else {
-            content = <p className="m-0 small">
+        return <div className="kars-tt-thing">
+            {costInfo}
+            <p className="m-0 small">
                 {Infra.strings["TTWrapper.UnlockHint"]}
                 {" \u2022 "}
-                <a onClick={() => this.setState({confirming: true})} className="text-danger">
+                <a onClick={() => this.confirmAndResetData()} className="text-danger">
                     {Infra.strings["Reset All Nodes..."]}
                 </a>
                 {this.props.path? <span className="dev-only">
                     Debug: tail node ID: {this.props.node[0]} Highlight set: {this.props.path.toString()}</span> : null}
             </p>
-        }
-        return <div className="kars-tt-thing">
-            {costInfo}
-            {content}
         </div>
     }
 }
