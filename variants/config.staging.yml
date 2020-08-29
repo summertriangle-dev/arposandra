@@ -1,4 +1,4 @@
-version: '3'
+version: '3.3'
 services:
   asset:
     ports:
@@ -11,6 +11,7 @@ services:
       AS_CANONICAL_REGION: "jp:ja"
       NEW_RELIC_CONFIG_FILE: "/newrelic/skyfarer.ini"
       NEW_RELIC_ENVIRONMENT: "staging"
+      AS_EXTRA_REGIONS: "en:en"
     restart: unless-stopped
   web:
     ports:
@@ -23,8 +24,10 @@ services:
       AS_TLINJECT_SECRET: A3EAEE7BDC584150A9E2CCC03CD64ED4
       AS_ASSET_JIT_SECRET: B10E7DBB0B7E462398879E649DCE3C09
       AS_HOST_ID: mari-staging
+      AS_POSTGRES_DSN: "postgres://postgres:example@db/postgres"
       AS_CANONICAL_REGION: "jp:ja"
-      AS_EXTRA_DICTIONARIES: "pr:en:Test Alternative"
+      AS_EXTRA_DICTIONARIES: "en:en:Official Translations;en:ko:Official Translations;en:th:Official Translations;en:zh:Official Translations"
+      AS_COOKIE_SECRET: "Av6yFgjwL7Vca+z+iaBTVpXE04YiusnT9BN5M/1vwwI="
       NEW_RELIC_CONFIG_FILE: "/newrelic/captain.ini"
       NEW_RELIC_ENVIRONMENT: "staging"
     restart: unless-stopped
@@ -32,3 +35,16 @@ services:
     user: "501"
     volumes:
       - ./arena/astool:/external/astool_storage:rw
+    environment:
+      AS_POSTGRES_DSN: "postgres://postgres:example@db/postgres"
+  db:
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_PASSWORD: example
+    volumes:
+      - ./arena/pgdata:/var/lib/postgresql/data
+  
