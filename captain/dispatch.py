@@ -6,6 +6,8 @@ from typing import Type, TypeVar, Optional, Callable, Iterable
 import tornado.web
 from tornado import locale
 
+from .database import DatabaseCoordinator
+
 ROUTES = []
 H = TypeVar("H", bound=tornado.web.RequestHandler)
 
@@ -42,3 +44,8 @@ class LanguageCookieMixin(tornado.web.RequestHandler):
         if not preferred_lang:
             return self.locale.code.split("_")[0]
         return preferred_lang
+
+
+class DatabaseMixin(tornado.web.RequestHandler):
+    def database(self) -> DatabaseCoordinator:
+        return self.settings["db_coordinator"]

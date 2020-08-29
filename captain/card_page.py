@@ -4,7 +4,7 @@ from datetime import datetime
 from tornado.web import RequestHandler
 
 from libcard2.utils import coding_context
-from .dispatch import route, LanguageCookieMixin
+from .dispatch import route, LanguageCookieMixin, DatabaseMixin
 from .pageutils import tlinject_static
 
 
@@ -96,9 +96,9 @@ class CardPage(LanguageCookieMixin):
 
 
 @route("/cards/history")
-class CardHistory(LanguageCookieMixin):
+class CardHistory(DatabaseMixin, LanguageCookieMixin):
     async def get(self):
-        his = await self.settings["card_tracking"].get_history_entries("jp", datetime.now(), 21)
+        his = await self.database().card_tracker.get_history_entries("jp", datetime.now(), 21)
         if len(his) == 21:
             has_more = True
         else:

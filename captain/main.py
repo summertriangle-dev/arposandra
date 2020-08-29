@@ -16,6 +16,7 @@ from asyncpg.exceptions import CannotConnectNowError
 
 from captain.application import application
 
+
 def get_master_version(tag=None):
     env = os.environ.get("AS_DATA_ROOT", ".")
     if not tag:
@@ -52,9 +53,6 @@ async def async_main():
         except (CannotConnectNowError, OSError) as e:
             logging.warning("Can't connect to database: %s", e)
         await asyncio.sleep(1)
-
-    # FIXME: move this
-    await app.settings["tlinject_context"].init_models()
 
     logging.info(f"Web server listening on {kr_addr}:{kr_port}")
     app.listen(kr_port, kr_addr, xheaders=True)

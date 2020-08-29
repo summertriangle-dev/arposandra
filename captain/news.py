@@ -1,112 +1,40 @@
-import hmac
-import hashlib
 import base64
 import binascii
-import os
-import time
-import json
-import sys
 import calendar
-import re
+import hashlib
+import hmac
+import json
 import logging
-from datetime import datetime
+import os
+import re
+import sys
+import time
 from dataclasses import dataclass
-from typing import List, Union
+from datetime import datetime
 from html import unescape
+from typing import List, Union
 
 import asyncpg
 from tornado.web import RequestHandler
 
-from .dispatch import route, LanguageCookieMixin
 from . import pageutils
-from libcard2.dataclasses import Card
+from .dispatch import DatabaseMixin, LanguageCookieMixin, route
 
 JP_OFFSET_FROM_UTC = 32400
 
 
-@dataclass
-class NewsItem(object):
-    id: int
-    title: str
-    thumbnail_asset_path: str
-    date: datetime
-    category: int
-    body_html: str
-    card_refs: List[Union[Card, int]]
-
-    def timestamp(self):
-        return calendar.timegm(self.date.utctimetuple())
-
-    def display_title(self):
-        return unescape(self.title)
-
-
-class NewsDatabase(object):
-    SERVER_IDS = ["jp", "en"]
-
-    def __init__(self, coordinator):
-        self.coordinator = coordinator
-
-    def validate_server_id(self, server_id):
-        if server_id not in self.SERVER_IDS:
-            return self.SERVER_IDS[0]
-        return server_id
-
-    async def get_news_items(self, for_server, before_time, limit):
-        async with self.coordinator.pool.acquire() as c:
-            items = await c.fetch(
-                """SELECT news_id, title, thumbnail, ts, internal_category, NULL, card_refs
-                    FROM news_v2 WHERE ts < $1 AND (visible = TRUE OR internal_category IN (2, 3))
-                    AND serverid=$3 ORDER BY ts DESC, news_id LIMIT $2""",
-                before_time,
-                limit,
-                for_server,
-            )
-
-        return [NewsItem(*i, json.loads(crefs) if crefs else []) for *i, crefs in items]
-
-    async def get_only_card_carrying_news_items(self, for_server, before_time, limit):
-        async with self.coordinator.pool.acquire() as c:
-            items = await c.fetch(
-                """SELECT news_id, title, thumbnail, ts, internal_category, NULL, card_refs
-                    FROM news_v2 WHERE ts < $1 AND internal_category IN (2, 3) AND card_refs IS NOT NULL
-                    AND serverid=$3 ORDER BY ts DESC, news_id LIMIT $2""",
-                before_time,
-                limit,
-                for_server,
-            )
-
-        return [NewsItem(*i, json.loads(crefs)) for *i, crefs in items]
-
-    async def count_news_items(self, for_server):
-        async with self.coordinator.pool.acquire() as c:
-            items = await c.fetchrow("SELECT COUNT(0) FROM news_v2 WHERE serverid=$1", for_server)
-
-        return items[0]
-
-    async def get_full_text(self, for_server, news_id):
-        async with self.coordinator.pool.acquire() as c:
-            item = await c.fetchrow(
-                "SELECT news_id, title, thumbnail, ts, internal_category, body_html, card_refs FROM news_v2 WHERE serverid=$1 AND news_id=$2",
-                for_server,
-                news_id,
-            )
-
-        return NewsItem(*item[:-1], json.loads(item[-1]) if item[-1] else [])
-
-
 @route("/news/?")
 @route("/([a-z]+)/news/?")
-class NewsList(LanguageCookieMixin):
+class NewsList(DatabaseMixin, LanguageCookieMixin):
     NUM_ITEMS_PER_PAGE = 20
 
     async def get(self, region=None):
         if not region:
-            server = self.settings["news_context"].validate_server_id(self.get_cookie("dsid", "jp"))
+            server = self.database().news_database.validate_server_id(self.get_cookie("dsid", "jp"))
             self.redirect(f"/{server}/news/")
             return
         else:
-            server = self.settings["news_context"].validate_server_id(region)
+            server = self.database().news_database.validate_server_id(region)
 
         before = self.get_argument("before", None)
         has_offset = False
@@ -119,7 +47,7 @@ class NewsList(LanguageCookieMixin):
             except ValueError:
                 before = datetime.utcnow()
 
-        count = await self.settings["news_context"].count_news_items(server)
+        count = await self.database().news_database.count_news_items(server)
         items = await self.get_items(server, before, self.NUM_ITEMS_PER_PAGE + 1)
         has_next_page = len(items) > self.NUM_ITEMS_PER_PAGE
         self.resolve_cards(items)
@@ -140,11 +68,11 @@ class NewsList(LanguageCookieMixin):
     async def get_items(self, server, before, nmax):
         cookie = self.cookies.get("nfm", None)
         if cookie and cookie.value == "1":
-            return await self.settings["news_context"].get_only_card_carrying_news_items(
+            return await self.database().news_database.get_only_card_carrying_news_items(
                 server, before, nmax
             )
 
-        return await self.settings["news_context"].get_news_items(server, before, nmax)
+        return await self.database().news_database.get_news_items(server, before, nmax)
 
     def resolve_cards(self, items):
         for item in items:
@@ -155,7 +83,7 @@ class NewsList(LanguageCookieMixin):
 
 
 @route("/([a-z]+)/news/([0-9]+)")
-class NewsSingle(LanguageCookieMixin):
+class NewsSingle(DatabaseMixin, LanguageCookieMixin):
     CARD_INCLUDE_INSTR = re.compile(r"<\?asi-include-card card-id:([0-9]+)\?>")
     TIMESTAMP_INSTR = re.compile(r"<\?asi-blind-ts t:(1|2|4|5);v:([0-9]+)\?>")
     JP_OFFSET_FROM_UTC = 32400
@@ -190,7 +118,7 @@ class NewsSingle(LanguageCookieMixin):
         return repl
 
     async def get(self, server, nid):
-        item = await self.settings["news_context"].get_full_text(server, int(nid))
+        item = await self.database().news_database.get_full_text(server, int(nid))
         cards = [
             c for c in self.settings["master"].lookup_multiple_cards_by_id(item.card_refs) if c
         ]

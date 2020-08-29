@@ -55,7 +55,8 @@ TLINJECT_ALT_EMPTY = set()
 
 @export
 def tlinject_supported_languages(handler):
-    return " ".join(handler.settings["tlinject_context"].supported_languages)
+    return " ".join(handler.settings["db_coordinator"].tlinject_database.supported_languages)
+
 
 @export
 def tlinject(handler, s, key_is_pt=False, *, mock=False):
@@ -66,7 +67,7 @@ def tlinject(handler, s, key_is_pt=False, *, mock=False):
         alt_set = TLINJECT_ALT_EMPTY
         logging.warn("TLInject users should have a _tlinject_base dict")
 
-    secret = handler.settings.get("tlinject_context").secret
+    secret = handler.settings["db_coordinator"].tlinject_database.secret
     if secret:
         my = hmac.new(secret, s.encode("utf8"), hashlib.sha224).digest()[:12]
         my = base64.urlsafe_b64encode(my).decode("ascii").rstrip("=")

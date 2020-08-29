@@ -10,17 +10,20 @@ from tornado import locale
 
 from . import readonly_app_path
 
+import libcard2
 from . import database
 from . import dispatch
+from . import pageutils
+from . import dict_aggregator
+
+# Start of handlers
 from . import pages
 from . import card_page
-from . import pageutils
 from . import tlinject
 from . import news
-from . import card_tracking
 from . import event_tracker
-from . import dict_aggregator
-import libcard2
+
+# End of handlers
 
 
 class DictionaryAccessProtocolImp(gettext.GNUTranslations):
@@ -117,10 +120,6 @@ def application(master, language, debug):
         more_masters=create_more_masters(),
         string_access=create_dict_aggregator(master, language),
         image_server=os.environ.get("AS_IMAGE_SERVER"),
-        tlinject_context=tlinject.TLInjectContext(db_coordinator),
-        news_context=news.NewsDatabase(db_coordinator),
-        card_tracking=card_tracking.CardTrackingDatabase(db_coordinator),
-        event_tracking=event_tracker.EventTrackingDatabase(db_coordinator),
         template_path=readonly_app_path("webui"),
         runtime_info=runtime_info,
         tlinject_secret=os.environ.get("AS_TLINJECT_SECRET", "").encode("utf8"),
