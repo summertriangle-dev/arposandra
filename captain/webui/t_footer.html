@@ -12,7 +12,7 @@
         {{ handler.settings["runtime_info"].host_id }} <br>
         {{ _("Render time (so far):") }} {{ "{0:.4f}".format(request.request_time() * 1000) }} ms.
 
-        <div class="kars-debug-footer-only">
+        <div class="dev-only">
             {% try %}
                 <br> Assets requested: {{ len(handler._reified_tags) }},
             {% except %}

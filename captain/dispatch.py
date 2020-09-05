@@ -6,6 +6,7 @@ from typing import Type, TypeVar, Optional, Callable, Iterable
 import tornado.web
 from tornado import locale
 
+from libcard2.master import MasterData
 from .database import DatabaseCoordinator
 
 ROUTES = []
@@ -19,7 +20,7 @@ def add_route(regex: str, handler: Type[H], inits: Optional[dict] = None):
         ROUTES.append((regex, handler))
 
 
-def route(*regexes: Iterable[str], **kwargs: dict) -> Callable[[Type[H]], Type[H]]:
+def route(*regexes: str, **kwargs: dict) -> Callable[[Type[H]], Type[H]]:
     def wrapper(handler: Type[H]) -> Type[H]:
         for regex in regexes:
             if kwargs:
@@ -47,5 +48,8 @@ class LanguageCookieMixin(tornado.web.RequestHandler):
 
 
 class DatabaseMixin(tornado.web.RequestHandler):
+    def master(self) -> MasterData:
+        return self.settings["master"]
+
     def database(self) -> DatabaseCoordinator:
         return self.settings["db_coordinator"]

@@ -16,7 +16,7 @@ from tornado.ioloop import IOLoop
 from tornado.autoreload import add_reload_hook
 
 import hwdecrypt
-from .synthetic import stack_card
+from .synthetic import stack_card, resize_card
 
 G_ATEXIT_REGISTERED = False
 G_ACTIVE_PROCESSPOOLS = WeakSet()
@@ -180,6 +180,19 @@ class ExtractContext(object):
         load_args = (pack, *texinfo)
         result, data = await IOLoop.current().run_in_executor(
             self.get_pool(), stack_card, load_args, format, frame_num, role_num, attr_num
+        )
+
+        if result > 0:
+            raise ExtractFailure(result)
+
+        return data
+
+    async def get_resized(self, image_asset_id, format, target_size, axis):
+        pack, *texinfo = self.get_texture_info(image_asset_id)
+        pack = os.path.join(self.cache, f"pkg{pack[0]}", pack)
+        load_args = (pack, *texinfo)
+        result, data = await IOLoop.current().run_in_executor(
+            self.get_pool(), resize_card, load_args, format, target_size, axis
         )
 
         if result > 0:

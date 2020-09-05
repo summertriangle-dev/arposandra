@@ -26,7 +26,7 @@
                 alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">
         </a>
         {% end %}
-        <a class="btn btn-primary btn-sm" href="/card/{{ ",".join(str(c.ordinal) for c in news_item.card_refs if c) }}">{{ _("All...") }}</a>
+        <a class="btn btn-primary btn-sm card-icon-margin" href="/card/{{ ",".join(str(c.ordinal) for c in news_item.card_refs if c) }}">{{ _("All...") }}</a>
     </div>
     {% end %}
 </div>

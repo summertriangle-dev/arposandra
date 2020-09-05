@@ -1,8 +1,9 @@
+import json
 import os
 from datetime import datetime
-import json
 
 import asyncpg
+import pkg_resources
 
 
 class DatabaseConnection(object):
@@ -12,44 +13,9 @@ class DatabaseConnection(object):
 
     async def init_models(self):
         self.pool = await asyncpg.create_pool(dsn=self.connection_url)
+        init_schema = pkg_resources.resource_string("captain", "init_schema.sql").decode("utf8")
         async with self.pool.acquire() as c, c.transaction():
-            await c.execute(
-                """
-                CREATE TABLE IF NOT EXISTS news_v2 (
-                    serverid varchar(8),
-                    news_id int,
-                    thumbnail varchar(16),
-                    title text,
-                    ts timestamp,
-                    internal_category int,
-                    body_html text,
-                    body_dm text,
-                    card_refs text,
-                    visible bool,
-                    PRIMARY KEY (serverid, news_id)
-                );
-
-                CREATE TABLE IF NOT EXISTS dt_v1 (
-                    serverid varchar(8),
-                    dt_id int,
-                    ts timestamp,
-                    next_ts timestamp,
-                    title text,
-                    body_html text,
-                    body_dm text,
-                    PRIMARY KEY (serverid, dt_id)
-                );
-
-                CREATE TABLE IF NOT EXISTS dt_char_refs_v1 (
-                    serverid varchar(8),
-                    dt_id int,
-                    char_id int,
-                    UNIQUE (serverid, dt_id, char_id),
-                    FOREIGN KEY (serverid, dt_id) REFERENCES dt_v1 (serverid, dt_id)
-                        ON UPDATE CASCADE ON DELETE CASCADE
-                );
-                """
-            )
+            await c.execute(init_schema)
 
     async def get_epoch(self, server_id):
         async with self.pool.acquire() as c:

@@ -45,7 +45,7 @@ function localizeReturnedLanguageList(langs) {
 }
 
 function regionAwareReload() {
-    const regionedPaths = ["news", "events"]
+    const regionedPaths = ["news", "events", "history"]
     const paths = window.location.pathname.split("/")
     if (paths.length > 2 && regionedPaths.includes(paths[2])) {
         window.location.href = `/${paths[2]}`

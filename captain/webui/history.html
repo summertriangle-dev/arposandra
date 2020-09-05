@@ -11,19 +11,34 @@
         {% module Template("uim_nav.html", current="cards") %}
         
         <div class="container">
-            <h1 class="h3 ml-3 mb-3">
+            <h1 class="h3 mb-3 kars-negative-box">
                 {{ _("PT.CardReleases") }}
             </h1>
 
-            <div class="card kars-card-box">
+            {% set prev_ent = None %}
             {% for release in releases %}
-                {% module Template("uim_card_releases.html", release=release) %}
+                {% if not prev_ent or prev_ent.start_time.month != release.start_time.month %}
+                {% if prev_ent %}
+                </div>
+                {% end %}
+
+                <h2 class="h4 mb-3 kars-negative-box">
+                    {{ release.start_time.strftime("%B %Y") }}
+                </h2>
+                <div class="kars-card-box">
+                {% end %}
+
+                {% module Template("uim_release_record.html", release=release, server=server, current_time=current_time) %}
+                {% set prev_ent = release %}
             {% end %}
             </div>
+
             {% if has_next_page %}
-            <a class="btn btn-primary" href="/cards/history/?before={{ str(releases[-1].norm_date) }}">
-                {{ _("More...") }}
-            </a>
+            <div class="container kars-negative-box">
+                <a class="btn btn-primary" href="/{{ server }}/history?before={{ int(releases[-1].start_time.timestamp()) }}">
+                    {{ _("More...") }}
+                </a>
+            </div>
             {% end %}
         </div>
 

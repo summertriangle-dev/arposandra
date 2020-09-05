@@ -32,7 +32,7 @@ def application(master, language, extras, debug):
         language,
         extras,
         [
-            (r"/i(?:/([a-z]+))?/([^/]+)/([^/\.]+)(?:\.(?:png|jpg))?", ReifyHandler,),
+            (r"/i(?:/([a-z]+))?/([^/]+)/([^/\.]+)(?:\.(?:png|jpg))?", ReifyHandler),
             (
                 # The 3 letters encode the type of frame and icons the image should have.
                 # See libcard2/utils.py for the definitions.
@@ -43,7 +43,8 @@ def application(master, language, extras, debug):
             ),
             (r"/adv/(.+)/([^/\.]+)\.json", AdvScriptHandler),
             (r"/advg/(.+)/([0-9]+)\.(?:png|jpg)", AdvScriptGraphicHandler),
-            (r"/if/(.+)/([^/\.]+)(?:\.(?:png|jpg))?", BareReifyHandler),
+            (r"/if(?:/([a-z]+))?/(.+)/([^/\.]+)(?:\.(?:png|jpg))?", BareReifyHandler),
+            (r"/thumb/([0-9]+)(w|h)/([^/]+)/([^/\.]+)\.(png|jpg)", SyntheticCardResizeHandler),
         ],
         debug=debug,
         disable_security=debug,
@@ -101,7 +102,7 @@ class BareReifyHandler(RequestHandler):
 
         try:
             assr = base64.urlsafe_b64decode(assr + "====")
-        except binascii.Error:
+        except ValueError:
             self.set_status(400)
             self.write(ERR_REQUEST_NOAUTH)
             return
@@ -195,6 +196,39 @@ class SyntheticCardIconHandler(BaseAssrValidating):
         try:
             image = await self.settings["extract_contexts"][""].get_cardicon(
                 asset_id, filetype, *fsp
+            )
+        except ExtractFailure as e:
+            if e.reason == 1:
+                self.set_status(404)
+                self.write(str(e))
+                return
+            else:
+                self.set_status(503)
+                self.write(str(e))
+                return
+
+        self.set_status(200)
+
+        if filetype == "jpg":
+            self.set_header("Content-Type", "image/jpeg")
+        else:
+            self.set_header("Content-Type", "image/png")
+
+        self.write(image)
+
+
+class SyntheticCardResizeHandler(BaseAssrValidating):
+    async def get(self, size, axis, asset_b64, assr, filetype):
+        if not self.validate_assr(f"thumb/{size}{axis}/{asset_b64}", assr):
+            self.set_status(403)
+            self.write(ERR_REQUEST_NOAUTH)
+            return
+
+        asset_id = base64.urlsafe_b64decode("".join((asset_b64, "===="))).decode("utf8")
+
+        try:
+            image = await self.settings["extract_contexts"][""].get_resized(
+                asset_id, filetype, int(size), axis
             )
         except ExtractFailure as e:
             if e.reason == 1:

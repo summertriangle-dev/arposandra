@@ -10,6 +10,9 @@ $kars-card-radius: 16px
     display: inline-flex
     justify-content: center
 
+.icon.clickable
+    color: $link-color
+
 .kars-navbar
     display: flex
     justify-content: space-between
@@ -27,6 +30,7 @@ $kars-card-radius: 16px
             color: $kars-navbar-item-color
         a.item:hover
             color: $kars-navbar-item-hover-color
+
     .kars-navbar-leading
         overflow-x: scroll
         scrollbar-width: none
@@ -35,6 +39,9 @@ $kars-card-radius: 16px
             height: 0
     .icon
         font-size: 1.33rem
+    
+    .nav-icon, .nav-icon:hover
+        text-decoration: none !important
 
 html[lang=ja] .kars-navbar-list
     word-break: keep-all
@@ -61,7 +68,7 @@ html[lang=ja] .kars-navbar-list
 .kars-footer
     font-size: 0.8rem
     margin: $card-spacer-y $card-spacer-x
-    padding-bottom: env(safe-area-inset-bottom)
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom))
 
 /* cards */
 
@@ -161,6 +168,14 @@ html[lang=ja] .kars-navbar-list
     thead th
         border-top: none
 
+.kars-skill-table
+    margin-bottom: 0
+    td 
+        font-size: 80%
+        vertical-align: middle
+    tr:first-child td, td:first-child
+        border-top: none
+
 /* skills */
 
 img.kars-skill-icon
@@ -241,11 +256,13 @@ img.kars-skill-icon
     align-items: flex-end
     flex-wrap: wrap
     padding-top: 22px
-    padding-bottom: 16px
+    padding-bottom: 8px
 
+    .card-icon, .card-icon-margin
+        margin-right: 8px
+        margin-bottom: 8px
     .card-icon
         display: block
-        margin-right: 8px
         font-size: 0
 
 .card-icon img, .kars-mem-icon
@@ -273,9 +290,11 @@ img.kars-skill-icon
         background-color: $card-bg-alt
 
     &:first-child
-        border-radius: 16px 16px 0 0
+        border-top-left-radius: 16px
+        border-top-right-radius: 16px
     &:last-child
-        border-radius: 0 0 16px 16px
+        border-bottom-left-radius: 16px
+        border-bottom-right-radius: 16px
 
 .kars-butt
     height: 24px
@@ -300,3 +319,6 @@ img.kars-skill-icon
 
 .dev-only
     display: none
+
+.hevent-now
+    color: $ongoing-event-text

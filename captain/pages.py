@@ -2,9 +2,12 @@ import json
 from collections import OrderedDict
 from tornado.web import RequestHandler
 from tornado.locale import get_supported_locales
+from typing import Iterable
+from datetime import datetime
 
-from .dispatch import route, LanguageCookieMixin
+from .dispatch import route, LanguageCookieMixin, DatabaseMixin
 from . import pageutils
+from .models import card_tracking
 import libcard2.localization
 
 
@@ -76,6 +79,50 @@ class LiveSingle(LanguageCookieMixin):
         )
 
         self.render("song.html", songs=[song])
+
+
+@route(r"/history/?")
+class HistoryRedirect(DatabaseMixin, LanguageCookieMixin):
+    def get(self):
+        server = self.database().news_database.validate_server_id(self.get_cookie("dsid", None))
+        self.redirect(f"/{server}/history/")
+
+
+@route(r"/([a-z]+)/history/?")
+class CardHistory(DatabaseMixin, LanguageCookieMixin):
+    async def get(self, server_id):
+        server = self.database().news_database.validate_server_id(server_id)
+        before = self.get_argument("before", None)
+        before_date = None
+        if before:
+            try:
+                before_date = datetime.utcfromtimestamp(int(before))
+            except ValueError:
+                before_date = None
+
+        now = datetime.utcnow()
+        his = await self.database().card_tracker.get_history_entries(
+            server, None, None, before_date, n_entries=21
+        )
+
+        if len(his) == 21:
+            has_more = True
+        else:
+            has_more = False
+
+        self.resolve_cards(his)
+        self.render(
+            "history.html",
+            releases=his[:-1],
+            has_next_page=has_more,
+            server=server,
+            current_time=now,
+        )
+
+    def resolve_cards(self, items: Iterable[card_tracking.UnifiedSRecord]):
+        for item in items:
+            cards = self.settings["master"].lookup_multiple_cards_by_id(item.feature_card_ids)
+            item.feature_card_ids = [c for c in cards if c]
 
 
 @route("/accessory_skills")

@@ -45,6 +45,20 @@ async function _validateCaveSlimeEntry(password) {
     })
 }
 
+function displayEntitlementsModal() {
+    ModalManager.pushModal(() => {
+        const ff = readFeatureFlagsInsecure()
+        return <div className="modal-body">
+            <p>Entitled to use CaveSlime: 
+                {ff & 0x1? " Yes" : " No"}</p>
+            <p>Developer info feature flag:
+                {ff & FLG_CS_SHOW_DEV_INFO_E? " Yes" : " No"}</p>
+            <p>Have consent for cookies/local storage:
+                {localStorage.getItem("as$have-storage-consent") !== null? " Yes" : " No"}</p>
+        </div>
+    })
+}
+
 export function injectIntoPage() {
     document.querySelector("#uilib-modal-button").addEventListener("click", () => {
         ModalManager.pushModal(() => {
@@ -74,6 +88,7 @@ export function injectIntoPage() {
             })
         })
     }, {passive: true})
+    document.querySelector("#cs-check-ff-status").addEventListener("click", displayEntitlementsModal, {passive: true})
 }
 
 export function readFeatureFlagsInsecure() {

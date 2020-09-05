@@ -42,11 +42,15 @@ role_coordinate = {
 }
 
 
-def make_exif(f, a, r):
+def make_exif(s: bytes) -> bytes:
     head = binascii.unhexlify("4578696600004D4D002A00000008000101310002")
+    size = struct.pack(">IIxxxx", len(s), len(head) + 6)
+    return b"".join((head, size, s))
+
+
+def make_icon_exif(f, a, r):
     meta = f"Skyfarer v:2,f:{f},a:{a},r:{r}\x00".encode("ascii")
-    size = struct.pack(">IIxxxx", len(meta), len(head) + 6)
-    return b"".join((head, size, meta))
+    return make_exif(meta)
 
 
 def load_image(packid, head, size, k1, k2, k3):
@@ -102,13 +106,41 @@ def stack_card(image_load_args, fmt, frame_num, role_num, attr_num):
     try:
         if fmt == "jpg":
             icon.convert("RGB").save(
-                bio, "jpeg", quality=90, exif=make_exif(frame_num, attr_num, role_num)
+                bio, "jpeg", quality=90, exif=make_icon_exif(frame_num, attr_num, role_num)
             )
         else:
             meta = PngInfo()
             meta.add_text("Skyfarer", f"v:2,f:{frame_num},a:{attr_num},r:{role_num}")
             icon.save(bio, "png", optimize=True, pnginfo=meta)
     except IOError:
+        return (3, None)
+
+    return (0, bio.getvalue())
+
+
+def resize_card(image_load_args, fmt, height, axis):
+    try:
+        image = load_image(*image_load_args)
+    except IOError:
+        return (1, None)
+
+    scalefactor = height / (image.height if axis == "h" else image.width)
+
+    if image.format == "PNG" and (image.mode != "RGB" or image.mode != "RGBA"):
+        image = image.convert("RGBA")
+
+    image = image.resize(
+        (round(image.width * scalefactor), round(image.height * scalefactor)), reducing_gap=3.0
+    )
+    bio = io.BytesIO()
+    try:
+        if fmt == "jpg":
+            image.save(bio, "jpeg", quality=90, exif=make_exif(b"SkyfarerGalleryResizeTag"))
+        else:
+            meta = PngInfo()
+            meta.add_text("Skyfarer", f"GalleryResizeTag")
+            image.save(bio, "png", optimize=True, pnginfo=meta)
+    except IOError as e:
         return (3, None)
 
     return (0, bio.getvalue())

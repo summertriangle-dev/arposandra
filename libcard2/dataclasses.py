@@ -1,7 +1,7 @@
 import struct
 from collections import namedtuple
 from dataclasses import dataclass, field
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 from weakref import ref
 
 from dataclasses_json import dataclass_json, config as JSONConfig
@@ -174,7 +174,7 @@ class Card(object):
     tt_offset: LevelValues
 
     stats: List[LevelValues] = None
-    costume_info: CostumeInfo = None
+    costume_info: Optional[CostumeInfo] = None
 
     def get_tl_set(self):
         se = {self.normal_appearance.name, self.idolized_appearance.name} | self.member.get_tl_set()

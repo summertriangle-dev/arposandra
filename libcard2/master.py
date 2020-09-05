@@ -84,7 +84,7 @@ class MasterData(MasterDataLite):
             ls.append(D.Card.LevelValues(k, a, s, t))
         return ls
 
-    def lookup_member_by_id(self, member_id: int):
+    def lookup_member_by_id(self, member_id: int) -> D.Member:
         if member_id in self.member_cache:
             return self.member_cache[member_id]
 

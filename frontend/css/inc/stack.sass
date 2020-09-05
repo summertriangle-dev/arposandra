@@ -24,17 +24,17 @@
     padding: 8px 16px !important
     background-color: $kars-stack-background
 
-    &:nth-child(2)
-        box-shadow: 0 -1px 0 0px rgba(10, 10, 10, 0.1)
-        border-top-left-radius: 8px 8px
-        border-top-right-radius: 8px 8px
-
     &:last-child
         border-bottom-left-radius: 8px 8px
         border-bottom-right-radius: 8px 8px
     
     &:not(:last-child)
         border-bottom: 1px solid rgba(10, 10, 10, 0.1)
+
+.kars-stack > .kars-stack-member:nth-child(2)
+    box-shadow: 0 -1px 0 0px rgba(10, 10, 10, 0.1)
+    border-top-left-radius: 8px 8px
+    border-top-right-radius: 8px 8px
 
 .kars-bg-active-skills
     background-color: $kars-skill-bg-active

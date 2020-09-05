@@ -25,6 +25,9 @@ msgstr "AppendixHiramekuSkills"
 msgid "Attribute"
 msgstr "Attribute"
 
+msgid "Basic Information"
+msgstr "Basic Information"
+
 msgid "Be aware that external sites may contain malicious content. To continue, click the link."
 msgstr "Be aware that external sites may contain malicious content. To continue, click the link."
 
@@ -46,14 +49,35 @@ msgstr "EventTracker.HeaderStories"
 msgid "Fork me on GitHub"
 msgstr "Fork me on GitHub"
 
+msgid "HEvent.AllCards"
+msgstr "HEvent.AllCards"
+
+msgid "HEvent.GachaEvent"
+msgstr "HEvent.GachaEvent"
+
+msgid "HEvent.GachaFes"
+msgstr "HEvent.GachaFes"
+
+msgid "HEvent.GachaOther"
+msgstr "HEvent.GachaOther"
+
+msgid "HEvent.GachaPickUp"
+msgstr "HEvent.GachaPickUp"
+
+msgid "HEvent.IGEvent"
+msgstr "HEvent.IGEvent"
+
+msgid "HEvent.NewsPost"
+msgstr "HEvent.NewsPost"
+
+msgid "HEvent.Ongoing"
+msgstr "HEvent.Ongoing"
+
 msgid "IndividualSkillHeader"
 msgstr "IndividualSkillHeader"
 
 msgid "Interesting choice of cards..."
 msgstr "Interesting choice of cards..."
-
-msgid "Language Options"
-msgstr "Language Options"
 
 msgid "LevelShort"
 msgstr "LevelShort"
@@ -109,6 +133,9 @@ msgstr "OpengraphNewsItem:{category}"
 msgid "OpengraphNewsItem:{category}:{num_assoc_cards}"
 msgstr "OpengraphNewsItem:{category}:{num_assoc_cards}"
 
+msgid "Options"
+msgstr "Options"
+
 msgid "PT.CardReleases"
 msgstr "PT.CardReleases"
 
@@ -162,6 +189,39 @@ msgstr "Saint.WaitingForWebpack"
 
 msgid "Search"
 msgstr "Search"
+
+msgid "SetRecord.ExpandAll"
+msgstr "SetRecord.ExpandAll"
+
+msgid "SetRecord.FirstFeaturedOn{server_id}"
+msgstr "SetRecord.FirstFeaturedOn{server_id}"
+
+msgid "SetRecord.LastFeatured"
+msgstr "SetRecord.LastFeatured"
+
+msgid "SetRecord.RevealStatsDescription"
+msgstr "SetRecord.RevealStatsDescription"
+
+msgid "SetRecord.SeeCardDetailsButton"
+msgstr "SetRecord.SeeCardDetailsButton"
+
+msgid "SetRecord.SetTypeDescriptionDefault"
+msgstr "SetRecord.SetTypeDescriptionDefault"
+
+msgid "SetRecord.SetTypeDescriptionEventPair"
+msgstr "SetRecord.SetTypeDescriptionEventPair"
+
+msgid "SetRecord.SetTypeDescriptionOrdFes"
+msgstr "SetRecord.SetTypeDescriptionOrdFes"
+
+msgid "SetRecord.SetTypeDescriptionPickup"
+msgstr "SetRecord.SetTypeDescriptionPickup"
+
+msgid "SetRecord.SetTypeDescriptionSong"
+msgstr "SetRecord.SetTypeDescriptionSong"
+
+msgid "SetRecord.Unreleased"
+msgstr "SetRecord.Unreleased"
 
 msgid "Show All Limit Breaks"
 msgstr "Show All Limit Breaks"

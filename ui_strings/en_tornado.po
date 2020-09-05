@@ -33,6 +33,9 @@ msgstr "AppendixHiramekuSkills"
 msgid "Attribute"
 msgstr "Attribute"
 
+msgid "Basic Information"
+msgstr "Basic Information"
+
 msgid ""
 "Be aware that external sites may contain malicious content. To continue, "
 "click the link."
@@ -58,14 +61,35 @@ msgstr "Event Story"
 msgid "Fork me on GitHub"
 msgstr "Fork me on GitHub"
 
+msgid "HEvent.AllCards"
+msgstr "See all cards..."
+
+msgid "HEvent.GachaEvent"
+msgstr "Event Gacha"
+
+msgid "HEvent.GachaFes"
+msgstr "Festival"
+
+msgid "HEvent.GachaOther"
+msgstr "Other"
+
+msgid "HEvent.GachaPickUp"
+msgstr "Spotlight"
+
+msgid "HEvent.IGEvent"
+msgstr "Event"
+
+msgid "HEvent.NewsPost"
+msgstr "Go to news post"
+
+msgid "HEvent.Ongoing"
+msgstr "Ongoing"
+
 msgid "IndividualSkillHeader"
 msgstr "Individual Skills"
 
 msgid "Interesting choice of cards..."
 msgstr "And an interesting choice of cards, I might add..."
-
-msgid "Language Options"
-msgstr "Language Options"
 
 msgid "LevelShort"
 msgstr "Lv."
@@ -131,8 +155,11 @@ msgstr "{category} news post."
 msgid "OpengraphNewsItem:{category}:{num_assoc_cards}"
 msgstr "{category} news post, featuring {num_assoc_cards} cards."
 
+msgid "Options"
+msgstr "Options"
+
 msgid "PT.CardReleases"
-msgstr "PT.CardReleases"
+msgstr "Releases"
 
 msgid "PT.EventTracker"
 msgstr "Event Tracker"
@@ -188,6 +215,45 @@ msgstr "Waiting for JavaScript components..."
 
 msgid "Search"
 msgstr "Search"
+
+msgid "SetRecord.ExpandAll"
+msgstr "Show/Hide all stats"
+
+msgid "SetRecord.FirstFeaturedOn{server_id}"
+msgstr "First appearance on {server_id} server:"
+
+msgid "SetRecord.LastFeatured"
+msgstr "Last appearance:"
+
+msgid "SetRecord.RevealStatsDescription"
+msgstr "Click or tap to reveal stats."
+
+msgid "SetRecord.SeeCardDetailsButton"
+msgstr "All cards..."
+
+msgid "SetRecord.SetTypeDescriptionDefault"
+msgstr "A set where everyone has the same theme."
+
+msgid "SetRecord.SetTypeDescriptionEventPair"
+msgstr ""
+"Released as a paired event and gacha. You can exchange SBL coins for "
+"previous event cards after some time."
+
+msgid "SetRecord.SetTypeDescriptionOrdFes"
+msgstr ""
+"Released in All Star Festival boxes. Festival cards are only scoutable in "
+"other Festival gachas."
+
+msgid "SetRecord.SetTypeDescriptionPickup"
+msgstr ""
+"Released between events. Spotlight cards are scoutable in other gachas after "
+"being featured."
+
+msgid "SetRecord.SetTypeDescriptionSong"
+msgstr "Live costume SR sets are released over several events and gachas."
+
+msgid "SetRecord.Unreleased"
+msgstr "Unreleased"
 
 msgid "Show All Limit Breaks"
 msgstr "Show All Limit Breaks"

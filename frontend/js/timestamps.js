@@ -27,6 +27,23 @@ function formatTooltipTime(ts, tz) {
             `${pad2(d.getUTCHours())}:${pad2(d.getUTCMinutes())} ${tz}`
 }
 
+function swapTimeOnClick(e) {
+    const n = e.target
+    if (!n.dataset.origOffset) {
+        return
+    }
+
+    if (n.getAttribute("tsi-swapped")) {
+        n.removeAttribute("tsi-swapped")
+        n.textContent = formatTime(parseInt(n.dataset.ts), n.dataset.style)
+    } else {
+        const cmp = n.dataset.origOffset.split(",")
+        const offset = parseInt(cmp[0]), tz = cmp[1]
+        n.setAttribute("tsi-swapped", 1)
+        n.textContent = formatTooltipTime(parseInt(n.dataset.ts) + offset, tz)
+    }
+}
+
 export function initialize() {
     console.debug("timestamps.js: start")
     const nodes = document.getElementsByClassName("kars-data-ts")
@@ -39,5 +56,7 @@ export function initialize() {
             const offset = parseInt(cmp[0]), tz = cmp[1]
             n.title = formatTooltipTime(parseInt(n.dataset.ts) + offset, tz)
         }
+
+        n.addEventListener("click", swapTimeOnClick, {passive: true})
     }
 }

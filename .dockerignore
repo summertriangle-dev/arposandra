@@ -3,6 +3,7 @@
 rt
 */__pycache__
 */.DS_Store
+*/.mypy_cache
 
 # JS
 */node_modules/*

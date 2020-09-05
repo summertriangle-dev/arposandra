@@ -1,0 +1,55 @@
+<div class="kars-list-alternate">
+    <div class="card-body kars-member-header kars-member-small">
+        {% if release.thumbnail %}
+            <img class="item" width="210" src="{{ image_url_reify(release.thumbnail, "jpg", server) }}" />
+        {% end %}
+        <div class="item">
+            <h1 class="h5 {% if release.thumbnail %} mt-2 {% end %}">
+                {{ release.common_title }}
+            </h1>
+            <h2 class="h6 mb-0
+                {% if current_time > release.start_time and current_time < release.end_time %}
+                hevent-now
+                {% end %}
+                ">
+
+                {% if current_time > release.start_time and current_time < release.end_time %}
+                {{ _("HEvent.Ongoing") }} &ndash; 
+                {% end %}
+
+                {% if release.major_type == 1 %}
+                    {% if release.sub_type == 1 %}
+                        {{ _("HEvent.GachaEvent") }}
+                    {% elif release.sub_type == 2 %}
+                        {{ _("HEvent.GachaPickUp") }}
+                    {% elif release.sub_type == 3 %}
+                        {{ _("HEvent.GachaFes") }}
+                    {% else %}
+                        {{ _("HEvent.GachaOther") }}
+                    {% end %}
+                {% else %}
+                    {{ _("HEvent.IGEvent") }}
+                {% end %}
+
+                &ndash;
+                <span class="kars-data-ts" data-orig-offset="32400,JST" data-ts="{{ release.start_time.timestamp() }}">{{ release.start_time }} UTC</span>
+                ~
+                <span class="kars-data-ts" data-orig-offset="32400,JST" data-ts="{{ release.end_time.timestamp() }}">{{ release.end_time }} UTC</span>
+            </h2>
+        </div>
+    </div>
+    <div class="card-body kars-card-brief-list">
+        {% for cl in release.feature_card_ids %}
+        <a href="/card/{{ cl.ordinal }}" class="card-icon">
+            <img width="48" height="48" src="{{ card_icon_url(cl, cl.normal_appearance) }}"
+                alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">
+        </a>
+        {% end %}
+        <a class="btn btn-primary btn-sm card-icon-margin" href="/card/{{ ",".join(str(c.ordinal) for c in release.feature_card_ids if c) }}">
+            {{ _("HEvent.AllCards") }}
+        </a>
+        <a class="btn btn-primary btn-sm card-icon-margin" href="/{{ server }}/news/{{ release.record_id }}">
+            {{ _("HEvent.NewsPost") }}
+        </a>
+    </div>
+</div>

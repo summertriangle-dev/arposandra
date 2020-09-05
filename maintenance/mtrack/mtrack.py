@@ -1,18 +1,23 @@
-import os
-from datetime import date
-from collections import namedtuple
+import asyncio
 import json
 import logging
-import sys
-import asyncio
-import time
+import os
 import sqlite3
+import sys
+import time
+from collections import namedtuple
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import List, Optional
 
 import asyncpg
+import plac
 
+from captain.models import mine_models
+from captain.models.indexer import db_expert, types
+from libcard2 import string_mgr
 from libcard2.master import MasterData
-import maintenance.mtrack.indexer
-import maintenance.mtrack.db_expert
+from maintenance.mtrack import newsminer, setminer, scripts as sql_scripts
 
 T_EVENT = 4
 T_EVENT_GACHA = 3
@@ -23,44 +28,170 @@ card_info_t = namedtuple("card_info_t", ("card_id", "ordinal", "probable_type"))
 
 
 class IndexerDBCoordinator(object):
-    def __init__(self, connection_url: str):
+    def __init__(self, connection_url: Optional[str]):
         self.connection_url = connection_url
-        self.pool = None
+        self.pool: "asyncpg.pool.Pool" = None
 
     async def create_pool(self):
         self.pool = await asyncpg.create_pool(dsn=self.connection_url)
 
+    async def drop_all_mtrack_tables(self):
+        async with self.pool.acquire() as conn, conn.transaction():
+            await conn.execute(
+                """
+                DROP TABLE IF EXISTS card_index_v1;
+                DROP TABLE IF EXISTS card_index_v1__skill_minors;
+                DROP TABLE IF EXISTS card_p_set_index_v1;
+                DROP TABLE IF EXISTS card_p_set_index_v1__event_references;
+                DROP TABLE IF EXISTS card_p_set_index_v1__card_ids;
+                DROP TABLE IF EXISTS card_p_set_index_v1__release_dates;
+                DROP TABLE IF EXISTS history_v5;
+                DROP TABLE IF EXISTS history_v5__card_ids;
+                """
+            )
+            logging.warning("All mtrack tables dropped.")
 
-async def main():
-    cloc = time.monotonic()
 
-    logging.basicConfig(level=logging.INFO)
-    tag = sys.argv[1]
-    mvs = sys.argv[2:]
+async def update_card_index(
+    tag: str, lang: str, from_master: str, coordinator: IndexerDBCoordinator
+) -> List[mine_models.SetRecord]:
+    cdb_expert = db_expert.PostgresDBExpert(mine_models.CardIndex)
 
-    conn = IndexerDBCoordinator(os.environ.get("AS_POSTGRES_DSN"))
-    await conn.create_pool()
-
-    expert = maintenance.mtrack.db_expert.PostgresDBExpert(
-        maintenance.mtrack.indexer.CardIndex, conn.pool
-    )
-    await expert.create_tables()
-
-    for mv in mvs:
-        mtime = os.path.getmtime(
-            os.path.join(os.environ.get("ASTOOL_STORAGE"), tag, "masters", mv, "masterdata.db")
+    prefix = os.path.join(os.environ.get("ASTOOL_STORAGE", ""), tag, "masters", from_master)
+    db = MasterData(prefix)
+    daccess = string_mgr.DictionaryAccess(prefix, lang)
+    sets = {
+        common_name: mine_models.SetRecord(
+            common_name, rep, stype="song" if is_song else "same_name"
         )
-        db = MasterData(os.path.join(os.environ.get("ASTOOL_STORAGE"), tag, "masters", mv))
+        for rep, common_name, is_song in setminer.find_potential_set_names(daccess)
+    }
+    card_names = {}
 
-        async with conn.pool.acquire() as c, c.transaction():
+    async with coordinator.pool.acquire() as conn:
+        async with conn.transaction():
+            await cdb_expert.create_tables(conn)
+
+        async with conn.transaction():
             for id in db.card_ordinals_to_ids(db.all_ordinals()):
                 card = db.lookup_card_by_id(id)
-                await expert.add_object(c, card)
+                await cdb_expert.add_object(conn, card)
 
-    print("done in", time.monotonic() - cloc)
+                if card.idolized_appearance:
+                    card_names[card.id] = (card.idolized_appearance.name, card.ordinal)
+
+        # Group cards with the same idolized title.
+        all_names = daccess.lookup_strings(x[0] for x in card_names.values())
+        for (cid, (common_name, ordinal)) in card_names.items():
+            set_name = all_names.get(common_name)
+            if set_name in sets:
+                # We want to end up with the same representative name every time.
+                # Lowest ordinal is a good enough approximation for the first in
+                # each series, so use that.
+                sets[set_name].replace_representative(common_name, ordinal)
+                sets[set_name].members.append(cid)
+
+    return list(sets.values())
+
+
+async def insert_timeline(expert, conn, events, gachas):
+    # Use a temporary table with only the new history entries so we don't
+    # query the entire list again for set ref updates.
+    prefix = "mtrack_multi_op_"
+    await expert.create_tables(conn, temporary=True, temp_prefix=prefix)
+
+    for event in events:
+        await expert.add_object(conn, event, prefix=prefix)
+    for gacha in gachas:
+        await expert.add_object(conn, gacha, prefix=prefix)
+
+    await conn.execute(sql_scripts.update_set_event_refs(prefix))
+    await conn.execute(sql_scripts.update_card_release_dates(prefix))
+    await conn.execute(sql_scripts.update_set_per_server_release_dates(prefix))
+
+    # Now do the real insert.
+    for event in events:
+        await expert.add_object(conn, event)
+    for gacha in gachas:
+        await expert.add_object(conn, gacha)
+
+
+async def main(
+    tag: "Server ID",
+    mv: "Master version to interrogate. Pass '-' to skip (only run newsminer)",
+    quiet: ("Silence logging", "flag", "q") = False,
+    clear_history: ("Clear history before running newsminer", "flag", "x") = False,
+    clear_history_hard: (
+        "Clear everything before running index and newsminer. Dangerous!!",
+        "flag",
+        "X",
+    ) = False,
+):
+    cloc = time.monotonic()
+
+    if not quiet:
+        logging.basicConfig(level=logging.DEBUG)
+        logging.getLogger("captain.models.indexer.db_expert.sql").setLevel(logging.INFO)
+
+    coordinator = IndexerDBCoordinator(os.environ.get("AS_POSTGRES_DSN"))
+    await coordinator.create_pool()
+
+    need_reinit = False
+    if clear_history_hard:
+        await coordinator.drop_all_mtrack_tables()
+        need_reinit = True
+
+    generated_sets: List[mine_models.SetRecord] = []
+    if tag == "jp" and mv != "-":
+        generated_sets = await update_card_index(tag, "ja", mv, coordinator)
+
+    logging.debug("Master import done in %s ms", (time.monotonic() - cloc) * 1000)
+    cloc = time.monotonic()
+
+    setminer_dirty = False
+    hist_expert = db_expert.PostgresDBExpert(mine_models.HistoryIndex)
+    set_expert = db_expert.PostgresDBExpert(mine_models.SetIndex)
+    async with coordinator.pool.acquire() as conn:
+        await hist_expert.create_tables(conn)
+        await set_expert.create_tables(conn)
+
+        if clear_history:
+            need_reinit = True
+            async with conn.transaction():
+                await conn.execute("DELETE FROM history_v5 where serverid=$1", tag)
+
+        events, gachas = await newsminer.assemble_timeline(conn, tag)
+
+        async with conn.transaction():
+            for set_ in generated_sets:
+                await set_expert.add_object(conn, set_)
+
+            if need_reinit:
+                logging.warning("Added pre-history entries. Be careful!")
+                pre_events, pre_gachas = newsminer.prepare_old_evt_entries(tag)
+                events = pre_events + events
+                gachas = pre_gachas + gachas
+
+            if events or gachas:
+                await insert_timeline(hist_expert, conn, events, gachas)
+
+        # This runs on the entire dataset so let the transaction commit first.
+        async with conn.transaction():
+            await conn.execute(sql_scripts.update_event_sets())
+
+        setminer_dirty = True
+
+    logging.debug("NewsMiner import done in %s ms", (time.monotonic() - cloc) * 1000)
+    cloc = time.monotonic()
+
+    if setminer_dirty:
+        async with coordinator.pool.acquire() as conn:
+            await setminer.update_ordinal_sets(conn, set_expert)
+
+        logging.debug("SetMiner import done in %s ms", (time.monotonic() - cloc) * 1000)
 
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    loop.run_until_complete(plac.call(main))
     loop.close()

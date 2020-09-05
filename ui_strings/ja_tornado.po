@@ -33,6 +33,9 @@ msgstr "AppendixHiramekuSkills"
 msgid "Attribute"
 msgstr "属性"
 
+msgid "Basic Information"
+msgstr "Basic Information"
+
 msgid ""
 "Be aware that external sites may contain malicious content. To continue, "
 "click the link."
@@ -58,14 +61,35 @@ msgstr "エピソード"
 msgid "Fork me on GitHub"
 msgstr "ソースコードへ"
 
+msgid "HEvent.AllCards"
+msgstr "すべてを表示..."
+
+msgid "HEvent.GachaEvent"
+msgstr "イベントガチャ"
+
+msgid "HEvent.GachaFes"
+msgstr "フェス"
+
+msgid "HEvent.GachaOther"
+msgstr "..."
+
+msgid "HEvent.GachaPickUp"
+msgstr "ピックアップ"
+
+msgid "HEvent.IGEvent"
+msgstr "イベント"
+
+msgid "HEvent.NewsPost"
+msgstr "Go to news post..."
+
+msgid "HEvent.Ongoing"
+msgstr "Ongoing"
+
 msgid "IndividualSkillHeader"
 msgstr "個性"
 
 msgid "Interesting choice of cards..."
 msgstr "Interesting choice of cards..."
-
-msgid "Language Options"
-msgstr "Language Options"
 
 msgid "LevelShort"
 msgstr "レベル"
@@ -131,6 +155,9 @@ msgstr "{category} news post."
 msgid "OpengraphNewsItem:{category}:{num_assoc_cards}"
 msgstr "{category} news post, featuring {num_assoc_cards} cards."
 
+msgid "Options"
+msgstr "Options"
+
 msgid "PT.CardReleases"
 msgstr "リリース履歴"
 
@@ -181,12 +208,50 @@ msgstr "★のある行には、その限界突破までの特訓増加が含ま
 msgid "SSF.WaitingForWebpack"
 msgstr "追加のコンポーネントを待っています..."
 
-#, fuzzy
 msgid "Saint.WaitingForWebpack"
 msgstr "追加のコンポーネントを待っています..."
 
 msgid "Search"
 msgstr "検索"
+
+msgid "SetRecord.ExpandAll"
+msgstr "Show/Hide all stats"
+
+msgid "SetRecord.FirstFeaturedOn{server_id}"
+msgstr "First appearance on {server_id} server:"
+
+msgid "SetRecord.LastFeatured"
+msgstr "Last appearance:"
+
+msgid "SetRecord.RevealStatsDescription"
+msgstr "Click or tap to reveal stats."
+
+msgid "SetRecord.SeeCardDetailsButton"
+msgstr "All cards..."
+
+msgid "SetRecord.SetTypeDescriptionDefault"
+msgstr "A set where everyone has the same theme."
+
+msgid "SetRecord.SetTypeDescriptionEventPair"
+msgstr ""
+"Released as a paired event and gacha. You can exchange SBL coins for "
+"previous event cards after some time."
+
+msgid "SetRecord.SetTypeDescriptionOrdFes"
+msgstr ""
+"Released in All Star Festival boxes. Festival cards are only scoutable in "
+"other Festival gachas."
+
+msgid "SetRecord.SetTypeDescriptionPickup"
+msgstr ""
+"Released between events. Spotlight cards are scoutable in other gachas after "
+"being featured."
+
+msgid "SetRecord.SetTypeDescriptionSong"
+msgstr "Live costume SR sets are released over several events and gachas."
+
+msgid "SetRecord.Unreleased"
+msgstr "Unreleased"
 
 msgid "Show All Limit Breaks"
 msgstr "全ての限界突破を表示する"
@@ -258,12 +323,3 @@ msgstr "{pts}ポイント"
 
 msgid "★ {star}"
 msgstr "★ {star}"
-
-#~ msgid "One idol and {num} cards."
-#~ msgstr "One idol and {num} cards."
-
-#~ msgid "Base stats"
-#~ msgstr "Base stats"
-
-#~ msgid "EventTracker.HeaderCurrentTiers"
-#~ msgstr "トラッカー"

@@ -212,6 +212,8 @@ $kars-gutter-text: white;
 $kars-gutter-select-bg: white;
 $kars-gutter-select-text: black;
 
+$ongoing-event-text: #f57272;
+
 @import "node_modules/bootstrap/scss/bootstrap";
 @import "inc/custom-layout.sass";
 @import "inc/stack.sass";
@@ -222,3 +224,4 @@ $kars-gutter-select-text: black;
 @import "inc/story.sass";
 @import "inc/adjustments.sass";
 @import "inc/modal.sass";
+@import "inc/gallery.sass";

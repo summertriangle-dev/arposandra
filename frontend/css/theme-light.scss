@@ -35,6 +35,8 @@ $kars-gutter-text: white;
 $kars-gutter-select-bg: white;
 $kars-gutter-select-text: black;
 
+$ongoing-event-text: #ce4c4c;
+
 @import "node_modules/bootstrap/scss/bootstrap";
 
 $input-bg: #ced4da;
@@ -48,3 +50,4 @@ $input-bg: #ced4da;
 @import "inc/story.sass";
 @import "inc/adjustments.sass";
 @import "inc/modal.sass";
+@import "inc/gallery.sass";
