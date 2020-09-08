@@ -1,5 +1,7 @@
 import json
 import logging
+import zlib
+from binascii import hexlify
 from dataclasses import dataclass, field
 
 from libcard2.dataclasses import Card as libcard2_card
@@ -84,7 +86,7 @@ class CardExpert(object):
     def source(self):
         return Schema.Empty
 
-    def release_date(self):
+    def release_dates(self):
         return Schema.Empty
 
 
@@ -102,12 +104,14 @@ CardIndex = Schema(
         Field.integer("max_technique"),
         Field.integer("rarity"),
         Field.integer("source"),
-        Field.datetime("release_date"),
         Field.enum("role", ("voltage", "sp", "guard", "skill")),
         Field.enum("attribute", ("smile", "pure", "cool", "active", "natural", "elegant")),
         Field.integer("skill_major"),
         Field.enum("maximal_stat", ("appeal", "stamina", "technique")),
         Field.integer("skill_minors", multiple=True),
+        Field.composite(
+            "release_dates", Field.varchar("server_id", 8, primary=True), Field.datetime("date"),
+        ),
     ],
     expert=CardExpert,
 )
@@ -130,7 +134,14 @@ class SetRecord(object):
 
     # This class is its own expert
     def id(self):
-        return self.name
+        try:
+            ascii_name = self.name.encode("ascii")
+            ascii_name = self.name
+        except UnicodeEncodeError:
+            hash = zlib.crc32(self.name.encode("utf8")).to_bytes(4, "big")
+            ascii_name = "set-" + hexlify(hash).decode("ascii")
+
+        return ascii_name.lower().replace(" ", "-").replace("/", "-")
 
     def representative(self):
         return self.representative_name
@@ -141,10 +152,12 @@ class SetRecord(object):
     def set_type(self):
         return self.stype
 
-    def release_dates(self):
+    def sort_dates(self):
         return Schema.Empty
 
-    def event_references(self):
+    def shioriko_exists(self):
+        if self.stype in ["ordinal_fes", "ordinal_pickup"]:
+            return 1
         return Schema.Empty
 
 
@@ -153,21 +166,15 @@ SetIndex = Schema(
     fields=[
         Field.text("id"),
         Field.text("representative", primary=True),
-        Field.enum("set_type", ("same_name", "event", "song", "ordinal_fes", "ordinal_pickup", "initial", "else")),
+        Field.enum(
+            "set_type",
+            ("same_name", "event", "song", "ordinal_fes", "ordinal_pickup", "initial", "else"),
+        ),
+        Field.integer("shioriko_exists"),
+        Field.composite(
+            "sort_dates", Field.varchar("server_id", 8, primary=True), Field.datetime("date")
+        ),
         Field.integer("card_ids", multiple=True),
-        Field.composite(
-            "event_references",
-            Field.varchar("server_id", 8),
-            Field.integer("record_id"),
-            multiple=True,
-        ),
-        Field.composite(
-            "release_dates",
-            Field.varchar("server_id", 8, primary=True),
-            Field.datetime("min_date"),
-            Field.datetime("max_date"),
-            multiple=False,
-        ),
     ],
     expert=lambda x: x,
 )
@@ -193,7 +200,10 @@ class SRecordExpert(object):
         return self.record.common_title
 
     def card_ids(self):
-        return self.record.feature_card_ids
+        if isinstance(self.record, SGachaMergeRecord):
+            return self.record.feature_card_ids.items()
+        else:
+            return ((x, "event") for x in self.record.feature_card_ids)
 
     def subtype(self):
         if isinstance(self.record, SGachaMergeRecord):
@@ -201,17 +211,32 @@ class SRecordExpert(object):
         else:
             return Schema.Empty
 
-    def start_time(self):
-        return self.record.time_span[0]
-
-    def end_time(self):
-        return self.record.time_span[0] + self.record.time_span[1]
-
-    def internal_id(self):
-        return Schema.Empty
-
     def thumbnail(self):
         return self.record.thumbnail or Schema.Empty
+
+    def sort_date(self):
+        if isinstance(self.record, SGachaMergeRecord):
+            return self.record.time_spans["gacha"][0]
+        else:
+            return self.record.time_span[0]
+
+    def dates(self):
+        if isinstance(self.record, SGachaMergeRecord):
+            ts = self.record.time_spans["gacha"]
+            yield ("gacha_start", ts[0])
+            yield ("gacha_end", ts[0] + ts[1])
+            ts = self.record.time_spans.get("event")
+            if ts:
+                yield ("event_start", ts[0])
+                yield ("event_end", ts[0] + ts[1])
+            ts = self.record.time_spans.get("part2")
+            if ts:
+                yield ("gachap2_start", ts[0])
+                yield ("gachap2_end", ts[0] + ts[1])
+        else:
+            ts = self.record.time_span
+            yield ("event_start", ts[0])
+            yield ("event_end", ts[0] + ts[1])
 
 
 HistoryIndex = Schema(
@@ -222,10 +247,29 @@ HistoryIndex = Schema(
         Field.integer("what"),
         Field.text("title"),
         Field.integer("subtype"),
-        Field.datetime("start_time"),
-        Field.datetime("end_time"),
         Field.varchar("thumbnail", 8),
-        Field.integer("card_ids", multiple=True),
+        Field.datetime("sort_date"),
+        Field.composite(
+            "dates",
+            Field.enum(
+                "type",
+                (
+                    "event_start",
+                    "gacha_start",
+                    "gachap2_start",
+                    "event_end",
+                    "gacha_end",
+                    "gachap2_end",
+                ),
+                primary=True,
+            ),
+            Field.datetime("date"),
+        ),
+        Field.composite(
+            "card_ids",
+            Field.integer("card_id", primary=True),
+            Field.enum("what", ("event", "gacha", "gachap2")),
+        ),
     ],
     expert=SRecordExpert,
 )

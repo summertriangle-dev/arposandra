@@ -1,11 +1,20 @@
 import re
 from typing import Callable
 
-LANG_JP_EVT_FIRST_HALF = "（前編）"
-LANG_JP_EVT_SECOND_HALF = "（後編）"
-LANG_JP_FES_MARKER = "フェス開催"
-LANG_JP_PICKUP_MARKER = "ピックアップガチャ"
-LANG_JP_EVT_OMNIBUS_MARKER = "スクールアイドル紹介"
+LANG_JA_EVT_FIRST_HALF = "（前編）"
+LANG_JA_EVT_SECOND_HALF = "（後編）"
+LANG_JA_FES_MARKER = "フェス開催"
+LANG_JA_PICKUP_MARKER = "ピックアップガチャ"
+LANG_JA_EVT_OMNIBUS_MARKER = "スクールアイドル紹介"
+LANG_JA_POSTSCRIPT_MARKER = "【追記】"
+
+LANG_EN_EVT_FIRST_HALF = "scouting (part 1)"
+LANG_EN_EVT_SECOND_HALF = "scouting (part 2)"
+LANG_EN_FES_MARKER_START = "scout in"
+LANG_EN_FES_MARKER_END = "festival!"
+LANG_EN_PICKUP_MARKER = "spotlight scouting"
+LANG_EN_EVT_OMNIBUS_MARKER = "school idol lineup"
+LANG_EN_POSTSCRIPT_MARKER = "(UPDATED)"
 
 T_EVENT_TIE = 1
 T_PICK_UP = 2
@@ -15,13 +24,13 @@ T_IGNORE = -1
 
 
 def gacha_label_from_name_jp(name: str) -> int:
-    if LANG_JP_FES_MARKER in name:
+    if LANG_JA_FES_MARKER in name:
         return T_FES
-    elif LANG_JP_PICKUP_MARKER in name:
+    elif LANG_JA_PICKUP_MARKER in name:
         return T_PICK_UP
-    elif LANG_JP_EVT_OMNIBUS_MARKER in name or LANG_JP_EVT_FIRST_HALF in name:
+    elif LANG_JA_EVT_OMNIBUS_MARKER in name or LANG_JA_EVT_FIRST_HALF in name:
         return T_EVENT_TIE
-    elif LANG_JP_EVT_SECOND_HALF in name:
+    elif LANG_JA_EVT_SECOND_HALF in name:
         return T_IGNORE
     else:
         return T_ELSE
@@ -30,13 +39,13 @@ def gacha_label_from_name_jp(name: str) -> int:
 def gacha_label_from_name_en(name: str) -> int:
     # Hopefully they don't change their style.
     name = name.lower()
-    if name.startswith("scout in") and name.endswith("festival!"):
+    if name.startswith(LANG_EN_FES_MARKER_START) and name.endswith(LANG_EN_FES_MARKER_END):
         return T_FES
-    elif name.endswith("spotlight scouting"):
+    elif name.endswith(LANG_EN_PICKUP_MARKER):
         return T_PICK_UP
-    elif name.endswith("school idol lineup") or "scouting (part 1)" in name:
+    elif name.endswith(LANG_EN_EVT_OMNIBUS_MARKER) or LANG_EN_EVT_FIRST_HALF in name:
         return T_EVENT_TIE
-    elif "scouting (part 2)" in name:
+    elif LANG_EN_EVT_SECOND_HALF in name:
         return T_IGNORE
     else:
         return T_ELSE
@@ -75,3 +84,10 @@ def get_gacha_label_func(tag: str) -> Callable[[str], int]:
         return gacha_label_from_name_en
     else:
         raise ValueError("Invalid tag. You need to add support for this language to newsminer!")
+
+
+def is_postscript(record):
+    if record["title"].startswith(LANG_JA_POSTSCRIPT_MARKER):
+        return True
+    if record["title"].startswith(LANG_EN_POSTSCRIPT_MARKER):
+        return True

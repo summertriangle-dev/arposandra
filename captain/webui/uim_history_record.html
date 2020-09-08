@@ -1,0 +1,114 @@
+<div class="kars-list-alternate">
+    <div class="card-body kars-news-header">
+        {% if release.thumbnail %}
+            <img class="item" width="210" src="{{ image_url_reify(release.thumbnail, "jpg", server) }}" />
+        {% end %}
+        <div class="item">
+            <h1 class="h5 {% if release.thumbnail %} mt-2 {% end %}">
+                {{ release.common_title }}
+            </h1>
+            {% module Template("uim_history_schedule.html", release=release, current_time=current_time) %}
+        </div>
+    </div>
+
+    <div class="card-body grouped-card-icon-list">
+        {% set use_labels = len(release.feature_card_ids) > 1 %}
+        {% if "gacha" in release.feature_card_ids %}
+        <div class="group">
+            {% if use_labels %}
+            {% if "gacha_part2" in release.feature_card_ids %}
+            <div class="label">{{ _("HEvent.ScoutCardListLabelP1") }}</div>
+            {% else %}
+            <div class="label">{{ _("HEvent.ScoutCardListLabel") }}</div>
+            {% end %}
+            {% end %}
+            <div class="card-body kars-card-brief-list">
+                {% for cl in release.feature_card_ids["gacha"] %}
+                <a href="/card/{{ cl.ordinal }}" class="card-icon">
+                    <img width="48" height="48" src="{{ card_icon_url(cl, cl.normal_appearance) }}"
+                        alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">
+                </a>
+                {% end %}
+            </div>
+        </div>
+        {% end %}
+
+        {% if "gacha_part2" in release.feature_card_ids %}
+        <div class="group">
+            {% if use_labels %}
+            <div class="label">{{ _("HEvent.ScoutCardListLabelP2") }}</div>
+            {% end %}
+            <div class="card-body kars-card-brief-list">
+                {% for cl in release.feature_card_ids["gacha_part2"] %}
+                <a href="/card/{{ cl.ordinal }}" class="card-icon">
+                    <img width="48" height="48" src="{{ card_icon_url(cl, cl.normal_appearance) }}"
+                        alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">
+                </a>
+                {% end %}
+            </div>
+        </div>
+        {% end %}
+
+        {% if "event" in release.feature_card_ids %}
+        <div class="group">
+            {% if use_labels %}
+            <div class="label">{{ _("HEvent.EventCardListLabel") }}</div>
+            {% end %}
+            <div class="card-body kars-card-brief-list">
+                {% for cl in release.feature_card_ids["event"] %}
+                <a href="/card/{{ cl.ordinal }}" class="card-icon">
+                    <img width="48" height="48" src="{{ card_icon_url(cl, cl.normal_appearance) }}"
+                        alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">
+                </a>
+                {% end %}
+            </div>
+        </div>
+        {% end %}
+
+        {% if release.major_type == 1 and release.sub_type == 1 %}
+        <div class="group weird">
+            {% set start, end = release.gacha_dates() %}
+            {% set start2, end2 = release.gacha_part2_dates() %}
+            <p class="mb-1 h6 sub-event-date
+                {% if current_time >= start and current_time <= end %}
+                hevent-now
+                {% end %}
+                ">
+                {% if start2 %}
+                    {{ _("HEvent.ScoutingPart1Time") }}:
+                {% else %}
+                    {{ _("HEvent.ScoutingTime") }}:
+                {% end %}
+
+                <span class="kars-data-ts" data-style="fullshort" data-orig-offset="32400,JST" data-ts="{{ start.timestamp() }}">
+                    {{ start }} UTC</span>
+                ~
+                <span class="kars-data-ts" data-style="fullshort" data-orig-offset="32400,JST" data-ts="{{ end.timestamp() }}">
+                    {{ end }} UTC</span>
+
+                {% if current_time >= start and current_time <= end %}
+                ({{ _("HEvent.Ongoing") }})
+                {% end %}
+            </p>
+            {% if start2 %}
+            <p class="mb-1 h6 sub-event-date
+                {% if current_time >= start2 and current_time <= end2 %}
+                hevent-now
+                {% end %}
+                ">
+                {{ _("HEvent.ScoutingPart2Time") }}:
+                <span class="kars-data-ts" data-style="fullshort" data-orig-offset="32400,JST" data-ts="{{ start2.timestamp() }}">
+                    {{ start2 }} UTC</span>
+                ~
+                <span class="kars-data-ts" data-style="fullshort" data-orig-offset="32400,JST" data-ts="{{ end2.timestamp() }}">
+                    {{ end2 }} UTC</span>
+
+                {% if current_time >= start and current_time <= end %}
+                ({{ _("HEvent.Ongoing") }})
+                {% end %}
+            </p>
+            {% end %}
+        </div>
+        {% end %}
+    </div>
+</div>

@@ -133,10 +133,14 @@ msgstr "Shioriko Mifune"
 msgid "k.m_dic_unit_name_cyaron"
 msgstr "CYaRon!"
 
-# note: only Nijigasaki is required here, this is only for completeness.
 msgid "k.m_dic_group_name_muse"
 msgstr "µ's"
 msgid "k.m_dic_group_name_aqours"
 msgstr "Aqours"
 msgid "k.m_dic_group_name_niji"
 msgstr "Nijigasaki"
+
+msgid "kars.gallery.fragment.gacha_type_fes"
+msgstr "Festival"
+msgid "kars.gallery.fragment.gacha_type_pickup"
+msgstr "Spotlight"

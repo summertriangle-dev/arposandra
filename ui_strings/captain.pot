@@ -49,11 +49,8 @@ msgstr "EventTracker.HeaderStories"
 msgid "Fork me on GitHub"
 msgstr "Fork me on GitHub"
 
-msgid "HEvent.AllCards"
-msgstr "HEvent.AllCards"
-
-msgid "HEvent.GachaEvent"
-msgstr "HEvent.GachaEvent"
+msgid "HEvent.EventCardListLabel"
+msgstr "HEvent.EventCardListLabel"
 
 msgid "HEvent.GachaFes"
 msgstr "HEvent.GachaFes"
@@ -67,11 +64,26 @@ msgstr "HEvent.GachaPickUp"
 msgid "HEvent.IGEvent"
 msgstr "HEvent.IGEvent"
 
-msgid "HEvent.NewsPost"
-msgstr "HEvent.NewsPost"
-
 msgid "HEvent.Ongoing"
 msgstr "HEvent.Ongoing"
+
+msgid "HEvent.ScoutCardListLabel"
+msgstr "HEvent.ScoutCardListLabel"
+
+msgid "HEvent.ScoutCardListLabelP1"
+msgstr "HEvent.ScoutCardListLabelP1"
+
+msgid "HEvent.ScoutCardListLabelP2"
+msgstr "HEvent.ScoutCardListLabelP2"
+
+msgid "HEvent.ScoutingPart1Time"
+msgstr "HEvent.ScoutingPart1Time"
+
+msgid "HEvent.ScoutingPart2Time"
+msgstr "HEvent.ScoutingPart2Time"
+
+msgid "HEvent.ScoutingTime"
+msgstr "HEvent.ScoutingTime"
 
 msgid "IndividualSkillHeader"
 msgstr "IndividualSkillHeader"
@@ -190,14 +202,20 @@ msgstr "Saint.WaitingForWebpack"
 msgid "Search"
 msgstr "Search"
 
+msgid "SetRecord.AvailableFromEvent"
+msgstr "SetRecord.AvailableFromEvent"
+
+msgid "SetRecord.AvailableFromGacha"
+msgstr "SetRecord.AvailableFromGacha"
+
+msgid "SetRecord.AvailableFromGachaPart2"
+msgstr "SetRecord.AvailableFromGachaPart2"
+
 msgid "SetRecord.ExpandAll"
 msgstr "SetRecord.ExpandAll"
 
 msgid "SetRecord.FirstFeaturedOn{server_id}"
 msgstr "SetRecord.FirstFeaturedOn{server_id}"
-
-msgid "SetRecord.LastFeatured"
-msgstr "SetRecord.LastFeatured"
 
 msgid "SetRecord.RevealStatsDescription"
 msgstr "SetRecord.RevealStatsDescription"
@@ -222,6 +240,12 @@ msgstr "SetRecord.SetTypeDescriptionSong"
 
 msgid "SetRecord.Unreleased"
 msgstr "SetRecord.Unreleased"
+
+msgid "SetRecord.UnreleasedOn{server_id}"
+msgstr "SetRecord.UnreleasedOn{server_id}"
+
+msgid "SetRecord.{school}{gacha_type}URsRound{set_num}"
+msgstr "SetRecord.{school}{gacha_type}URsRound{set_num}"
 
 msgid "Show All Limit Breaks"
 msgstr "Show All Limit Breaks"

@@ -7,52 +7,50 @@
     .spread-component
         padding: 8px
 
+    .spread-component .t-expand-click-target
+        cursor: pointer
+
     .spread-component.flex-push-bottom
         display: flex
         align-items: flex-end
     
     .spread-image-backing
         position: relative
-        z-index: 1
         background-size: cover
         display: block
         font-size: 0
-        transition: transform 250ms ease-out, box-shadow 250ms ease-out
-
-    .spread-image-backing.placeholder
-        display: flex
-        flex-direction: column-reverse
-
-        .pin-bottom
-            margin: 0
-            text-align: center
-            font-size: 30px
 
     .spread-image-backing img
         max-width: 100%
     
-    .spread-image-backing, .spread-image
+    .spread-image-backing, .spread-image:first-child
         border-radius: 8px 8px 0 0
-    
-    .spread-image-backing:not(.placeholder):hover
-        transform: scale(1.2, 1.2) rotate(2deg)
-        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.4)
-        z-index: 2
-    
-    .spread-image-backing .sp-tooltip
-        display: none
-    .spread-image-backing:hover .sp-tooltip
-        display: block
+
+    .spread-image-backing.unrls::after
+        position: absolute
+        background-image: url(../images/unreleased-overlay.svg?v=1)
+        background-size: cover
+        height: 100%
+        width: 100%
+        top: 0
+        left: 0
+        content: ""
 
     .spread-gutter
         padding: 16px
-
-        .gallery-info-text
-            font-size: 80%
     
     .gallery-card .below-fold
         overflow: hidden
         transition: max-height 200ms ease-in-out
         max-height: 400px
-    .gallery-card.folded .below-fold
-        max-height: 0px
+
+    .gallery-card.folded
+        .kars-stack-header
+            border: none
+        .below-fold
+            max-height: 0px
+    
+    @include media-breakpoint-down(md)
+        .t-expand-click-target
+            padding-top: 8px
+            padding-bottom: 8px

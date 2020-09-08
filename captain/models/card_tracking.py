@@ -2,7 +2,9 @@ import json
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
-from typing import List, Optional, Tuple, Any
+from typing import List, Optional, Tuple, Any, Dict
+
+from libcard2.dataclasses import Card
 
 Timespan = Tuple[datetime, timedelta]
 
@@ -15,18 +17,50 @@ SUBTYPE_FES = 3
 SUBTYPE_ELSE = 4
 SUBTYPE_IGNORE = -1
 
+MAP_WHAT_TO_ID = {1: "event", 2: "gacha", 3: "gacha_part2"}
+
 
 @dataclass
-class UnifiedSRecord(object):
+class HistoryRecord(object):
+    T_DATE_EVENT_START = 1
+    T_DATE_GACHA_START = 2
+    T_DATE_GACHA2_START = 3
+    T_DATE_EVENT_END = 4
+    T_DATE_GACHA_END = 5
+    T_DATE_GACHA2_END = 6
+
     record_id: int
     server_id: int
     common_title: str
-    feature_card_ids: List[int]
+    feature_card_ids: Dict[str, List[int]]
     major_type: int
     sub_type: int
     thumbnail: str
-    start_time: datetime
-    end_time: datetime
+    dates: Dict[str, datetime]
+
+    def event_dates(self):
+        return (self.dates.get(self.T_DATE_EVENT_START), self.dates.get(self.T_DATE_EVENT_END))
+
+    def gacha_dates(self):
+        return (self.dates.get(self.T_DATE_GACHA_START), self.dates.get(self.T_DATE_GACHA_END))
+
+    def gacha_part2_dates(self):
+        return (self.dates.get(self.T_DATE_GACHA2_START), self.dates.get(self.T_DATE_GACHA2_END))
+
+    def nom_date(self):
+        return self.dates.get(self.T_DATE_GACHA_START) or self.dates.get(self.T_DATE_EVENT_START)
+
+    @staticmethod
+    def card_list(l: List[Tuple[int, int]]) -> Dict[str, List[int]]:
+        gs: Dict[str, List[int]] = {}
+        for cid, what in l:
+            ins = gs.get(MAP_WHAT_TO_ID[what])
+            if ins is None:
+                gs[MAP_WHAT_TO_ID[what]] = [cid]
+            else:
+                ins.append(cid)
+
+        return gs
 
 
 @dataclass
@@ -37,13 +71,28 @@ class CardSetRecord(object):
     T_FES = 4
     T_PICKUP = 5
 
+    @dataclass
+    class ID(object):
+        id: int
+        source: int
+        release: datetime
+        card: Card = None
+
     name: str
     representative: str
     set_type: int
-    min_date: datetime
-    max_date: datetime
-    card_refs: List[int]
-    original_release: datetime
+    card_refs: List[ID]
+    shioriko_exists: bool
+
+    def is_systematic(self):
+        return self.set_type in [4, 5]
+
+    def max_date(self):
+        return max(x.release for x in self.card_refs if x.release)
+
+    @staticmethod
+    def unpack_rdates(lrecs):
+        return [CardSetRecord.ID(*x) for x in lrecs]
 
 
 class CardTrackingDatabase(object):
@@ -51,36 +100,28 @@ class CardTrackingDatabase(object):
         self.coordinator = coordinator
 
     async def get_history_entries(
-        self,
-        for_server: str,
-        category: int = None,
-        subtype: int = None,
-        before_date: datetime = None,
-        n_entries: int = 20,
-    ) -> List[UnifiedSRecord]:
+        self, for_server: str, subtype: int = None, page: int = 0, n_entries: int = 20,
+    ) -> Tuple[List[HistoryRecord], int]:
+        offset = page * n_entries
+
         act = 2
         args: List[Any] = [for_server]
-        footer = f"\nORDER BY start_time DESC LIMIT {n_entries}"
+        footer = f"\nORDER BY sort_date DESC LIMIT {n_entries + 1} OFFSET {offset}"
         query = """
-            SELECT id, serverid, title, 
-            ARRAY(SELECT card_ids FROM history_v5__card_ids 
-	            WHERE history_v5__card_ids.serverid = history_v5.serverid 
-                AND history_v5__card_ids.id=history_v5.id) AS card_ids,
-            what, subtype, thumbnail, start_time, end_time
-            FROM history_v5 WHERE serverid = $1
+            SELECT id, serverid, title, what, subtype, thumbnail,
+            ARRAY(SELECT (card_id, what) FROM history_v5__card_ids 
+	                WHERE history_v5__card_ids.id = history_v5.id
+                    AND history_v5__card_ids.serverid = $1) AS card_ids,
+            ARRAY(SELECT (type, date) FROM history_v5__dates
+	                WHERE history_v5__dates.id = history_v5.id
+                    AND history_v5__dates.serverid = $1) AS dates
+			FROM history_v5
+			WHERE serverid = $1
         """
 
-        if category is not None:
-            query += f"\nAND what = ${act}"
-            args.append(category)
-            act += 1
-        elif subtype is not None:
+        if subtype is not None:
             query += f"\nAND subtype = ${act}"
             args.append(subtype)
-            act += 1
-        elif before_date is not None:
-            query += f"\nAND start_time < ${act}"
-            args.append(before_date)
             act += 1
 
         query += footer
@@ -88,27 +129,27 @@ class CardTrackingDatabase(object):
         async with self.coordinator.pool.acquire() as c:
             items = await c.fetch(query, *args)
 
-        return [
-            UnifiedSRecord(
-                i["id"],
-                i["serverid"],
-                i["title"],
-                i["card_ids"],
-                i["what"],
-                i["subtype"],
-                i["thumbnail"],
-                i["start_time"],
-                i["end_time"],
-            )
-            for i in items
-        ]
+        if len(items) > n_entries:
+            have_more = True
+        else:
+            have_more = False
 
-    def collect_card_ids(self, rows):
-        buckets = defaultdict(lambda: [])
-        for row in rows:
-            buckets[row["representative"]].append(row["card_ids"])
-
-        return buckets
+        return (
+            [
+                HistoryRecord(
+                    i["id"],
+                    i["serverid"],
+                    i["title"],
+                    HistoryRecord.card_list(i["card_ids"]),
+                    i["what"],
+                    i["subtype"],
+                    i["thumbnail"],
+                    dict(i["dates"]),
+                )
+                for i in items[:n_entries]
+            ],
+            have_more,
+        )
 
     async def get_card_sets(
         self, category: int = None, page: int = None, n_entries: int = 20, tag: str = None,
@@ -122,20 +163,19 @@ class CardTrackingDatabase(object):
 
         query = [
             f"""
-            SELECT id, card_p_set_index_v1.representative, set_type,
-            ARRAY(SELECT card_ids FROM card_p_set_index_v1__card_ids 
-	            WHERE card_p_set_index_v1__card_ids.representative = card_p_set_index_v1.representative 
-            ) AS card_ids, card_p_set_index_v1__release_dates.min_date, 
-            card_p_set_index_v1__release_dates.max_date, 
-            orig_rls.min_date AS orig_rlsd
-            FROM card_p_set_index_v1
-            LEFT JOIN card_p_set_index_v1__release_dates ON 
-                (card_p_set_index_v1__release_dates.representative = card_p_set_index_v1.representative 
-                 AND card_p_set_index_v1__release_dates.server_id = $1)
-            LEFT JOIN card_p_set_index_v1__release_dates AS orig_rls ON 
-                (orig_rls.representative = card_p_set_index_v1.representative 
-                 AND orig_rls.server_id = 'jp')
-            WHERE card_p_set_index_v1__release_dates.max_date IS NOT NULL
+            SELECT card_p_set_index_v1.id, card_p_set_index_v1.representative, set_type, shioriko_exists,
+            ARRAY(
+                SELECT (card_ids, source, date) FROM card_p_set_index_v1__card_ids 
+                INNER JOIN card_index_v1 ON (card_index_v1.id = card_p_set_index_v1__card_ids.card_ids)
+                LEFT JOIN card_index_v1__release_dates ON (
+                    card_index_v1.id = card_index_v1__release_dates.id 
+                    AND server_id = $1
+                )
+                WHERE card_p_set_index_v1__card_ids.representative = card_p_set_index_v1.representative 
+            ) AS cards
+            FROM card_p_set_index_v1__sort_dates
+            INNER JOIN card_p_set_index_v1 USING (representative)
+            WHERE server_id = $1
             """
         ]
         args: List[Any] = [tag]
@@ -143,9 +183,7 @@ class CardTrackingDatabase(object):
             query.append(f"AND set_type = ${len(args) + 1}")
             args.append(category)
 
-        query.append(
-            f"ORDER BY card_p_set_index_v1__release_dates.max_date DESC LIMIT {n_entries + 1} OFFSET {offset}"
-        )
+        query.append(f"ORDER BY date DESC LIMIT {n_entries + 1} OFFSET {offset}")
 
         async with self.coordinator.pool.acquire() as conn:
             set_ids = await conn.fetch("\n".join(query), *args)
@@ -160,12 +198,39 @@ class CardTrackingDatabase(object):
                         r["id"],
                         r["representative"],
                         r["set_type"],
-                        r["min_date"],
-                        r["max_date"],
-                        r["card_ids"],
-                        r["orig_rlsd"],
+                        CardSetRecord.unpack_rdates(r["cards"]),
+                        bool(r["shioriko_exists"]),
                     )
                     for r in set_ids[:n_entries]
                 ],
                 have_more,
             )
+
+    async def get_single_card_set(self, name: str) -> Optional[CardSetRecord]:
+        query = f"""
+            SELECT card_p_set_index_v1.id, card_p_set_index_v1.representative, set_type, shioriko_exists,
+            ARRAY(
+                SELECT (card_ids, source, date) FROM card_p_set_index_v1__card_ids 
+                INNER JOIN card_index_v1 ON (card_index_v1.id = card_p_set_index_v1__card_ids.card_ids)
+                LEFT JOIN card_index_v1__release_dates ON (
+                    card_index_v1.id = card_index_v1__release_dates.id 
+                    AND server_id = $1
+                )
+                WHERE card_p_set_index_v1__card_ids.representative = card_p_set_index_v1.representative 
+            ) AS cards
+            FROM card_p_set_index_v1__sort_dates
+            INNER JOIN card_p_set_index_v1 USING (representative)
+            WHERE server_id = $1 AND id = $2 LIMIT 1
+        """
+
+        async with self.coordinator.pool.acquire() as conn:
+            the_set = await conn.fetchrow(query, "jp", name)
+
+            return CardSetRecord(
+                the_set["id"],
+                the_set["representative"],
+                the_set["set_type"],
+                CardSetRecord.unpack_rdates(the_set["cards"]),
+                bool(the_set["shioriko_exists"]),
+            )
+

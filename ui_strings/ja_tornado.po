@@ -61,11 +61,8 @@ msgstr "エピソード"
 msgid "Fork me on GitHub"
 msgstr "ソースコードへ"
 
-msgid "HEvent.AllCards"
-msgstr "すべてを表示..."
-
-msgid "HEvent.GachaEvent"
-msgstr "イベントガチャ"
+msgid "HEvent.EventCardListLabel"
+msgstr "イベ"
 
 msgid "HEvent.GachaFes"
 msgstr "フェス"
@@ -79,11 +76,26 @@ msgstr "ピックアップ"
 msgid "HEvent.IGEvent"
 msgstr "イベント"
 
-msgid "HEvent.NewsPost"
-msgstr "Go to news post..."
-
 msgid "HEvent.Ongoing"
 msgstr "Ongoing"
+
+msgid "HEvent.ScoutCardListLabel"
+msgstr "ガシャ"
+
+msgid "HEvent.ScoutCardListLabelP1"
+msgstr "前編"
+
+msgid "HEvent.ScoutCardListLabelP2"
+msgstr "後編"
+
+msgid "HEvent.ScoutingPart1Time"
+msgstr "ガシャ（前編）"
+
+msgid "HEvent.ScoutingPart2Time"
+msgstr "ガシャ（後編）"
+
+msgid "HEvent.ScoutingTime"
+msgstr "ガシャ"
 
 msgid "IndividualSkillHeader"
 msgstr "個性"
@@ -214,14 +226,20 @@ msgstr "追加のコンポーネントを待っています..."
 msgid "Search"
 msgstr "検索"
 
+msgid "SetRecord.AvailableFromEvent"
+msgstr "Event Reward"
+
+msgid "SetRecord.AvailableFromGacha"
+msgstr "Available from Scouting"
+
+msgid "SetRecord.AvailableFromGachaPart2"
+msgstr "Available from Scouting (Part 2)"
+
 msgid "SetRecord.ExpandAll"
 msgstr "Show/Hide all stats"
 
 msgid "SetRecord.FirstFeaturedOn{server_id}"
 msgstr "First appearance on {server_id} server:"
-
-msgid "SetRecord.LastFeatured"
-msgstr "Last appearance:"
 
 msgid "SetRecord.RevealStatsDescription"
 msgstr "Click or tap to reveal stats."
@@ -252,6 +270,12 @@ msgstr "Live costume SR sets are released over several events and gachas."
 
 msgid "SetRecord.Unreleased"
 msgstr "Unreleased"
+
+msgid "SetRecord.UnreleasedOn{server_id}"
+msgstr "Not yet available on {server_id} server"
+
+msgid "SetRecord.{school}{gacha_type}URsRound{set_num}"
+msgstr "{school}{gacha_type} UR 第{set_num}章"
 
 msgid "Show All Limit Breaks"
 msgstr "全ての限界突破を表示する"

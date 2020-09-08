@@ -265,6 +265,26 @@ img.kars-skill-icon
         display: block
         font-size: 0
 
+.grouped-card-icon-list
+    display: flex
+    flex-direction: row
+    flex-wrap: wrap
+    margin-bottom: -8px
+
+    .group
+        display: flex
+        flex-direction: column
+        justify-content: flex-end
+        
+    .group .label
+        text-transform: uppercase
+        font-size: 80%
+        font-weight: bold
+        margin: -8px 0.5rem 0.2rem 0
+    .group .kars-card-brief-list
+        margin: 0
+        padding: 0
+
 .card-icon img, .kars-mem-icon
     border-radius: 3px
 
@@ -312,7 +332,7 @@ img.kars-skill-icon
         text-align: center
 
 .kars-data-ts[data-orig-offset]
-    border-bottom: 1px dashed $body-color
+    border-bottom: 1px dashed
 
 .kars-event-cutoff-card
     margin-top: 1rem
@@ -322,3 +342,7 @@ img.kars-skill-icon
 
 .hevent-now
     color: $ongoing-event-text
+
+@include media-breakpoint-down(md)
+    .col-lg:not(:last-child)
+        margin-bottom: 1.5rem

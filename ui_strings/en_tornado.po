@@ -61,11 +61,8 @@ msgstr "Event Story"
 msgid "Fork me on GitHub"
 msgstr "Fork me on GitHub"
 
-msgid "HEvent.AllCards"
-msgstr "See all cards..."
-
-msgid "HEvent.GachaEvent"
-msgstr "Event Gacha"
+msgid "HEvent.EventCardListLabel"
+msgstr "Event"
 
 msgid "HEvent.GachaFes"
 msgstr "Festival"
@@ -79,11 +76,26 @@ msgstr "Spotlight"
 msgid "HEvent.IGEvent"
 msgstr "Event"
 
-msgid "HEvent.NewsPost"
-msgstr "Go to news post"
-
 msgid "HEvent.Ongoing"
 msgstr "Ongoing"
+
+msgid "HEvent.ScoutCardListLabel"
+msgstr "Scouting"
+
+msgid "HEvent.ScoutCardListLabelP1"
+msgstr "Part 1"
+
+msgid "HEvent.ScoutCardListLabelP2"
+msgstr "Part 2"
+
+msgid "HEvent.ScoutingPart1Time"
+msgstr "Scouting (Part 1)"
+
+msgid "HEvent.ScoutingPart2Time"
+msgstr "Scouting (Part 2)"
+
+msgid "HEvent.ScoutingTime"
+msgstr "Scouting"
 
 msgid "IndividualSkillHeader"
 msgstr "Individual Skills"
@@ -216,14 +228,20 @@ msgstr "Waiting for JavaScript components..."
 msgid "Search"
 msgstr "Search"
 
+msgid "SetRecord.AvailableFromEvent"
+msgstr "Event Reward"
+
+msgid "SetRecord.AvailableFromGacha"
+msgstr "Available from Scouting"
+
+msgid "SetRecord.AvailableFromGachaPart2"
+msgstr "Available from Scouting (Part 2)"
+
 msgid "SetRecord.ExpandAll"
 msgstr "Show/Hide all stats"
 
 msgid "SetRecord.FirstFeaturedOn{server_id}"
 msgstr "First appearance on {server_id} server:"
-
-msgid "SetRecord.LastFeatured"
-msgstr "Last appearance:"
 
 msgid "SetRecord.RevealStatsDescription"
 msgstr "Click or tap to reveal stats."
@@ -254,6 +272,12 @@ msgstr "Live costume SR sets are released over several events and gachas."
 
 msgid "SetRecord.Unreleased"
 msgstr "Unreleased"
+
+msgid "SetRecord.UnreleasedOn{server_id}"
+msgstr "Not yet available on {server_id} server"
+
+msgid "SetRecord.{school}{gacha_type}URsRound{set_num}"
+msgstr "{school} {gacha_type} URs Round {set_num}"
 
 msgid "Show All Limit Breaks"
 msgstr "Show All Limit Breaks"

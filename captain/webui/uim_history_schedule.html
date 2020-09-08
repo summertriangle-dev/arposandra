@@ -1,0 +1,50 @@
+<h2 class="h6 mb-0">
+{% if release.major_type == 1 and release.sub_type != 1 %}
+    {% set start, end = release.gacha_dates() %}
+    {% if current_time >= start and current_time <= end %}
+    <span class="hevent-now"> 
+    {% end %}
+
+    {% if release.sub_type == 1 %}
+        {{ _("HEvent.IGEvent") }}
+    {% elif release.sub_type == 2 %}
+        {{ _("HEvent.GachaPickUp") }}
+    {% elif release.sub_type == 3 %}
+        {{ _("HEvent.GachaFes") }}
+    {% else %}
+        {{ _("HEvent.GachaOther") }}
+    {% end %}
+
+    &ndash;
+    
+    <span class="kars-data-ts" data-style="fullshort" data-orig-offset="32400,JST" data-ts="{{ start.timestamp() }}">
+        {{ start }} UTC</span>
+    ~
+    <span class="kars-data-ts" data-style="fullshort" data-orig-offset="32400,JST" data-ts="{{ end.timestamp() }}">
+        {{ end }} UTC</span>
+    
+    {% if current_time >= start and current_time <= end %}
+    ({{ _("HEvent.Ongoing") }})
+    </span> 
+    {% end %}
+{% else %}
+    {% set start, end = release.event_dates() %}
+    {% if current_time >= start and current_time <= end %}
+    <span class="hevent-now"> 
+    {% end %}
+
+    {{ _("HEvent.IGEvent") }}
+    &ndash;
+    
+    <span class="kars-data-ts" data-style="fullshort" data-orig-offset="32400,JST" data-ts="{{ start.timestamp() }}">
+        {{ start }} UTC</span>
+    ~
+    <span class="kars-data-ts" data-style="fullshort" data-orig-offset="32400,JST" data-ts="{{ end.timestamp() }}">
+        {{ end }} UTC</span>
+
+    {% if current_time >= start and current_time <= end %}
+    ({{ _("HEvent.Ongoing") }})
+    </span> 
+    {% end %}
+{% end %}
+</h2>

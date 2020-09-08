@@ -1,0 +1,47 @@
+<h1 class="h4 mb-1 kars-negative-box">
+    {% if set.is_systematic() %}
+    {% raw tlinject_static(set.representative) %}
+    {% else %}
+    {% raw tlinject(set.representative) %}
+    {% end %}
+</h1>
+<div class="card kars-card-box gallery-spread" data-expand-group-root>
+    <div class="kars-list-alternate">
+        <div class="row">
+            {% for member, ref in handler.matrix_order(set) %}
+            <div class="spread-component col-lg-4">
+                {% if ref %}
+                {% module Template("uim_gallery_card.html", release_info=ref, card=ref.card, set_type=set.set_type, server_id=server_id) %}
+                {% else %}
+                {% module Template("uim_gallery_member_placeholder.html", member=member) %}
+                {% end %}
+            </div>
+            {% end %}
+
+            <div class="spread-component col-4-lg flex-push-bottom">
+                <a class="btn btn-primary btn-sm mr-2" 
+                    href="/cards/set/{{ set.name }}">{{ _("SetRecord.SeeCardDetailsButton") }}</a>
+                <a class="btn btn-primary btn-sm t-expand-group-target">{{ _("SetRecord.ExpandAll") }}</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="kars-list-alternate">
+        <div class="spread-gutter">
+            <span class="text-muted gallery-info-text">
+            {% if set.set_type == 1 %}
+                {{ _("SetRecord.SetTypeDescriptionDefault") }}
+            {% elif set.set_type == 2 %}
+                {{ _("SetRecord.SetTypeDescriptionEventPair") }}
+            {% elif set.set_type == 3 %}
+                {{ _("SetRecord.SetTypeDescriptionSong") }}
+            {% elif set.set_type == 4 %}
+                {{ _("SetRecord.SetTypeDescriptionOrdFes") }}
+            {% elif set.set_type == 5 %}
+                {{ _("SetRecord.SetTypeDescriptionPickup") }}
+            {% end %}
+            </span>
+        </div>
+        
+    </div>
+</div>

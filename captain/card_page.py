@@ -14,6 +14,7 @@ from libcard2.utils import coding_context
 from .dispatch import DatabaseMixin, LanguageCookieMixin, route
 from .models import card_tracking
 from .pageutils import get_as_secret, tlinject_static
+import logging
 
 
 @route("/cards/by_idol/([0-9]+)(/.*)?")
@@ -105,10 +106,6 @@ class CardPage(LanguageCookieMixin):
 
 @route(r"/cards/sets/?")
 class CardGallery(DatabaseMixin, LanguageCookieMixin):
-    # The date when Shioriko was added as a playable character. (/jp/news/1129510)
-    # We'll exclude her from any Nijigasaki sets introduced before this date.
-    EPOCH_MIFUNE = datetime(2020, 8, 5, 8, 0)
-    GROUP_NIJIGASAKI = 3
     # The largest known subunit size (QU4RTZ). This is checked so we don't treat
     # subunit costume sets as group sets.
     ALL_MEMBER_SET_THRES = 4
@@ -134,20 +131,20 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin):
     # FIXME: We should be implementing this in SQL.
     def custom_sort_key(self, aset: card_tracking.CardSetRecord):
         if aset.set_type == card_tracking.CardSetRecord.T_DEFAULT:
-            return (aset.max_date, 0)
-        if aset.set_type == card_tracking.CardSetRecord.T_EVENT:
-            return (aset.max_date, 9)
-        if aset.set_type == card_tracking.CardSetRecord.T_SONG:
-            return (aset.max_date, 1)
-        if aset.set_type == card_tracking.CardSetRecord.T_FES:
-            return (aset.max_date, 10)
-        if aset.set_type == card_tracking.CardSetRecord.T_PICKUP:
-            return (aset.max_date, 8)
-        return (aset.max_date, -9999)
+            return (aset.max_date(), 1)
+        elif aset.set_type == card_tracking.CardSetRecord.T_EVENT:
+            return (aset.max_date(), 10)
+        elif aset.set_type == card_tracking.CardSetRecord.T_SONG:
+            return (aset.max_date(), 5)
+        elif aset.set_type == card_tracking.CardSetRecord.T_FES:
+            return (aset.max_date(), 9)
+        elif aset.set_type == card_tracking.CardSetRecord.T_PICKUP:
+            return (aset.max_date(), 8)
+        return (aset.max_date(), -9999)
 
     def should_fill(self, aset: card_tracking.CardSetRecord):
         return (
-            len(set(card.member.group for card in aset.card_refs)) == 1
+            len(set(ref.card.member.group for ref in aset.card_refs)) == 1
             and aset.set_type in self.FILL_SET_TYPES
             and len(aset.card_refs) > self.ALL_MEMBER_SET_THRES
         )
@@ -155,15 +152,11 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin):
     def matrix_order(
         self, aset: card_tracking.CardSetRecord
     ) -> Iterable[Tuple[Member, Optional[Card]]]:
-        crefs_by_member = {x.member.id: x for x in aset.card_refs}
+        crefs_by_member = {x.card.member.id: x for x in aset.card_refs}
 
         if self.should_fill(aset):
-            the_group = aset.card_refs[0].member.group
-            skip_shioriko = not aset.original_release or (
-                aset.original_release < self.EPOCH_MIFUNE
-                and the_group == self.GROUP_NIJIGASAKI
-                and aset.set_type not in [4, 5]
-            )
+            the_group = aset.card_refs[0].card.member.group
+            skip_shioriko = not aset.shioriko_exists
             member_list = self.master().lookup_member_list(group=the_group)
             for member in member_list:
                 card = crefs_by_member.get(member.id)
@@ -176,8 +169,8 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin):
             #    for card in crefs_by_member.values():
             #        yield (card.member, card)
         else:
-            for card in sorted(aset.card_refs, key=lambda x: x.rarity, reverse=True):
-                yield (card.member, card)
+            for cid in sorted(aset.card_refs, key=lambda x: x.card.rarity, reverse=True):
+                yield (cid.card.member, cid)
 
     def thumbnail(self, appearance: Card.Appearance, size: int, axis: str, fmt: str):
         first = (
@@ -254,32 +247,79 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin):
         if not m:
             return
 
+        part_src = self.settings["static_strings"].get(self.locale.code, "en")
+
         sub_type = int(m.group(1))
         if sub_type == 2:
-            gacha_type = "Spotlight"
+            gacha_type = part_src.gettext("kars.gallery.fragment.gacha_type_pickup")
         else:
-            gacha_type = "Festival"
+            gacha_type = part_src.gettext("kars.gallery.fragment.gacha_type_fes")
 
         group = int(m.group(2))
         if group == 1:
-            school = "µ's"
+            school = part_src.gettext("k.m_dic_group_name_muse")
         elif group == 2:
-            school = "Aqours"
+            school = part_src.gettext("k.m_dic_group_name_aqours")
         else:
-            school = "Nijigasaki"
+            school = part_src.gettext("k.m_dic_group_name_niji")
 
+        fmt_string = self.locale.translate("SetRecord.{school}{gacha_type}URsRound{set_num}")
         set_num = int(m.group(3)) + 1
-        self._tlinject_base[0][rep] = f"{school} {gacha_type} URs Round {set_num}"
+        self._tlinject_base[0][rep] = fmt_string.format(
+            school=school, gacha_type=gacha_type, set_num=set_num
+        )
 
     def resolve_cards(self, items: Iterable[card_tracking.CardSetRecord]):
         for item in items:
-            cards = self.settings["master"].lookup_multiple_cards_by_id(item.card_refs)
-            item.card_refs = [c for c in cards if c]
+            cards = self.settings["master"].lookup_multiple_cards_by_id(
+                list(x.id for x in item.card_refs)
+            )
+            for card, ref in zip(cards, item.card_refs):
+                ref.card = card
 
             for card in cards:
                 self.tl_batch.update(card.get_tl_set())
             if item.representative.startswith("synthetic."):
                 self.add_synthetic_name(item.representative)
+
+
+@route(r"/cards/set/([^/]+)")
+class CardGallerySingle(CardGallery):
+    async def get(self, slug):
+        the_set = await self.database().card_tracker.get_single_card_set(slug)
+
+        if not the_set:
+            self.set_status(404)
+            self.render("error.html", message=self.locale.translate("ErrorMessage.ItemNotFound"))
+            return
+
+        cards = self.settings["master"].lookup_multiple_cards_by_id(
+            list(x.id for x in the_set.card_refs)
+        )
+        cards = [c for c in cards if c]
+
+        if the_set.set_type in self.FILL_SET_TYPES:
+            cards.sort(key=lambda x: x.member.id)
+        else:
+            cards.sort(key=lambda x: x.rarity, reverse=True)
+
+        tlbatch = set()
+        for card in cards:
+            tlbatch.update(card.get_tl_set())
+
+        self._tlinject_base = self.settings["string_access"].lookup_strings(
+            tlbatch, self.get_user_dict_preference()
+        )
+
+        self.add_synthetic_name(the_set.representative)
+        custom_title = "Set: {0}".format(self._tlinject_base[0].get(the_set.representative))
+
+        if len(cards) == 0:
+            self.set_status(404)
+            self.render("error.html", message=self.locale.translate("ErrorMessage.ItemNotFound"))
+            return
+
+        self.render("cards.html", cards=cards, custom_title=custom_title, og_context={})
 
 
 @route(r"/api/private/cards/id_list\.json")

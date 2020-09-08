@@ -190,3 +190,9 @@ msgstr "Aqours"
 
 msgid "k.m_dic_group_name_niji"
 msgstr "Nijigasaki"
+
+msgid "kars.gallery.fragment.gacha_type_fes"
+msgstr "Festival"
+
+msgid "kars.gallery.fragment.gacha_type_pickup"
+msgstr "Spotlight"

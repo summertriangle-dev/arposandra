@@ -41,12 +41,13 @@ class IndexerDBCoordinator(object):
                 """
                 DROP TABLE IF EXISTS card_index_v1;
                 DROP TABLE IF EXISTS card_index_v1__skill_minors;
+                DROP TABLE IF EXISTS card_index_v1__release_dates;
                 DROP TABLE IF EXISTS card_p_set_index_v1;
-                DROP TABLE IF EXISTS card_p_set_index_v1__event_references;
+                DROP TABLE IF EXISTS card_p_set_index_v1__sort_dates;
                 DROP TABLE IF EXISTS card_p_set_index_v1__card_ids;
-                DROP TABLE IF EXISTS card_p_set_index_v1__release_dates;
                 DROP TABLE IF EXISTS history_v5;
                 DROP TABLE IF EXISTS history_v5__card_ids;
+                DROP TABLE IF EXISTS history_v5__dates;
                 """
             )
             logging.warning("All mtrack tables dropped.")
@@ -94,7 +95,7 @@ async def update_card_index(
     return list(sets.values())
 
 
-async def insert_timeline(expert, conn, events, gachas):
+async def insert_timeline(expert, conn, events):
     # Use a temporary table with only the new history entries so we don't
     # query the entire list again for set ref updates.
     prefix = "mtrack_multi_op_"
@@ -102,30 +103,29 @@ async def insert_timeline(expert, conn, events, gachas):
 
     for event in events:
         await expert.add_object(conn, event, prefix=prefix)
-    for gacha in gachas:
-        await expert.add_object(conn, gacha, prefix=prefix)
 
-    await conn.execute(sql_scripts.update_set_event_refs(prefix))
     await conn.execute(sql_scripts.update_card_release_dates(prefix))
-    await conn.execute(sql_scripts.update_set_per_server_release_dates(prefix))
 
     # Now do the real insert.
     for event in events:
         await expert.add_object(conn, event)
-    for gacha in gachas:
-        await expert.add_object(conn, gacha)
 
 
+@plac.pos("tag", "Server ID")
+@plac.pos("mv", "Master version to interrogate. Pass '-' to skip (only run newsminer)")
+@plac.flg("quiet", "Silence logging")
+@plac.flg("clear_history", "Clear history before running newsminer", abbrev="x")
+@plac.flg(
+    "clear_history_hard",
+    "Clear everything before running index and newsminer. Dangerous!!",
+    abbrev="X",
+)
 async def main(
-    tag: "Server ID",
-    mv: "Master version to interrogate. Pass '-' to skip (only run newsminer)",
-    quiet: ("Silence logging", "flag", "q") = False,
-    clear_history: ("Clear history before running newsminer", "flag", "x") = False,
-    clear_history_hard: (
-        "Clear everything before running index and newsminer. Dangerous!!",
-        "flag",
-        "X",
-    ) = False,
+    tag: str,
+    mv: str,
+    quiet: bool = False,
+    clear_history: bool = False,
+    clear_history_hard: bool = False,
 ):
     cloc = time.monotonic()
 
@@ -160,35 +160,28 @@ async def main(
             async with conn.transaction():
                 await conn.execute("DELETE FROM history_v5 where serverid=$1", tag)
 
-        events, gachas = await newsminer.assemble_timeline(conn, tag)
+        events = await newsminer.assemble_timeline(conn, tag)
 
         async with conn.transaction():
-            for set_ in generated_sets:
-                await set_expert.add_object(conn, set_)
-
             if need_reinit:
                 logging.warning("Added pre-history entries. Be careful!")
-                pre_events, pre_gachas = newsminer.prepare_old_evt_entries(tag)
+                pre_events = newsminer.prepare_old_evt_entries(tag)
                 events = pre_events + events
-                gachas = pre_gachas + gachas
 
-            if events or gachas:
-                await insert_timeline(hist_expert, conn, events, gachas)
+            for set_ in setminer.filter_sets_against_history(generated_sets, events):
+                await set_expert.add_object(conn, set_, overwrite=False)
 
-        # This runs on the entire dataset so let the transaction commit first.
-        async with conn.transaction():
-            await conn.execute(sql_scripts.update_event_sets())
-
-        setminer_dirty = True
+            if events:
+                await insert_timeline(hist_expert, conn, events)
 
     logging.debug("NewsMiner import done in %s ms", (time.monotonic() - cloc) * 1000)
     cloc = time.monotonic()
 
-    if setminer_dirty:
-        async with coordinator.pool.acquire() as conn:
-            await setminer.update_ordinal_sets(conn, set_expert)
+    async with coordinator.pool.acquire() as conn:
+        await setminer.update_ordinal_sets(conn, set_expert)
+        await conn.execute(sql_scripts.update_set_sort_table())
 
-        logging.debug("SetMiner import done in %s ms", (time.monotonic() - cloc) * 1000)
+    logging.debug("SetMiner import done in %s ms", (time.monotonic() - cloc) * 1000)
 
 
 if __name__ == "__main__":

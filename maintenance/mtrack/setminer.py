@@ -9,15 +9,23 @@ from captain.models.card_tracking import SUBTYPE_FES, SUBTYPE_PICK_UP
 from captain.models.mine_models import SetRecord
 
 from . import scripts
+from .newsminer import AnySRecord, SEventRecord
 
 TSetMemory = List[Tuple[int, List[Tuple[List[int], SetRecord]]]]
 
 
 class OrdinalSetWatcher(object):
+    GROUP_NAMES = {1: "muse", 2: "aqours", 3: "nijigasaki"}
+    CATEGORY_NAMES = {3: "fes", 2: "pickup"}
+
     def __init__(self):
         self.fes: TSetMemory = []
         self.pickup: TSetMemory = []
         self.max_ordinal = 0
+
+    def make_slug(self, cat: int, grp: int, ord: int):
+        # Something like "nijigasaki-fes-part1"
+        return f"{self.GROUP_NAMES.get(grp)}-{self.CATEGORY_NAMES.get(cat)}-part{ord}"
 
     def getgroup(self, cat: int, grp: int):
         if cat == SUBTYPE_PICK_UP:
@@ -46,7 +54,7 @@ class OrdinalSetWatcher(object):
                 break
         else:
             new_set = SetRecord(
-                f"synthetic set",
+                self.make_slug(subtype, member_group, len(sets) + 1),
                 f"synthetic.cat{subtype}.g{member_group}.ord{len(sets)}",
                 stype="ordinal_fes" if subtype == 3 else "ordinal_pickup",
             )
@@ -71,10 +79,10 @@ async def update_ordinal_sets(conn: asyncpg.Connection, set_expert: PostgresDBEx
         """
         SELECT DISTINCT ON (ordinal) card_index_v1.id, ordinal, member_group, member, subtype
         FROM history_v5__card_ids 
-	    INNER JOIN history_v5 USING (id, serverid) 
-	    INNER JOIN card_index_v1 ON (card_ids = card_index_v1.id) 
-	    WHERE (subtype = 2 OR subtype = 3) AND rarity = 30 AND serverid = 'jp' AND what = 1
-	    ORDER BY ordinal, start_time
+        INNER JOIN history_v5 USING (id, serverid) 
+        INNER JOIN card_index_v1 ON (card_id = card_index_v1.id) 
+        WHERE (subtype = 2 OR subtype = 3) AND rarity = 30 AND serverid = 'jp' AND history_v5__card_ids.what > 1
+        ORDER BY ordinal, sort_date
         """
     )
 
@@ -84,7 +92,6 @@ async def update_ordinal_sets(conn: asyncpg.Connection, set_expert: PostgresDBEx
     async with conn.transaction():
         for s in watcher.generate_sets():
             await set_expert.add_object(conn, s)
-        await conn.execute(scripts.update_set_per_server_release_dates_synthetic())
 
 
 # This *may* not always return the same representative for each common name,
@@ -103,3 +110,24 @@ def find_potential_set_names(from_lang: string_mgr.DictionaryAccess) -> List[Tup
         GROUP BY m_dictionary.message HAVING COUNT(m_dictionary.message) > 1 ORDER BY COUNT(m_dictionary.message) DESC
     """
     return db.execute(script).fetchall()
+
+
+def filter_sets_against_history(sets: List[SetRecord], events: List[AnySRecord]):
+    cache = {
+        x.record_id: x.feature_card_ids
+        if isinstance(x, SEventRecord)
+        else set(x.feature_card_ids.keys())
+        for x in events
+    }
+    marks = []
+
+    for s in sets:
+        for rid, cset in cache.items():
+            # Avoid being overzealous and consuming sr costume sets.
+            if cset.issuperset(s.members) and len(cset.intersection(s.members)) > 1:
+                print(s, "consumed by", rid)
+                s.members = list(cset)
+                s.stype = "event"
+                marks.append(rid)
+
+        yield s

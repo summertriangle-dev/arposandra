@@ -1,23 +1,23 @@
 {% set roman = {1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII", 8: "VIII", 9: "IX", 10: "X"} %}
 
-<div class="kars-stack gallery-card">
+<div class="kars-stack gallery-card folded">
     <div class="spread-image-backing placeholder" 
         style="background:url({{ handler.static_url(f"images/placeholder_{member.group}.svg") }})">
         <svg viewBox="0 0 400 200">
             <defs>
-                <text id="numeral_{{ member.id }}" style="
-                     transform: rotate(15deg) scale(0.80, 1.0);
-                     font-size: 24px; font-family: serif; 
-                     fill: rgba(255,255,255,0.8);
-                     dominant-baseline: middle; text-anchor=middle;">
-                    {{ roman.get(member.id % 100, "XX") }}
-                </text>
+                
             </defs>
             <image href="{{ handler.static_url(f"images/membersymbol/sy_{member.id}.svg") }}" 
                 style="transform-origin: center;
-                    transform:rotate(15deg) translate(-32px, -32px)" x="50%" y="50%" height="64" width="64" />
-            <use xlink:href="#numeral_{{ member.id }}" x="29" y="29" style="transform-origin: 36px 36px; " />
-            <use xlink:href="#numeral_{{ member.id }}" x="357" y="157" style="transform-origin: 364px 164px; transform: scale(-1, -1); " />
+                    transform:translate(-32px, -48px)" x="50%" y="50%" height="64" width="64" />
+            <text id="numeral_{{ member.id }}" x="50%" y="50%" style="
+                     transform: translateY(40px) scale(0.80, 1.0);
+                     transform-origin: center;
+                     font-size: 24px; font-family: serif; 
+                     fill: rgba(255,255,255,0.8);
+                     dominant-baseline: middle; text-anchor:middle;">
+                {{ roman.get(member.id % 100, "XX") }}
+            </text>
         </svg>
     </div>
 

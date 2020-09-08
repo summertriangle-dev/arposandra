@@ -226,7 +226,8 @@ class PostgresDBExpert(Generic[T]):
                 log_sql.debug("%s", cleanup_stmt)
                 await connection.execute(cleanup_stmt, *values[: len(self.schema.primary_key)])
 
-            stmt = self.m_cache.get(cache_key)
+            ck_multi = "|".join((cache_key, column))
+            stmt = self.m_cache.get(ck_multi)
             if not stmt:
                 pk = [pk.name for pk in self.schema.primary_key]
                 if self.schema[column].field_type == types.FIELD_TYPE_COMPOSITE:
@@ -240,7 +241,7 @@ class PostgresDBExpert(Generic[T]):
                     ({', '.join(f'${x + 1}' for x in range(len(values)))})
                     ON CONFLICT ({pks}) DO NOTHING
                 """
-                self.m_cache[cache_key] = stmt
+                self.m_cache[ck_multi] = stmt
                 log_sql.debug("%s", stmt)
 
             await connection.execute(stmt, *values)

@@ -1,16 +1,20 @@
 {% set max_level_id = card.max_level - 1 %}
 <div class="kars-stack gallery-card folded" data-cid="{{ card.id }}" data-expand-target>
-    <a href="/card/{{ card.ordinal }}" class="spread-image-backing"
+    <a href="/card/{{ card.ordinal }}" class="spread-image-backing {% if not release_info.release %} unrls {% end %}"
         {% if not card_has_full_bg(card) %}
         style="background-image: url({{ image_url_reify(card.background_asset_path, "jpg") }})"
         {% end %}
         >
 
-        {% if not card_has_full_bg(card) %}
-        <img class="spread-image" alt="{{ _("Card image") }}" src="{{ handler.thumbnail(card.idolized_appearance, 400, "h", "png") }}" />
+        {% if set_type == 2 and card.rarity < 30 %}
+        {% set app = card.normal_appearance %}
         {% else %}
-        <img class="spread-image" alt="{{ _("Card image") }}" src="{{ handler.thumbnail(card.idolized_appearance, 400, "h", "jpg") }}" />
+        {% set app = card.idolized_appearance %}
         {% end %}
+
+        <img class="spread-image" alt="{{ _("Card image") }}" 
+            src="{{ handler.thumbnail(app, 400, "h", 
+                "jpg" if card_has_full_bg(card) else "png") }}" />
     </a>
     <div class="kars-stack-header t-expand-click-target">
         <i class="icon ion-ios-arrow-forward clickable t-expand-indicator" title="{{ _("SetRecord.RevealStatsDescription") }}"></i>
@@ -71,6 +75,22 @@
                 {% end %}
             </tbody>
         </table>
+    </div>
+    <div class="kars-stack-member">
+        {% if release_info.release %}
+        {{ _("SetRecord.FirstFeaturedOn{server_id}").format(server_id=server_id.upper()) }} 
+        <span class="kars-data-ts" data-style="date" data-orig-offset="32400,JST" data-ts="{{ release_info.release.timestamp() }}">{{ release_info.release }} UTC</span>
+        &bull;
+        {% if release_info.source == 3 %}
+            {{ _("SetRecord.AvailableFromGachaPart2") }}
+        {% elif release_info.source == 2 %}
+            {{ _("SetRecord.AvailableFromEvent") }}
+        {% else %}
+            {{ _("SetRecord.AvailableFromGacha") }}
+        {% end %}
+        {% else %}
+        {{ _("SetRecord.UnreleasedOn{server_id}").format(server_id=server_id.upper()) }}
+        {% end %}
     </div>
     </div>
 </div>

@@ -17,29 +17,29 @@
 
             {% set prev_ent = None %}
             {% for release in releases %}
-                {% if not prev_ent or prev_ent.start_time.month != release.start_time.month %}
+                {% if not prev_ent or prev_ent.nom_date().month != release.nom_date().month %}
                 {% if prev_ent %}
                 </div>
                 {% end %}
 
                 <h2 class="h4 mb-3 kars-negative-box">
-                    {{ release.start_time.strftime("%B %Y") }}
+                    {{ release.nom_date().strftime("%B %Y") }}
                 </h2>
                 <div class="kars-card-box">
                 {% end %}
 
-                {% module Template("uim_release_record.html", release=release, server=server, current_time=current_time) %}
+                {% module Template("uim_history_record.html", release=release, server=server, current_time=current_time) %}
                 {% set prev_ent = release %}
             {% end %}
             </div>
 
-            {% if has_next_page %}
+            {#% if has_next_page %}
             <div class="container kars-negative-box">
                 <a class="btn btn-primary" href="/{{ server }}/history?before={{ int(releases[-1].start_time.timestamp()) }}">
                     {{ _("More...") }}
                 </a>
             </div>
-            {% end %}
+            {% end %#}
         </div>
 
         {% include t_footer.html %}
