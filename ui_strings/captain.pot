@@ -34,6 +34,57 @@ msgstr "Be aware that external sites may contain malicious content. To continue,
 msgid "Card image"
 msgstr "Card image"
 
+msgid "CardSetsForm.CategoryHelp"
+msgstr "CardSetsForm.CategoryHelp"
+
+msgid "CardSetsForm.Done"
+msgstr "CardSetsForm.Done"
+
+msgid "CardSetsForm.OpenTooltip"
+msgstr "CardSetsForm.OpenTooltip"
+
+msgid "CardSetsForm.ReleaseDates"
+msgstr "CardSetsForm.ReleaseDates"
+
+msgid "CardSetsForm.ReleaseDates.MyPref"
+msgstr "CardSetsForm.ReleaseDates.MyPref"
+
+msgid "CardSetsForm.ReleaseDates.ServerEn"
+msgstr "CardSetsForm.ReleaseDates.ServerEn"
+
+msgid "CardSetsForm.ReleaseDates.ServerJp"
+msgstr "CardSetsForm.ReleaseDates.ServerJp"
+
+msgid "CardSetsForm.ServerPrefHelp"
+msgstr "CardSetsForm.ServerPrefHelp"
+
+msgid "CardSetsForm.SetType"
+msgstr "CardSetsForm.SetType"
+
+msgid "CardSetsForm.SetType.Any"
+msgstr "CardSetsForm.SetType.Any"
+
+msgid "CardSetsForm.SetType.Event"
+msgstr "CardSetsForm.SetType.Event"
+
+msgid "CardSetsForm.SetType.Fes"
+msgstr "CardSetsForm.SetType.Fes"
+
+msgid "CardSetsForm.SetType.Live"
+msgstr "CardSetsForm.SetType.Live"
+
+msgid "CardSetsForm.SetType.Other"
+msgstr "CardSetsForm.SetType.Other"
+
+msgid "CardSetsForm.SetType.Pickup"
+msgstr "CardSetsForm.SetType.Pickup"
+
+msgid "CardSetsForm.Submit"
+msgstr "CardSetsForm.Submit"
+
+msgid "CardSetsForm.Title"
+msgstr "CardSetsForm.Title"
+
 msgid "Cards of {idol_name}"
 msgstr "Cards of {idol_name}"
 
@@ -150,6 +201,9 @@ msgstr "Options"
 
 msgid "PT.CardReleases"
 msgstr "PT.CardReleases"
+
+msgid "PT.CardSets"
+msgstr "PT.CardSets"
 
 msgid "PT.EventTracker"
 msgstr "PT.EventTracker"

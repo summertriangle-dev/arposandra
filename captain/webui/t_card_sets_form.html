@@ -1,0 +1,34 @@
+<form method="get" action="/cards/sets">
+    <div class="form-group">
+        <label for="set-type">{{ _("CardSetsForm.SetType") }}</label>
+        <select class="form-control" name="type" id="set-type">
+            {% set v = prefilled_form.get("category", "") %}
+            <option value="" {{ 'selected' if not v else '' }}>{{ _("CardSetsForm.SetType.Any") }}</option>
+            <option value="event" {{ 'selected' if v == 'event' else '' }}>{{ _("CardSetsForm.SetType.Event") }}</option>
+            <option value="fes" {{ 'selected' if v == 'fes' else '' }}>{{ _("CardSetsForm.SetType.Fes") }}</option>
+            <option value="pickup" {{ 'selected' if v == 'pickup' else '' }}>{{ _("CardSetsForm.SetType.Pickup") }}</option>
+            <option value="song" {{ 'selected' if v == 'song' else '' }}>{{ _("CardSetsForm.SetType.Live") }}</option>
+            <option value="other" {{ 'selected' if v == 'other' else '' }}>{{ _("CardSetsForm.SetType.Other") }}</option>
+        </select>
+        <small class="form-text text-muted">
+            {{ _("CardSetsForm.CategoryHelp") }}
+        </small>
+    </div>
+    <div class="form-group">
+        <label for="use-dates">{{ _("CardSetsForm.ReleaseDates") }}</label>
+        {% set v = prefilled_form.get("use_dates", "") %}
+        <select class="form-control" name="use_dates" id="use-dates">
+            <option value="" {{ 'selected' if not v else '' }}>{{ _("CardSetsForm.ReleaseDates.MyPref") }}</option>
+            <option value="en" {{ 'selected' if v == 'en' else '' }}>{{ _("CardSetsForm.ReleaseDates.ServerEn") }}</option>
+            <option value="jp" {{ 'selected' if v == 'jp' else '' }}>{{ _("CardSetsForm.ReleaseDates.ServerJp") }}</option>
+        </select>
+        <small class="form-text text-muted">
+            {{ _("CardSetsForm.ServerPrefHelp") }}
+        </small>
+    </div>
+    <div class="form-group stretch-bar">
+        <input class="item btn btn-primary" type="submit" value="{{ _("CardSetsForm.Submit") }}" />
+        <div class="item flexible-space"></div>
+        <a class="item btn btn-secondary open-gutter">{{ _("CardSetsForm.Done") }}</a>
+    </div>
+</form>

@@ -1,35 +1,50 @@
 <!doctype html>
 <html lang="{{ handler.locale.code }}">
-    <head>
-        <title>
-            {{ _("PT.CardReleases") }} - {{ _("PT.SiteName") }}
-        </title>
 
-        {% include t_preamble.html %}
-    </head>
-    <body class="kars-dark" data-master="{{ handler.settings["master"].version }}" data-inject="card">
-        {% module Template("uim_nav.html", current="cards") %}
-        
-        <div class="container">
-            <h1 class="h3 mb-3 kars-negative-box">
-                {{ _("PT.CardReleases") }}
-            </h1>
-        </div>
+<head>
+    <title>
+        {{ _("PT.CardSets") }} - {{ _("PT.SiteName") }}
+    </title>
 
-        <div class="container has-gallery">
+    {% include t_preamble.html %}
+</head>
+
+<body class="with-split-view" data-master="{{ handler.settings["master"].version }}" data-inject="card">
+    {% module Template("uim_nav.html", current="cards") %}
+
+    <div class="split-view">
+        <div class="primary container">
+            <div class="stretch-bar kars-negative-box">
+                <h1 class="h3 mb-3">
+                    {{ _("PT.CardSets") }}
+                </h1>
+                <span class="flexible-space"></span>
+                <span class="open-gutter">
+                    <i class="icon clickable ion-ios-search" title="{{ _("CardSetsForm.OpenTooltip") }}"></i>
+                </span>
+            </div>
+
             {% for set in sets %}
-                {% module Template("uim_gallery_record.html", set=set, server_id=server_id) %}
+            {% module Template("uim_gallery_record.html", set=set, server_id=server_id) %}
             {% end %}
         </div>
-
-        {% if has_next_page %}
-        <div class="container kars-negative-box">
-            <a class="btn btn-primary" href="{{ handler.url_for_page(current_page + 1) }}">
-                {{ _("More...") }}
-            </a>
+        <div class="secondary gutter-host">
+            <div class="gutter">
+                <h4 class="h5">{{ _("CardSetsForm.Title") }}</h4>
+                {% include t_card_sets_form.html %}
+            </div>
         </div>
-        {% end %}
+    </div>
 
-        {% include t_footer.html %}
-    </body>
+    {% if has_next_page %}
+    <div class="container kars-negative-box">
+        <a class="btn btn-primary" href="{{ handler.url_for_page(current_page + 1) }}">
+            {{ _("More...") }}
+        </a>
+    </div>
+    {% end %}
+
+    {% include t_footer.html %}
+</body>
+
 </html>

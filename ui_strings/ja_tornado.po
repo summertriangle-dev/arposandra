@@ -46,6 +46,57 @@ msgstr ""
 msgid "Card image"
 msgstr "カードの画像"
 
+msgid "CardSetsForm.CategoryHelp"
+msgstr "Other includes initial cards and non-song themed sets."
+
+msgid "CardSetsForm.Done"
+msgstr "Done"
+
+msgid "CardSetsForm.OpenTooltip"
+msgstr "Filter"
+
+msgid "CardSetsForm.ReleaseDates"
+msgstr "Show card release dates from this server:"
+
+msgid "CardSetsForm.ReleaseDates.MyPref"
+msgstr "Follow my preferences"
+
+msgid "CardSetsForm.ReleaseDates.ServerEn"
+msgstr "Global server"
+
+msgid "CardSetsForm.ReleaseDates.ServerJp"
+msgstr "Japanese server"
+
+msgid "CardSetsForm.ServerPrefHelp"
+msgstr "You can change your preferred server by clicking the gear icon at the top of the page."
+
+msgid "CardSetsForm.SetType"
+msgstr "Set type:"
+
+msgid "CardSetsForm.SetType.Any"
+msgstr "All sets"
+
+msgid "CardSetsForm.SetType.Event"
+msgstr "Event sets"
+
+msgid "CardSetsForm.SetType.Fes"
+msgstr "Festival sets"
+
+msgid "CardSetsForm.SetType.Live"
+msgstr "Live outfit sets"
+
+msgid "CardSetsForm.SetType.Other"
+msgstr "Other sets"
+
+msgid "CardSetsForm.SetType.Pickup"
+msgstr "Spotlight sets"
+
+msgid "CardSetsForm.Submit"
+msgstr "Find sets"
+
+msgid "CardSetsForm.Title"
+msgstr "Filter"
+
 msgid "Cards of {idol_name}"
 msgstr "{idol_name}のカード"
 
@@ -171,6 +222,10 @@ msgid "Options"
 msgstr "Options"
 
 msgid "PT.CardReleases"
+msgstr "リリース履歴"
+
+#, fuzzy
+msgid "PT.CardSets"
 msgstr "リリース履歴"
 
 msgid "PT.EventTracker"

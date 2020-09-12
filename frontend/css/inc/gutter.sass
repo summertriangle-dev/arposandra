@@ -1,51 +1,69 @@
-.gutter-menu-host
-    position: fixed
-    left: 50%
-    margin-right: -1rem
-    transform: translateX(-50%)
-    z-index: 990
-    top: 0
+$sidebar-inner: 360px
+$sidebar-outer: map-get($grid-breakpoints, "xl") - map-get($container-max-widths, "xl") + $sidebar-inner
+$expanded-gutter-brk: map-get($grid-breakpoints, "xl") + $sidebar-inner
+$expanded-gutter-container-size: $expanded-gutter-brk - 60px
 
-    &.opened
-        bottom: 0
+@media only screen and (min-width: $expanded-gutter-brk)
+    body.with-split-view .container
+        max-width: $expanded-gutter-container-size
 
-.gutter-menu
-    position: absolute
-    top: 4rem
-    left: 100%
-    display: flex
-    flex-direction: column
+    .split-view
+        display: flex
+        flex-direction: row
+        max-width: $expanded-gutter-container-size
+        margin: 0 auto
 
-.gutter-menu-main
-    display: none
-    transition: transform 150ms ease-out, opacity 150ms ease-out
-    transform: none
-    opacity: 1.0
-
-    &.animation-state-start
-        opacity: 0.0
-        transform: translateX(100%)
-
-.gutter-menu-host.opened .gutter-menu-main
-    display: block
-    position: absolute
-    top: 0
-    bottom: 0
-    right: 0
-    height: 100%
-    background-color: change-color($body-bg, $alpha: 0.90)
-    border-left: 1px solid scale-color($body-bg, $saturation: -40%, $lightness: -15%)
-
-    .contents
-        margin-top: 4rem
-        padding: 0 1rem
-
-.gutter-menu-host.opened .gutter-menu-main:before
-    position: absolute
-    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAG0lEQVQoU2NkYGFgBkMQzYIEISLMjKMKRpICAL5tA6G+hgxFAAAAAElFTkSuQmCC')
-    left: -16px
-    width: 16px
-    height: 100%
-    content: ""
-
+        .primary
+            max-width: map-get($container-max-widths, "xl") !important
+            margin-left: 0
+            margin-right: 0
+            flex-grow: 2
         
+        .secondary
+            margin-top: 0.8rem
+            padding-right: 15px
+            max-width: $sidebar-inner
+            flex-grow: 1
+        
+    .split-view .gutter
+        position: fixed
+        width: $sidebar-inner - 15px
+        padding: 1rem
+
+        border: 1px solid scale-color($body-bg, $saturation: -40%, $lightness: -15%)
+        border-radius: 16px
+    
+    .open-gutter
+        display: none
+
+@media only screen and (max-width: $expanded-gutter-brk - 1)
+    .gutter-host
+        display: none
+
+    .gutter-host.opened
+        display: block
+        position: fixed
+        top: 0
+        bottom: 0
+        right: 0
+        height: 100%
+        width: 100%
+
+    .gutter
+        margin-left: auto
+        padding: 1rem
+        height: 100%
+        width: $sidebar-inner
+        max-width: 85%
+        background-color: change-color($body-bg, $alpha: 0.90)
+        border-left: 1px solid scale-color($body-bg, $saturation: -40%, $lightness: -15%)
+
+        transition: transform 150ms ease-out, opacity 150ms ease-out
+        transform: none
+        opacity: 1.0
+
+        overflow-y: scroll
+
+        &.animation-state-start
+            opacity: 0.0
+            transform: translateX(100%)
