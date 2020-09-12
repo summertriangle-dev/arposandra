@@ -164,9 +164,14 @@ def merge_gachas(tag, gachas: Iterable[DateMinedNewsItem]):
                 # hopefully it's the combined merge record. If it is, attach the thumbnail.
                 # But since the buffer only holds one, we need to send it on its way either way.
                 card_refs = {id: "gacha" for id in json.loads(sp1_record["card_refs"])}
-                next_card_refs = {id: "gachap2" for id in json.loads(sp2_record["card_refs"])}
                 mentioned_cids_p1 = set(card_refs.keys())
-                have_part2 = set(next_card_refs.keys()) & mentioned_cids_p1
+
+                if sp2_record:
+                    next_card_refs = {id: "gachap2" for id in json.loads(sp2_record["card_refs"])}
+                    have_part2 = bool(set(next_card_refs.keys()) & mentioned_cids_p1)
+                else:
+                    have_part2 = False
+
                 use_id = sp1_record["news_id"]
 
                 if buf:
