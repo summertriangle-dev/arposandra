@@ -53,7 +53,7 @@ class SkillEffectDescriberContext(object):
     def default_birdseye(self, effect1, effect2=None):
         return ""
 
-    def default_finish(self, skill: Skill):
+    def default_finish(self, skill: Skill.Effect):
         return ""
 
     def default_trigger(self, skill: Skill):
@@ -62,8 +62,8 @@ class SkillEffectDescriberContext(object):
     def default_target(self, tt: Skill.TargetType, strings: DictionaryAccess, context: Card):
         return ""
 
-    def default_combiner(self, trigger: str, effect: str, finish: str):
-        return " ".join([trigger, effect, finish])
+    def default_combiner(self, trigger: str, effect: str):
+        return " ".join([trigger, effect])
 
     def finish_clause(self, f: Callable[[Skill, dict], str]):
         self.finish = f
@@ -81,7 +81,7 @@ class SkillEffectDescriberContext(object):
         self.target = f
         return f
 
-    def final_combiner(self, f: Callable[[str, str, str], str]):
+    def final_combiner(self, f: Callable[[str, str], str]):
         self.combiner = f
         return f
 
@@ -89,9 +89,21 @@ class SkillEffectDescriberContext(object):
         return self.mod_value(level_struct)
 
     def format_target(self, tt: Skill, strings: DictionaryAccess, context: Card = None):
-        if tt.levels[0].effect_type in IMPLICIT_TARGET_SKILL_TYPES:
-            return ""
-        return self.target(tt.target, strings, context)
+        e1 = None
+        e2 = None
+        if tt.levels[0].effect_type not in IMPLICIT_TARGET_SKILL_TYPES:
+            e1 = self.target(tt.target, strings, context)
+        if tt.levels_2 and tt.levels_2[0].effect_type not in IMPLICIT_TARGET_SKILL_TYPES:
+            e2 = self.target(tt.target_2, strings, context)
+
+        if e1 and e2:
+            return " / ".join((e1, e2))
+        elif e1:
+            return e1
+        elif e2:
+            return e2
+
+        return ""
 
     def find_formatter(self, effect_type):
         desc = self.skill_effect.get(effect_type)
@@ -137,13 +149,19 @@ class SkillEffectDescriberContext(object):
 
         value = self.display_value(skill.levels, level)
         trigger = self.trigger(skill, format_args)
-        effect = formatter(value=value, **format_args)
+        effect = " ".join(
+            (formatter(value=value, **format_args), self.finish(skill.levels[0], format_args))
+        )
 
         if skill.levels_2:
             value_2 = self.display_value(skill.levels_2, level)
-            effect_2 = formatter_sec(value=value_2, **format_args_sec)
+            effect_2 = " ".join(
+                (
+                    formatter_sec(value=value_2, **format_args_sec),
+                    self.finish(skill.levels_2[0], format_args_sec),
+                )
+            )
             # FIXME: Not happy with this formatting but will do for now
             effect = " / ".join((effect, effect_2))
 
-        finish = self.finish(skill, format_args)
-        return self.combiner(trigger, effect, finish)
+        return self.combiner(trigger, effect)

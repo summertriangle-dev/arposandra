@@ -38,7 +38,7 @@ def _times(value):
 
 
 @EN.target_clause
-def _(tt: Skill, base, context: Card = None):
+def fmt_apply(tt: Skill.TargetType, base, context: Card = None):
     if tt.self_only:
         return "Applies to: Just this card"
 
@@ -116,7 +116,7 @@ def _(tt: Skill, base, context: Card = None):
         complex_.append("Everyone")
 
     if tt.not_self:
-        if (tt.owner_party and tt.apply_type >= 2) or tt.apply_count >= 8:
+        if (tt.owner_party and tt.apply_count >= 2) or tt.apply_count >= 8:
             complex_.append("(except this card)")
         else:
             complex_.append(f"({tt.apply_count} cards, except this one)")
@@ -129,7 +129,7 @@ def _(tt: Skill, base, context: Card = None):
 
 
 @EN.birdseye_clause
-def _(effect1, effect2=None):
+def fmt_range(effect1, effect2=None):
     m = SkillEffectDescriberContext.mod_value
     if effect2:
         one = f"{m(effect1)}..{m(effect2)}"
@@ -144,8 +144,8 @@ def _(effect1, effect2=None):
 
 
 @EN.finish_clause
-def _(skill, tags):
-    finish_type, finish_value = skill.levels[0].finish_type, skill.levels[0].finish_value
+def fmt_finish_type(effect: Skill.Effect, tags):
+    finish_type, finish_value = effect.finish_type, effect.finish_value
     if finish_type == FT.Turn:
         return f" for {tags['let']}{finish_value}{tags['end']} notes"
     if finish_type == FT.SpExecuteCount:
@@ -206,7 +206,7 @@ def to_condition_phrase(trigger_type, condition_type, condition_value, tags):
 
 
 @EN.trigger_clause
-def _(skill, tags):
+def fmt_trigger(skill, tags):
     if skill.has_complex_trigger():
         phrases = []
         if skill.trigger_probability != 10000:

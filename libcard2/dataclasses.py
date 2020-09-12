@@ -1,7 +1,7 @@
 import struct
 from collections import namedtuple
 from dataclasses import dataclass, field
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from weakref import ref
 
 from dataclasses_json import dataclass_json, config as JSONConfig
@@ -117,9 +117,10 @@ class Skill(object):
     trigger_probability: int
 
     target: TargetType
+    target_2: Optional[TargetType]
     conditions: List[Condition] = field(default_factory=list)
     levels: List[Effect] = field(default_factory=list)
-    levels_2: List[Effect] = None
+    levels_2: Optional[List[Effect]] = field(default_factory=lambda: None)
 
     def has_complex_trigger(self):
         return self.trigger_type != TT.Non

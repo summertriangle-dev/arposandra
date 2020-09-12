@@ -245,15 +245,15 @@ class MasterData(MasterDataLite):
         return [self.lookup_card_by_id(i, cache) for i in idset]
 
     def lookup_active_skill_by_card_id(self, card_id: int):
-        EFFECT_1 = 10
-        EFFECT_2 = 18
+        EFFECT_1 = 11
+        EFFECT_2 = 19
         EFFECT_COUNT = 8
 
         da = self.connection.execute(
             """SELECT m_active_skill.id, m_active_skill.name,
                 m_active_skill.description, skill_type, trigger_probability, sp_gauge_point,
                 m_active_skill.icon_asset_path, m_active_skill.thumbnail_asset_path,
-                skill_target_master_id1, skill_effect_master_id2,
+                skill_target_master_id1, skill_target_master_id2, skill_effect_master_id2,
 
                 _Se1.target_parameter,
                 _Se1.effect_type, _Se1.effect_value,
@@ -280,8 +280,11 @@ class MasterData(MasterDataLite):
         if not first:
             return None
 
-        target_id = first[8]
         target = self.lookup_skill_target_type(first[8])
+        target_2 = None
+        if first[9]:
+            target_2 = self.lookup_skill_target_type(first[9])
+
         skill = D.Skill(
             first[0],
             first[1],
@@ -294,11 +297,12 @@ class MasterData(MasterDataLite):
             TriggerType.Non,
             first[4],
             target,
+            target_2,
         )
 
         # Levels
         skill.levels.append(D.Skill.Effect(*first[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
-        has_secondary_effect = first[9]
+        has_secondary_effect = first[10]
         if has_secondary_effect:
             skill.levels_2 = [D.Skill.Effect(*first[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])]
 
@@ -312,8 +316,8 @@ class MasterData(MasterDataLite):
         return skill
 
     def lookup_passive_skills_by_card_id(self, card_id: int):
-        EFFECT_1 = 14
-        EFFECT_2 = 22
+        EFFECT_1 = 15
+        EFFECT_2 = 23
         EFFECT_COUNT = 8
 
         da = self.connection.execute(
@@ -323,7 +327,8 @@ class MasterData(MasterDataLite):
                 m_passive_skill.icon_asset_path, m_passive_skill.thumbnail_asset_path, -- 7
                 _Cd1.condition_type, _Cd1.condition_value, -- 9
                 _Cd2.condition_type, _Cd2.condition_value, -- 11
-                skill_target_master_id1, skill_effect_master_id2, -- 13
+                skill_target_master_id1, skill_target_master_id2, -- 13
+                skill_effect_master_id2, -- 14
 
                 _Se1.target_parameter,
                 _Se1.effect_type, _Se1.effect_value,
@@ -370,13 +375,14 @@ class MasterData(MasterDataLite):
                     row[4],
                     row[5],
                     self.lookup_skill_target_type(row[12]),
+                    self.lookup_skill_target_type(row[13]) if row[13] else None,
                 )
 
                 if row[8] and row[8] != ConditionType.Non:
                     c_skill.conditions.append(D.Skill.Condition(row[8], row[9]))
                 if row[10] and row[10] != ConditionType.Non:
                     c_skill.conditions.append(D.Skill.Condition(row[10], row[11]))
-                if row[13]:
+                if row[14]:
                     c_skill.levels_2 = []
 
                 c_demux_key = demux_key
@@ -440,13 +446,13 @@ class MasterData(MasterDataLite):
         return root
 
     def lookup_note_gimmicks_by_live_diff_id(self, live_diff_id: int):
-        EFFECT_1 = 5
-        EFFECT_2 = 13
+        EFFECT_1 = 6
+        EFFECT_2 = 14
         EFFECT_COUNT = 8
 
         da = self.connection.execute(
             """SELECT COUNT(0), m_live_difficulty_note_gimmick.name, m_live_difficulty_note_gimmick.description,
-                skill_target_master_id1, skill_effect_master_id2,
+                skill_target_master_id1, skill_target_master_id2, skill_effect_master_id2,
 
                 _Se1.target_parameter,
                 _Se1.effect_type, _Se1.effect_value,
@@ -481,17 +487,18 @@ class MasterData(MasterDataLite):
                 None,
                 10000,
                 self.lookup_skill_target_type(row[3]),
+                self.lookup_skill_target_type(row[4]) if row[4] else None,
             )
             c_skill.levels.append(D.Skill.Effect(*row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
-            if row[4]:
+            if row[5]:
                 c_skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])]
             skills.append(c_skill)
 
         return skills
 
     def lookup_gimmicks_by_live_diff_id(self, live_diff_id: int):
-        EFFECT_1 = 10
-        EFFECT_2 = 18
+        EFFECT_1 = 11
+        EFFECT_2 = 19
         EFFECT_COUNT = 8
 
         da = self.connection.execute(
@@ -499,7 +506,7 @@ class MasterData(MasterDataLite):
                 m_live_difficulty_gimmick.description, trigger_type,
                 _Cd1.condition_type, _Cd1.condition_value, -- 5
                 _Cd2.condition_type, _Cd2.condition_value, -- 7
-                skill_target_master_id1, skill_effect_master_id2,
+                skill_target_master_id1, skill_target_master_id2, skill_effect_master_id2, -- 10
 
                 _Se1.target_parameter,
                 _Se1.effect_type, _Se1.effect_value,
@@ -535,6 +542,7 @@ class MasterData(MasterDataLite):
                 row[3],
                 10000,
                 self.lookup_skill_target_type(row[8]),
+                self.lookup_skill_target_type(row[9]) if row[9] else None,
             )
 
             if row[4] and row[4] != ConditionType.Non:
@@ -543,19 +551,19 @@ class MasterData(MasterDataLite):
                 c_skill.conditions.append(D.Skill.Condition(row[6], row[7]))
 
             c_skill.levels.append(D.Skill.Effect(*row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
-            if row[9]:
+            if row[10]:
                 c_skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])]
             skills.append(c_skill)
 
         return skills
 
     def _lookup_generic_skill_info(self, skill_id: int, cons: type):
-        EFFECT_1 = 3
-        EFFECT_2 = 11
+        EFFECT_1 = 4
+        EFFECT_2 = 12
         EFFECT_COUNT = 8
         da = self.connection.execute(
             """SELECT m_skill.id,
-                skill_target_master_id1, skill_effect_master_id2,
+                skill_target_master_id1, skill_target_master_id2, skill_effect_master_id2,
 
                 _Se1.target_parameter,
                 _Se1.effect_type, _Se1.effect_value,
@@ -590,10 +598,11 @@ class MasterData(MasterDataLite):
             TriggerType.Non,
             10000,
             self.lookup_skill_target_type(row[1]),
+            self.lookup_skill_target_type(row[2]) if row[2] else None,
         )
 
         c_skill.levels.append(D.Skill.Effect(*row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
-        if row[2]:
+        if row[3]:
             c_skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])]
         return c_skill
 
@@ -620,8 +629,8 @@ class MasterData(MasterDataLite):
         return rlist
 
     def lookup_all_accessory_skills(self):
-        EFFECT_1 = 14
-        EFFECT_2 = 22
+        EFFECT_1 = 15
+        EFFECT_2 = 23
         EFFECT_COUNT = 8
         da = self.connection.execute(
             """SELECT m_accessory_passive_skill.id,
@@ -629,7 +638,7 @@ class MasterData(MasterDataLite):
                 m_accessory_passive_skill.icon_asset_path, m_accessory_passive_skill.thumbnail_asset_path,
                 _Cd1.condition_type, _Cd1.condition_value,
                 _Cd2.condition_type, _Cd2.condition_value,
-                skill_target_master_id1, skill_effect_master_id2,
+                skill_target_master_id1, skill_target_master_id2, skill_effect_master_id2,
 
                 _Se1.target_parameter,
                 _Se1.effect_type, _Se1.effect_value,
@@ -667,6 +676,7 @@ class MasterData(MasterDataLite):
                 row[4],
                 row[5],
                 self.lookup_skill_target_type(row[12]),
+                self.lookup_skill_target_type(row[13]) if row[13] else None,
             )
             if row[8] and row[8] != ConditionType.Non:
                 skill.conditions.append(D.Skill.Condition(row[8], row[9]))
@@ -674,15 +684,15 @@ class MasterData(MasterDataLite):
                 skill.conditions.append(D.Skill.Condition(row[10], row[11]))
 
             skill.levels.append(D.Skill.Effect(*row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
-            if row[13]:
+            if row[14]:
                 skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])]
             skills.append(skill)
 
         return skills
 
     def lookup_all_hirameku_skills(self):
-        EFFECT_1 = 14
-        EFFECT_2 = 22
+        EFFECT_1 = 15
+        EFFECT_2 = 23
         EFFECT_COUNT = 8
         da = self.connection.execute(
             """SELECT m_passive_skill.id,
@@ -690,7 +700,7 @@ class MasterData(MasterDataLite):
                 m_passive_skill.icon_asset_path, m_passive_skill.thumbnail_asset_path,
                 _Cd1.condition_type, _Cd1.condition_value,
                 _Cd2.condition_type, _Cd2.condition_value,
-                skill_target_master_id1, skill_effect_master_id2,
+                skill_target_master_id1, skill_target_master_id2, skill_effect_master_id2,
 
                 _Se1.target_parameter,
                 _Se1.effect_type, _Se1.effect_value,
@@ -726,6 +736,7 @@ class MasterData(MasterDataLite):
                 row[4],
                 row[5],
                 self.lookup_skill_target_type(row[12]),
+                self.lookup_skill_target_type(row[13]) if row[13] else None,
             )
             if row[8] and row[8] != ConditionType.Non:
                 skill.conditions.append(D.Skill.Condition(row[8], row[9]))
@@ -733,7 +744,7 @@ class MasterData(MasterDataLite):
                 skill.conditions.append(D.Skill.Condition(row[10], row[11]))
 
             skill.levels.append(D.Skill.Effect(*row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
-            if row[13]:
+            if row[14]:
                 skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])]
             skills.append(skill)
 
