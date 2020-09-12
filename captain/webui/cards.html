@@ -7,7 +7,7 @@
 
         {% module Template("ogm_cards.html", cards=cards, custom_title=custom_title, context=og_context) %}
     </head>
-    <body class="kars-dark" data-master="{{ handler.settings["master"].version }}" data-inject="card">
+    <body data-master="{{ handler.settings["master"].version }}" data-inject="card">
         {% module Template("uim_nav.html", current="cards") %}
 
         <div class="container">

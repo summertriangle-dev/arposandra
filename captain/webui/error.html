@@ -4,7 +4,7 @@
         <title>{{ handler.get_status() }} - {{ _("PT.SiteName") }}</title>
         {% include t_preamble.html %}
     </head>
-    <body class="kars-dark" data-master="{{ handler.settings["master"].version }}">
+    <body data-master="{{ handler.settings["master"].version }}">
         {% module Template("uim_nav.html", current="error") %}
 
         <div class="container">

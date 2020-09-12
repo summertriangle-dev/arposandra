@@ -103,7 +103,7 @@ export function initWithRedux(store) {
         console.debug("Appearance: did change...")
         console.debug(`The theme is ${state.theme}. The CDM is ${state.cardDisplayMode}.`)
         dmSetAppearance(state, true)
-        document.body.className = `kars-${state.cardDisplayMode}-config`
+        document.body.dataset.karsCdm = `${state.cardDisplayMode}`
     })
 
     const sers = JSON.parse(localStorage.getItem("as$$appearance"))
