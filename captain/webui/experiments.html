@@ -9,7 +9,8 @@
     <body data-inject="experiments">
         {% module Template("uim_nav.html", current="") %}
 
-        <div class="container">
+        <div class="split-view">
+        <div class="container primary">
             <div class="card kars-card-box">
                 <div class="card-body">
                     {% raw tlinject("Click me for the old TLInject modal", mock=True) %}
@@ -19,6 +20,7 @@
                     <button class="btn btn-sm btn-primary" id="cs-test-permission">Test Storage Permission Request</button>
                     <button class="btn btn-sm btn-primary" id="cs-test-permission-f">Test Storage Permission Request (force)</button>
                     <button class="btn btn-sm btn-primary" id="cs-check-ff-status">Show Feature Flags and Entitlements</button>
+                    <button class="btn btn-sm btn-primary open-gutter">Show Gutter Menu</button>
                 </div>
 
                 <div class="card-body form-inline">
@@ -29,6 +31,14 @@
                 </div>
                 
             </div>
+        </div>
+        <div class="secondary gutter-host">
+            <div class="gutter">
+                {% for x in range(15) %}
+                <p>This is some long text to increase the size of the gutter</p>
+                {% end %}
+            </div>
+        </div>
         </div>
 
         {% include t_footer.html %}
