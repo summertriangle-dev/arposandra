@@ -74,10 +74,10 @@ class LanguageMenu extends React.Component {
     }
 
     fixDefaults() {
-        return {
+        this.setState({
             dictionary: Cookies.get("mdic") || this.state.dataLangs[0].code,
             region: Cookies.get("dsid") || this.state.regions[0],
-        }
+        })
     }
 
     save() {
@@ -139,9 +139,8 @@ class LanguageMenu extends React.Component {
                 <button className="item btn btn-secondary"
                     onClick={this.props.dismiss}>{Infra.strings.LangMenu.Cancel}</button>
                 <span className="item flexible-space"></span>
-                <button className="item btn btn-secondary"
-                    onClick={() => this.goToExperiments()}>
-                    {Infra.strings.LangMenu.GoToExperiments}</button>
+                <a className="item btn btn-secondary" href="/experiments">
+                    {Infra.strings.LangMenu.GoToExperiments}</a>
             </div>
         </section>
     }
