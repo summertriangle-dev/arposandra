@@ -13,6 +13,7 @@ import tornado.ioloop
 
 from skyfarer.web import application
 
+
 def get_master_version(tag=None):
     env = os.environ.get("AS_DATA_ROOT", ".")
     if not tag:
@@ -32,6 +33,7 @@ def get_master_version(tag=None):
     except (FileNotFoundError, KeyError):
         return root, lang
 
+
 def other_masters():
     reg = os.environ.get("AS_EXTRA_REGIONS")
     if not reg:
@@ -47,6 +49,7 @@ def other_masters():
 
     return ret
 
+
 def handle_sigterm(signum, frame):
     runloop = tornado.ioloop.IOLoop.current()
     runloop.add_callback_from_signal(lambda: runloop.stop())
@@ -61,6 +64,7 @@ def main():
         format=f"%(asctime)s asset:  %(levelname)s: %(message)s",
         level=logging.DEBUG if debug else logging.INFO,
     )
+    logging.getLogger("PIL").setLevel(logging.WARNING)
 
     master_root, master_lang = get_master_version()
     logging.info(f"Master: {master_root}")
@@ -68,9 +72,7 @@ def main():
     extras = other_masters()
 
     logging.info(f"Asset server listening on {as_addr}:{as_port}")
-    application(master_root, master_lang, extras, debug).listen(
-        as_port, as_addr, xheaders=True
-    )
+    application(master_root, master_lang, extras, debug).listen(as_port, as_addr, xheaders=True)
 
     runloop = tornado.ioloop.IOLoop.current()
     # We want to make sure the callback is only run if there's an ioloop.
