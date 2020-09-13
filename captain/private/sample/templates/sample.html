@@ -10,7 +10,7 @@
         <script type="text/javascript" src="{{ handler.static_url("extra.js") }}" async></script>
         <link rel="stylesheet" href="{{ handler.static_url("extra.css") }}" />
     </head>
-    <body class="kars-dark" data-master="{{ handler.settings["master"].version }}">
+    <body data-master="{{ handler.settings["master"].version }}">
         {% module Template("../../../webui/uim_nav.html", current="cards") %}
 
         {% raw tlinject_static(name) %}

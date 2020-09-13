@@ -6,13 +6,13 @@
     display: none
 
 /* Users in esports mode probably want to see all info. */
-.kars-stats-displaying-extraneous, .kars-esports-config
+.kars-stats-displaying-extraneous, body[data-kars-cdm="esports"]
     .kars-stats-extraneous
         display: table-row !important
     .kars-show-full-stat-table
         display: none
 
-.kars-esports-config
+body[data-kars-cdm="esports"]
     .kars-card-box
         .card-image
             display: none
@@ -23,7 +23,7 @@
             border-left: none
             border-radius: $kars-card-radius $kars-card-radius 0 0
 
-.kars-gallery-config .kars-card-box
+body[data-kars-cdm="gallery"] .kars-card-box
     .gallery-mode-hidden
         display: none
 

@@ -105,6 +105,7 @@ class CardPage(LanguageCookieMixin):
 
 
 @route(r"/cards/sets/?")
+@route(r"/cards/sets/([0-9]+)/?")
 class CardGallery(DatabaseMixin, LanguageCookieMixin):
     # The largest known subunit size (QU4RTZ). This is checked so we don't treat
     # subunit costume sets as group sets.
@@ -193,10 +194,10 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin):
 
     def url_for_page(self, pageno: int):
         args = []
-        tag = self.get_argument("use_dates", None)
-        tag = self.database().news_database.validate_server_id(tag)
+        _tag = self.get_argument("use_dates", None)
+        tag = self.database().news_database.validate_server_id(_tag)
 
-        if tag != "jp":
+        if tag == _tag:
             args.append(f"use_dates={tag}")
 
         cat = self.get_argument("type", None)
@@ -204,27 +205,29 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin):
             args.append(f"type={cat}")
 
         if pageno > 1:
-            args.append(f"page={pageno}")
+            page_frag = f"{pageno}/"
+        else:
+            page_frag = ""
 
         qs = ("?" + "&".join(args)) if args else ""
-        return f"/cards/sets/{qs}"
+        return f"/cards/sets/{page_frag}{qs}"
 
-    async def get(self):
+    async def get(self, page=None):
         try:
-            pageno = max(int(self.get_argument("page", 1)) - 1, 0)
-        except ValueError:
+            pageno = max(int(page) - 1, 0)
+        except TypeError:
             pageno = 0
 
-        tag = self.get_argument("use_dates", None)
-        if not tag:
-            tag = self.get_cookie("dsid", None)
-        tag = self.database().news_database.validate_server_id(tag)
+        raw_tag = self.get_argument("use_dates", None)
+        if not raw_tag:
+            raw_tag = self.get_cookie("dsid", None)
+        tag = self.database().news_database.validate_server_id(raw_tag)
 
         _cat = self.get_argument("type", None)
         cat = self.VALID_CATEGORIES.get(_cat, None)
 
         sets, has_more = await self.database().card_tracker.get_card_sets(
-            page=pageno, n_entries=10, tag=tag, category=cat,
+            page=pageno, n_entries=8, tag=tag, category=cat,
         )
         sets.sort(key=self.custom_sort_key, reverse=True)
         self.resolve_cards(sets)
@@ -240,6 +243,10 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin):
             current_page=pageno + 1,
             has_next_page=has_more,
             server_id=tag,
+            prefilled_form={
+                "category": _cat if cat is not None else None,
+                "use_dates": tag if tag == raw_tag else None,
+            },
         )
 
     def add_synthetic_name(self, rep: str):
