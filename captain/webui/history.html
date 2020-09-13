@@ -33,13 +33,9 @@
             {% end %}
             </div>
 
-            {#% if has_next_page %}
-            <div class="container kars-negative-box">
-                <a class="btn btn-primary" href="/{{ server }}/history?before={{ int(releases[-1].start_time.timestamp()) }}">
-                    {{ _("More...") }}
-                </a>
-            </div>
-            {% end %#}
+            <nav class="pb-3">
+                {% module Template("uim_paginate.html", current_page=current_page, num_pages=page_count, url_for_page=handler.url_for_page) %}
+            </nav>
         </div>
 
         {% include t_footer.html %}

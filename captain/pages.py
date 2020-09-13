@@ -9,6 +9,7 @@ from .dispatch import route, LanguageCookieMixin, DatabaseMixin
 from . import pageutils
 from .models import card_tracking
 import libcard2.localization
+import sys
 
 
 @route("/")
@@ -95,6 +96,8 @@ class HistoryRedirect(DatabaseMixin, LanguageCookieMixin):
 @route(r"/([a-z]+)/history/?")
 @route(r"/([a-z]+)/history/([0-9]+)/?")
 class CardHistory(DatabaseMixin, LanguageCookieMixin):
+    VALID_CATEGORIES = []
+
     async def get(self, server_id, page=None):
         server = self.database().news_database.validate_server_id(server_id)
 
@@ -103,18 +106,39 @@ class CardHistory(DatabaseMixin, LanguageCookieMixin):
             pageno = max(int(page) - 1, 0)
 
         now = datetime.utcnow()
-        his, has_more = await self.database().card_tracker.get_history_entries(
+        his = await self.database().card_tracker.get_history_entries(
             server, None, pageno, n_entries=20
         )
+
+        count = await self.database().card_tracker.get_history_entry_count(server, None)
+        print(count, file=sys.stderr)
 
         self.resolve_cards(his)
         self.render(
             "history.html",
-            releases=his[:-1],
-            has_next_page=has_more,
+            releases=his,
+            current_page=pageno + 1,
+            page_count=int((count / 20) + 1),
             server=server,
             current_time=now,
         )
+
+    def url_for_page(self, pageno: int):
+        args = []
+        tag = self.path_args[0]
+        tag = self.database().news_database.validate_server_id(tag)
+
+        cat = self.get_argument("type", None)
+        if cat in self.VALID_CATEGORIES:
+            args.append(f"type={cat}")
+
+        if pageno > 1:
+            page_frag = f"{pageno}/"
+        else:
+            page_frag = ""
+
+        qs = ("?" + "&".join(args)) if args else ""
+        return f"/{tag}/history/{page_frag}{qs}"
 
     def resolve_cards(self, items: Iterable[card_tracking.HistoryRecord]):
         for item in items:

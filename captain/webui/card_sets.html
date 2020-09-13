@@ -36,13 +36,11 @@
         </div>
     </div>
 
-    {% if has_next_page %}
     <div class="container kars-negative-box">
-        <a class="btn btn-primary" href="{{ handler.url_for_page(current_page + 1) }}">
-            {{ _("More...") }}
-        </a>
+        <nav class="pb-3">
+            {% module Template("uim_paginate.html", current_page=current_page, num_pages=page_count, url_for_page=handler.url_for_page) %}
+        </nav>
     </div>
-    {% end %}
 
     {% include t_footer.html %}
 </body>

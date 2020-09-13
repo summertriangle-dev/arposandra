@@ -226,6 +226,15 @@ msgstr "PT.SongSingle"
 msgid "PT.Welcome"
 msgstr "PT.Welcome"
 
+msgid "Pagination.Next"
+msgstr "Pagination.Next"
+
+msgid "Pagination.Previous"
+msgstr "Pagination.Previous"
+
+msgid "Pagination.Title"
+msgstr "Pagination.Title"
+
 msgid "Persistent Gimmick"
 msgstr "Persistent Gimmick"
 

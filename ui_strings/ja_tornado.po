@@ -68,7 +68,9 @@ msgid "CardSetsForm.ReleaseDates.ServerJp"
 msgstr "Japanese server"
 
 msgid "CardSetsForm.ServerPrefHelp"
-msgstr "You can change your preferred server by clicking the gear icon at the top of the page."
+msgstr ""
+"You can change your preferred server by clicking the gear icon at the top of "
+"the page."
 
 msgid "CardSetsForm.SetType"
 msgstr "Set type:"
@@ -248,6 +250,15 @@ msgstr "ライブ情報"
 
 msgid "PT.Welcome"
 msgstr "Welcome"
+
+msgid "Pagination.Next"
+msgstr "Next"
+
+msgid "Pagination.Previous"
+msgstr "Back"
+
+msgid "Pagination.Title"
+msgstr "Page:"
 
 msgid "Persistent Gimmick"
 msgstr "ライブのギミック"

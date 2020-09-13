@@ -226,9 +226,10 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin):
         _cat = self.get_argument("type", None)
         cat = self.VALID_CATEGORIES.get(_cat, None)
 
-        sets, has_more = await self.database().card_tracker.get_card_sets(
+        sets = await self.database().card_tracker.get_card_sets(
             page=pageno, n_entries=8, tag=tag, category=cat,
         )
+        count = await self.database().card_tracker.get_card_set_count(tag=tag, category=cat)
         sets.sort(key=self.custom_sort_key, reverse=True)
         self.resolve_cards(sets)
 
@@ -241,7 +242,7 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin):
             "card_sets.html",
             sets=sets,
             current_page=pageno + 1,
-            has_next_page=has_more,
+            page_count=int((count / 8) + 1),
             server_id=tag,
             prefilled_form={
                 "category": _cat if cat is not None else None,

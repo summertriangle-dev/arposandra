@@ -1,0 +1,25 @@
+{% if num_pages > 1 %}
+<ul class="pagination justify-content-center">
+    <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1">{{ _("Pagination.Title") }}</a>
+    </li>
+
+    {% if current_page > 1 %}
+    <li class="page-item">
+        <a class="page-link" href="{{ url_for_page(current_page - 1) }}">{{ _("Pagination.Previous") }}</a>
+    </li>
+    {% end %}
+    
+    {% for page_num in range(max(current_page - 5, 1), min(current_page + 5, num_pages) + 1) %}
+    <li class="page-item {% if current_page == page_num %} active {% end %}">
+        <a class="page-link" href="{{ url_for_page(page_num) }}">{{ page_num }}</a>
+    </li>
+    {% end %}
+
+    {% if current_page < num_pages %}
+    <li class="page-item">
+        <a class="page-link" href="{{ url_for_page(current_page + 1) }}">{{ _("Pagination.Next") }}</a>
+    </li>
+    {% end %}
+</ul>
+{% end %}

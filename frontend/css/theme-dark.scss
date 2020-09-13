@@ -108,24 +108,6 @@ $navbar-light-active-color:         $white !default;
 $navbar-light-disabled-color:       rgba($white,.3) !default;
 $navbar-light-toggler-border-color: rgba($white,.1) !default;
 
-// Pagination
-
-$pagination-color:                  $white !default;
-$pagination-bg:                     $success !default;
-$pagination-border-width:           0 !default;
-$pagination-border-color:           transparent !default;
-
-$pagination-hover-color:            $white !default;
-$pagination-hover-bg:               lighten($success, 10%) !default;
-$pagination-hover-border-color:     transparent !default;
-
-$pagination-active-bg:              $pagination-hover-bg !default;
-$pagination-active-border-color:    transparent !default;
-
-$pagination-disabled-color:         $white !default;
-$pagination-disabled-bg:            darken($success, 15%) !default;
-$pagination-disabled-border-color:  transparent !default;
-
 // Jumbotron
 
 $jumbotron-bg:                      $gray-800 !default;
@@ -213,6 +195,22 @@ $kars-gutter-select-bg: white;
 $kars-gutter-select-text: black;
 
 $ongoing-event-text: #f57272;
+
+$pagination-color: $body-color;
+$pagination-bg: scale-color($main_content_background_dark, $lightness: +10%);
+$pagination-border-color: scale-color($main_content_background_dark, $lightness: +20%);
+
+$pagination-hover-color:            $body-color;
+$pagination-hover-bg:               scale-color($main_content_background_dark, $lightness: +15%);
+$pagination-hover-border-color:     $pagination-border-color;
+
+$pagination-active-bg:              $primary;
+$pagination-active-border-color:    $pagination-border-color;
+
+$pagination-disabled-color:         $body-color;
+$pagination-disabled-bg:            scale-color($main_content_background_dark, $lightness: +5%);
+$pagination-disabled-border-color:  $pagination-border-color;
+
 
 @import "node_modules/bootstrap/scss/bootstrap";
 @import "inc/custom-layout.sass";

@@ -37,9 +37,15 @@ $kars-gutter-select-text: black;
 
 $ongoing-event-text: #ce4c4c;
 
-@import "node_modules/bootstrap/scss/bootstrap";
-
 $input-bg: #ced4da;
+
+$pagination-border-color: scale-color($body-bg, $lightness: -10%, $saturation: -80%);
+$pagination-hover-border-color:     $pagination-border-color;
+$pagination-active-border-color:    $pagination-border-color;
+$pagination-disabled-bg:            scale-color($body-bg, $lightness: +50%);
+$pagination-disabled-border-color:  $pagination-border-color;
+
+@import "node_modules/bootstrap/scss/bootstrap";
 
 @import "inc/custom-layout.sass";
 @import "inc/stack.sass";

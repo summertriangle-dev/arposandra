@@ -99,9 +99,22 @@ class CardTrackingDatabase(object):
     def __init__(self, coordinator):
         self.coordinator = coordinator
 
+    async def get_history_entry_count(self, for_server: str, subtype: int = None) -> int:
+        args: List[Any] = [for_server]
+        query = [
+            """SELECT COUNT(0) AS count FROM history_v5
+                WHERE serverid = $1"""
+        ]
+        if subtype is not None:
+            query.append("AND subtype = $2")
+            args.append(subtype)
+
+        async with self.coordinator.pool.acquire() as conn:
+            return (await conn.fetchrow("\n".join(query), *args))["count"]
+
     async def get_history_entries(
         self, for_server: str, subtype: int = None, page: int = 0, n_entries: int = 20,
-    ) -> Tuple[List[HistoryRecord], int]:
+    ) -> List[HistoryRecord]:
         offset = page * n_entries
 
         act = 2
@@ -129,31 +142,42 @@ class CardTrackingDatabase(object):
         async with self.coordinator.pool.acquire() as c:
             items = await c.fetch(query, *args)
 
-        if len(items) > n_entries:
-            have_more = True
-        else:
-            have_more = False
+        return [
+            HistoryRecord(
+                i["id"],
+                i["serverid"],
+                i["title"],
+                HistoryRecord.card_list(i["card_ids"]),
+                i["what"],
+                i["subtype"],
+                i["thumbnail"],
+                dict(i["dates"]),
+            )
+            for i in items
+        ]
 
-        return (
-            [
-                HistoryRecord(
-                    i["id"],
-                    i["serverid"],
-                    i["title"],
-                    HistoryRecord.card_list(i["card_ids"]),
-                    i["what"],
-                    i["subtype"],
-                    i["thumbnail"],
-                    dict(i["dates"]),
-                )
-                for i in items[:n_entries]
-            ],
-            have_more,
-        )
+    async def get_card_set_count(self, category: int = None, tag: str = None) -> int:
+        if tag is None:
+            tag = "jp"
+
+        args: List[Any] = [tag]
+        query = [
+            """
+            SELECT COUNT(0) AS count FROM card_p_set_index_v1__sort_dates
+            INNER JOIN card_p_set_index_v1 USING (representative)
+            WHERE server_id = $1
+        """
+        ]
+        if category is not None:
+            query.append("AND set_type = $2")
+            args.append(category)
+
+        async with self.coordinator.pool.acquire() as conn:
+            return (await conn.fetchrow("\n".join(query), *args))["count"]
 
     async def get_card_sets(
         self, category: int = None, page: int = None, n_entries: int = 20, tag: str = None,
-    ) -> Tuple[List[CardSetRecord], bool]:
+    ) -> List[CardSetRecord]:
         if tag is None:
             tag = "jp"
 
@@ -183,28 +207,20 @@ class CardTrackingDatabase(object):
             query.append(f"AND set_type = ${len(args) + 1}")
             args.append(category)
 
-        query.append(f"ORDER BY date DESC LIMIT {n_entries + 1} OFFSET {offset}")
+        query.append(f"ORDER BY date DESC LIMIT {n_entries} OFFSET {offset}")
 
         async with self.coordinator.pool.acquire() as conn:
             set_ids = await conn.fetch("\n".join(query), *args)
-            if len(set_ids) > n_entries:
-                have_more = True
-            else:
-                have_more = False
-
-            return (
-                [
-                    CardSetRecord(
-                        r["id"],
-                        r["representative"],
-                        r["set_type"],
-                        CardSetRecord.unpack_rdates(r["cards"]),
-                        bool(r["shioriko_exists"]),
-                    )
-                    for r in set_ids[:n_entries]
-                ],
-                have_more,
-            )
+            return [
+                CardSetRecord(
+                    r["id"],
+                    r["representative"],
+                    r["set_type"],
+                    CardSetRecord.unpack_rdates(r["cards"]),
+                    bool(r["shioriko_exists"]),
+                )
+                for r in set_ids
+            ]
 
     async def get_single_card_set(self, name: str) -> Optional[CardSetRecord]:
         query = f"""
