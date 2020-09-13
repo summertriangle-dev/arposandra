@@ -64,7 +64,6 @@ class OrdinalSetWatcher(object):
     def generate_sets(self) -> Iterable[SetRecord]:
         for gid, lst in self.fes:
             for _, collection in lst:
-                print(collection)
                 yield collection
 
         for gid, lst in self.pickup:
@@ -125,7 +124,6 @@ def filter_sets_against_history(sets: List[SetRecord], events: List[AnySRecord])
         for rid, cset in cache.items():
             # Avoid being overzealous and consuming sr costume sets.
             if cset.issuperset(s.members) and len(cset.intersection(s.members)) > 1:
-                print(s, "consumed by", rid)
                 s.members = list(cset)
                 s.stype = "event"
                 marks.append(rid)

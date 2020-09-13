@@ -46,5 +46,10 @@
     ({{ _("HEvent.Ongoing") }})
     </span> 
     {% end %}
+
+    {% if release.ig_event_id() %}
+    &ndash;
+    <a href="/{{ server }}/events/{{ release.ig_event_id() }}">Tracker</a>
+    {% end %}
 {% end %}
 </h2>

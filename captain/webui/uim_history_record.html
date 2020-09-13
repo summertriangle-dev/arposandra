@@ -7,7 +7,7 @@
             <h1 class="h5 {% if release.thumbnail %} mt-2 {% end %}">
                 {{ release.common_title }}
             </h1>
-            {% module Template("uim_history_schedule.html", release=release, current_time=current_time) %}
+            {% module Template("uim_history_schedule.html", release=release, current_time=current_time, server=server) %}
         </div>
     </div>
 

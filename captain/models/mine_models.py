@@ -223,20 +223,20 @@ class SRecordExpert(object):
     def dates(self):
         if isinstance(self.record, SGachaMergeRecord):
             ts = self.record.time_spans["gacha"]
-            yield ("gacha_start", ts[0])
-            yield ("gacha_end", ts[0] + ts[1])
+            yield ("gacha_start", ts[0], None)
+            yield ("gacha_end", ts[0] + ts[1], None)
             ts = self.record.time_spans.get("event")
             if ts:
-                yield ("event_start", ts[0])
-                yield ("event_end", ts[0] + ts[1])
+                yield ("event_start", ts[0], None)
+                yield ("event_end", ts[0] + ts[1], None)
             ts = self.record.time_spans.get("part2")
             if ts:
-                yield ("gachap2_start", ts[0])
-                yield ("gachap2_end", ts[0] + ts[1])
+                yield ("gachap2_start", ts[0], None)
+                yield ("gachap2_end", ts[0] + ts[1], None)
         else:
             ts = self.record.time_span
-            yield ("event_start", ts[0])
-            yield ("event_end", ts[0] + ts[1])
+            yield ("event_start", ts[0], None)
+            yield ("event_end", ts[0] + ts[1], None)
 
 
 HistoryIndex = Schema(
@@ -260,10 +260,12 @@ HistoryIndex = Schema(
                     "event_end",
                     "gacha_end",
                     "gachap2_end",
+                    "ig_event_id",
                 ),
                 primary=True,
             ),
             Field.datetime("date"),
+            Field.integer("value"),
         ),
         Field.composite(
             "card_ids",

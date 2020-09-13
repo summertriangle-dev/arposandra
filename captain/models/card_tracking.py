@@ -2,7 +2,7 @@ import json
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
-from typing import List, Optional, Tuple, Any, Dict
+from typing import List, Optional, Tuple, Any, Dict, Union
 
 from libcard2.dataclasses import Card
 
@@ -28,6 +28,7 @@ class HistoryRecord(object):
     T_DATE_EVENT_END = 4
     T_DATE_GACHA_END = 5
     T_DATE_GACHA2_END = 6
+    T_DATE_INGAME_EVENT_ID = 7
 
     record_id: int
     server_id: int
@@ -36,7 +37,7 @@ class HistoryRecord(object):
     major_type: int
     sub_type: int
     thumbnail: str
-    dates: Dict[str, datetime]
+    dates: Dict[int, Union[int, datetime]]
 
     def event_dates(self):
         return (self.dates.get(self.T_DATE_EVENT_START), self.dates.get(self.T_DATE_EVENT_END))
@@ -50,6 +51,9 @@ class HistoryRecord(object):
     def nom_date(self):
         return self.dates.get(self.T_DATE_GACHA_START) or self.dates.get(self.T_DATE_EVENT_START)
 
+    def ig_event_id(self):
+        return self.dates.get(self.T_DATE_INGAME_EVENT_ID)
+
     @staticmethod
     def card_list(l: List[Tuple[int, int]]) -> Dict[str, List[int]]:
         gs: Dict[str, List[int]] = {}
@@ -59,6 +63,17 @@ class HistoryRecord(object):
                 gs[MAP_WHAT_TO_ID[what]] = [cid]
             else:
                 ins.append(cid)
+
+        return gs
+
+    @classmethod
+    def unpack_dates(cls, l: List[Tuple[int, datetime, int]]) -> Dict[int, Union[int, datetime]]:
+        gs: Dict[int, Union[int, datetime]] = {}
+        for vid, date, val in l:
+            if vid >= cls.T_DATE_INGAME_EVENT_ID:
+                gs[vid] = val
+            else:
+                gs[vid] = date
 
         return gs
 
@@ -125,7 +140,7 @@ class CardTrackingDatabase(object):
             ARRAY(SELECT (card_id, what) FROM history_v5__card_ids 
 	                WHERE history_v5__card_ids.id = history_v5.id
                     AND history_v5__card_ids.serverid = $1) AS card_ids,
-            ARRAY(SELECT (type, date) FROM history_v5__dates
+            ARRAY(SELECT (type, date, value) FROM history_v5__dates
 	                WHERE history_v5__dates.id = history_v5.id
                     AND history_v5__dates.serverid = $1) AS dates
 			FROM history_v5
@@ -151,7 +166,7 @@ class CardTrackingDatabase(object):
                 i["what"],
                 i["subtype"],
                 i["thumbnail"],
-                dict(i["dates"]),
+                HistoryRecord.unpack_dates(i["dates"]),
             )
             for i in items
         ]

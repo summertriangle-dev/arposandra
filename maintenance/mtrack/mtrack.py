@@ -180,6 +180,7 @@ async def main(
     async with coordinator.pool.acquire() as conn:
         await setminer.update_ordinal_sets(conn, set_expert)
         await conn.execute(sql_scripts.update_set_sort_table())
+        await conn.execute(sql_scripts.update_hist_event_link())
 
     logging.debug("SetMiner import done in %s ms", (time.monotonic() - cloc) * 1000)
 

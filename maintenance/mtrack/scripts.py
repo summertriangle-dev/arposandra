@@ -52,3 +52,17 @@ def update_card_release_dates(prefix):
         UPDATE card_index_v1 SET 
             source = (SELECT what FROM {prefix}history_v5__card_ids WHERE card_id = card_index_v1.id LIMIT 1)
     """
+
+def update_hist_event_link():
+    return f"""
+        WITH event_match AS (
+            SELECT event_v2.serverid AS sid, event_id, history_v5__dates.id AS hid FROM history_v5__dates 
+            INNER JOIN event_v2 ON (history_v5__dates.serverid=event_v2.serverid 
+                AND EXTRACT(epoch FROM history_v5__dates.date - event_v2.start_t) <= 0)
+            WHERE type = 1
+        )
+
+        INSERT INTO history_v5__dates (
+            (SELECT hid, sid, NULL, event_id FROM event_match)
+        ) ON CONFLICT DO NOTHING;
+    """
