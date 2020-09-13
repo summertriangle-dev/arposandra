@@ -6,6 +6,8 @@ from collections import namedtuple
 import asyncpg
 import pkg_resources
 
+from captain.models.indexer import db_expert
+from captain.models import mine_models
 
 event_status_t = namedtuple(
     "event_status_t", ("start_time", "end_time", "results_time", "last_collect_time", "have_final")
@@ -20,8 +22,10 @@ class DatabaseConnection(object):
     async def init_models(self):
         self.pool = await asyncpg.create_pool(dsn=self.connection_url)
         init_schema = pkg_resources.resource_string("captain", "init_schema.sql").decode("utf8")
+        hist_expert = db_expert.PostgresDBExpert(mine_models.HistoryIndex)
         async with self.pool.acquire() as c, c.transaction():
             await c.execute(init_schema)
+            await hist_expert.create_tables(c)
 
     async def have_event_info(self, region, event_id):
         async with self.pool.acquire() as c:
@@ -111,6 +115,7 @@ class DatabaseConnection(object):
                 """,
                 stories,
             )
+        await self.update_mtrack_event_links()
 
     async def add_tiers(self, region, event_id, time, is_last, rows, singular):
         time = time.replace(second=0, microsecond=0)
@@ -147,3 +152,19 @@ class DatabaseConnection(object):
     async def clear_norm_tiers(self, region, event_id):
         async with self.pool.acquire() as c, c.transaction():
             await c.execute("DELETE FROM border_data_v3")
+
+    async def update_mtrack_event_links(self):
+        query = """
+            WITH event_match AS (
+                SELECT event_v2.serverid AS sid, event_id, history_v5__dates.id AS hid FROM history_v5__dates 
+                INNER JOIN event_v2 ON (history_v5__dates.serverid=event_v2.serverid 
+                    AND EXTRACT(epoch FROM history_v5__dates.date - event_v2.start_t) <= 0)
+                WHERE type = 1
+            )
+
+            INSERT INTO history_v5__dates (
+                (SELECT hid, sid, NULL, event_id FROM event_match)
+            ) ON CONFLICT DO NOTHING;
+        """
+        async with self.pool.acquire() as c, c.transaction():
+            await c.execute(query)
