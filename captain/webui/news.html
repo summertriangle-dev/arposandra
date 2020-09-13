@@ -12,7 +12,7 @@
 
         {% module Template("ogm_news.html", items=news_items) %}
     </head>
-    <body class="with-split-view" data-master="{{ handler.settings["master"].version }}">
+    <body data-master="{{ handler.settings["master"].version }}">
         {% module Template("uim_nav.html", current="news") %}
         
         <div class="container">
@@ -29,57 +29,19 @@
             {% end %}
         </div>
 
-        <div class="split-view">
-            <div class="container primary">
-                <div class="card kars-card-box">
-                {% for news_item in news_items %}
-                    {% module Template("uim_news_item.html", news_item=news_item, server=server, expand=expand, show_ts_msg=show_ts_msg, time_offset=time_offset) %}
-                {% end %}
+        <div class="container">
+            <div class="card kars-card-box">
+            {% for news_item in news_items %}
+                {% module Template("uim_news_item.html", news_item=news_item, server=server, expand=expand, show_ts_msg=show_ts_msg, time_offset=time_offset) %}
+            {% end %}
 
-                {% if has_next_page %}
-                <div class="kars-list-alternate">
-                    <div class="card-body">
-                        <a class="btn btn-primary" href="/{{ server }}/news/?before={{ news_items[-1].timestamp() }}">{{ _("More...") }}</a>
-                    </div>
-                </div>
-                {% end %}
+            {% if has_next_page %}
+            <div class="kars-list-alternate">
+                <div class="card-body">
+                    <a class="btn btn-primary" href="/{{ server }}/news/?before={{ news_items[-1].timestamp() }}">{{ _("More...") }}</a>
                 </div>
             </div>
-
-            <div class="gutter-host secondary">
-                <div class="gutter">
-                    <form>
-                <div class="form-group">
-                  <label for="exampleFormControlSelect1">Set type:</label>
-                  <select class="form-control" id="exampleFormControlSelect1">
-                    <option selected>All sets</option>
-                    <option>Event sets</option>
-                    <option>Festival sets</option>
-                    <option>Pickup sets</option>
-                    <option>Live outfit sets</option>
-                    <option>Other</option>
-                  </select>
-                  <label class="text-muted">
-                    "Other" includes initial UR sets and non-song themed sets.
-                  </label>
-                </div>
-                <div class="form-group">
-                  <label for="exampleFormControlSelect1">Use card release dates from:</label>
-                  <select class="form-control" id="exampleFormControlSelect1">
-                    <option selected>Follow my preferences</option>
-                    <option>EN</option>
-                    <option>JP</option>
-                  </select>
-                  <label class="text-muted">
-                    To change your preferred server, click the gear icon at the top of the page,
-                    under this sidebar.
-                  </label>
-                </div>
-                <div class="form-group">
-                    <input class="btn btn-primary" type="submit" value="Go" />
-                </div>
-            </form>
-                </div>
+            {% end %}
             </div>
         </div>
 
