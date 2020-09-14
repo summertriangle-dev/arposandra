@@ -1,10 +1,6 @@
 // Darkly 4.3.1
 // Bootswatch
 
-//
-// Color system
-//
-
 $font-family-sans-serif:
   -apple-system,
   BlinkMacSystemFont,
@@ -13,31 +9,35 @@ $font-family-sans-serif:
   "Helvetica Neue", Arial, sans-serif,
   "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
+//
+// Color system
+//
+
 $white:    #fff !default;
-$gray-100: #f8f9fa !default;
-$gray-200: #ebebeb !default;
-$gray-300: #dee2e6 !default;
-$gray-400: #ced4da !default;
-$gray-500: #adb5bd !default;
-$gray-600: #999 !default;
-$gray-700: #666 !default;
-$gray-800: #303030 !default;
-$gray-900: #222 !default;
+$gray-100: scale-color(hsl(264, 100%, 99%), $saturation: -92%);
+$gray-200: scale-color($gray-100, $lightness: -5%);
+$gray-300: scale-color($gray-100, $lightness: -10%);
+$gray-400: scale-color($gray-100, $lightness: -15%);
+$gray-500: scale-color($gray-100, $lightness: -25%);
+$gray-600: scale-color($gray-100, $lightness: -40%);
+$gray-700: scale-color($gray-100, $lightness: -60%);
+$gray-800: scale-color($gray-100, $lightness: -80%);
+$gray-900: scale-color($gray-100, $lightness: -85%);
 $black:    #000 !default;
 
 $blue:    #007bff !default;
 $indigo:  #6610f2 !default;
 $purple:  #6f42c1 !default;
 $pink:    #e83e8c !default;
-$red:     #E74C3C !default;
+$red:     #ee5f5b !default;
 $orange:  #fd7e14 !default;
-$yellow:  #F39C12 !default;
-$green:   #00bc8c !default;
+$yellow:  #f89406 !default;
+$green:   #62c462 !default;
 $teal:    #20c997 !default;
-$cyan:    #3498DB !default;
+$cyan:    #5bc0de !default;
 
 $primary:       $blue !default;
-$secondary:     $gray-700 !default;
+$secondary:     hsl(0, 0%, 40%) !default;
 $success:       $green !default;
 $info:          $cyan !default;
 $warning:       $yellow !default;
@@ -47,27 +47,17 @@ $dark:          $gray-800 !default;
 
 $yiq-contrasted-threshold:  175 !default;
 
-// Body
-
-$body-bg:                   $gray-900 !default;
-$body-color:                $white !default;
-
-// Links
-
-$link-color:                $success !default;
-
 // Tables
 
 $table-accent-bg:             $gray-800 !default;
-
 $table-border-color:          $gray-700 !default;
 
 // Forms
 
-$input-bg: $gray-800;
+$input-bg: scale-color($gray-800, $lightness: 5%);
 $input-color: $gray-300;
 
-$input-border-color:                    change-color($gray-700, $alpha: 0.6) !default;
+$input-border-color: scale-color($input-bg, $lightness: 10%);
 
 $input-group-addon-color:               $gray-500 !default;
 $input-group-addon-bg:                  $gray-700 !default;
@@ -87,7 +77,6 @@ $dropdown-link-hover-bg:            $primary !default;
 
 // Navs
 
-$nav-link-padding-x:                2rem !default;
 $nav-link-disabled-color:           $gray-500 !default;
 
 $nav-tabs-border-color:             $gray-700 !default;
@@ -95,45 +84,19 @@ $nav-tabs-link-hover-border-color:  $nav-tabs-border-color $nav-tabs-border-colo
 $nav-tabs-link-active-color:        $white !default;
 $nav-tabs-link-active-border-color: $nav-tabs-border-color $nav-tabs-border-color transparent !default;
 
-// Navbar
-
-$navbar-padding-y:                  1rem !default;
-
-$navbar-dark-color:                rgba($white,.6) !default;
-$navbar-dark-hover-color:          $white !default;
-
-$navbar-light-color:                 $white !default;
-$navbar-light-hover-color:           $success !default;
-$navbar-light-active-color:         $white !default;
-$navbar-light-disabled-color:       rgba($white,.3) !default;
-$navbar-light-toggler-border-color: rgba($white,.1) !default;
-
-// Jumbotron
-
-$jumbotron-bg:                      $gray-800 !default;
-
 // Cards
 
 $card-cap-bg:                       $gray-700 !default;
 $card-bg:                           $gray-800 !default;
 
-// Popovers
-
-$popover-bg:                        $gray-800 !default;
-
-$popover-header-bg:                 $gray-700 !default;
-
 // Modals
 
 $modal-content-bg:                  $gray-800 !default;
 $modal-content-border-color:        $gray-700 !default;
-
 $modal-header-border-color:         $gray-700 !default;
 
 // Progress bars
 
-$progress-height:                   0.625rem !default;
-$progress-font-size:                0.625rem !default;
 $progress-bg:                       $gray-700 !default;
 
 // List group
@@ -194,23 +157,32 @@ $kars-gutter-text: white;
 $kars-gutter-select-bg: white;
 $kars-gutter-select-text: black;
 
+$gutter-menu-border: scale-color($body-bg, $saturation: -40%, $lightness: +15%);
+
 $ongoing-event-text: #f57272;
+
+$navbar-light-color: $gray-500;
+$navbar-light-hover-color: $body-color;
+$navbar-light-active-color: $body-color;
+$navbar-light-disabled-color: rgba($navbar-light-color, 0.3);
+$navbar-light-toggler-border-color: rgba($navbar-light-color, 0.1);
 
 $pagination-color: $body-color;
 $pagination-bg: scale-color($main_content_background_dark, $lightness: +10%);
 $pagination-border-color: scale-color($main_content_background_dark, $lightness: +20%);
 
-$pagination-hover-color:            $body-color;
-$pagination-hover-bg:               scale-color($main_content_background_dark, $lightness: +15%);
-$pagination-hover-border-color:     $pagination-border-color;
+$pagination-hover-color: $body-color;
+$pagination-hover-bg: scale-color($main_content_background_dark, $lightness: +15%);
+$pagination-hover-border-color: $pagination-border-color;
 
-$pagination-active-bg:              $primary;
-$pagination-active-border-color:    $pagination-border-color;
+$pagination-active-bg: $primary;
+$pagination-active-border-color: $pagination-border-color;
 
-$pagination-disabled-color:         $body-color;
-$pagination-disabled-bg:            scale-color($main_content_background_dark, $lightness: +5%);
-$pagination-disabled-border-color:  $pagination-border-color;
+$pagination-disabled-color: $body-color;
+$pagination-disabled-bg: scale-color($main_content_background_dark, $lightness: +5%);
+$pagination-disabled-border-color: $pagination-border-color;
 
+$navbar-padding-y: 0.3rem;
 
 @import "node_modules/bootstrap/scss/bootstrap";
 @import "inc/custom-layout.sass";

@@ -174,7 +174,7 @@ export function CardDisplayModeSwitcher() {
         <CardDisplayModeSwitcherInternal />
         <a className="has-icon item"
             onClick={() => alert(Infra.strings.CDM.SwitchHint)}>
-            <i className="icon ion-ios-help-circle"></i>
+            <i className="icon icon-lg ion-ios-help-circle"></i>
         </a>
     </div>
 }

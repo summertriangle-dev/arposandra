@@ -37,7 +37,10 @@ $kars-gutter-select-text: black;
 
 $ongoing-event-text: #ce4c4c;
 
-$input-bg: #ced4da;
+$input-bg: hsla(274, 26%, 95%, 0.9);
+$input-disabled-bg: scale-color($input-bg, $lightness: -8%);
+
+$gutter-menu-border: scale-color($body-bg, $lightness: -20%, $saturation: -80%);
 
 $pagination-border-color: scale-color($body-bg, $lightness: -10%, $saturation: -80%);
 $pagination-hover-border-color:     $pagination-border-color;
@@ -45,8 +48,9 @@ $pagination-active-border-color:    $pagination-border-color;
 $pagination-disabled-bg:            scale-color($body-bg, $lightness: +50%);
 $pagination-disabled-border-color:  $pagination-border-color;
 
-@import "node_modules/bootstrap/scss/bootstrap";
+$navbar-padding-y: 0.3rem;
 
+@import "node_modules/bootstrap/scss/bootstrap";
 @import "inc/custom-layout.sass";
 @import "inc/stack.sass";
 @import "inc/sprites.sass"; 
