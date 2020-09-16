@@ -20,18 +20,22 @@ $expanded-gutter-container-size: $expanded-gutter-brk - 60px
             flex-grow: 2
         
         .secondary
-            margin-top: 0.8rem
+            position: fixed
+            top: 0
             padding-right: 15px
             max-width: $sidebar-inner
-            flex-grow: 1
-        
+            max-height: 100%
+            margin-left: map-get($container-max-widths, "xl")
+            overflow: auto
+            
     .split-view .gutter
-        position: fixed
+        margin: 3rem 0
         width: $sidebar-inner - 15px
         padding: 1rem
 
         border: 1px solid $gutter-menu-border
         border-radius: 16px
+        overflow: auto
     
     .open-gutter
         display: none
@@ -43,6 +47,7 @@ $expanded-gutter-container-size: $expanded-gutter-brk - 60px
     .gutter-host.opened
         display: block
         position: fixed
+        z-index: 50
         top: 0
         bottom: 0
         right: 0
@@ -62,7 +67,7 @@ $expanded-gutter-container-size: $expanded-gutter-brk - 60px
         transform: none
         opacity: 1.0
 
-        overflow-y: scroll
+        overflow-y: auto
 
         &.animation-state-start
             opacity: 0.0
