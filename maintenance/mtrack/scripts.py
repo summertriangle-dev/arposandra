@@ -64,6 +64,6 @@ def update_hist_event_link():
         )
 
         INSERT INTO history_v5__dates (
-            (SELECT hid, sid, NULL, event_id FROM event_match)
+            (SELECT hid, sid, 7, NULL, event_id FROM event_match)
         ) ON CONFLICT DO NOTHING;
     """
