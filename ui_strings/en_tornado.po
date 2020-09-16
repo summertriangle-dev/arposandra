@@ -165,17 +165,41 @@ msgstr "Lv. {level}"
 msgid "More..."
 msgstr "More..."
 
-msgid "Nav.Event"
-msgstr "Event"
+msgid "Nav.CardSets"
+msgstr "Card sets"
 
-msgid "Nav.Idols"
-msgstr "Idols"
+msgid "Nav.Cards"
+msgstr "Cards"
 
-msgid "Nav.Lives"
-msgstr "Lives"
+msgid "Nav.Etc"
+msgstr "More"
+
+msgid "Nav.EventTracker"
+msgstr "Event tracker"
+
+msgid "Nav.IdolList"
+msgstr "Idol list"
+
+msgid "Nav.LiveInfo"
+msgstr "Live show info"
 
 msgid "Nav.News"
 msgstr "Updates"
+
+msgid "Nav.NewsENServer"
+msgstr "In-game news (Global server)"
+
+msgid "Nav.NewsJPServer"
+msgstr "In-game news (Japanese server)"
+
+msgid "Nav.ScheduleList"
+msgstr "Event/Scouting list"
+
+msgid "Nav.ScheduleListENServer"
+msgstr "Event/Scouting list (Global server)"
+
+msgid "Nav.ScheduleListJPServer"
+msgstr "Event/Scouting list (Japanese server)"
 
 msgid "NewsPostDisclaimer"
 msgstr ""
@@ -289,9 +313,6 @@ msgstr "Waiting for JavaScript components..."
 
 msgid "Saint.WaitingForWebpack"
 msgstr "Waiting for JavaScript components..."
-
-msgid "Search"
-msgstr "Search"
 
 msgid "SetRecord.AvailableFromEvent"
 msgstr "Event Reward"

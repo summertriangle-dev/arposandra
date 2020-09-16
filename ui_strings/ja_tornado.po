@@ -165,17 +165,41 @@ msgstr "レベル {level}"
 msgid "More..."
 msgstr "さらに表示..."
 
-msgid "Nav.Event"
-msgstr "イベント"
+msgid "Nav.CardSets"
+msgstr "Card sets"
 
-msgid "Nav.Idols"
-msgstr "アイドル"
+msgid "Nav.Cards"
+msgstr "Cards"
 
-msgid "Nav.Lives"
-msgstr "ライブ"
+msgid "Nav.Etc"
+msgstr "More"
+
+msgid "Nav.EventTracker"
+msgstr "Event tracker"
+
+msgid "Nav.IdolList"
+msgstr "Idol list"
+
+msgid "Nav.LiveInfo"
+msgstr "Live show info"
 
 msgid "Nav.News"
-msgstr "お知らせ"
+msgstr "Updates"
+
+msgid "Nav.NewsENServer"
+msgstr "In-game news (Global server)"
+
+msgid "Nav.NewsJPServer"
+msgstr "In-game news (Japanese server)"
+
+msgid "Nav.ScheduleList"
+msgstr "Event/Scouting list"
+
+msgid "Nav.ScheduleListENServer"
+msgstr "Event/Scouting list (Global server)"
+
+msgid "Nav.ScheduleListJPServer"
+msgstr "Event/Scouting list (Japanese server)"
 
 msgid "NewsPostDisclaimer"
 msgstr ""
@@ -226,9 +250,8 @@ msgstr "Options"
 msgid "PT.CardReleases"
 msgstr "リリース履歴"
 
-#, fuzzy
 msgid "PT.CardSets"
-msgstr "リリース履歴"
+msgstr "Sets"
 
 msgid "PT.EventTracker"
 msgstr "イベントトラッカー"
@@ -288,9 +311,6 @@ msgstr "追加のコンポーネントを待っています..."
 
 msgid "Saint.WaitingForWebpack"
 msgstr "追加のコンポーネントを待っています..."
-
-msgid "Search"
-msgstr "検索"
 
 msgid "SetRecord.AvailableFromEvent"
 msgstr "Event Reward"
@@ -413,3 +433,6 @@ msgstr "{pts}ポイント"
 
 msgid "★ {star}"
 msgstr "★ {star}"
+
+#~ msgid "Search"
+#~ msgstr "検索"

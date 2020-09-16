@@ -13,6 +13,7 @@ $kars-navbar-item-hover-color: $body-color;
 $body-bg: hsl(311, 66%, 92%);
 
 $kars-stack-background: #fff;
+$kars-stack-border: rgba(10, 10, 10, 0.1);
 $kars-skill-bg-active: #ffd2d2;
 $kars-skill-bg-passive: #cbd9ff;
 
@@ -48,9 +49,10 @@ $pagination-active-border-color:    $pagination-border-color;
 $pagination-disabled-bg:            scale-color($body-bg, $lightness: +50%);
 $pagination-disabled-border-color:  $pagination-border-color;
 
-$navbar-padding-y: 0.3rem;
+$nav-menu-bg: change-color($card-bg, $alpha: 0.95);
+$nav-menu-separator: rgba(10, 10, 10, 0.2);
 
-@import "node_modules/bootstrap/scss/bootstrap";
+@import "inc/bootstrap-slim.sass";
 @import "inc/custom-layout.sass";
 @import "inc/stack.sass";
 @import "inc/sprites.sass"; 
@@ -62,3 +64,11 @@ $navbar-padding-y: 0.3rem;
 @import "inc/modal.sass";
 @import "inc/gallery.sass";
 @import "inc/gutter.sass";
+
+
+// ------ OVERRIDES ------
+@include media-breakpoint-up(sm) {
+  .nav-submenu.open {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(10, 10, 10, 0.1);
+  }
+}

@@ -1,7 +1,7 @@
 .kars-stack
     background: darken($kars-stack-background, 2%)
     border-radius: 8px
-    box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)
+    box-shadow: 0 2px 3px $kars-stack-border, 0 0 0 1px $kars-stack-border
     &:not(:last-child)
         margin-bottom: 1.5rem
 
@@ -15,8 +15,8 @@
 .kars-stack-header:not(:first-child)
     border-radius: 0
     padding-bottom: 3px
-    border-top: 1px solid rgba(10, 10, 10, 0.1)
-    border-bottom: 1px solid rgba(10, 10, 10, 0.1)
+    border-top: 1px solid $kars-stack-border
+    border-bottom: 1px solid $kars-stack-border
 
 .kars-stack-member
     margin-bottom: 0 !important
@@ -29,10 +29,10 @@
         border-bottom-right-radius: 8px 8px
     
     &:not(:last-child)
-        border-bottom: 1px solid rgba(10, 10, 10, 0.1)
+        border-bottom: 1px solid $kars-stack-border
 
 .kars-stack > .kars-stack-member:nth-child(2)
-    box-shadow: 0 -1px 0 0px rgba(10, 10, 10, 0.1)
+    box-shadow: 0 -1px 0 0px $kars-stack-border
     border-top-left-radius: 8px 8px
     border-top-right-radius: 8px 8px
 

@@ -14,6 +14,7 @@ import { CardDisplayModeSwitcher, ImageSwitcher, SkillTreeLoader } from "./card_
 import { initLangMenu } from "./lang_menu"
 import { hasStoragePermission, requestStoragePermission } from "./storage_permission"
 import * as GutterMenu from "./gutter"
+import * as NavMenu from "./nav_menu"
 
 const FLG_CS_SHOW_DEV_INFO_E = 0x2
 
@@ -120,6 +121,7 @@ function init() {
     NewsFilter.initWithRedux(Infra.store)
     initLangMenu()
     GutterMenu.injectIntoPage()
+    NavMenu.injectIntoPage()
 
     Infra.initialize().then(() => {
         console.debug("Localizations have arrived. Continuing...")

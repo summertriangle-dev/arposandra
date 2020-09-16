@@ -14,14 +14,16 @@ $font-family-sans-serif:
 //
 
 $white:    #fff !default;
-$gray-100: scale-color(hsl(264, 100%, 99%), $saturation: -92%);
+$gray-100: scale-color(hsl(264, 100%, 99%), $saturation: -87%);
 $gray-200: scale-color($gray-100, $lightness: -5%);
 $gray-300: scale-color($gray-100, $lightness: -10%);
 $gray-400: scale-color($gray-100, $lightness: -15%);
 $gray-500: scale-color($gray-100, $lightness: -25%);
 $gray-600: scale-color($gray-100, $lightness: -40%);
-$gray-700: scale-color($gray-100, $lightness: -60%);
-$gray-800: scale-color($gray-100, $lightness: -80%);
+$gray-700: scale-color($gray-100, $lightness: -60%, $saturation: -5%);
+$gray-750: scale-color($gray-100, $lightness: -70%, $saturation: -5%);
+$gray-800: scale-color($gray-100, $lightness: -80%, $saturation: -5%);
+$gray-850: scale-color($gray-100, $lightness: -84%, $saturation: -5%);
 $gray-900: scale-color($gray-100, $lightness: -85%);
 $black:    #000 !default;
 
@@ -50,7 +52,7 @@ $yiq-contrasted-threshold:  175 !default;
 // Tables
 
 $table-accent-bg:             $gray-800 !default;
-$table-border-color:          $gray-700 !default;
+$table-border-color:          rgba(10, 10, 10, 0.2);
 
 // Forms
 
@@ -137,6 +139,8 @@ $card-bg: scale-color($main_content_background_dark, $lightness: +6%);
 $card-bg-alt: scale-color($main_content_background_dark, $lightness: +2%);
 
 $kars-stack-background: lighten($card-bg, 5%);
+$kars-stack-border: rgba(10, 10, 10, 0.2);
+
 $kars-skill-bg-active: #772929;
 $kars-skill-bg-passive: #304581;
 
@@ -154,37 +158,32 @@ $kars-box-highlight-color: rgba(255, 255, 255, 0.1);
 
 $kars-gutter-bg: darken($body-bg, 5%);
 $kars-gutter-text: white;
-$kars-gutter-select-bg: white;
-$kars-gutter-select-text: black;
+$kars-gutter-select-bg: $gray-700;
+$kars-gutter-select-text: white;
 
 $gutter-menu-border: scale-color($body-bg, $saturation: -40%, $lightness: +15%);
 
 $ongoing-event-text: #f57272;
 
-$navbar-light-color: $gray-500;
-$navbar-light-hover-color: $body-color;
-$navbar-light-active-color: $body-color;
-$navbar-light-disabled-color: rgba($navbar-light-color, 0.3);
-$navbar-light-toggler-border-color: rgba($navbar-light-color, 0.1);
-
 $pagination-color: $body-color;
-$pagination-bg: scale-color($main_content_background_dark, $lightness: +10%);
-$pagination-border-color: scale-color($main_content_background_dark, $lightness: +20%);
+$pagination-bg: $gray-750;//scale-color($main_content_background_dark, $lightness: +10%);
+$pagination-border-color: scale-color($pagination-bg, $lightness: +5%);
 
 $pagination-hover-color: $body-color;
-$pagination-hover-bg: scale-color($main_content_background_dark, $lightness: +15%);
-$pagination-hover-border-color: $pagination-border-color;
+$pagination-hover-bg: scale-color($pagination-bg, $lightness: +10%);
+$pagination-hover-border-color: scale-color($pagination-hover-bg, $lightness: +3%);
 
 $pagination-active-bg: $primary;
-$pagination-active-border-color: $pagination-border-color;
+$pagination-active-border-color: scale-color($primary, $lightness: -10%);
 
 $pagination-disabled-color: $body-color;
-$pagination-disabled-bg: scale-color($main_content_background_dark, $lightness: +5%);
+$pagination-disabled-bg: scale-color($pagination-bg, $lightness: -15%);
 $pagination-disabled-border-color: $pagination-border-color;
 
-$navbar-padding-y: 0.3rem;
+$nav-menu-bg: change-color($modal-content-bg, $alpha: 0.97);
+$nav-menu-separator: scale-color($modal-content-bg, $lightness: +15%);
 
-@import "node_modules/bootstrap/scss/bootstrap";
+@import "inc/bootstrap-slim.sass";
 @import "inc/custom-layout.sass";
 @import "inc/stack.sass";
 @import "inc/sprites.sass"; 
@@ -196,3 +195,9 @@ $navbar-padding-y: 0.3rem;
 @import "inc/modal.sass";
 @import "inc/gallery.sass";
 @import "inc/gutter.sass";
+
+@include media-breakpoint-up(sm) {
+  .nav-submenu.open {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+}

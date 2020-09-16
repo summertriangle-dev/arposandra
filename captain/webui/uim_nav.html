@@ -1,18 +1,35 @@
 <div class="container">
     <nav class="kars-navbar kars-negative-box">
         <div class="kars-navbar-list kars-navbar-leading">
-            <a class="item" href="/news">
-                {{ _("Nav.News") }}
-            </a>
-            <a class="item" href="/idols">
-                {{ _("Nav.Idols") }}
-            </a>
-            <a class="item" href="/lives">
-                {{ _("Nav.Lives") }}
-            </a>
-            <a class="item" href="/events">
-                {{ _("Nav.Event") }}
-            </a>
+            <div class="item mascot">
+                <a href="/">
+                    <img height="32" src="{{ handler.static_url('images/nav_mascot.svg') }}" alt="The thing." />
+                </a>
+            </div>
+            <div class="item">
+                <a class="nav-submenu-opener" href="/cards/">{{ _("Nav.Cards") }}</a>
+                <ul class="nav-submenu">
+                    <li class="sub-item"><a class="stretched-link" href="/idols">{{ _("Nav.IdolList") }}</a></li>
+                    <li class="sub-item"><a class="stretched-link" href="/cards/sets">{{ _("Nav.CardSets") }}</a></li>
+                    <li class="sub-item"><a class="stretched-link" href="/history/">{{ _("Nav.ScheduleList") }}</a></li>
+                </ul>
+            </div>
+            <div class="item">
+                <a class="nav-submenu-opener" href="/news/">{{ _("Nav.News") }}</a>
+                <ul class="nav-submenu">
+                    <li class="sub-item"><a class="stretched-link" href="/jp/news/">{{ _("Nav.NewsJPServer") }}</a></li>
+                    <li class="sub-item"><a class="stretched-link" href="/jp/history/">{{ _("Nav.ScheduleListJPServer") }}</a></li>
+                    <li class="sub-item"><a class="stretched-link" href="/en/news/">{{ _("Nav.NewsENServer") }}</a></li>
+                    <li class="sub-item"><a class="stretched-link" href="/en/history/">{{ _("Nav.ScheduleListENServer") }}</a></li>
+                </ul>
+            </div>
+            <div class="item">
+                <a class="nav-submenu-opener" href="/other/">{{ _("Nav.Etc") }}</a>
+                <ul class="nav-submenu">
+                    <li class="sub-item"><a class="stretched-link" href="/lives">{{ _("Nav.LiveInfo") }}</a></li>
+                    <li class="sub-item"><a class="stretched-link" href="/events">{{ _("Nav.EventTracker") }}</a></li>
+                </ul>
+            </div>
         </div>
         <div class="kars-navbar-list kars-navbar-trailing">
             <a class="item nav-icon" id="bind-languagemenu-toggle">
@@ -20,9 +37,6 @@
             </a>
             <a class="item nav-icon" id="bind-appearance-toggle">
                 <i class="icon ion-ios-bulb" title="{{ _("Toggle Appearance") }}"></i>
-            </a>
-            <a class="item nav-icon" id="bind-search-toggle" style="display:none">
-                <i class="icon ion-ios-search" title="{{ _("Search") }}"></i>
             </a>
         </div>
     </nav>

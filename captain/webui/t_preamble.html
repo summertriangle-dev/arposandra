@@ -2,11 +2,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="x-tlinject-langs" content="{{ tlinject_supported_languages() }}" />
 
+<link href="{{ handler.static_url('images/favicon.ico') }}" rel="shortcut icon" />
 <link href="{{ handler.static_url('vendor/ionicons.min.css') }}" rel="stylesheet" />
 
 {% if handler.settings["debug"] %}
 <link data-appearance="light" data-bg-color="#f2dbf8" 
     class="theme" rel="stylesheet" type="text/css" 
+    media="(prefers-color-scheme: light)" 
     href="{{ handler.settings["wds_host"] }}/static/css/theme-light.css">
 <link data-appearance="dark" data-bg-color="#262336" 
     class="theme" rel="stylesheet" type="text/css" 
@@ -20,6 +22,7 @@
 {% else %}
 <link data-appearance="light" data-bg-color="#f2dbf8" 
     class="theme" rel="stylesheet" type="text/css" 
+    media="(prefers-color-scheme: light)" 
     href="{{ handler.static_url('css/theme-light.css') }}">
 <link data-appearance="dark" data-bg-color="#262336" 
     class="theme" rel="stylesheet" type="text/css" 

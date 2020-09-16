@@ -15,30 +15,40 @@ a.has-icon
 
 .icon.clickable
     color: $link-color
+    cursor: pointer
 
 .icon.icon-lg
     font-size: 1.5rem
 
+@keyframes mascot-a
+    from 
+        transform: scaleY(1) translateY(0)
+    to
+        transform: scaleY(0.8) translateY(6px)
+
+
 .kars-navbar
     display: flex
     justify-content: space-between
-    margin-top: 12px
-    margin-bottom: 12px
+    position: relative
+    z-index: 50
 
     .kars-navbar-list
         display: flex
+        padding-top: 12px
+        padding-bottom: 12px
+        
         &.kars-navbar-leading .item
             margin-right: 20px
         &.kars-navbar-trailing .item
             margin-left: 20px
 
-        .item
+        .item, .item a
             color: $kars-navbar-item-color
-        a.item:hover
+        .item a:hover
             color: $kars-navbar-item-hover-color
 
     .kars-navbar-leading
-        overflow-x: scroll
         scrollbar-width: none
         &::-webkit-scrollbar
             width: 0
@@ -46,8 +56,67 @@ a.has-icon
     .icon
         font-size: 1.33rem
     
+    .mascot
+        margin-top: -6px
+        margin-bottom: -2px
+        transition: filter 150ms linear, transform 150ms ease-out
+    
+    .mascot:hover
+        filter: saturate(120%)
+        animation: mascot-a 200ms ease-out 0s alternate 2
+
     .nav-icon, .nav-icon:hover
         text-decoration: none !important
+
+    .nav-submenu
+        display: none
+        transition: opacity 150ms ease-out
+
+    .nav-submenu.animate-out
+        opacity: 0
+
+    .nav-submenu.open
+        display: block
+        position: absolute
+        z-index: 50
+        left: 0
+        right: 0
+
+        margin-top: 12px
+        padding: 0
+        background: $nav-menu-bg
+        border-top: 1px solid $nav-menu-separator
+        
+    .nav-submenu .sub-item
+        display: block
+        position: relative
+        min-width: 20rem
+
+        // Mobile only
+        padding: 0.5rem 1rem
+        border-bottom: 1px solid $nav-menu-separator
+
+        &:hover, &:hover a
+            background: $primary
+            color: white
+            text-decoration: none
+    
+    @include media-breakpoint-up(sm)
+        .item
+            position: relative
+
+        .nav-submenu.open
+            top: 100%
+            left: -1rem
+            right: unset
+            border-radius: 8px
+            padding: 0.5rem 0
+            border-top: none
+        
+        .nav-submenu .sub-item
+            padding: 0.5rem 1rem
+            margin: 0
+            border: none
 
 html[lang=ja] .kars-navbar-list
     word-break: keep-all
@@ -328,9 +397,7 @@ img.kars-skill-icon
     &:last-child
         border-bottom-left-radius: 16px
         border-bottom-right-radius: 16px
-
-.kars-butt
-    height: 24px
+        border-bottom: none
 
 .kars-long-var-table
     width: 100%

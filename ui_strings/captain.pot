@@ -151,17 +151,41 @@ msgstr "Lv. {level}"
 msgid "More..."
 msgstr "More..."
 
-msgid "Nav.Event"
-msgstr "Nav.Event"
+msgid "Nav.CardSets"
+msgstr "Nav.CardSets"
 
-msgid "Nav.Idols"
-msgstr "Nav.Idols"
+msgid "Nav.Cards"
+msgstr "Nav.Cards"
 
-msgid "Nav.Lives"
-msgstr "Nav.Lives"
+msgid "Nav.Etc"
+msgstr "Nav.Etc"
+
+msgid "Nav.EventTracker"
+msgstr "Nav.EventTracker"
+
+msgid "Nav.IdolList"
+msgstr "Nav.IdolList"
+
+msgid "Nav.LiveInfo"
+msgstr "Nav.LiveInfo"
 
 msgid "Nav.News"
 msgstr "Nav.News"
+
+msgid "Nav.NewsENServer"
+msgstr "Nav.NewsENServer"
+
+msgid "Nav.NewsJPServer"
+msgstr "Nav.NewsJPServer"
+
+msgid "Nav.ScheduleList"
+msgstr "Nav.ScheduleList"
+
+msgid "Nav.ScheduleListENServer"
+msgstr "Nav.ScheduleListENServer"
+
+msgid "Nav.ScheduleListJPServer"
+msgstr "Nav.ScheduleListJPServer"
 
 msgid "NewsPostDisclaimer"
 msgstr "NewsPostDisclaimer"
@@ -261,9 +285,6 @@ msgstr "SSF.WaitingForWebpack"
 
 msgid "Saint.WaitingForWebpack"
 msgstr "Saint.WaitingForWebpack"
-
-msgid "Search"
-msgstr "Search"
 
 msgid "SetRecord.AvailableFromEvent"
 msgstr "SetRecord.AvailableFromEvent"
