@@ -4,20 +4,19 @@
     <div class="spread-image-backing placeholder" 
         style="background:url({{ handler.static_url(f"images/placeholder_{member.group}.svg") }})">
         <svg viewBox="0 0 400 200">
-            <defs>
-                
-            </defs>
             <image href="{{ handler.static_url(f"images/membersymbol/sy_{member.id}.svg") }}" 
                 style="transform-origin: center;
                     transform:translate(-32px, -48px)" x="50%" y="50%" height="64" width="64" />
-            <text id="numeral_{{ member.id }}" x="50%" y="50%" style="
-                     transform: translateY(40px) scale(0.80, 1.0);
-                     transform-origin: center;
-                     font-size: 24px; font-family: serif; 
-                     fill: rgba(255,255,255,0.8);
-                     dominant-baseline: middle; text-anchor:middle;">
-                {{ roman.get(member.id % 100, "XX") }}
-            </text>
+            
+            <g style="transform: translate(50%, 140px)">
+                <text style="
+                    transform: scale(0.8, 1.0);
+                    font-size: 24px; font-family: serif; 
+                    fill: rgba(255,255,255,0.8);
+                    text-anchor:middle;">
+                    {{ roman.get(member.id % 100, "XX") }}
+                </text>
+            </g>
         </svg>
     </div>
 
