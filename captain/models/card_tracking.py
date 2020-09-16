@@ -256,6 +256,8 @@ class CardTrackingDatabase(object):
 
         async with self.coordinator.pool.acquire() as conn:
             the_set = await conn.fetchrow(query, "jp", name)
+            if not the_set:
+                return None
 
             return CardSetRecord(
                 the_set["id"],
