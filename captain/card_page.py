@@ -123,6 +123,7 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin):
         "fes": card_tracking.CardSetRecord.T_FES,
         "pickup": card_tracking.CardSetRecord.T_PICKUP,
     }
+    SAME_GROUP_ORD_TYPES = [card_tracking.CardSetRecord.T_FES, card_tracking.CardSetRecord.T_PICKUP]
 
     def initialize(self):
         self._tlinject_base = ({}, set())
@@ -143,9 +144,20 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin):
             return (aset.max_date(), 8)
         return (aset.max_date(), -9999)
 
+    def get_same_group_for_all_members(self, aset: card_tracking.CardSetRecord) -> Optional[int]:
+        if not aset.card_refs:
+            return None
+
+        match = aset.card_refs[0].card.member.group
+        for c in aset.card_refs:
+            if c.card.member.group != match:
+                return None
+
+        return match
+
     def should_fill(self, aset: card_tracking.CardSetRecord):
         return (
-            len(set(ref.card.member.group for ref in aset.card_refs)) == 1
+            (self.get_same_group_for_all_members(aset) is not None)
             and aset.set_type in self.FILL_SET_TYPES
             and len(aset.card_refs) > self.ALL_MEMBER_SET_THRES
         )

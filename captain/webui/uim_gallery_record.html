@@ -1,8 +1,13 @@
-<h1 class="h4 mb-1 kars-negative-box">
+<h1 class="h4 mb-3 kars-negative-box">
     {% if set.is_systematic() %}
     {% raw tlinject_static(set.representative) %}
     {% else %}
     {% raw tlinject(set.representative) %}
+    {% end %}
+
+    {% set grp = handler.get_same_group_for_all_members(set) %}
+    {% if grp is not None and set.set_type not in handler.SAME_GROUP_ORD_TYPES %}
+    <small>(<a href="/idols/group/{{ grp }}">{% raw tlinject_static(f"kars.group_{grp}", escape=False) %}</a>)</small>
     {% end %}
 </h1>
 <div class="card kars-card-box gallery-spread" data-expand-group-root>
