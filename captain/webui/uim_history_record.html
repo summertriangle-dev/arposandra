@@ -65,6 +65,12 @@
         </div>
         {% end %}
 
+        <div class="group">
+            <div class="card-body kars-card-brief-list">
+                <a class="btn btn-primary btn-sm card-icon-margin" href="/card/{{ ",".join(str(c.ordinal) for c in release.all_card_ids() if c) }}">{{ _("All...") }}</a>
+            </div>
+        </div>
+
         {% if release.major_type == 1 and release.sub_type == 1 %}
         <div class="group weird">
             {% set start, end = release.gacha_dates() %}
@@ -91,7 +97,7 @@
                 {% end %}
             </p>
             {% if start2 %}
-            <p class="mb-1 h6 sub-event-date
+            <p class="mb-0 h6 sub-event-date
                 {% if current_time >= start2 and current_time <= end2 %}
                 hevent-now
                 {% end %}

@@ -54,6 +54,10 @@ class HistoryRecord(object):
     def ig_event_id(self):
         return self.dates.get(self.T_DATE_INGAME_EVENT_ID)
 
+    def all_card_ids(self):
+        for (k, v) in sorted(self.feature_card_ids.items()):
+            yield from v
+
     @staticmethod
     def card_list(l: List[Tuple[int, int]]) -> Dict[str, List[int]]:
         gs: Dict[str, List[int]] = {}
