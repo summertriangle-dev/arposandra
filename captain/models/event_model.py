@@ -201,7 +201,7 @@ class EventTrackingDatabase(object):
             if isinstance(after_dt, datetime):
                 recs = await self._fetch_t10_afterts(c, server_id, event_id, after_dt)
             else:
-                recs = await self._fetch_new_t10_recs(c, server_id, event_id)
+                recs = await self._fetch_new_t10_recs(c, server_id, event_id, after_dt)
 
             for record in recs:
                 for x in range(1, 11):
