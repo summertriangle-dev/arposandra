@@ -201,6 +201,9 @@ msgstr "Event/Scouting list (Global server)"
 msgid "Nav.ScheduleListJPServer"
 msgstr "Event/Scouting list (Japanese server)"
 
+msgid "Nav.SendFeedback"
+msgstr "Send comments, questions, and bugs"
+
 msgid "NewsPostDisclaimer"
 msgstr ""
 "This news post is presented on a best-effort basis and may differ from its "

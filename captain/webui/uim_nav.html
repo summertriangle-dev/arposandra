@@ -28,6 +28,9 @@
                 <ul class="nav-submenu">
                     <li class="sub-item"><a class="stretched-link" href="/lives">{{ _("Nav.LiveInfo") }}</a></li>
                     <li class="sub-item"><a class="stretched-link" href="/events">{{ _("Nav.EventTracker") }}</a></li>
+                    {% if "feedback_link" in handler.settings %}
+                    <li class="sub-item"><a class="stretched-link" href="{{ handler.settings["feedback_link"] }}">{{ _("Nav.SendFeedback") }}</a></li>
+                    {% end %}
                 </ul>
             </div>
         </div>

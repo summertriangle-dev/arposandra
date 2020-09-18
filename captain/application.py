@@ -132,5 +132,6 @@ def application(master, language, debug):
         have_preamble_extra=have_preamble_extra,
         have_footer_extra=have_footer_extra,
         cookie_secret=os.environ.get("AS_COOKIE_SECRET"),
+        feedback_link=os.environ.get("AS_FEEDBACK_URL"),
     )
     return application

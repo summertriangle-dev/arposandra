@@ -29,6 +29,7 @@ services:
       AS_COOKIE_SECRET: "8nM1zysPo+vimew9DAPEvSi4EOAazwaBa09NYvKUls4="
       ### Change this or js-dev will not work
       AS_WDS_HOST: "//mari.local:5002"
+      AS_FEEDBACK_URL: "http://example.com"
   utils:
     volumes:
       - .:/usr/kars
