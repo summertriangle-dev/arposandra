@@ -37,8 +37,13 @@ class EventDash(DatabaseMixin, LanguageCookieMixin):
             self.render("error.html", message="There's no event with this ID.")
             return
 
-        stories_list = await self.database().event_tracker.get_stories(sid, event["event_id"])
+        self.resolve_cards(event)
+        stories_list = await self.database().event_tracker.get_stories(sid, event.id)
         self.render("event_scaffold.html", server_id=sid, event_rec=event, stories=stories_list)
+
+    def resolve_cards(self, item):
+        cards = self.settings["master"].lookup_multiple_cards_by_id(item.feature_card_ids)
+        item.feature_card_ids = [c for c in cards if c]
 
 
 @route(r"/api/private/saint/([a-z]+)/current/setup.json")
@@ -61,11 +66,13 @@ class APISaintInfo(DatabaseMixin):
         self.write(
             {
                 "result": {
-                    "event_id": event["event_id"],
-                    "start_time": event["start_t"].isoformat(),
-                    "end_time": event["end_t"].isoformat(),
-                    "result_time": event["result_t"].isoformat(),
-                    "title_image": pageutils.image_url_reify(self, event["banner"], "png"),
+                    "event_id": event.id,
+                    "start_time": event.start_t.isoformat(),
+                    "end_time": event.end_t.isoformat(),
+                    "result_time": event.result_t.isoformat(),
+                    "title_image": pageutils.image_url_reify(
+                        self, event.thumbnail, "jpg", region=sid
+                    ),
                 }
             }
         )

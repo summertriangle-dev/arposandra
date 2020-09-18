@@ -12,14 +12,35 @@
     <div class="container">
         <div class="card kars-card-box">
             <div class="kars-list-alternate">
-                <div class="card-body">
-                    <span class="kars-data-ts" data-ts="{{ event_rec["start_t"].timestamp() }}">
-                        {{ event_rec["start_t"] }} UTC</span>
-                    -
-                    <span class="kars-data-ts" data-ts="{{ event_rec["end_t"].timestamp() }}">
-                        {{ event_rec["end_t"] }} UTC</span>
+                <div class="card-body kars-news-header">
+                    {% if event_rec.thumbnail %}
+                        <img class="item" width="210" src="{{ image_url_reify(event_rec.thumbnail, "jpg", server_id) }}" />
+                    {% end %}
+                    <div class="item">
+                        <h1 class="h5 {% if event_rec.thumbnail %} mt-2 {% end %}">
+                            {{ event_rec.title or "" }}
+                        </h1>
+                        <h2 class="h6 mb-0">
+                            <span class="kars-data-ts" data-orig-offset="32400,JST" data-style="fullshort" data-ts="{{ event_rec.start_t.timestamp() }}">
+                                {{ event_rec.start_t }} UTC</span>
+                            ~
+                            <span class="kars-data-ts" data-orig-offset="32400,JST" data-style="fullshort" data-ts="{{ event_rec.end_t.timestamp() }}">
+                                {{ event_rec.end_t }} UTC</span>
+                            </h2>
+                    </div>
                 </div>
+                {% if event_rec.feature_card_ids %}
+                <div class="card-body kars-card-brief-list">
+                    {% for cl in event_rec.feature_card_ids %}
+                    <a href="/card/{{ cl.ordinal }}" class="card-icon">
+                        <img width="48" height="48" src="{{ card_icon_url(cl, cl.normal_appearance) }}"
+                            alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">
+                    </a>
+                    {% end %}
+                </div>
+                {% end %}
             </div>
+
             {% module Template("uim_saint_graph.html", server=server_id, event=event_rec) %}
 
             <div class="kars-list-alternate card-body kars-story-grid">

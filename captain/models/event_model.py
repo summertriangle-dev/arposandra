@@ -1,5 +1,24 @@
-from datetime import datetime, timezone
 from collections import defaultdict
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import List
+
+from .card_tracking import HistoryRecord
+
+
+@dataclass
+class EventID(object):
+    server_id: str
+    id: int
+    type: int
+
+    title: str
+    thumbnail: str
+    feature_card_ids: List[int]
+
+    start_t: datetime
+    end_t: datetime
+    result_t: datetime
 
 
 class EventTrackingDatabase(object):
@@ -17,27 +36,71 @@ class EventTrackingDatabase(object):
             return self.SERVER_IDS[0]
         return server_id
 
-    async def get_event_info(self, server_id, event_id):
+    async def get_event_info(self, server_id, event_id) -> EventID:
         async with self.coordinator.pool.acquire() as c:
-            return await c.fetchrow(
+            the_row = await c.fetchrow(
                 """
-                SELECT event_id, banner, event_type, start_t, end_t, result_t FROM event_v2
-                WHERE serverid=$1 AND event_id=$2
+                SELECT event_id, event_type, start_t, end_t, result_t,
+                    title, thumbnail, ARRAY(SELECT card_id FROM history_v5__card_ids 
+                    WHERE history_v5__card_ids.id = history_v5.id
+                    AND history_v5__card_ids.serverid = $1
+                    AND history_v5__card_ids.what = 1) AS card_ids
+                FROM event_v2
+                LEFT JOIN history_v5__dates ON (event_v2.serverid = history_v5__dates.serverid
+                    AND event_v2.event_id = history_v5__dates.value 
+                    AND history_v5__dates.type = 7)
+                LEFT JOIN history_v5 ON (history_v5__dates.serverid = history_v5.serverid 
+                    AND history_v5__dates.id = history_v5.id)
+                WHERE event_v2.serverid=$1 AND event_id=$2
                 """,
                 server_id,
                 event_id,
             )
 
-    async def get_current_event(self, server_id, timestamp):
+        return EventID(
+            server_id,
+            the_row["event_id"],
+            the_row["event_type"],
+            the_row["title"],
+            the_row["thumbnail"],
+            the_row["card_ids"],
+            the_row["start_t"],
+            the_row["end_t"],
+            the_row["result_t"],
+        )
+
+    async def get_current_event(self, server_id, timestamp) -> EventID:
         async with self.coordinator.pool.acquire() as c:
-            return await c.fetchrow(
+            the_row = await c.fetchrow(
                 """
-                SELECT event_id, banner, event_type, start_t, end_t, result_t FROM event_v2
-                WHERE serverid=$1 AND start_t <= $2 ORDER BY end_t DESC
+                SELECT event_id, event_type, start_t, end_t, result_t,
+                    title, thumbnail, ARRAY(SELECT card_id FROM history_v5__card_ids 
+                    WHERE history_v5__card_ids.id = history_v5.id
+                    AND history_v5__card_ids.serverid = $1
+                    AND history_v5__card_ids.what = 1) AS card_ids
+                FROM event_v2
+                LEFT JOIN history_v5__dates ON (event_v2.serverid = history_v5__dates.serverid
+                    AND event_v2.event_id = history_v5__dates.value 
+                    AND history_v5__dates.type = 7)
+                LEFT JOIN history_v5 ON (history_v5__dates.serverid = history_v5.serverid 
+                    AND history_v5__dates.id = history_v5.id)
+                WHERE event_v2.serverid=$1 AND start_t <= $2 ORDER BY end_t DESC
                 """,
                 server_id,
                 timestamp,
             )
+
+        return EventID(
+            server_id,
+            the_row["event_id"],
+            the_row["event_type"],
+            the_row["title"],
+            the_row["thumbnail"],
+            the_row["card_ids"],
+            the_row["start_t"],
+            the_row["end_t"],
+            the_row["result_t"],
+        )
 
     async def get_stories(self, server_id, event_id):
         async with self.coordinator.pool.acquire() as c:
