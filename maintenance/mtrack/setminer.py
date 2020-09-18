@@ -1,15 +1,16 @@
-from typing import List, Tuple, Dict, Iterable
+import logging
 from dataclasses import dataclass
+from typing import Dict, Iterable, List, Tuple
+
 import asyncpg
 
-from libcard2 import string_mgr, dataclasses
-
-from captain.models.indexer.db_expert import PostgresDBExpert
 from captain.models.card_tracking import SUBTYPE_FES, SUBTYPE_PICK_UP
+from captain.models.indexer.db_expert import PostgresDBExpert
 from captain.models.mine_models import SetRecord
+from libcard2 import dataclasses, string_mgr
 
 from . import scripts
-from .newsminer import AnySRecord, SEventRecord
+from .newsminer import AnySRecord, SEventRecord, SGachaMergeRecord
 
 TSetMemory = List[Tuple[int, List[Tuple[List[int], SetRecord]]]]
 
@@ -111,7 +112,19 @@ def find_potential_set_names(from_lang: string_mgr.DictionaryAccess) -> List[Tup
     return db.execute(script).fetchall()
 
 
-def filter_sets_against_history(sets: List[SetRecord], events: List[AnySRecord]):
+def is_event_srecord(rec: AnySRecord):
+    return isinstance(rec, SEventRecord) or rec.maybe_type == SGachaMergeRecord.T_EVENT_TIE
+
+
+def get_card_list(rec: AnySRecord):
+    return (
+        rec.feature_card_ids if isinstance(rec, SEventRecord) else set(rec.feature_card_ids.keys())
+    )
+
+
+def filter_sets_against_history(
+    sets: List[SetRecord], events: List[AnySRecord], is_authoritative: bool
+):
     cache = {
         x.record_id: x.feature_card_ids
         if isinstance(x, SEventRecord)
@@ -129,3 +142,11 @@ def filter_sets_against_history(sets: List[SetRecord], events: List[AnySRecord])
                 marks.append(rid)
 
         yield s
+
+    if is_authoritative:
+        for evt in events:
+            if evt.record_id in marks or not is_event_srecord(evt):
+                continue
+
+            logging.debug("Creating a set for event release from %s.", evt.common_title)
+            yield SetRecord(evt.common_title, evt.common_title, "event", list(get_card_list(evt)))

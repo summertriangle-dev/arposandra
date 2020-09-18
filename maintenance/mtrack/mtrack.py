@@ -148,7 +148,7 @@ async def main(
     logging.debug("Master import done in %s ms", (time.monotonic() - cloc) * 1000)
     cloc = time.monotonic()
 
-    setminer_dirty = False
+    authoritative = (tag == "jp")
     hist_expert = db_expert.PostgresDBExpert(mine_models.HistoryIndex)
     set_expert = db_expert.PostgresDBExpert(mine_models.SetIndex)
     async with coordinator.pool.acquire() as conn:
@@ -168,7 +168,7 @@ async def main(
                 pre_events = newsminer.prepare_old_evt_entries(tag)
                 events = pre_events + events
 
-            for set_ in setminer.filter_sets_against_history(generated_sets, events):
+            for set_ in setminer.filter_sets_against_history(generated_sets, events, authoritative):
                 await set_expert.add_object(conn, set_, overwrite=False)
 
             if events:
