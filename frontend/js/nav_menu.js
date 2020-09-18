@@ -50,7 +50,10 @@ export function injectIntoPage() {
     const triggers = document.querySelectorAll(".nav-submenu-opener")
     for (let i = 0; i < triggers.length; i++) {
         const button = triggers[i]
-        button.addEventListener("click", openSubmenu, {passive: false})
+        button.addEventListener("mousedown", (e) => {
+            if (e.button == 0) openSubmenu(e)
+        }, {passive: false})
+        button.addEventListener("touchstart", openSubmenu, {passive: false})
         button.href = "#"
     }
 }
