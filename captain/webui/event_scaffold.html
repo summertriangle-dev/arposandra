@@ -41,7 +41,7 @@
                 {% end %}
             </div>
 
-            {% module Template("uim_saint_graph.html", server=server_id, event=event_rec) %}
+            {% module Template("uim_saint_graph.html", server=server_id, event=event_rec, track_mode=track_mode) %}
 
             {% if track_mode == "normal" %}
             <div class="kars-list-alternate card-body kars-story-grid">

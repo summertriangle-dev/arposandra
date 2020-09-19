@@ -3,8 +3,8 @@ import React from "react"
 import ReactDOM from "react-dom"
 import Chart from "chart.js"
 import {connect, Provider} from "react-redux"
-import { SaintDatasetCoordinator, SaintUserConfig, toRankTypeFriendlyName, 
-    rankTypesForEventType, localizeDatasetName, compareDatasetKey } from "./event_tracker_internal"
+import { SaintDatasetCoordinator, SaintT10DatasetCoordinator, SaintUserConfig, toRankTypeFriendlyName, 
+    rankTypesForEventType, compareDatasetKey } from "./event_tracker_internal"
 import { MultiValueSwitch } from "../ui_lib"
 import { effectiveAppearance } from "../appearance"
 import { hasStoragePermission, requestStoragePermission } from "../storage_permission"
@@ -84,28 +84,46 @@ const SaintRankTypeSelector = connect(
         }
     })(_SaintRankTypeSelector)
 
-function SaintDisplayBoardCard(props) {
+function symbolForDelta2(datum) {
     let diff2sym
-    if (!props.datum.delta2) {
+    if (!datum.delta2) {
         diff2sym = "-"
-    } else if (props.datum.delta2 > 0) {
+    } else if (datum.delta2 > 0) {
         diff2sym = <span 
-            title={Infra.strings.formatString(Infra.strings.Saint.TrendingUp, props.datum.delta2)} 
+            title={Infra.strings.formatString(Infra.strings.Saint.TrendingUp, datum.delta2)} 
             className="small text-success">↑</span>
     } else {
         diff2sym = <span 
-            title={Infra.strings.formatString(Infra.strings.Saint.TrendingDown, props.datum.delta2)} 
+            title={Infra.strings.formatString(Infra.strings.Saint.TrendingDown, datum.delta2)} 
             className="small text-danger">↓</span>
     }
+    return diff2sym
+}
 
+function SaintDisplayBoardCard(props) {
     return <div className="card kars-event-cutoff-card">
         <div className="card-body">
             <p className="card-text mb-1">{props.datum.label}</p>
             <p className="h5 card-title mb-1">
                 {Infra.strings.formatString(Infra.strings.Saint.PointCount, props.datum.points)}</p>
             <p className="h6 card-subtitle my-0">
-                {diff2sym}
-                {" "}
+                {symbolForDelta2(props.datum)} {" "}
+                <span className="delta-word">{props.datum.delta || "--"}</span>
+            </p>
+        </div>
+    </div>
+}
+
+function SaintDisplayBoardCardT10(props) {
+    return <div className="card kars-event-cutoff-card">
+        <div className="card-body">
+            <p className="card-text mb-1">{props.datum.label}</p>
+            <p className="h5 card-title mb-1">
+                {Infra.strings.formatString(Infra.strings.Saint.PointCount, props.datum.points)}
+                <i>({props.datum.who})</i>
+            </p>
+            <p className="h6 card-subtitle my-0">
+                {symbolForDelta2(props.datum)} {" "}
                 <span className="delta-word">{props.datum.delta || "--"}</span>
             </p>
         </div>
@@ -125,6 +143,8 @@ const SaintDisplayBoard = connect(
         return v.startsWith(prefix) && props.displayTiers[props.eventType][v]
     })
 
+    const CardProp = props.trackType == "top10"? SaintDisplayBoardCardT10 : SaintDisplayBoardCard
+
     vset.sort(compareDatasetKey)
     return <div className="row">
         {vset.map((k) => {
@@ -133,7 +153,7 @@ const SaintDisplayBoard = connect(
                 return null
             }
             return <div className="col-sm-4" key={k}>
-                <SaintDisplayBoardCard datum={s} />
+                <CardProp datum={s} />
             </div>
         })}
     </div>
@@ -143,18 +163,18 @@ class _SaintDisplayEditor extends React.Component {
     buttonsToShow() {
         const prefix = `${this.props.rankMode[this.props.eventType]}.`
         let show = []
-        for (let key of this.props.available) {
-            if (key.startsWith(prefix)) show.push(key)
+        for (let tuple of this.props.available) {
+            if (tuple[0].startsWith(prefix)) show.push(tuple)
         }
 
-        return show.sort(compareDatasetKey)
+        return show.sort((a, b) => compareDatasetKey(a[0], b[0]))
     }
 
     setAllToValue(v) {
         let newMap = {...this.props.displayTiers[this.props.eventType]}
 
         const prefix = `${this.props.rankMode[this.props.eventType]}.`
-        for (let key of this.props.available) {
+        for (let [key] of this.props.available) {
             if (key.startsWith(prefix)) newMap[key] = v
         }
 
@@ -184,13 +204,14 @@ class _SaintDisplayEditor extends React.Component {
                 </div>
             </div>
 
-            {this.buttonsToShow().map((k) => {
+            {this.buttonsToShow().map((tuple) => {
+                const [k, label] = tuple
                 return <div className="col-md-4" key={k}>
                     <div className="card kars-event-cutoff-card" 
                         onClick={() => this.toggleSingle(k)}>
                         <div className="card-body">
                             <p className="card-text h6">
-                                {localizeDatasetName(k)} {" "}
+                                {label} {" "}
                                 <input type="checkbox" 
                                     checked={map[k] === true} 
                                     readOnly={true}
@@ -279,7 +300,8 @@ const SaintRoot = connect(
             </div>
             {props.editMode?
                 <SaintDisplayEditor eventType={props.eventType} available={props.availableSet}/> :
-                <SaintDisplayBoard eventType={props.eventType} summaryData={props.summaries} /> }
+                <SaintDisplayBoard eventType={props.eventType} summaryData={props.summaries} 
+                    trackType={props.trackType}/> }
             <p className="small mb-3 mt-3">
                 {props.timerInstalled? Infra.strings.Saint.UpdateTimeNote : Infra.strings.Saint.UpdatesDisabled}
                 {" "}
@@ -297,8 +319,16 @@ class SaintDisplayController {
     constructor(canvas) {
         this.canvas = canvas
         this.eventType = canvas.dataset.eventType
-        this.chartData = new SaintDatasetCoordinator(canvas.dataset.serverId, 
-            parseInt(canvas.dataset.eventId))
+
+        if (canvas.dataset.trackWorld == "top10") {
+            this.chartData = new SaintT10DatasetCoordinator(canvas.dataset.serverId, 
+                parseInt(canvas.dataset.eventId))
+        } else {
+            this.chartData = new SaintDatasetCoordinator(canvas.dataset.serverId, 
+                parseInt(canvas.dataset.eventId))
+        }
+        
+        this.trackType = canvas.dataset.trackWorld
         this.chart = null
         this.timeout = null
         this.firstTime = true
@@ -457,7 +487,7 @@ class SaintDisplayController {
 
                 datasets.push({
                     key,
-                    label: localizeDatasetName(key),
+                    label: this.chartData.localizeDatasetName(key),
                     fill: false,
                     borderColor: COLOURS[i % COLOURS.length]((i / COLOURS.length) | 0),
                     ...this.chartData.datasets[key]
@@ -481,12 +511,13 @@ class SaintDisplayController {
         const summaries = this.chartData.summaryForDatasets(set)
         ReactDOM.render(<Provider store={Infra.store}>
             <SaintRoot 
-                availableSet={set}
+                availableSet={set.map((s) => [s, summaries[s].label])}
                 eventType={this.eventType}
                 summaries={summaries}
                 lastCheckin={new Date(this.chartData.lastCheckinTime * 1000)}
                 lastUpdate={new Date(this.chartData.lastUpdateTime * 1000)}
-                timerInstalled={this.timeout !== null} />
+                timerInstalled={this.timeout !== null}
+                trackType={this.trackType} />
         </Provider>, this.canvas)
     }
 }

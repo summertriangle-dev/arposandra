@@ -42,15 +42,6 @@ export function toRankTypeFriendlyName(key) {
     }
 }
 
-export function localizeDatasetName(dsn) {
-    let s = dsn.split(".")
-    if (s.length !== 2) return s
-
-    let criteria = toRankTypeFriendlyName(s[0])    
-
-    return Infra.strings.formatString(Infra.strings.Saint.DatasetNameFormat, s[1], criteria)
-}
-
 export const SaintUserConfig = createSlice({
     name: "saint",
     initialState: {
@@ -117,6 +108,15 @@ export class SaintDatasetCoordinator {
         this.datasets = {}
     }
 
+    localizeDatasetName(dsn) {
+        let s = dsn.split(".")
+        if (s.length !== 2) return s
+    
+        let criteria = toRankTypeFriendlyName(s[0])    
+    
+        return Infra.strings.formatString(Infra.strings.Saint.DatasetNameFormat, s[1], criteria)
+    }
+
     async refresh(hard = false) {
         if (hard) {
             this.lastUpdateTime = 0
@@ -145,11 +145,15 @@ export class SaintDatasetCoordinator {
         let maxT = -1
         for (let name of Object.keys(datasets)) {
             const rawDS = datasets[name]
+            if (rawDS.length > 0 && rawDS[0][1] === null) {
+                continue
+            }
+
             if (Object.hasOwnProperty.call(this.datasets, name)) {
                 this.datasets[name].data.push(...SaintDatasetCoordinator.reshapeDataset(rawDS))
             } else {
                 this.datasets[name] = {
-                    name: localizeDatasetName(name),
+                    name: this.localizeDatasetName(name),
                     data: SaintDatasetCoordinator.reshapeDataset(rawDS),
                     rankType: name.split(".")[0],
                 }
@@ -176,7 +180,7 @@ export class SaintDatasetCoordinator {
     }
 
     static reshapeDataset(dso) {
-        return dso.map((v) => {return {x: new Date(v[0] * 1000), y: v[1]}})
+        return dso.map((v) => {return {x: new Date(v[0] * 1000), y: v[1], n: v[2]}})
     }
 
     summaryForDatasets(wantNames) {
@@ -189,7 +193,7 @@ export class SaintDatasetCoordinator {
             const len = this.datasets[key].data.length
             ret[key] = {
                 points: this.datasets[key].data[len - 1].y,
-                label: this.datasets[key].name
+                label: this.datasets[key].name,
             }
 
             if (len > 1) {
@@ -264,3 +268,34 @@ export class SaintDatasetCoordinator {
     }
 }
 
+export class SaintT10DatasetCoordinator extends SaintDatasetCoordinator {
+    getUpdateURL() {
+        return `/api/private/saint/${this.serverid}/${this.eventId}/top10.json`
+    }
+
+    summaryForDatasets(wantNames) {
+        let ret = {}
+        for (let key of wantNames) {
+            if (!Object.hasOwnProperty.call(this.datasets, key)) {
+                continue
+            }
+
+            const len = this.datasets[key].data.length
+            ret[key] = {
+                points: this.datasets[key].data[len - 1].y,
+                label: this.datasets[key].name,
+                who: this.datasets[key].data[len - 1].n
+            }
+
+            if (len > 1) {
+                ret[key].delta = ret[key].points - this.datasets[key].data[len - 2].y
+            }
+
+            if (len > 2) {
+                ret[key].delta2 = ret[key].delta - (this.datasets[key].data[len - 2].y 
+                    - this.datasets[key].data[len - 3].y)
+            }
+        }
+        return ret
+    }
+}

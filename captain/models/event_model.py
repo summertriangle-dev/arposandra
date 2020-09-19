@@ -217,7 +217,7 @@ class EventTrackingDatabase(object):
 
             for record in recs:
                 for x in range(1, 21):
-                    datasets[f"{record['dataset']}.t{x}"].append(
+                    datasets[f"{record['dataset']}.{x}"].append(
                         (
                             self.to_utc_timestamp(record["observation"]),
                             record[f"points_t{x}"],
