@@ -4,7 +4,8 @@
         data-event-id="{{ event.id }}"
         data-range-start="{{ event.start_t.isoformat() }}Z"
         data-range-end="{{ event.end_t.isoformat() }}Z"
-        data-event-type="{{ event.type }}">
+        data-event-type="{{ event.type }}"
+        data-track-world="{{ track_mode }}">
 
         <p class="text-center">{{ _("Saint.WaitingForWebpack") }}</p>
     </div>

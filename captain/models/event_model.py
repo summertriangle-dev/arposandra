@@ -164,15 +164,21 @@ class EventTrackingDatabase(object):
         return await con.fetch(
             """
             WITH closest AS (
-                SELECT observation FROM border_fixed_data_v3
+                SELECT observation FROM border_fixed_data_v4
                 WHERE serverid=$1 AND event_id=$2
                 ORDER BY observation DESC LIMIT 1
             )
 
             SELECT observation, tier_type AS dataset,
                 points_t1, points_t2, points_t3, points_t4, points_t5,
-                points_t6, points_t7, points_t8, points_t9, points_t10
-            FROM border_fixed_data_v3 WHERE serverid=$1 AND event_id=$2
+                points_t6, points_t7, points_t8, points_t9, points_t10,
+                points_t11, points_t12, points_t13, points_t14, points_t15,
+                points_t16, points_t17, points_t18, points_t19, points_t20,
+                who_t1, who_t2, who_t3, who_t4, who_t5,
+                who_t6, who_t7, who_t8, who_t9, who_t10,
+                who_t11, who_t12, who_t13, who_t14, who_t15,
+                who_t16, who_t17, who_t18, who_t19, who_t20
+            FROM border_fixed_data_v4 WHERE serverid=$1 AND event_id=$2
             AND observation > (SELECT observation FROM closest) - make_interval(hours => $3)
             ORDER BY observation
             """,
@@ -186,8 +192,14 @@ class EventTrackingDatabase(object):
             """
             SELECT observation, tier_type AS dataset,
                 points_t1, points_t2, points_t3, points_t4, points_t5,
-                points_t6, points_t7, points_t8, points_t9, points_t10
-            FROM border_fixed_data_v3 WHERE serverid=$1 AND event_id=$2 AND observation > $3
+                points_t6, points_t7, points_t8, points_t9, points_t10,
+                points_t11, points_t12, points_t13, points_t14, points_t15,
+                points_t16, points_t17, points_t18, points_t19, points_t20,
+                who_t1, who_t2, who_t3, who_t4, who_t5,
+                who_t6, who_t7, who_t8, who_t9, who_t10,
+                who_t11, who_t12, who_t13, who_t14, who_t15,
+                who_t16, who_t17, who_t18, who_t19, who_t20
+            FROM border_fixed_data_v4 WHERE serverid=$1 AND event_id=$2 AND observation > $3
             ORDER BY observation
             """,
             server_id,
@@ -204,9 +216,13 @@ class EventTrackingDatabase(object):
                 recs = await self._fetch_new_t10_recs(c, server_id, event_id, after_dt)
 
             for record in recs:
-                for x in range(1, 11):
+                for x in range(1, 21):
                     datasets[f"{record['dataset']}.t{x}"].append(
-                        (self.to_utc_timestamp(record["observation"]), record[f"points_t{x}"])
+                        (
+                            self.to_utc_timestamp(record["observation"]),
+                            record[f"points_t{x}"],
+                            record[f"who_t{x}"],
+                        )
                     )
 
         return datasets

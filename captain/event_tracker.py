@@ -20,10 +20,15 @@ class EventServerRedirect(DatabaseMixin, RequestHandler):
             self.redirect(f"/{target}/events")
 
 
-@route(r"/([a-z]+)/events/?")
-@route(r"/([a-z]+)/events/([0-9]+)(?:/[^/]*)?")
+@route(r"/([a-z]+)/(events|events_high)/?")
+@route(r"/([a-z]+)/(events|events_high)/([0-9]+)(?:/[^/]*)?")
 class EventDash(DatabaseMixin, LanguageCookieMixin):
-    async def get(self, sid, eid=None):
+    def to_track_mode(self, urltype):
+        if urltype == "events_high":
+            return "top10"
+        return "normal"
+
+    async def get(self, sid, ttype, eid=None):
         sid = self.database().event_tracker.validate_server_id(sid)
 
         if not eid:
@@ -39,7 +44,13 @@ class EventDash(DatabaseMixin, LanguageCookieMixin):
 
         self.resolve_cards(event)
         stories_list = await self.database().event_tracker.get_stories(sid, event.id)
-        self.render("event_scaffold.html", server_id=sid, event_rec=event, stories=stories_list)
+        self.render(
+            "event_scaffold.html",
+            server_id=sid,
+            event_rec=event,
+            stories=stories_list,
+            track_mode=self.to_track_mode(ttype),
+        )
 
     def resolve_cards(self, item):
         cards = self.settings["master"].lookup_multiple_cards_by_id(item.feature_card_ids)

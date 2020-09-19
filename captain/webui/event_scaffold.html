@@ -43,6 +43,7 @@
 
             {% module Template("uim_saint_graph.html", server=server_id, event=event_rec) %}
 
+            {% if track_mode == "normal" %}
             <div class="kars-list-alternate card-body kars-story-grid">
                 <div class="row">
                     <div class="col-12">
@@ -70,6 +71,7 @@
                 </div>
                 {% end %}
             </div>
+            {% end %}
         </div>
     </div>
     {% include t_footer.html %}
