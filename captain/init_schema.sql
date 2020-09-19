@@ -54,23 +54,33 @@ CREATE TABLE IF NOT EXISTS event_story_v2 (
     FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
-CREATE TABLE IF NOT EXISTS border_fixed_data_v3 (
+CREATE TABLE IF NOT EXISTS border_fixed_data_v4 (
     serverid varchar(8),
     event_id int,
     observation timestamp,
     is_last boolean,
 
     tier_type tier_type_t,
-    points_t1 int, userid_t1 int,
-    points_t2 int, userid_t2 int,
-    points_t3 int, userid_t3 int,
-    points_t4 int, userid_t4 int,
-    points_t5 int, userid_t5 int,
-    points_t6 int, userid_t6 int,
-    points_t7 int, userid_t7 int,
-    points_t8 int, userid_t8 int,
-    points_t9 int, userid_t9 int,
-    points_t10 int, userid_t10 int,
+    points_t1 int,  userid_t1 int,  who_t1 text,
+    points_t2 int,  userid_t2 int,  who_t2 text,
+    points_t3 int,  userid_t3 int,  who_t3 text,
+    points_t4 int,  userid_t4 int,  who_t4 text,
+    points_t5 int,  userid_t5 int,  who_t5 text,
+    points_t6 int,  userid_t6 int,  who_t6 text,
+    points_t7 int,  userid_t7 int,  who_t7 text,
+    points_t8 int,  userid_t8 int,  who_t8 text,
+    points_t9 int,  userid_t9 int,  who_t9 text,
+    points_t10 int, userid_t10 int, who_t10 text,
+    points_t11 int, userid_t11 int, who_t11 text,
+    points_t12 int, userid_t12 int, who_t12 text,
+    points_t13 int, userid_t13 int, who_t13 text,
+    points_t14 int, userid_t14 int, who_t14 text,
+    points_t15 int, userid_t15 int, who_t15 text,
+    points_t16 int, userid_t16 int, who_t16 text,
+    points_t17 int, userid_t17 int, who_t17 text,
+    points_t18 int, userid_t18 int, who_t18 text,
+    points_t19 int, userid_t19 int, who_t19 text,
+    points_t20 int, userid_t20 int, who_t20 text,
 
     UNIQUE (serverid, event_id, tier_type, observation),
     FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
@@ -91,6 +101,9 @@ CREATE TABLE IF NOT EXISTS border_data_v3 (
     FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS border_data_v3_obs_idx ON border_data_v3 (observation);
+CREATE INDEX IF NOT EXISTS border_fixed_data_v4_obs_idx ON border_fixed_data_v4 (observation);
 
 -- tlinject_model.py
 CREATE TABLE IF NOT EXISTS tlinject_v1 (

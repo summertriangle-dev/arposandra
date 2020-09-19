@@ -97,6 +97,9 @@ TRACK_INTERVAL_ACCELERATED = 900
 TRACK_INTERVAL = 3600
 MIN_ENTRIES_FOR_T100 = 100
 
+# Number of positions in top 10 row. Will generate 3 columns for each place.
+TOP10_POSITION_COUNT = 20
+
 
 def track_interval(current: datetime, status: models.event_status_t):
     if current < status.start_time:
@@ -161,14 +164,16 @@ def make_common_top100_rows(cell_coll, userinfo_key):
 def make_common_top10_row(cell_coll, rank_type, userinfo_key):
     l = [rank_type]
     max_ = len(cell_coll)
-    for x in range(10):
+    for x in range(TOP10_POSITION_COUNT):
         if x >= max_:
+            l.append(None)
             l.append(None)
             l.append(None)
             continue
 
         l.append(cell_coll[x]["event_point"])
         l.append(cell_coll[x][userinfo_key]["user_id"])
+        l.append(cell_coll[x][userinfo_key]["user_name"]["dot_under_text"])
     return l
 
 
