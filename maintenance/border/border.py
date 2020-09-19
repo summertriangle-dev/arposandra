@@ -146,6 +146,7 @@ def should_track_for_event(status: models.event_status_t):
 def make_common_top100_rows(cell_coll, userinfo_key):
     return [
         (
+            i,
             cell["order"],
             cell["event_point"],
             cell[userinfo_key]["user_id"],
@@ -157,7 +158,7 @@ def make_common_top100_rows(cell_coll, userinfo_key):
             cell[userinfo_key]["is_all_training_activated"],
             cell[userinfo_key]["emblem_master_id"],
         )
-        for cell in cell_coll
+        for i, cell in enumerate(cell_coll)
     ]
 
 

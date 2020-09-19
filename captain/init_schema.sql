@@ -105,6 +105,26 @@ CREATE TABLE IF NOT EXISTS border_data_v3 (
 CREATE INDEX IF NOT EXISTS border_data_v3_obs_idx ON border_data_v3 (observation);
 CREATE INDEX IF NOT EXISTS border_fixed_data_v4_obs_idx ON border_fixed_data_v4 (observation);
 
+CREATE TABLE IF NOT EXISTS border_t100_v2 (
+    serverid varchar(8),
+    event_id int,
+    tier_type tier_type_t,
+    idx int,
+    rank int,
+    points int,
+    user_id int,
+    user_name text,
+    user_level int,
+    center_card int,
+    center_level int,
+    awakened boolean,
+    full_tree boolean,
+    wield_title int,
+    UNIQUE(serverid, event_id, tier_type, idx),
+    FOREIGN KEY (serverid, event_id) REFERENCES event_v2(serverid, event_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
 -- tlinject_model.py
 CREATE TABLE IF NOT EXISTS tlinject_v1 (
     langid varchar(8),

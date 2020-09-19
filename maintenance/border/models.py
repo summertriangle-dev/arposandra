@@ -145,9 +145,9 @@ class DatabaseConnection(object):
         async with self.pool.acquire() as c, c.transaction():
             await c.executemany(
                 """
-                INSERT INTO border_t100_v1 VALUES
-                ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-                ON CONFLICT (serverid, event_id, tier_type, rank) DO NOTHING 
+                INSERT INTO border_t100_v2 VALUES
+                ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+                ON CONFLICT (serverid, event_id, tier_type, idx) DO NOTHING 
                 """,
                 ((region, event_id, type_, *r) for r in rows),
             )
