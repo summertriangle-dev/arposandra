@@ -71,6 +71,7 @@ export default {
     Saint: {
         HeaderCurrentTiers: "Cutoffs",
         DatasetNameFormat: "Top {0} ({1})",
+        DatasetNameFormatHigh: "Rank {0}",
         DatasetFriendlyName: {
             Voltage: "Voltage",
             Points: "Points",

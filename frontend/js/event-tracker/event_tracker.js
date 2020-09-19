@@ -105,11 +105,14 @@ function SaintDisplayBoardCard(props) {
         <div className="card-body">
             <p className="card-text mb-1">{props.datum.label}</p>
             <p className="h5 card-title mb-1">
-                {Infra.strings.formatString(Infra.strings.Saint.PointCount, props.datum.points)}</p>
-            <p className="h6 card-subtitle my-0">
-                {symbolForDelta2(props.datum)} {" "}
-                <span className="delta-word">{props.datum.delta || "--"}</span>
+                {Infra.strings.formatString(Infra.strings.Saint.PointCount, props.datum.points)}
+                {" "}
+                <span className="h6 my-0">
+                    {symbolForDelta2(props.datum)} {" "}
+                    <span className="delta-word">{props.datum.delta || "--"}</span>
+                </span>
             </p>
+            
         </div>
     </div>
 }
@@ -117,14 +120,14 @@ function SaintDisplayBoardCard(props) {
 function SaintDisplayBoardCardT10(props) {
     return <div className="card kars-event-cutoff-card">
         <div className="card-body">
-            <p className="card-text mb-1">{props.datum.label}</p>
+            <p className="card-text mb-1">{props.datum.label}: <i>{props.datum.who}</i></p>
             <p className="h5 card-title mb-1">
                 {Infra.strings.formatString(Infra.strings.Saint.PointCount, props.datum.points)}
-                <i>({props.datum.who})</i>
-            </p>
-            <p className="h6 card-subtitle my-0">
-                {symbolForDelta2(props.datum)} {" "}
-                <span className="delta-word">{props.datum.delta || "--"}</span>
+                {" "}
+                <span className="h6 my-0">
+                    {symbolForDelta2(props.datum)} {" "}
+                    <span className="delta-word">{props.datum.delta || "--"}</span>
+                </span>
             </p>
         </div>
     </div>

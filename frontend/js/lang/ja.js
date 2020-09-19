@@ -71,6 +71,7 @@ export default {
     Saint: {
         HeaderCurrentTiers: "ボーダー",
         DatasetNameFormat: "{0}位上 ({1})",
+        DatasetNameFormatHigh: "Rank {0}",
         DatasetFriendlyName: {
             Voltage: "ボルテージ",
             Points: "イベントP",

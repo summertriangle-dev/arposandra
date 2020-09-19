@@ -273,6 +273,14 @@ export class SaintT10DatasetCoordinator extends SaintDatasetCoordinator {
         return `/api/private/saint/${this.serverid}/${this.eventId}/top10.json`
     }
 
+    localizeDatasetName(dsn) {
+        let s = dsn.split(".")
+        if (s.length !== 2) return s
+    
+        let criteria = toRankTypeFriendlyName(s[0])    
+        return Infra.strings.formatString(Infra.strings.Saint.DatasetNameFormatHigh, s[1], criteria)
+    }
+
     summaryForDatasets(wantNames) {
         let ret = {}
         for (let key of wantNames) {
