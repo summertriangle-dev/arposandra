@@ -20,11 +20,11 @@ class EventServerRedirect(DatabaseMixin, RequestHandler):
             self.redirect(f"/{target}/events")
 
 
-@route(r"/([a-z]+)/(events|events_high)/?")
-@route(r"/([a-z]+)/(events|events_high)/([0-9]+)(?:/[^/]*)?")
+@route(r"/([a-z]+)/(events|events/top)/?")
+@route(r"/([a-z]+)/(events|events/top)/([0-9]+)(?:/[^/]*)?")
 class EventDash(DatabaseMixin, LanguageCookieMixin):
     def to_track_mode(self, urltype):
-        if urltype == "events_high":
+        if urltype == "events/top":
             return "top10"
         return "normal"
 
