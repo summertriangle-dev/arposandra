@@ -15,7 +15,10 @@ class DatabaseConnection(object):
         self.pool = await asyncpg.create_pool(dsn=self.connection_url)
         init_schema = pkg_resources.resource_string("captain", "init_schema.sql").decode("utf8")
         async with self.pool.acquire() as c, c.transaction():
-            await c.execute(init_schema)
+            try:
+                await c.execute(init_schema)
+            except asyncpg.UniqueViolationError:
+                pass
 
     async def get_epoch(self, server_id):
         async with self.pool.acquire() as c:

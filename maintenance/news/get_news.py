@@ -6,9 +6,10 @@ from datetime import datetime
 import logging
 
 from astool import ctx, iceapi
-import ingest
-import dm_parse
-import theatre_parse
+
+from maintenance.news import ingest
+from maintenance.news import dm_parse
+from maintenance.news import theatre_parse
 
 
 DT_DISABLED_REGIONS = {"en"}

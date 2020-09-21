@@ -24,8 +24,15 @@ class DatabaseConnection(object):
         init_schema = pkg_resources.resource_string("captain", "init_schema.sql").decode("utf8")
         hist_expert = db_expert.PostgresDBExpert(mine_models.HistoryIndex)
         async with self.pool.acquire() as c, c.transaction():
-            await c.execute(init_schema)
-            await hist_expert.create_tables(c)
+            try:
+                await c.execute(init_schema)
+            except asyncpg.UniqueViolationError:
+                pass
+
+            try:
+                await hist_expert.create_tables(c)
+            except asyncpg.UniqueViolationError:
+                pass
 
     async def have_event_info(self, region, event_id):
         async with self.pool.acquire() as c:
@@ -166,7 +173,7 @@ class DatabaseConnection(object):
             )
 
             INSERT INTO history_v5__dates (
-                (SELECT hid, sid, NULL, event_id FROM event_match)
+                (SELECT hid, sid, 7, NULL, event_id FROM event_match)
             ) ON CONFLICT DO NOTHING;
         """
         async with self.pool.acquire() as c, c.transaction():

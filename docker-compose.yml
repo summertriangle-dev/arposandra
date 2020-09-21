@@ -22,4 +22,4 @@ services:
     image: arposandra_app
     working_dir: /usr/kars/maintenance
     entrypoint: ["./start.sh"]
-    command: ["none"]
+    command: ["become-host-for-cron-execs"]

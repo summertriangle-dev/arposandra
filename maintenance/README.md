@@ -5,18 +5,10 @@ They are meant to run from a single docker image, so you can do something like
 docker-compose -f docker-compose.yml -f ... run --rm utils [news|karstool|sync...]
 ```
 
-**NOTE**: The image will not function without
-astool/IceAPI copied into the `lib` folder. You can get the required files from
-Howler (git@wireguard.kirara.ca:services/astool.git).
+**NOTE**: The image will not run properly without a copy of astool
+in the astool/ directory. It's not needed for docker build, but if you
+plan to run a prod instance of the site you may want to run:
 
-Supported commands:
+`git clone https://howler.kirara.ca/services/astool.git astool`
 
-- `news` - Fetch in-game news.
-- `reparse` - Re-run the DM parser on already fetched news. Doesn't rely
-  on external services.
-- `sync-master` - Same as running karstool from the astool distribution, but
-  in docker!
-- `sync-cache` - Same as running package_list_tool on main and card:* packages
-- `plt` - Trap door for running package_list_tool with arbitrary args.
-
-For a full list, see start.sh.
+For the list of commands, see start.sh.
