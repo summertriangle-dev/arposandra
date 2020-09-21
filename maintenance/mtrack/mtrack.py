@@ -141,14 +141,14 @@ async def main(
         await coordinator.drop_all_mtrack_tables()
         need_reinit = True
 
+    authoritative = tag == "jp" and mv != "-"
     generated_sets: List[mine_models.SetRecord] = []
-    if tag == "jp" and mv != "-":
+    if authoritative:
         generated_sets = await update_card_index(tag, "ja", mv, coordinator)
 
     logging.debug("Master import done in %s ms", (time.monotonic() - cloc) * 1000)
     cloc = time.monotonic()
 
-    authoritative = (tag == "jp")
     hist_expert = db_expert.PostgresDBExpert(mine_models.HistoryIndex)
     set_expert = db_expert.PostgresDBExpert(mine_models.SetIndex)
     async with coordinator.pool.acquire() as conn:
