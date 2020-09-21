@@ -5,7 +5,7 @@
 SERVERS="jp en"
 
 function debug() {
-    test -z "${AS_CRON_DEBUG}" && echo $@
+    test '!' -z "${AS_CRON_DEBUG}" && echo $@
 }
 
 function webhook() {

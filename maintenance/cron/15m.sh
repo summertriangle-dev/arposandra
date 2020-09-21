@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function debug() {
-    test -z "${AS_CRON_DEBUG}" && echo $@
+    test '!' -z "${AS_CRON_DEBUG}" && echo $@
 }
 
 PIDS=""
