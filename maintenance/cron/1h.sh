@@ -14,7 +14,7 @@ function webhook() {
         local WEBHOOK_URL=$(cat /run/secrets/webhook_config)
         local MESSAGE="($1) All Stars master version changed to \`$2\`."
         local JSON="{\"content\": \"$MESSAGE\"}"
-        curl -q -d "$JSON" -H "Content-Type: application/json" "$WEBHOOK_URL"
+        ./sendmsg.py "$WEBHOOK_URL" "application/json" "$JSON" 
     fi
 }
 
@@ -54,7 +54,7 @@ function update_server() {
     wait
     debug "@${SID} phase: all children exited"
     if [[ "$CUR" != "$NEW" ]]; then
-        # webhook "$SID" "$NEW"
+        webhook "$SID" "$NEW"
         return 55
     fi
 }
