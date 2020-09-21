@@ -40,8 +40,16 @@ function update_server() {
     local NEW=$(python3 -m astool "${SID}" current_master)
 
     debug "@${SID} phase: news"
-    # Try this and see if it flakes
+    # This may conflict with the callout to sign asset urls.
     python3 news/get_news.py "${SID}"
+
+    # Mtrack needs to run after news is settled
+    debug "@${SID} phase: mtrack"
+    if [[ "$CUR" != "$NEW" ]]; then
+        python3 mtrack/mtrack.py "${SID}" "${NEW}"
+    else
+        python3 mtrack/mtrack.py "${SID}" -
+    fi
 
     wait
     debug "@${SID} phase: all children exited"
