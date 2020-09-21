@@ -168,7 +168,7 @@ class DatabaseConnection(object):
             WITH event_match AS (
                 SELECT event_v2.serverid AS sid, event_id, history_v5__dates.id AS hid FROM history_v5__dates 
                 INNER JOIN event_v2 ON (history_v5__dates.serverid=event_v2.serverid 
-                    AND EXTRACT(epoch FROM history_v5__dates.date - event_v2.start_t) <= 0)
+                    AND EXTRACT(epoch FROM history_v5__dates.date - event_v2.start_t) = 0)
                 WHERE type = 1
             )
 
