@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 export PYTHONPATH=/usr/kars:./lib:$PYTHONPATH
@@ -20,6 +20,7 @@ case $executable in
             exit 1
         fi
         ;;
+
     ##### ADMIN COMMANDS #####
     astool)
         exec python3 -m astool "$@"
@@ -41,6 +42,7 @@ case $executable in
         ;;
 
     become-host-for-cron-execs)
+        echo "become-host-for-cron-execs: start"
         sleep infinity
         ;;
     none)
