@@ -1,6 +1,6 @@
 # Arposandra
 
-You need Python 3.6 to run this thing.
+You need Python 3.7 to run this thing.
 It's split into two apps, the asset server that produces images on demand
 from the astool package cache, and the web server that produces the pages.
 
@@ -29,31 +29,12 @@ You will need to make the following edits to the configs:
 - Alternatively, just create the symlink "./arena/astool_server_specific_fixme"
   that points to the right place.
 
-To make CSS work in dev mode, you need to compile the sass files (not in
-docker):
-
-```
-cd frontend
-yarn
-make all
-```
-
-The frontend folder also has the `control.sh` script which will run 
-webpack-dev-server and live sass for you. This makes it so
-
-- JS works in dev mode, and
-- Changes you make to sass files are automatically compiled.
-
 If you want to run the tools in the utils image, you need to follow the instructions
 to clone astool in the maintenance directory.
 
 ## Application Configuration
 
-Configuration is done through [environment variables, which are described in the wiki](https://github.com/summertriangle-dev/arposandra/wiki/Configuration-Variables).
-
-~~You can point the image server at (insert public url here) if you're not
-running an asset server~~. Unfortunately this doesn't work anymore because the 
-URLs changed. 
+See `doc/config.md`.
 
 ## Adding New Pages
 
@@ -77,33 +58,16 @@ is like this:
 
 ## Frontend code (Sass and JS)
 
-The Makefile in frontend/ is wired up to run watch commands to compile
-the sass and js code. You can use the control.sh script to run both in
-the same window.
+The CSS and Javascript code is in frontend/. Starting the js-dev docker container
+(defined in variants/config.dev.yml) will set up webpack-dev-server for you.
+No need to do anything on the host side anymore.
 
-```bash
-cd frontend
-./control.sh
-```
-
-When you are ready to commit your changes, run `make all` to ensure
-all files are up-to-date.
+Remember to change the AS_WDS_HOST environment variable in config.dev.yml to
+either localhost, or an accessible host if testing on other devices.
 
 ## Localization
 
-Translations exist in two places.
-
-- The Python code uses the files in the `ui_strings` directory. To create
-  a new language, duplicate en_tornado.po and en_static.po to the new 
-  language code, then translate it. cd into the `ui_strings` directory
-  and type `make` to build the new string files.
-- To extract new strings, do `make genstrings`. To add them to the current 
-  language files, run `make msgmerge`. You will then be able to update the
-  individual translation files.
-- The frontend has its own translations in `frontend/js/lang`. To translate
-  it, duplicate the en.js file, and translate it. Webpack should pick it
-  up automatically. **Important: the JS code only loads languages that
-  have a Python counterpart.**
+See `doc/localization.md`.
 
 ## Asset Server
 
