@@ -48,12 +48,15 @@ function createDismissTarget() {
 
 export function injectIntoPage() {
     const triggers = document.querySelectorAll(".nav-submenu-opener")
+    const mousedownEvent = (e) => {
+        if (e.button == 0) openSubmenu(e)
+    }
+    const clickEvent = (e) => e.preventDefault()
     for (let i = 0; i < triggers.length; i++) {
         const button = triggers[i]
-        button.addEventListener("mousedown", (e) => {
-            if (e.button == 0) openSubmenu(e)
-        }, {passive: false})
+        button.addEventListener("mousedown", mousedownEvent, {passive: false})
         button.addEventListener("touchstart", openSubmenu, {passive: false})
+        button.addEventListener("click", clickEvent, {passive: false})
         button.href = "#"
     }
 }
