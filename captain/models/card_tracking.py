@@ -204,32 +204,34 @@ class CardTrackingDatabase(object):
         if page:
             offset = page * n_entries
 
-        query = [
-            f"""
-            SELECT card_p_set_index_v1.id, card_p_set_index_v1.representative, set_type, shioriko_exists,
-            ARRAY(
+        query = f"""
+            WITH wanted_entries AS (
+                SELECT card_p_set_index_v1.id, card_p_set_index_v1.representative, set_type, shioriko_exists
+                FROM card_p_set_index_v1
+                INNER JOIN card_p_set_index_v1__sort_dates USING (representative)
+                WHERE server_id = $1
+                {"AND set_type = $2" if category is not None else ""}
+			    ORDER BY date DESC LIMIT {n_entries} OFFSET {offset}
+            )
+			
+			SELECT *, ARRAY(
                 SELECT (card_ids, source, date) FROM card_p_set_index_v1__card_ids 
                 INNER JOIN card_index_v1 ON (card_index_v1.id = card_p_set_index_v1__card_ids.card_ids)
                 LEFT JOIN card_index_v1__release_dates ON (
                     card_index_v1.id = card_index_v1__release_dates.id 
                     AND server_id = $1
                 )
-                WHERE card_p_set_index_v1__card_ids.representative = card_p_set_index_v1.representative 
+                WHERE card_p_set_index_v1__card_ids.representative = wanted_entries.representative 
             ) AS cards
-            FROM card_p_set_index_v1__sort_dates
-            INNER JOIN card_p_set_index_v1 USING (representative)
-            WHERE server_id = $1
-            """
-        ]
+			FROM wanted_entries
+        """
+
         args: List[Any] = [tag]
         if category is not None:
-            query.append(f"AND set_type = ${len(args) + 1}")
             args.append(category)
 
-        query.append(f"ORDER BY date DESC LIMIT {n_entries} OFFSET {offset}")
-
         async with self.coordinator.pool.acquire() as conn:
-            set_ids = await conn.fetch("\n".join(query), *args)
+            set_ids = await conn.fetch(query, *args)
             return [
                 CardSetRecord(
                     r["id"],
