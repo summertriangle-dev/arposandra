@@ -25,19 +25,17 @@ function update_server() {
         CUR=""
     fi
 
+    debug "@${SID} phase: dl_master"
+    python3 -m astool "${SID}" --quiet dl_master
+    local NEW=$(python3 -m astool "${SID}" current_master)
+
     if [[ "$SID" == "jp" ]]; then
-        debug "@${SID} phase: dl_master"
-        python3 -m astool "${SID}" --quiet dl_master
         debug "@${SID} phase: pkgsync"
         python3 -m astool "${SID}" --quiet pkg_sync main card:% &
     else
-        debug "@${SID} phase: dl_master"
-        python3 -m astool "${SID}" --quiet dl_master
         debug "@${SID} phase: sync_region_banners"
         python3 -m astool_extra.sync_region_banners -r ${SID} -l ${SID} --quiet &
     fi
-
-    local NEW=$(python3 -m astool "${SID}" current_master)
 
     debug "@${SID} phase: news"
     # This may conflict with the callout to sign asset urls.
