@@ -25,7 +25,7 @@ class SEventRecord(object):
     time_span: Timespan
 
     def get_dedup_timespan(self):
-        return self.time_span
+        return (*self.time_span, tuple(sorted(self.feature_card_ids)))
 
     def get_full_range(self):
         return (self.time_span[0], self.time_span[0] + self.time_span[1])
@@ -48,7 +48,7 @@ class SGachaMergeRecord(object):
     time_spans: Dict[str, Timespan] = field(default_factory=dict)
 
     def get_dedup_timespan(self):
-        return self.time_spans["gacha"]
+        return (*self.time_spans["gacha"], tuple(sorted(self.feature_card_ids.keys())))
 
     def get_full_range(self):
         if "part2" not in self.time_spans:
@@ -83,6 +83,8 @@ def deduplicate_srecords(spans: Iterable[AnySRecord]) -> List[AnySRecord]:
         have_record = dedup.get(eff_ts)
         if not have_record or have_record.record_id > record.record_id:
             dedup[eff_ts] = record
+        else:
+            logging.debug("Suppressing supposed duplicate record: %s.", record)
 
     return sorted(dedup.values(), key=lambda x: x.get_dedup_timespan())
 
