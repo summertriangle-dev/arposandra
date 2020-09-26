@@ -1,7 +1,7 @@
 <form method="get" action="/cards/sets">
     <div class="form-group">
         <label for="set-type">{{ _("CardSetsForm.SetType") }}</label>
-        <select class="form-control" name="type" id="set-type">
+        <select class="custom-select form-control" name="type" id="set-type">
             {% set v = prefilled_form.get("category", "") %}
             <option value="" {{ 'selected' if not v else '' }}>{{ _("CardSetsForm.SetType.Any") }}</option>
             <option value="event" {{ 'selected' if v == 'event' else '' }}>{{ _("CardSetsForm.SetType.Event") }}</option>
@@ -17,7 +17,7 @@
     <div class="form-group">
         <label for="use-dates">{{ _("CardSetsForm.ReleaseDates") }}</label>
         {% set v = prefilled_form.get("use_dates", "") %}
-        <select class="form-control" name="use_dates" id="use-dates">
+        <select class="custom-select form-control" name="use_dates" id="use-dates">
             <option value="" {{ 'selected' if not v else '' }}>{{ _("CardSetsForm.ReleaseDates.MyPref") }}</option>
             <option value="en" {{ 'selected' if v == 'en' else '' }}>{{ _("CardSetsForm.ReleaseDates.ServerEn") }}</option>
             <option value="jp" {{ 'selected' if v == 'jp' else '' }}>{{ _("CardSetsForm.ReleaseDates.ServerJp") }}</option>

@@ -56,16 +56,18 @@ $table-border-color:          rgba(10, 10, 10, 0.2);
 
 // Forms
 
-$input-bg: scale-color($gray-800, $lightness: 5%);
+$input-bg: scale-color($gray-900, $lightness: 5%);
 $input-color: $gray-300;
 
-$input-border-color: scale-color($input-bg, $lightness: 10%);
+$input-border-color: scale-color($input-bg, $lightness: 20%);
 
 $input-group-addon-color:               $gray-500 !default;
 $input-group-addon-bg:                  $gray-700 !default;
 
 $custom-file-color:                 $gray-500 !default;
 $custom-file-border-color:          $gray-700 !default;
+
+$custom-select-indicator-color: $gray-300;
 
 // Dropdowns
 
@@ -138,6 +140,8 @@ $main_content_background_dark: scale-color($body-bg, $saturation: -40%);
 $card-bg: scale-color($main_content_background_dark, $lightness: +6%);
 $card-bg-alt: scale-color($main_content_background_dark, $lightness: +2%);
 
+$modal-content-bg: $card-bg-alt;
+
 $kars-stack-background: lighten($card-bg, 5%);
 $kars-stack-border: rgba(10, 10, 10, 0.2);
 
@@ -180,8 +184,8 @@ $pagination-disabled-color: $body-color;
 $pagination-disabled-bg: scale-color($pagination-bg, $lightness: -15%);
 $pagination-disabled-border-color: $pagination-border-color;
 
-$nav-menu-bg: change-color($modal-content-bg, $alpha: 0.97);
-$nav-menu-separator: scale-color($modal-content-bg, $lightness: +15%);
+$nav-menu-bg: change-color($gray-800, $alpha: 0.97);
+$nav-menu-separator: scale-color($gray-800, $lightness: +15%);
 
 @import "inc/bootstrap-slim.sass";
 @import "inc/custom-layout.sass";

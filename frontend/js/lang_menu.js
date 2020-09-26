@@ -104,7 +104,7 @@ class LanguageMenu extends React.Component {
                 <label htmlFor="ui-language-select">
                     {Infra.strings.LangMenu.UILanguageSelectLabel}
                 </label>
-                <select name="ui-language-select" className="form-control"
+                <select name="ui-language-select" className="custom-select form-control"
                     value={this.state.lang}
                     onChange={(e) => this.setState({lang: e.target.value})}>
                     {this.state.siteLangs.map((l) =>
@@ -115,7 +115,7 @@ class LanguageMenu extends React.Component {
                 <label htmlFor="dict-select">
                     {Infra.strings.LangMenu.DictionarySelectLabel}
                 </label>
-                <select name="dict-select" className="form-control"
+                <select name="dict-select" className="custom-select form-control"
                     value={this.state.dictionary}
                     onChange={(e) => this.setState({dictionary: e.target.value})}>
                     {this.state.dataLangs.map((l) =>
@@ -126,7 +126,7 @@ class LanguageMenu extends React.Component {
                 <label htmlFor="region-select">
                     {Infra.strings.LangMenu.RegionSelectLabel}
                 </label>
-                <select name="region-select" className="form-control"
+                <select name="region-select" className="custom-select form-control"
                     value={this.state.region}
                     onChange={(e) => this.setState({region: e.target.value})}>
                     {this.state.regions.map((rgnCode) =>
