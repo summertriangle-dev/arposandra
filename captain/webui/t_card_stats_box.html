@@ -27,7 +27,7 @@
                     <td class="let">{{ card.stats[0].stamina }}</td>
                     <td>
                         <span class="let">{{ card.stats[0].technique }}</span>
-                        <span class="stats-table-cr {% if card.has_critical_instinct %} super {% end %}">
+                        <span class="stats-table-cr {% if card.has_critical_instinct() %} super {% end %}">
                             <i class="icon ion-ios-flash" title="{{ _("Critical Rate") }}"></i>
                             {{ card.calc_critical_rate_percent(card.stats[0].technique) }}
                         </span>
@@ -39,7 +39,7 @@
                     <td class="let">{{ card.stats[max_level_id].stamina }}</td>
                     <td>
                         <span class="let">{{ card.stats[max_level_id].technique }}</span>
-                        <span class="stats-table-cr {% if card.has_critical_instinct %} super {% end %}">
+                        <span class="stats-table-cr {% if card.has_critical_instinct() %} super {% end %}">
                             <i class="icon ion-ios-flash" title="{{ _("Critical Rate") }}"></i>
                             {{ card.calc_critical_rate_percent(card.stats[max_level_id].technique) }}
                         </span>
@@ -58,7 +58,7 @@
                     <td class="let">{{ lb_stamina_base + lb_level.stamina }}</td>
                     <td>
                         <span class="let">{{ lb_tech_base + lb_level.technique }}</span>
-                        <span class="stats-table-cr {% if card.has_critical_instinct %} super {% end %}">
+                        <span class="stats-table-cr {% if card.has_critical_instinct() %} super {% end %}">
                             <i class="icon ion-ios-flash" title="{{ _("Critical Rate") }}"></i>
                             {{ card.calc_critical_rate_percent(lb_tech_base + lb_level.technique) }}
                         </span>

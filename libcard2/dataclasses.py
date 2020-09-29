@@ -167,7 +167,7 @@ class Card(object):
     exchange_item_id: int
     max_passive_skill_slot: int
     base_critical_rate: float
-    has_critical_instinct: bool
+    critical_rate_additive_bonus: int
     background_asset_path: str
 
     member: Member = field(metadata=JSONConfig(encoder=lambda member: member["id"]))
@@ -193,12 +193,14 @@ class Card(object):
         return se
 
     def calc_critical_rate_percent(self, with_tech) -> str:
-        # There will probably be some rounding error here because critical
-        # instinct is rolled into the global base multiplier.
         # Empirical analysis (for reference only; our formula is from RE):
         #     https://note.com/sifmatch/n/ne84a92072d40
-        # Also, this is for human display only. 
-        return "{0:.2f}%".format(int(with_tech * self.base_critical_rate) / 100)
+        # Also, this is for human display only.
+        value = int(with_tech * self.base_critical_rate) + self.critical_rate_additive_bonus
+        return "{0:.2f}%".format(value / 100)
+
+    def has_critical_instinct(self):
+        return self.critical_rate_additive_bonus != 0
 
 
 @dataclass
