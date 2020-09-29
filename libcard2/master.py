@@ -47,6 +47,7 @@ class MasterData(MasterDataLite):
             ord: id for ord, id in self.connection.execute("SELECT school_idol_no, id FROM m_card")
         }
         self.tt_stat_increases = self.distill_tt_stat_increases()
+        self.constants = self.fetch_required_constants()
         print(f"MasterData: alloc with {len(self.ordinal_to_cid)} cards")
 
     def distill_tt_stat_increases(self):
@@ -83,6 +84,15 @@ class MasterData(MasterDataLite):
             t += v.get(4, 0)
             ls.append(D.Card.LevelValues(k, a, s, t))
         return ls
+
+    def fetch_required_constants(self):
+        result = self.connection.execute(
+            "SELECT value FROM m_constant_int WHERE constant_int = 33"
+        ).fetchone()
+
+        return D.EmbeddedConstants(result[0] if result else 0.0)
+
+    # ---- End of init-time functions -----------------------------------------
 
     def lookup_member_by_id(self, member_id: int) -> D.Member:
         if member_id in self.member_cache:
@@ -169,11 +179,12 @@ class MasterData(MasterDataLite):
             """SELECT m_card.member_m_id, m_card.id, school_idol_no, card_rarity_type, max_level,
                 card_attribute, role, training_tree_m_id, sp_point, exchange_item_id, max_passive_skill_slot,
                 m_card_attribute.background_asset_path, parameter2, parameter1, parameter3,
-                m_suit.thumbnail_image_asset_path, m_suit.id
+                m_suit.thumbnail_image_asset_path, m_suit.id, m_card_live_const.critical_rate_offset
                 FROM m_card
                 LEFT JOIN m_card_rarity USING (card_rarity_type)
                 LEFT JOIN m_card_attribute USING (card_attribute)
-                LEFT JOIN m_card_awaken_parameter ON (card_master_id == m_card.id)
+                LEFT JOIN m_card_awaken_parameter ON (m_card_awaken_parameter.card_master_id == m_card.id)
+                LEFT JOIN m_card_live_const ON (m_card_live_const.card_master_id == m_card.id)
                 LEFT JOIN m_suit ON (m_suit.suit_release_value == m_card.id AND m_suit.suit_release_route = 1)
                 WHERE m_card.id = ? LIMIT 1""",
             (card_id,),
@@ -207,6 +218,8 @@ class MasterData(MasterDataLite):
             da[8],
             da[9],
             da[10],
+            (self.constants.base_critical_rate + (da[17] or 0)) / 10000,
+            bool(da[17]),
             da[11],
             self.lookup_member_by_id(da[0]),
             self.lookup_role_effect(da[6]),

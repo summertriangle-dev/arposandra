@@ -26,6 +26,8 @@ $kars-var-color-alt: hsl(197, 100%, 25%);
 $kars-attr-colors: darken(#ff3fb6, 10%) darken(#05c159, 10%) darken(#00aeff, 10%) darken(#fe4646, 10%) darken(#ffb400, 10%) darken(#bc4dd6, 10%);
 $kars-role-colors: darken(#fe4646, 10%) darken(#00aeff, 10%) darken(#05c159, 10%) darken(#ffb400, 10%); 
 $kars-stat-colors: #ff3fb6 #05c159 #ffb400;
+$kars-stat-critical-rate-text: #684c00;
+$kars-stat-critical-rate-super-text: darken(#fe4646, 10%);
 
 $kars-tt-placeholder-bg: $card-bg-alt;
 

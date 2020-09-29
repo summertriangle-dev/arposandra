@@ -43,13 +43,25 @@
                     <td>{{ _("★ {star}").format(star=0) }}</td>
                     <td class="let">{{ lb_appeal_base + card.tt_offset[0].appeal }}</td>
                     <td class="let">{{ lb_stamina_base + card.tt_offset[0].stamina }}</td>
-                    <td class="let">{{ lb_tech_base + card.tt_offset[0].technique }}</td>
+                    <td>
+                        <span class="let">{{ lb_tech_base + card.tt_offset[0].technique }}</span>
+                        <span class="stats-table-cr {% if card.has_critical_instinct %} super {% end %}">
+                            <i class="icon ion-ios-flash" title="{{ _("Critical Rate") }}"></i>
+                            {{ card.calc_critical_rate_percent(lb_tech_base + card.tt_offset[0].technique) }}
+                        </span>
+                    </td>
                 </tr>
                 <tr>
                     <td>{{ _("★ {star}").format(star=len(card.tt_offset) - 1) }}</td>
                     <td class="let">{{ lb_appeal_base + card.tt_offset[-1].appeal }}</td>
                     <td class="let">{{ lb_stamina_base + card.tt_offset[-1].stamina }}</td>
-                    <td class="let">{{ lb_tech_base + card.tt_offset[-1].technique }}</td>
+                    <td>
+                        <span class="let">{{ lb_tech_base + card.tt_offset[-1].technique }}</span>
+                        <span class="stats-table-cr {% if card.has_critical_instinct %} super {% end %}">
+                            <i class="icon ion-ios-flash" title="{{ _("Critical Rate") }}"></i>
+                            {{ card.calc_critical_rate_percent(lb_tech_base + card.tt_offset[-1].technique) }}
+                        </span>
+                    </td>
                 </tr>
                 {% end %}
             </tbody>

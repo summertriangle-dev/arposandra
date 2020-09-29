@@ -25,13 +25,25 @@
                     <th scope="row">{{ _("Lv. {level}").format(level=1) }}</th>
                     <td class="let">{{ card.stats[0].appeal }}</td>
                     <td class="let">{{ card.stats[0].stamina }}</td>
-                    <td class="let">{{ card.stats[0].technique }}</td>
+                    <td>
+                        <span class="let">{{ card.stats[0].technique }}</span>
+                        <span class="stats-table-cr {% if card.has_critical_instinct %} super {% end %}">
+                            <i class="icon ion-ios-flash" title="{{ _("Critical Rate") }}"></i>
+                            {{ card.calc_critical_rate_percent(card.stats[0].technique) }}
+                        </span>
+                    </td>
                 </tr>
                 <tr>
                     <th scope="row">{{ _("Lv. {level}").format(level=card.max_level) }}</th>
                     <td class="let">{{ card.stats[max_level_id].appeal }}</td>
                     <td class="let">{{ card.stats[max_level_id].stamina }}</td>
-                    <td class="let">{{ card.stats[max_level_id].technique }}</td>
+                    <td>
+                        <span class="let">{{ card.stats[max_level_id].technique }}</span>
+                        <span class="stats-table-cr {% if card.has_critical_instinct %} super {% end %}">
+                            <i class="icon ion-ios-flash" title="{{ _("Critical Rate") }}"></i>
+                            {{ card.calc_critical_rate_percent(card.stats[max_level_id].technique) }}
+                        </span>
+                    </td>
                 </tr>
                 {% set lb_appeal_base = card.stats[max_level_id].appeal + card.idolized_offset.appeal %}
                 {% set lb_stamina_base = card.stats[max_level_id].stamina + card.idolized_offset.stamina %}
@@ -44,7 +56,13 @@
                     <th scope="row">{{ _("★ {star}").format(star=lb_level.level) }}</th>
                     <td class="let">{{ lb_appeal_base + lb_level.appeal }}</td>
                     <td class="let">{{ lb_stamina_base + lb_level.stamina }}</td>
-                    <td class="let">{{ lb_tech_base + lb_level.technique }}</td>
+                    <td>
+                        <span class="let">{{ lb_tech_base + lb_level.technique }}</span>
+                        <span class="stats-table-cr {% if card.has_critical_instinct %} super {% end %}">
+                            <i class="icon ion-ios-flash" title="{{ _("Critical Rate") }}"></i>
+                            {{ card.calc_critical_rate_percent(lb_tech_base + lb_level.technique) }}
+                        </span>
+                    </td>
                 </tr>
                 {% end %}
             </tbody>

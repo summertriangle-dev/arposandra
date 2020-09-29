@@ -155,6 +155,8 @@ $kars-attr-colors: #ff3fb6 #05c159 #00aeff #fe4646 #ffb400 lighten(#bc4dd6, 10%)
 $kars-role-colors: lighten(#fe4646, 10%) #00aeff #05c159 #ffb400; 
 $kars-role-bg-colors: darken(#fe4646, 30%) darken(#00aeff, 30%) darken(#05c159, 30%) darken(#ffb400, 30%); 
 $kars-stat-colors: #ff3fb6 #05c159 #ffb400;
+$kars-stat-critical-rate-text: #ffb400;
+$kars-stat-critical-rate-super-text: #fe4646;
 
 $kars-tt-placeholder-bg: $card-bg-alt;
 

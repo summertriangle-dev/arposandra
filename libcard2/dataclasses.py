@@ -14,6 +14,11 @@ def _load_tl(string):
     return get_coding_context().get(string, string)
 
 
+@dataclass
+class EmbeddedConstants(object):
+    base_critical_rate: int
+
+
 @dataclass_json
 @dataclass
 class Member(object):
@@ -161,6 +166,8 @@ class Card(object):
     sp_point: int
     exchange_item_id: int
     max_passive_skill_slot: int
+    base_critical_rate: float
+    has_critical_instinct: bool
     background_asset_path: str
 
     member: Member = field(metadata=JSONConfig(encoder=lambda member: member["id"]))
@@ -184,6 +191,14 @@ class Card(object):
             for p in self.passive_skills:
                 se.update(p.get_tl_set())
         return se
+
+    def calc_critical_rate_percent(self, with_tech) -> str:
+        # There will probably be some rounding error here because critical
+        # instinct is rolled into the global base multiplier.
+        # Empirical analysis (for reference only; our formula is from RE):
+        #     https://note.com/sifmatch/n/ne84a92072d40
+        # Also, this is for human display only. 
+        return "{0:.2f}%".format(int(with_tech * self.base_critical_rate) / 100)
 
 
 @dataclass
