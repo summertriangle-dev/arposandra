@@ -201,6 +201,7 @@ $nav-menu-separator: scale-color($gray-800, $lightness: +15%);
 @import "inc/modal.sass";
 @import "inc/gallery.sass";
 @import "inc/gutter.sass";
+@import "inc/search.sass";
 
 @include media-breakpoint-up(sm) {
   .nav-submenu.open {

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>{{ _("PT.SearchCards") }} - {{ _("PT.SiteName") }}</title>
+        
+        {% include t_preamble.html %}
+    </head>
+    <body data-master="{{ handler.settings["master"].version }}" data-inject="search">
+        {% module Template("uim_nav.html", current="cards") %}
+
+        <div class="container">
+            <div class="card kars-card-box">
+                <div class="kars-list-alternate card-body">
+                    <form><div class="form-row">
+                        <label class="sr-only" for="criteria-finder">Search Criteria</label>
+                        <div class="input-group input-group-lg">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <i class="icon icon-lg ion-ios-search"></i>
+                            </div>
+                          </div>
+                          <input type="text" class="form-control" id="criteria-finder" placeholder="Touch to start...">
+                        </div>
+                    </div></form>
+                    
+                </div>
+                <div class="kars-list-alternate card-body">
+                    <div class="row">
+                        <div id="query-editor-host" class="col-md-6"></div>
+                        <div id="criteria-list-host" class="col-md-6">
+                            <p class="text-center">
+                                Loading schema...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        {% include t_footer.html %}
+    </body>
+</html>

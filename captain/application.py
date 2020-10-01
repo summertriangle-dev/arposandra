@@ -22,6 +22,7 @@ from . import card_page
 from . import tlinject
 from . import news
 from . import event_tracker
+from . import search
 
 # End of handlers
 

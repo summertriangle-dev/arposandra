@@ -1,0 +1,126 @@
+# Static definitions for search terms.
+msgid "kars.search_criteria.card_index.id"
+msgstr "ID"
+
+msgid "kars.search_criteria.card_index.ordinal"
+msgstr "Card No."
+
+msgid "kars.search_criteria.card_index.member"
+msgstr "Idol"
+
+msgid "kars.search_criteria.card_index.member_group"
+msgstr "Group"
+
+msgid "kars.search_criteria.card_index.member_subunit"
+msgstr "Subunit"
+
+msgid "kars.search_criteria.card_index.member_year"
+msgstr "Year"
+
+msgid "kars.search_criteria.card_index.max_appeal"
+msgstr "Max Appeal"
+
+msgid "kars.search_criteria.card_index.max_stamina"
+msgstr "Max Stam."
+
+msgid "kars.search_criteria.card_index.max_technique"
+msgstr "Max Tech."
+
+msgid "kars.search_criteria.card_index.rarity"
+msgstr "Rarity"
+
+msgid "kars.search_criteria.card_index.source"
+msgstr "Source"
+
+msgid "kars.search_criteria.card_index.role"
+msgstr "Type"
+
+msgid "kars.search_criteria.card_index.attribute"
+msgstr "Attribute"
+
+msgid "kars.search_criteria.card_index.maximal_stat"
+msgstr "High Stat"
+
+msgid "kars.search_criteria.card_index.skills.effect"
+msgstr "Skill Eff."
+
+msgid "kars.search_criteria.card_index.skills.activation_type"
+msgstr "Skill Trigger"
+
+msgid "kars.search_criteria.card_index.source.event"
+msgstr "Event"
+
+msgid "kars.search_criteria.card_index.source.gacha"
+msgstr "Scouting"
+
+msgid "kars.search_criteria.card_index.source.gachap2"
+msgstr "Scouting (2)"
+
+msgid "kars.search_criteria.card_index.rarity.ur"
+msgstr "UR"
+
+msgid "kars.search_criteria.card_index.rarity.sr"
+msgstr "SR"
+
+msgid "kars.search_criteria.card_index.rarity.r"
+msgstr "R"
+
+msgid "kars.search_criteria.card_index.role.voltage"
+msgstr "Voltage-type"
+
+msgid "kars.search_criteria.card_index.role.sp"
+msgstr "SP-type"
+
+msgid "kars.search_criteria.card_index.role.guard"
+msgstr "Guard-type"
+
+msgid "kars.search_criteria.card_index.role.skill"
+msgstr "Skill-type"
+
+msgid "kars.search_criteria.card_index.attribute.smile"
+msgstr "Smile"
+
+msgid "kars.search_criteria.card_index.attribute.pure"
+msgstr "Pure"
+
+msgid "kars.search_criteria.card_index.attribute.cool"
+msgstr "Cool"
+
+msgid "kars.search_criteria.card_index.attribute.active"
+msgstr "Active"
+
+msgid "kars.search_criteria.card_index.attribute.natural"
+msgstr "Natural"
+
+msgid "kars.search_criteria.card_index.attribute.elegant"
+msgstr "Elegant"
+
+msgid "kars.search_criteria.card_index.maximal_stat.appeal"
+msgstr "Appeal"
+
+msgid "kars.search_criteria.card_index.maximal_stat.stamina"
+msgstr "Stamina"
+
+msgid "kars.search_criteria.card_index.maximal_stat.technique"
+msgstr "Technique"
+
+msgid "kars.search_criteria.card_index.member_year.year_1st"
+msgstr "1st"
+
+msgid "kars.search_criteria.card_index.member_year.year_2nd"
+msgstr "2nd"
+
+msgid "kars.search_criteria.card_index.member_year.year_3rd"
+msgstr "3rd"
+
+msgid "k.m_dic_member_name_210"
+msgstr "Shioriko Mifune"
+
+msgid "k.m_dic_unit_name_cyaron"
+msgstr "CYaRon!"
+
+msgid "k.m_dic_unit_name_azuna"
+msgstr "AZUNA"
+
+msgid "k.m_dic_group_name_niji"
+msgstr "Nijigasaki"

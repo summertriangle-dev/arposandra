@@ -37,6 +37,10 @@ async function initializeContextDependentModules() {
         const mod = await import("./transcript/transcript")
         Infra.registerComponent("StoryViewer", mod.StoryViewer)
     }
+    if (wantModules.indexOf("search") != -1) {
+        const mod = await import("./search")
+        mod.initializeSearch()
+    }
 }
 
 function initializeReactComponents() {
