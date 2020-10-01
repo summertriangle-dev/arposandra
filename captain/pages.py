@@ -18,6 +18,15 @@ class Slash(LanguageCookieMixin):
         self.render("home.html")
 
 
+@route(r"/(cards|other)/")
+class NavPageNoJS(RequestHandler):
+    def get(self, where):
+        if where == "cards":
+            self.render("nav_cards_nojs.html")
+        else:
+            self.render("nav_other_nojs.html")
+
+
 @route("/(?:idols|idol)/?")
 @route("/idols/(unit)/([0-9]+)")
 @route("/idols/(group)/([0-9]+)")

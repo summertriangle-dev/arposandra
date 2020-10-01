@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>{{ _("PT.SiteName") }}</title>
+        {% include t_preamble.html %}
+    </head>
+    <body>
+        {% module Template("uim_nav.html", current=None) %}
+
+        <div class="container">
+            <div class="card kars-card-box">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card"><p class="p-3 m-0">
+                                <a class="h5 stretched-link mb-0" href="/lives">{{ _("Nav.LiveInfo") }}</a>
+                                <i class="icon icon-lg ion-ios-arrow-forward float-right"></i>
+                            </p></div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card"><p class="p-3 m-0">
+                                <a class="h5 stretched-link mb-0" href="/events">{{ _("Nav.EventTracker") }}</a>
+                                <i class="icon icon-lg ion-ios-arrow-forward float-right"></i>
+                            </p></div>
+                        </div>
+                        {% if "feedback_link" in handler.settings %}
+                        <div class="col-lg-4">
+                            <div class="card"><p class="p-3 m-0">
+                                <a class="h5 stretched-link mb-0" href="{{ handler.settings["feedback_link"] }}">{{ _("Nav.SendFeedback") }}</a>
+                                <i class="icon icon-lg ion-ios-arrow-forward float-right"></i>
+                            </p></div>
+                        </div>
+                        {% end %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include t_footer.html %}
+    </body>
+</html>
