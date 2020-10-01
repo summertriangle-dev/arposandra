@@ -111,7 +111,6 @@ class CardHistory(DatabaseMixin, LanguageCookieMixin):
         )
 
         count = await self.database().card_tracker.get_history_entry_count(server, None)
-        print(count, file=sys.stderr)
 
         self.resolve_cards(his)
         self.render(
