@@ -8,6 +8,7 @@
 {% if handler.settings["debug"] %}
 <link data-appearance="light" data-bg-color="#f2dbf8" 
     class="theme" rel="stylesheet" type="text/css" 
+    media="not (prefers-color-scheme: dark)" 
     href="{{ handler.settings["wds_host"] }}/static/css/theme-light.css">
 <link data-appearance="dark" data-bg-color="#262336" 
     class="theme" rel="stylesheet" type="text/css" 
@@ -21,6 +22,7 @@
 {% else %}
 <link data-appearance="light" data-bg-color="#f2dbf8" 
     class="theme" rel="stylesheet" type="text/css" 
+    media="not (prefers-color-scheme: dark)" 
     href="{{ handler.static_url('css/theme-light.css') }}">
 <link data-appearance="dark" data-bg-color="#262336" 
     class="theme" rel="stylesheet" type="text/css" 
