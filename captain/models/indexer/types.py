@@ -12,6 +12,7 @@ from typing import (
     Union,
     Optional,
     List,
+    Dict,
     cast,
 )
 
@@ -31,6 +32,7 @@ class Field(object):
     map_enum_to_id: Optional[dict] = field(default=None, init=False)
     length: Optional[int] = None
     sub_fields: Optional[Sequence] = None
+    behaviour: Optional[Dict[str, Any]] = None
 
     @classmethod
     def enum(cls, name, choices, **kwargs):
@@ -159,8 +161,8 @@ class Schema(Generic[T]):
             if field.field_type == FIELD_TYPE_COMPOSITE:
                 assert field.sub_fields is not None
 
-                for comp_row in results:
-                    tf = tuple(sf.transform(x) for sf, x in zip(field.sub_fields, comp_row))
+                for composite_obj in results:
+                    tf = tuple(sf.transform(x) for sf, x in zip(field.sub_fields, composite_obj))
                     multi.append((field.name, pk + tf))
             else:
                 multi.extend((field.name, pk + (field.transform(x),)) for x in results)
