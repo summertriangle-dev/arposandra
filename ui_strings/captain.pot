@@ -88,6 +88,9 @@ msgstr "CardSetsForm.Title"
 msgid "Cards of {idol_name}"
 msgstr "Cards of {idol_name}"
 
+msgid "Critical Rate"
+msgstr "Critical Rate"
+
 msgid "DefaultDictionaryName"
 msgstr "DefaultDictionaryName"
 
@@ -138,9 +141,6 @@ msgstr "HEvent.ScoutingTime"
 
 msgid "IndividualSkillHeader"
 msgstr "IndividualSkillHeader"
-
-msgid "Interesting choice of cards..."
-msgstr "Interesting choice of cards..."
 
 msgid "LevelShort"
 msgstr "LevelShort"
@@ -214,14 +214,29 @@ msgstr "Note Gimmicks"
 msgid "OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:{group}:{subunit}:{grade}"
 msgstr "OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:{group}:{subunit}:{grade}"
 
+msgid "OpengraphCardDescriptionMultiple"
+msgstr "OpengraphCardDescriptionMultiple"
+
+msgid "OpengraphHistoryDescription"
+msgstr "OpengraphHistoryDescription"
+
+msgid "OpengraphHistoryTitle{server_id}"
+msgstr "OpengraphHistoryTitle{server_id}"
+
 msgid "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
 msgstr "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
+
+msgid "OpengraphNewsDescription"
+msgstr "OpengraphNewsDescription"
 
 msgid "OpengraphNewsItem:{category}"
 msgstr "OpengraphNewsItem:{category}"
 
 msgid "OpengraphNewsItem:{category}:{num_assoc_cards}"
 msgstr "OpengraphNewsItem:{category}:{num_assoc_cards}"
+
+msgid "OpengraphNewsTitle{server_id}"
+msgstr "OpengraphNewsTitle{server_id}"
 
 msgid "Options"
 msgstr "Options"
@@ -240,6 +255,9 @@ msgstr "PT.IdolList"
 
 msgid "PT.News"
 msgstr "PT.News"
+
+msgid "PT.SearchCards"
+msgstr "PT.SearchCards"
 
 msgid "PT.SiteName"
 msgstr "PT.SiteName"

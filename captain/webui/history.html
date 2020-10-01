@@ -6,6 +6,8 @@
         </title>
 
         {% include t_preamble.html %}
+
+        {% module Template("ogm_history.html", releases=releases, server=server.upper()) %}
     </head>
     <body data-master="{{ handler.settings["master"].version }}">
         {% module Template("uim_nav.html", current="cards") %}

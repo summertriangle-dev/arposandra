@@ -18,9 +18,10 @@
     {% if len(cards) == 1 %}
         {% set card = cards[0] %}
         {% set max_level_id = card.max_level - 1 %}
-        {% set lb_appeal = card.stats[max_level_id].appeal %}
-        {% set lb_stamina = card.stats[max_level_id].stamina %}
-        {% set lb_tech = card.stats[max_level_id].technique %}
+        {% set lb_appeal = card.stats[max_level_id].appeal + card.idolized_offset.appeal + card.tt_offset[0].appeal %}
+        {% set lb_stamina = card.stats[max_level_id].stamina + card.idolized_offset.stamina + card.tt_offset[0].stamina %}
+        {% set lb_tech = card.stats[max_level_id].technique + card.idolized_offset.technique + card.tt_offset[0].technique %}
+
         <meta property="og:description" content="
         {{ _("OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:{group}:{subunit}:{grade}") \
             .format(appeal=lb_appeal, stamina=lb_stamina, technique=lb_tech, 
@@ -31,6 +32,6 @@
                 group=tlinject_static(card.member.group_name, escape=False)) }}
         " />
     {% else %}
-        <meta property="og:description" content="{{ _("Interesting choice of cards...") }}" />
+        <meta property="og:description" content="{{ _("OpengraphCardDescriptionMultiple") }}" />
     {% end %}
 {% end %}

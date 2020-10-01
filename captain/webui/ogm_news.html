@@ -23,4 +23,7 @@
 {% end %}
 
 <meta property="og:updated_time" content="{{ items[0].timestamp() }}" />
+{% else %}
+<meta property="og:title" content="{{ _("OpengraphNewsTitle{server_id}").format(server_id=server.upper()) }}" />
+<meta property="og:description" content="{{ _("OpengraphNewsDescription") }}" />
 {% end %}

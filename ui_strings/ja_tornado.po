@@ -102,6 +102,9 @@ msgstr "Filter"
 msgid "Cards of {idol_name}"
 msgstr "{idol_name}のカード"
 
+msgid "Critical Rate"
+msgstr "クリティカルー確率"
+
 msgid "DefaultDictionaryName"
 msgstr "既定"
 
@@ -153,9 +156,6 @@ msgstr "ガシャ"
 msgid "IndividualSkillHeader"
 msgstr "個性"
 
-msgid "Interesting choice of cards..."
-msgstr "Interesting choice of cards..."
-
 msgid "LevelShort"
 msgstr "レベル"
 
@@ -193,13 +193,13 @@ msgid "Nav.NewsJPServer"
 msgstr "In-game news (Japanese server)"
 
 msgid "Nav.ScheduleList"
-msgstr "Event/Scouting list"
+msgstr "イベント/ガシャ記録"
 
 msgid "Nav.ScheduleListENServer"
-msgstr "Event/Scouting list (Global server)"
+msgstr "イベント/ガシャ記録 (外国のサーバー)"
 
 msgid "Nav.ScheduleListJPServer"
-msgstr "Event/Scouting list (Japanese server)"
+msgstr "イベント/ガシャ記録 (本国のサーバー)"
 
 msgid "Nav.SendFeedback"
 msgstr "Send comments, questions, and bugs"
@@ -233,13 +233,25 @@ msgid ""
 "OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:"
 "{group}:{subunit}:{grade}"
 msgstr ""
-"Base stats at max level (Appeal/Stamina/Tech): {appeal}/{stamina}/"
+"Base stats at LB 0 (Appeal/Stamina/Tech): {appeal} / {stamina} / "
 "{technique}. A {role} {attribute} card with {group} / {subunit} / {grade} "
 "affiliations."
 
+msgid "OpengraphCardDescriptionMultiple"
+msgstr "ほら、後ろに! 初音ミクさんだ!"
+
+msgid "OpengraphHistoryDescription"
+msgstr "見逃したのフェスガチャを見ることができます。"
+
+msgid "OpengraphHistoryTitle{server_id}"
+msgstr "イベント/ガシャ記録: {server_id}サーバー"
+
 msgid "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
 msgstr ""
-"One idol with {group} / {subunit} / {grade} affiliations, and {num} cards."
+"An idol with {group} / {subunit} / {grade} affiliations, and {num} cards."
+
+msgid "OpengraphNewsDescription"
+msgstr "In-game news reader."
 
 msgid "OpengraphNewsItem:{category}"
 msgstr "{category} news post."
@@ -247,8 +259,11 @@ msgstr "{category} news post."
 msgid "OpengraphNewsItem:{category}:{num_assoc_cards}"
 msgstr "{category} news post, featuring {num_assoc_cards} cards."
 
+msgid "OpengraphNewsTitle{server_id}"
+msgstr "お知らせ: {server_id}サーバー"
+
 msgid "Options"
-msgstr "Options"
+msgstr "オプション"
 
 msgid "PT.CardReleases"
 msgstr "リリース履歴"
@@ -264,6 +279,9 @@ msgstr "アイドルリスト"
 
 msgid "PT.News"
 msgstr "お知らせ"
+
+msgid "PT.SearchCards"
+msgstr "メンバー検索"
 
 msgid "PT.SiteName"
 msgstr "スクスター"
@@ -307,7 +325,9 @@ msgstr "タイプ"
 msgid ""
 "Rows with ★ include idolization bonus, and all tree unlocks up to that limit "
 "break level."
-msgstr "★のある行には、その限界突破までの特訓増加が含まれます。"
+msgstr ""
+"★のある行には、その限界突破までの特訓増加が含まれます。個性の影響を考慮してい"
+"ません。"
 
 msgid "SSF.WaitingForWebpack"
 msgstr "追加のコンポーネントを待っています..."
@@ -436,6 +456,9 @@ msgstr "{pts}ポイント"
 
 msgid "★ {star}"
 msgstr "★ {star}"
+
+#~ msgid "Interesting choice of cards..."
+#~ msgstr "Interesting choice of cards..."
 
 #~ msgid "Search"
 #~ msgstr "検索"

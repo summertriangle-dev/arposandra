@@ -10,7 +10,7 @@
 
         {% include t_preamble.html %}
 
-        {% module Template("ogm_news.html", items=news_items) %}
+        {% module Template("ogm_news.html", items=news_items, server=server) %}
     </head>
     <body data-master="{{ handler.settings["master"].version }}">
         {% module Template("uim_nav.html", current="news") %}

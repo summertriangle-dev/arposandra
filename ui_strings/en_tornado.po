@@ -102,6 +102,9 @@ msgstr "Filter"
 msgid "Cards of {idol_name}"
 msgstr "Cards of {idol_name}"
 
+msgid "Critical Rate"
+msgstr "Critical Rate"
+
 msgid "DefaultDictionaryName"
 msgstr "Default"
 
@@ -152,9 +155,6 @@ msgstr "Scouting"
 
 msgid "IndividualSkillHeader"
 msgstr "Individual Skills"
-
-msgid "Interesting choice of cards..."
-msgstr "And an interesting choice of cards, I might add..."
 
 msgid "LevelShort"
 msgstr "Lv."
@@ -233,19 +233,34 @@ msgid ""
 "OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:"
 "{group}:{subunit}:{grade}"
 msgstr ""
-"Base stats at max level (Appeal/Stamina/Tech): {appeal}/{stamina}/"
+"Base stats at LB 0 (Appeal/Stamina/Tech): {appeal} / {stamina} / "
 "{technique}. A {role} {attribute} card with {group} / {subunit} / {grade} "
 "affiliations."
 
+msgid "OpengraphCardDescriptionMultiple"
+msgstr "Look, behind you! It's Hatsune Miku!"
+
+msgid "OpengraphHistoryDescription"
+msgstr "\"All Star Festivals in mirror are closer than they appear.\""
+
+msgid "OpengraphHistoryTitle{server_id}"
+msgstr "Event/Scouting List: {server_id} Server"
+
 msgid "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
 msgstr ""
-"One idol with {group} / {subunit} / {grade} affiliations, and {num} cards."
+"An idol with {num} cards, and {group} / {subunit} / {grade} affiliations."
+
+msgid "OpengraphNewsDescription"
+msgstr "In-game news reader."
 
 msgid "OpengraphNewsItem:{category}"
 msgstr "{category} news post."
 
 msgid "OpengraphNewsItem:{category}:{num_assoc_cards}"
 msgstr "{category} news post, featuring {num_assoc_cards} cards."
+
+msgid "OpengraphNewsTitle{server_id}"
+msgstr "News: {server_id} Server"
 
 msgid "Options"
 msgstr "Options"
@@ -264,6 +279,9 @@ msgstr "Idol list"
 
 msgid "PT.News"
 msgstr "Updates"
+
+msgid "PT.SearchCards"
+msgstr "Card search"
 
 msgid "PT.SiteName"
 msgstr "All Stars"
@@ -309,7 +327,7 @@ msgid ""
 "break level."
 msgstr ""
 "Rows with ★ include idolization bonus, and all tree unlocks up to that limit "
-"break level."
+"break level. Passive skill effects are not applied to table values."
 
 msgid "SSF.WaitingForWebpack"
 msgstr "Waiting for JavaScript components..."
