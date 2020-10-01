@@ -68,6 +68,17 @@ class CardExpert(object):
     def attribute(self):
         return self.ATTRIBUTES.get(self.card.attribute)
 
+    def skills(self):
+        if self.card.active_skill:
+            yield (self.card.active_skill.levels[0].effect_type, 0xFFFF)
+            if self.card.active_skill.levels_2:
+                yield (self.card.active_skill.levels_2[0].effect_type, 0xFFFF)
+
+        for skill in self.card.passive_skills:
+            yield (skill.levels[0].effect_type, skill.trigger_type)
+            if skill.levels_2:
+                yield (skill.levels_2[0].effect_type, skill.trigger_type)
+
     def skill_major(self):
         return self.card.active_skill.levels[0].effect_type
 
@@ -93,7 +104,7 @@ class CardExpert(object):
 CardIndex = Schema(
     "card_index_v1",
     fields=[
-        Field.integer("id", primary=True),
+        Field.integer("id", primary=True, behaviour={"digits": "9", "compare_type": "equal"}),
         Field.integer("ordinal"),
         Field.integer("member"),
         Field.integer("member_group"),
@@ -104,11 +115,18 @@ CardIndex = Schema(
         Field.integer("max_technique"),
         Field.integer("rarity"),
         Field.integer("source"),
-        Field.enum("role", ("voltage", "sp", "guard", "skill")),
-        Field.enum("attribute", ("smile", "pure", "cool", "active", "natural", "elegant")),
-        Field.integer("skill_major"),
+        Field.enum(
+            "role", ("voltage", "sp", "guard", "skill"), behaviour={"compare_type": "bit-set"}
+        ),
+        Field.enum(
+            "attribute",
+            ("smile", "pure", "cool", "active", "natural", "elegant"),
+            behaviour={"compare_type": "bit-set"},
+        ),
         Field.enum("maximal_stat", ("appeal", "stamina", "technique")),
-        Field.integer("skill_minors", multiple=True),
+        Field.composite(
+            "skills", Field.integer("effect"), Field.integer("activation_type"), multiple=True,
+        ),
         Field.composite(
             "release_dates", Field.varchar("server_id", 8, primary=True), Field.datetime("date"),
         ),
