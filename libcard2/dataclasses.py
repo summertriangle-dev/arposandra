@@ -180,7 +180,7 @@ class Card(object):
     idolized_offset: LevelValues
     tt_offset: LevelValues
 
-    stats: List[LevelValues] = None
+    stats: List[LevelValues] = field(init=False)
     costume_info: Optional[CostumeInfo] = None
 
     def get_tl_set(self):
@@ -205,6 +205,16 @@ class Card(object):
 
 @dataclass
 class CardLite(object):
+    __slots__ = (
+        "id",
+        "ordinal",
+        "rarity",
+        "attribute",
+        "role",
+        "normal_appearance",
+        "idolized_appearance",
+    )
+
     id: int
     ordinal: int
     rarity: int
@@ -227,12 +237,12 @@ class LiveWaveMission(object):
 
     @dataclass
     class Gimmick(Skill):
-        wave_state: int = None
+        wave_state: int = field(init=False)
 
         def requires_temporal_descriptor(self):
             return 2 <= self.wave_state <= 4
 
-    gimmick: Gimmick = None
+    gimmick: Optional[Gimmick] = None
 
 
 @dataclass
@@ -251,9 +261,9 @@ class LiveDifficulty(object):
     note_damage: int
     note_score_cap: int
 
-    stage_gimmicks: List[Skill] = None
-    note_gimmicks: List[Skill] = None
-    wave_missions: List[LiveWaveMission] = None
+    stage_gimmicks: List[Skill] = field(init=False)
+    note_gimmicks: List[Skill] = field(init=False)
+    wave_missions: List[LiveWaveMission] = field(init=False)
 
     def get_tl_set(self):
         s = set()
@@ -278,7 +288,7 @@ class Live(object):
     member_unit_name: str
     order: int
 
-    difficulties: List[LiveDifficulty] = None
+    difficulties: List[LiveDifficulty] = field(init=False)
 
     def get_tl_set(self):
         s = {self.name, self.member_group_name, self.member_unit_name}

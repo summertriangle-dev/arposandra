@@ -1,6 +1,6 @@
 import json
 from collections import OrderedDict, defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from typing import List, Optional, Tuple, Any, Dict, Union
 
@@ -95,7 +95,7 @@ class CardSetRecord(object):
         id: int
         source: int
         release: datetime
-        card: Card = None
+        card: Card = field(init=False)
 
     name: str
     representative: str

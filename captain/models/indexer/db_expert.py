@@ -160,6 +160,8 @@ class PostgresDBExpert(Generic[T]):
         for multi_field in self.schema.fields[self.schema.first_multi_index :]:
             m_fields = pk_header[:]
             if multi_field.field_type == types.FIELD_TYPE_COMPOSITE:
+                assert multi_field.sub_fields is not None
+
                 m_fields.extend(
                     f"{subfield.name} {self.sql_type(subfield)}"
                     for subfield in multi_field.sub_fields

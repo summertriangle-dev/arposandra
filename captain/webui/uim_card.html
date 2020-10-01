@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" id="card-anchor-{{ card.id }}">
     <div class="card kars-card-box">
         {% set Lext = "jpg" if card_has_full_bg(card) else "png" %}
         <div class="card-image position-relative">
@@ -17,14 +17,22 @@
                 data-generic-bg="{{ image_url_reify(card.background_asset_path, "jpg") }}"
                 {% end %}
             >
-            <a href="{{ image_url_reify(card.normal_appearance.image_asset_path) }}"
+        
+            <div class="react-aspect-ratio-placeholder" style="--aspect-ratio: (2/1)">
+                <a href="{{ image_url_reify(card.normal_appearance.image_asset_path) }}"
                 class="kars-card-image-backing"
                 {% if not card_has_full_bg(card) %}
                 style="background-image: url({{ image_url_reify(card.background_asset_path, "jpg") }})"
                 {% end %}
                 alt="{{ _("Card image") }}">
-                <img class="kars-card-spread" src="{{ image_url_reify(card.normal_appearance.image_asset_path, Lext) }}" />
-            </a>
+                    <img class="kars-card-spread" src="{{ image_url_reify(card.normal_appearance.image_asset_path, Lext) }}" />
+                </a>
+            </div>
+
+            <div class="kars-card-image-float">
+                <div class="kars-image-switch neutral"><a class="selected">Normal</a>
+                    <a href="{{ image_url_reify(card.idolized_appearance.image_asset_path, Lext) }}">Idolized</a></div>
+            </div>
             </div>
         </div>
         <div class="card-body kars-member-header kars-member-small kars-card-header">

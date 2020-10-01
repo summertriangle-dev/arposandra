@@ -1,7 +1,19 @@
 import os
 from collections import namedtuple
 from dataclasses import dataclass, field
-from typing import Any, Callable, Generic, Sequence, Tuple, Type, TypeVar, Union, Optional, List
+from typing import (
+    Any,
+    Callable,
+    Generic,
+    Sequence,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+    Optional,
+    List,
+    cast,
+)
 
 FIELD_TYPE_INT = 1
 FIELD_TYPE_STRING = 2
@@ -129,7 +141,7 @@ class Schema(Generic[T]):
             return v
 
     def sql_tuples_from_object(self, obj: T):
-        expert = self.expert(obj)
+        expert = self.expert(obj)  # type: ignore
         pk = tuple(getattr(expert, f.name)() for f in self.fields if f.primary)
         single = tuple(
             (field.name, field.transform(getattr(expert, field.name)()))
@@ -145,8 +157,10 @@ class Schema(Generic[T]):
                 continue
 
             if field.field_type == FIELD_TYPE_COMPOSITE:
-                for obj in results:
-                    tf = tuple(sf.transform(x) for sf, x in zip(field.sub_fields, obj))
+                assert field.sub_fields is not None
+
+                for comp_row in results:
+                    tf = tuple(sf.transform(x) for sf, x in zip(field.sub_fields, comp_row))
                     multi.append((field.name, pk + tf))
             else:
                 multi.extend((field.name, pk + (field.transform(x),)) for x in results)
