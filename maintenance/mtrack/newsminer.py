@@ -3,7 +3,7 @@ import logging
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, Iterable, List, Optional, Set, Tuple, Union, cast
+from typing import Dict, Iterable, List, Optional, Set, Tuple, Union, Sequence, cast
 
 from asyncpg import Connection, Record
 
@@ -66,7 +66,7 @@ class SGachaMergeRecord(object):
 
 
 AnySRecord = Union[SGachaMergeRecord, SEventRecord]
-DateMinedNewsItem = Tuple[Record, Iterable[datetime]]
+DateMinedNewsItem = Tuple[Record, Sequence[datetime]]
 
 
 def get_time(tstag: str) -> datetime:
@@ -122,7 +122,11 @@ def merge_gachas(tag, gachas: Iterable[DateMinedNewsItem]):
         for second in itr:
             yield (first, second)
             first = second
-        if second:
+
+        if second is None:
+            # Then first was the only object in the iterator.
+            yield (first, (None, None))
+        else:
             yield (second, (None, None))
 
     cleanup_func = lang_specific.get_name_clean_func(tag)
