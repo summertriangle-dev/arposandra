@@ -51,6 +51,13 @@ export class MultiValueSwitch extends React.Component {
         return ""
     }
 
+    _changeValueOnKey(keyEvent, value) {
+        if (keyEvent.key == " " || keyEvent.key == "Enter") {
+            keyEvent.preventDefault()
+            this.changeValue(value)
+        }
+    }
+
     transitionAndSet(toValue) {
         if (toValue === this.state.lastSelection) {
             return
@@ -104,7 +111,9 @@ export class MultiValueSwitch extends React.Component {
                 return <a key={v} 
                     ref={(r) => this.buttonRefs[v] = r}
                     className={this._selectionClass(v)} 
-                    onClick={() => this.changeValue(v)}>
+                    onClick={() => this.changeValue(v)}
+                    onKeyPress={(e) => this._changeValueOnKey(e, v)}
+                    tabIndex={0}>
                     {this.getLabelForChoice(v)}
                 </a>
             })}

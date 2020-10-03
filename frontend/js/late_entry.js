@@ -60,6 +60,17 @@ function initializeReactComponents() {
     })
 }
 
+function bindAppearanceToggle(node) {
+    node.addEventListener("click", dmToggleAppearance, false)
+    node.tabIndex = 0
+    node.addEventListener("keydown", (e) => {
+        if (e.keyCode == 0x0d || e.keyCode == 0x20) {
+            e.preventDefault()
+            dmToggleAppearance()
+        }
+    }, {passive: false})
+}
+
 function dmToggleAppearance() {
     const theme = Infra.store.getState().appearance.theme
     let nextAppearance
@@ -135,8 +146,7 @@ function init() {
         document.body.dataset.developer = "true"
     }
 
-    document.querySelector("#bind-appearance-toggle")
-        .addEventListener("click", dmToggleAppearance, false)
+    bindAppearanceToggle(document.querySelector("#bind-appearance-toggle"))
 }
 
 if (document.readyState === "loading") {

@@ -51,12 +51,17 @@ export function injectIntoPage() {
     const mousedownEvent = (e) => {
         if (e.button == 0) openSubmenu(e)
     }
+    const keydownEvent = (e) => {
+        console.log(e)
+        if (e.keyCode == 0x0d || e.keyCode == 0x20) openSubmenu(e)
+    }
     const clickEvent = (e) => e.preventDefault()
     for (let i = 0; i < triggers.length; i++) {
         const button = triggers[i]
         button.addEventListener("mousedown", mousedownEvent, {passive: false})
         button.addEventListener("touchstart", openSubmenu, {passive: false})
         button.addEventListener("click", clickEvent, {passive: false})
+        button.addEventListener("keydown", keydownEvent, {passive: false})
         button.href = "#"
     }
 }

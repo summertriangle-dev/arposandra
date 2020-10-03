@@ -93,8 +93,8 @@ class LanguageMenu extends React.Component {
         })        
     }
 
-    goToExperiments() {
-        window.location.href = "/experiments"
+    componentDidMount() {
+        this.firstInput && this.firstInput.focus()
     }
 
     render() {
@@ -106,7 +106,9 @@ class LanguageMenu extends React.Component {
                 </label>
                 <select name="ui-language-select" className="custom-select form-control"
                     value={this.state.lang}
-                    onChange={(e) => this.setState({lang: e.target.value})}>
+                    onChange={(e) => this.setState({lang: e.target.value})}
+                    tabIndex={1}
+                    ref={(ref) => this.firstInput = ref}>
                     {this.state.siteLangs.map((l) =>
                         <option key={l.code} value={l.code}>{l.name}</option>)}
                 </select>
@@ -117,7 +119,8 @@ class LanguageMenu extends React.Component {
                 </label>
                 <select name="dict-select" className="custom-select form-control"
                     value={this.state.dictionary}
-                    onChange={(e) => this.setState({dictionary: e.target.value})}>
+                    onChange={(e) => this.setState({dictionary: e.target.value})}
+                    tabIndex={1}>
                     {this.state.dataLangs.map((l) =>
                         <option key={l.code} value={l.code}>{l.name}</option>)}
                 </select>
@@ -128,18 +131,19 @@ class LanguageMenu extends React.Component {
                 </label>
                 <select name="region-select" className="custom-select form-control"
                     value={this.state.region}
-                    onChange={(e) => this.setState({region: e.target.value})}>
+                    onChange={(e) => this.setState({region: e.target.value})}
+                    tabIndex={1}>
                     {this.state.regions.map((rgnCode) =>
                         <option key={rgnCode} value={rgnCode}>{rgnCode}</option>)}
                 </select>
             </div>
             <div className="form-row kars-fieldset-naturalorder">
                 <button className="item btn btn-primary"
-                    onClick={() => this.save()}>{Infra.strings.LangMenu.Save}</button>
+                    onClick={() => this.save()} tabIndex={1}>{Infra.strings.LangMenu.Save}</button>
                 <button className="item btn btn-secondary"
-                    onClick={this.props.dismiss}>{Infra.strings.LangMenu.Cancel}</button>
+                    onClick={this.props.dismiss} tabIndex={1}>{Infra.strings.LangMenu.Cancel}</button>
                 <span className="item flexible-space"></span>
-                <a className="item btn btn-secondary" href="/experiments">
+                <a className="item btn btn-secondary" href="/experiments" tabIndex={1}>
                     {Infra.strings.LangMenu.GoToExperiments}</a>
             </div>
         </section>
@@ -150,7 +154,17 @@ class LanguageMenu extends React.Component {
 ////////////////////////////////////////////////////
 
 export function initLangMenu() {
-    document.getElementById("bind-languagemenu-toggle").addEventListener("click", () => {
+    const activateMenu = () => {
         ModalManager.pushModal((dismiss) => <LanguageMenu dismiss={dismiss} />)
-    }, {passive: true})
+    }
+    const button = document.getElementById("bind-languagemenu-toggle")
+    
+    button.tabIndex = 0
+    button.addEventListener("click", activateMenu, {passive: true})
+    button.addEventListener("keydown", (e) => {
+        if (e.keyCode == 0x0d || e.keyCode == 0x20) {
+            e.preventDefault()
+            activateMenu()
+        }
+    }, {passive: false})
 }

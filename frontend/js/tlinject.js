@@ -60,6 +60,10 @@ class TLInjectInputPromptModal extends React.Component {
         this.state = {}
     }
 
+    componentDidMount() {
+        this.firstInput && this.firstInput.focus()
+    }
+
     submit() {
         this.props.submitString(this, this.state.tstring || "", this.props.abort)
     }
@@ -96,7 +100,9 @@ class TLInjectInputPromptModal extends React.Component {
                 <div className="control">
                     <input className="form-control" type="text"
                         placeholder={Infra.strings["TLInject.InputFieldPlaceholder"]}
-                        onChange={(e) => this.setState({tstring: e.target.value})} />
+                        onChange={(e) => this.setState({tstring: e.target.value})} 
+                        ref={(ref) => this.firstInput = ref}
+                        tabIndex={1} />
                 </div>
                 <small className="form-text text-muted">
                     {this.bottomText()}
@@ -105,12 +111,15 @@ class TLInjectInputPromptModal extends React.Component {
             <div className="form-row kars-fieldset-naturalorder">
                 <button className="item btn btn-primary"
                     disabled={! (this.state.tstring && this.state.tstring.trim())}
-                    onClick={() => this.submit()}>{Infra.strings["TLInject.Submit"]}</button>
+                    onClick={() => this.submit()}
+                    tabIndex={1}>{Infra.strings["TLInject.Submit"]}</button>
                 <button className="item btn btn-secondary"
-                    onClick={() => this.cancel()}>{Infra.strings["TLInject.Cancel"]}</button>
+                    onClick={() => this.cancel()}
+                    tabIndex={1}>{Infra.strings["TLInject.Cancel"]}</button>
                 <span className="item flexible-space"></span>
                 <button className="item btn btn-danger"
-                    onClick={() => this.submitExplicitClear()}>{Infra.strings["TLInject.ExplicitClear"]}</button>
+                    onClick={() => this.submitExplicitClear()}
+                    tabIndex={1}>{Infra.strings["TLInject.ExplicitClear"]}</button>
             </div>
         </section>
     }
