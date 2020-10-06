@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <body data-master="{{ handler.settings["master"].version }}">
+        <div id="results-host">
+        {% for card in cards %}
+            {% module Template("uim_card.html", card=card) %}
+        {% end %}
+        </div>
+    </body>
+</html>

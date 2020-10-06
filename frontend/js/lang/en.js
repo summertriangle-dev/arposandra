@@ -119,5 +119,25 @@ export default {
         ],
         AllowButton: "Allow",
         DenyButton: "Deny",
+    },
+    Search: {
+        RemoveCriteria: "Delete",
+        CriteriaBlocksTitle: "Add criteria to your search:",
+        
+        SchemaLoadErrorTryAgain: "Try again",
+        EnumPlaceholder: "Choose one...",
+        Operator: {
+            Equals: "=",
+            LessThan: "<",
+            GreaterThan: ">",
+        },
+        DismissErrorModal: "Dismiss",
+        Error: {
+            NoCriteriaValues: `You need to add some filters before searching. 
+                Add filters by typing in the search box, or by selecting them from the grid.`,
+            SchemaLoad: "Error: {0} for URL: {1}.",
+            ExecuteFailed: "The server could not complete your search. The error code it returned was: {0}.",
+            NoResults: "Could not find any results. Please check your filters, or {0}."
+        }
     }
 }

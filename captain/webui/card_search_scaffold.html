@@ -5,38 +5,50 @@
         
         {% include t_preamble.html %}
     </head>
-    <body data-master="{{ handler.settings["master"].version }}" data-inject="search">
+    <body data-master="{{ handler.settings["master"].version }}" data-inject="search card" class="editing-query">
         {% module Template("uim_nav.html", current="cards") %}
 
+        <div class="container search-stage-viewing-results">
+            <div class="kars-react-component kars-negative-box"
+                data-component-class="CardDisplayModeSwitcher">
+            </div>
+        </div>
+
         <div class="container">
-            <div class="card kars-card-box">
+            <div class="card kars-card-box search-stage-editing-query">
                 <div class="kars-list-alternate card-body">
-                    <form><div class="form-row">
-                        <label class="sr-only" for="criteria-finder">Search Criteria</label>
-                        <div class="input-group input-group-lg">
-                          <div class="input-group-prepend">
-                            <div class="input-group-text">
-                                <i class="icon icon-lg ion-ios-search"></i>
-                            </div>
-                          </div>
-                          <input type="text" class="form-control" id="criteria-finder" placeholder="Touch to start...">
+                    <form class="search-metrics">
+                        <div class="form-row">
+                        <label class="sr-only" for="criteria-finder">{{ _("Search.TextBoxSRLabel") }}</label>
+                        <div class="search-overlay-grp">
+                            <i class="overlay icon icon-lg ion-ios-search"></i>
+                            <input type="text" class="form-control form-control-lg search-field" id="criteria-finder" placeholder="{{ _("Search.TextBoxHint") }}">
+                            <input type="submit" class="btn btn-lg btn-primary" id="search-button" value="{{ _("Search.SearchButtonLabel") }}" />
                         </div>
-                    </div></form>
-                    
+                    </div>
+                    <div id="completion-target"></div>
+                    </form>
                 </div>
-                <div class="kars-list-alternate card-body">
-                    <div class="row">
-                        <div id="query-editor-host" class="col-md-6"></div>
-                        <div id="criteria-list-host" class="col-md-6">
-                            <p class="text-center">
-                                Loading schema...
-                            </p>
-                        </div>
+                <div class="kars-list-alternate card-body search-stage-editing-query">
+                    <div id="query-editor-host" class="search-metrics"></div>
+                    <div id="criteria-list-host" class="search-metrics">
+                        <p class="text-center">
+                            {{ _("Search.LoadingSchema") }}
+                        </p>
                     </div>
                 </div>
             </div>
 
+            <!-- -->
+
+            <div class="card kars-card-box search-stage-viewing-results">
+                <div class="kars-list-alternate p-2 text-center">
+                    <i class="icon ion-ios-search"></i><a href="#">{{ _("Search.ContinueSearchLabel") }}</a>
+                </div>
+            </div>
         </div>
+
+        <div id="results-host" class="container"></div>
 
         {% include t_footer.html %}
     </body>

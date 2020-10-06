@@ -1,3 +1,13 @@
+.search-stage-viewing-results, .search-stage-editing-query
+    display: none
+
+body.editing-query
+    .search-stage-editing-query
+        display: block
+body.viewing-results
+    .search-stage-viewing-results
+        display: block    
+
 .criteria-list
     margin: -0.5rem
     text-align: center
@@ -17,3 +27,43 @@
         font-size: 80%
         font-weight: bold
         text-overflow: ellipsis
+
+.search-overlay-grp
+    display: flex
+    flex-direction: row
+    position: relative
+    width: 100%
+
+    input.search-field
+        flex-grow: 2
+        padding-left: 3rem !important
+        margin-right: 1rem
+
+    .overlay
+        position: absolute
+        top: 13px
+        left: 16px
+
+        pointer-events: none
+
+.search-metrics
+    max-width: 800px
+    margin: 0 auto
+    position: relative
+
+    .form-row
+        margin: 0
+
+.search-completions
+    position: absolute
+    width: 100%
+    margin-top: 1rem
+
+    background: change-color($body-bg, $alpha: 0.90)
+    list-style: none
+    padding: 0 1rem 0 3rem
+
+    z-index: 30
+
+    .completion
+        padding: 0.5rem 0

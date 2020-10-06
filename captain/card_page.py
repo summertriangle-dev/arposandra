@@ -342,6 +342,51 @@ class CardGallerySingle(CardGallery):
         self.render("cards.html", cards=cards, custom_title=custom_title, og_context={})
 
 
+# ----- AJAX (SEARCH) --------------------------------
+
+
+@route(r"/api/private/cards/ajax/([0-9,]+)")
+class CardPageAjax(LanguageCookieMixin, DatabaseMixin):
+    def card_spec(self, spec: str) -> list:
+        ret = []
+        unique = set()
+        for s in spec.split(","):
+            try:
+                v = int(s)
+            except ValueError:
+                continue
+            if v in unique:
+                continue
+            ret.append(v)
+            unique.add(v)
+        return ret
+
+    def get(self, ids):
+        ids = self.card_spec(ids)
+
+        cards = self.settings["master"].lookup_multiple_cards_by_id(ids)
+        cards = [c for c in cards if c]
+
+        tlbatch = set()
+        for card in cards:
+            if card:
+                tlbatch.update(card.get_tl_set())
+
+        self._tlinject_base = self.settings["string_access"].lookup_strings(
+            tlbatch, self.get_user_dict_preference()
+        )
+
+        if len(cards) == 0:
+            self.set_status(404)
+            self.render("error.html", message=self.locale.translate("ErrorMessage.ItemNotFound"))
+            return
+
+        self.render("cards_ajax.html", cards=cards)
+
+
+# ----- API ------------------------------------------
+
+
 @route(r"/api/private/cards/id_list\.json")
 class CardListAPI(RequestHandler):
     def get(self):
