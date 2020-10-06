@@ -92,8 +92,10 @@ def audit(lang, mdb, da):
     ncovered = 0
     for sid, symbol in SKILL_ID_REVERSE_MAP.items():
         if sid not in target.skill_effect.data:
-            print(f"# Missing: ST.{symbol}")
-            print(find_skill_type_example(mdb, da, sid))
+            have_example = find_skill_type_example(mdb, da, sid)
+            if have_example:
+                print(f"# Missing: ST.{symbol}")
+                print(have_example)
         else:
             ncovered += 1
     print(f"# {ncovered} skills described. {nactual - ncovered} missing.")

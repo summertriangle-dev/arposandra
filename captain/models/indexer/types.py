@@ -23,6 +23,10 @@ FIELD_TYPE_STRINGMAX = 4
 FIELD_TYPE_COMPOSITE = 5
 
 
+class NoLogicalResult(Exception):
+    pass
+
+
 @dataclass
 class Field(object):
     field_type: int
@@ -77,9 +81,13 @@ class Field(object):
             return self.map_enum_to_id[v]
         return v
 
+    def __getitem__(self, name):
+        for v in (x for x in self.sub_fields if x.name == name):
+            return v
+
+        raise KeyError(name)
 
 T = TypeVar("T")
-
 
 # @dataclass
 # class Query(object):
@@ -141,6 +149,8 @@ class Schema(Generic[T]):
     def __getitem__(self, name):
         for v in (x for x in self.fields if x.name == name):
             return v
+        
+        raise KeyError(name)
 
     def sql_tuples_from_object(self, obj: T):
         expert = self.expert(obj)  # type: ignore

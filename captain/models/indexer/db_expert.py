@@ -247,3 +247,88 @@ class PostgresDBExpert(Generic[T]):
                 log_sql.debug("%s", stmt)
 
             await connection.execute(stmt, *values)
+
+    def look_up_schema_field(self, field_name):
+        names = field_name.split(".")
+        assert len(names) > 0
+
+        root = self.schema[names[0]]
+        table = [self.schema.table]
+        for name in names[1:]:
+            table.append(root.name)
+            root = root[name]
+
+        return root, "__".join(table)
+
+    def _get_op(self, ops, equal=True):
+        if ops == "eq" and equal:
+            return "="
+        elif ops == "lt":
+            return "<"
+        elif ops == "gt":
+            return ">"
+        elif ops == "gte":
+            return ">="
+        elif ops == "lte":
+            return "<="
+
+        raise ValueError("invalid operator")
+
+    def build_query(self, crit_list):
+        fetchresult = []
+        wheres = []
+        joins = []
+        parameters = []
+
+        pkspec = ", ".join(pk.name for pk in self.schema.primary_key)
+        for (field_name, filter_value) in crit_list.items():
+            field, tablename = self.look_up_schema_field(field_name)
+            if filter_value.get("return"):
+                fetchresult.append(f"{tablename}.{field.name}")
+
+            raw_value = filter_value.get("value")
+            if raw_value is None:
+                continue
+
+            if tablename != self.schema.table:
+                joins.append(f"INNER JOIN {tablename} USING ({pkspec})")
+
+            if field.field_type == types.FIELD_TYPE_INT:
+                if isinstance(raw_value, int):
+                    compare_type = self._get_op(filter_value.get("compare_type", "eq"))
+                    wheres.append(f"{tablename}.{field.name} {compare_type} ${len(parameters) + 1}")
+                else:
+                    compare_type = "!= ALL" if filter_value.get("exclude") else "= ANY"
+                    wheres.append(
+                        f"{tablename}.{field.name} {compare_type} (${len(parameters) + 1}::int[])"
+                    )
+
+                parameters.append(raw_value)
+            elif (
+                field.field_type == types.FIELD_TYPE_STRING
+                or field.field_type == types.FIELD_TYPE_STRINGMAX
+            ):
+                if field.length is not None and len(raw_value) > field.length:
+                    raise types.NoLogicalResult(field_name)
+
+                compare_type = "!=" if filter_value.get("exclude") else "="
+                wheres.append(f"{tablename}.{field.name} {compare_type} ${len(parameters) + 1}")
+                parameters.append(raw_value)
+            elif field.field_type == types.FIELD_TYPE_DATETIME:
+                compare_type = self._get_op(filter_value["compare_type"], equal=False)
+
+                wheres.append(f"{tablename}.{field.name} {compare_type} ${len(parameters + 1)}")
+                parameters.append(raw_value)
+
+        return (
+            f"""SELECT {', '.join(fetchresult)} 
+            FROM {self.schema.table} 
+            {' '.join(joins)}
+            WHERE {' AND '.join(wheres)}""",
+            parameters,
+        )
+
+    async def run_query(self, connection: asyncpg.Connection, crit_list):
+        query, args = self.build_query(crit_list)
+        logging.debug("%s %s", query, args)
+        return await connection.fetch(query, *args)

@@ -106,15 +106,17 @@ CardIndex = Schema(
     fields=[
         Field.integer("id", primary=True, behaviour={"digits": "9", "compare_type": "equal"}),
         Field.integer("ordinal"),
-        Field.integer("member"),
-        Field.integer("member_group"),
-        Field.integer("member_subunit"),
-        Field.integer("member_year"),
+        Field.integer("member", behaviour={"captain_treat_as": "enum"}),
+        Field.integer("member_group", behaviour={"captain_treat_as": "enum"}),
+        Field.integer("member_subunit", behaviour={"captain_treat_as": "enum"}),
+        Field.integer(
+            "member_year", behaviour={"captain_treat_as": "enum", "compare_type": "bit-set"}
+        ),
         Field.integer("max_appeal"),
         Field.integer("max_stamina"),
         Field.integer("max_technique"),
-        Field.integer("rarity"),
-        Field.integer("source"),
+        Field.integer("rarity", behaviour={"captain_treat_as": "enum", "compare_type": "bit-set"}),
+        Field.integer("source", behaviour={"captain_treat_as": "enum", "compare_type": "bit-set"}),
         Field.enum(
             "role", ("voltage", "sp", "guard", "skill"), behaviour={"compare_type": "bit-set"}
         ),
@@ -125,7 +127,10 @@ CardIndex = Schema(
         ),
         Field.enum("maximal_stat", ("appeal", "stamina", "technique")),
         Field.composite(
-            "skills", Field.integer("effect"), Field.integer("activation_type"), multiple=True,
+            "skills",
+            Field.integer("effect", behaviour={"captain_treat_as": "enum"}),
+            Field.integer("activation_type", behaviour={"captain_treat_as": "enum"}),
+            multiple=True,
         ),
         Field.composite(
             "release_dates", Field.varchar("server_id", 8, primary=True), Field.datetime("date"),
