@@ -20,7 +20,7 @@ class DatabaseConnection(object):
         self.pool = None
 
     async def init_models(self):
-        self.pool = await asyncpg.create_pool(dsn=self.connection_url)
+        self.pool = await asyncpg.create_pool(dsn=self.connection_url, max_size=1)
         init_schema = pkg_resources.resource_string("captain", "init_schema.sql").decode("utf8")
         hist_expert = db_expert.PostgresDBExpert(mine_models.HistoryIndex)
         async with self.pool.acquire() as c, c.transaction():

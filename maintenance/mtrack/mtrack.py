@@ -33,7 +33,7 @@ class IndexerDBCoordinator(object):
         self.pool: "asyncpg.pool.Pool" = None
 
     async def create_pool(self):
-        self.pool = await asyncpg.create_pool(dsn=self.connection_url)
+        self.pool = await asyncpg.create_pool(dsn=self.connection_url, max_size=1)
 
     async def drop_all_mtrack_tables(self):
         async with self.pool.acquire() as conn, conn.transaction():
