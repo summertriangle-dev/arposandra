@@ -1,5 +1,6 @@
 import logging
 import sqlite3
+import time
 from datetime import datetime
 from typing import Dict, Generic, TypeVar, cast
 
@@ -274,11 +275,12 @@ class PostgresDBExpert(Generic[T]):
 
         raise ValueError("invalid operator")
 
-    def build_query(self, crit_list):
+    def build_query(self, crit_list, order_by=None, order_desc=False):
         fetchresult = []
         wheres = []
-        joins = []
+        joins = set()
         parameters = []
+        order_clause = ""
 
         pkspec = ", ".join(pk.name for pk in self.schema.primary_key)
         for (field_name, filter_value) in crit_list.items():
@@ -291,7 +293,7 @@ class PostgresDBExpert(Generic[T]):
                 continue
 
             if tablename != self.schema.table:
-                joins.append(f"INNER JOIN {tablename} USING ({pkspec})")
+                joins.add(f"INNER JOIN {tablename} USING ({pkspec})")
 
             if field.field_type == types.FIELD_TYPE_INT:
                 if isinstance(raw_value, int):
@@ -320,15 +322,21 @@ class PostgresDBExpert(Generic[T]):
                 wheres.append(f"{tablename}.{field.name} {compare_type} ${len(parameters + 1)}")
                 parameters.append(raw_value)
 
+        if order_by:
+            field, tablename = self.look_up_schema_field(order_by)
+            order_clause = f"ORDER BY {tablename}.{field.name} {'DESC' if order_desc else 'ASC'}"
+
         return (
-            f"""SELECT {', '.join(fetchresult)} 
-            FROM {self.schema.table} 
-            {' '.join(joins)}
-            WHERE {' AND '.join(wheres)}""",
+            f"""SELECT DISTINCT {', '.join(fetchresult)} FROM {self.schema.table} {' '.join(joins)}
+            WHERE {' AND '.join(wheres)} {order_clause}""",
             parameters,
         )
 
-    async def run_query(self, connection: asyncpg.Connection, crit_list):
-        query, args = self.build_query(crit_list)
+    async def run_query(
+        self, connection: asyncpg.Connection, crit_list, order_by=None, order_desc=False
+    ):
+        t = time.monotonic_ns()
+        query, args = self.build_query(crit_list, order_by, order_desc)
+        logging.info("Query build time: %d", time.monotonic_ns() - t)
         logging.debug("%s %s", query, args)
         return await connection.fetch(query, *args)
