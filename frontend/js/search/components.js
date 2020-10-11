@@ -643,11 +643,41 @@ export class PAPageControl extends React.Component {
         const lastPage = Math.min(this.props.page + 3, this.props.pageCount)
         const items = []
 
+        const go = (p) => {
+            if (!this.props.disabled) {
+                this.props.moveToPage(p)
+            }
+        }
+
+        if (firstPage != 1) {
+            items.push(
+                <li key={1} className={`page-item ${this.props.disabled? "disabled" : ""}`}>
+                    <button className="page-link" onClick={() => go(1)}>1</button>
+                </li>, <li className="page-item disabled">
+                    <a className="page-link" href="#" tabIndex="-1">...</a>
+                </li>
+            )
+        }
+
         for (let i = firstPage; i <= lastPage; i++) {
             const active = (i == this.props.page)? "active" : ""
-            items.push(<li key={i} className={`page-item ${active}`}>
-                <button className="page-link" onClick={() => this.props.moveToPage(i)}>{i}</button>
+            const disabled = this.props.disabled? "disabled" : ""
+            items.push(<li key={i} className={`page-item ${active} ${disabled}`}>
+                <button className="page-link" onClick={() => go(i)}>{i}</button>
             </li>)
+        }
+
+        if (lastPage != this.props.pageCount) {
+            items.push(
+                <li className="page-item disabled">
+                    <a className="page-link" href="#" tabIndex="-1">...</a>
+                </li>,
+                <li key={this.props.pageCount} className={`page-item ${this.props.disabled? "disabled" : ""}`}>
+                    <button className="page-link" onClick={() => go(this.props.pageCount)}>
+                        {this.props.pageCount}
+                    </button>
+                </li>
+            )
         }
 
         return <ul className="pagination justify-content-center">

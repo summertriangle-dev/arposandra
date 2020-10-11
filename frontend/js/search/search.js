@@ -41,7 +41,11 @@ class PASearchContext {
             host.style.opacity = 0.5
 
             const pager = document.getElementById("pager-host")
-            ReactDOM.render(null, pager)
+            ReactDOM.render(<PAPageControl 
+                disabled={true}
+                page={this.currentPage + 1} 
+                pageCount={this.pageCount()} 
+                moveToPage={this.moveToPageAction.bind(this)} />, pager)
         }
 
         this.render()
