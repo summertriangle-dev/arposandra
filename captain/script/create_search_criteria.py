@@ -83,7 +83,6 @@ def schema(master: master.MasterData):
                 {"name": "sr", "value": 20},
                 {"name": "ur", "value": 30},
             ],
-            behaviour={"compare_type": "bit-set"},
         )
     )
     criteria["member_year"].update(
@@ -94,7 +93,6 @@ def schema(master: master.MasterData):
                 {"name": "year_2nd", "value": 2},
                 {"name": "year_3rd", "value": 3},
             ],
-            behaviour={"compare_type": "bit-set"},
         )
     )
     criteria["source"].update(
@@ -123,10 +121,10 @@ def translate_schema(schm: dict, langcode: str, sid: str, mv: str):
                 )
                 # choice.pop("name")
         elif value["type"] == 1001:
+            value["type"] = 1000
             for choice in value["choices"]:
                 s = search_stab.gettext(choice["name"])
                 choice["display_name"] = s if s else choice["name"]
-                # choice.pop("name")
 
 
 @plac.pos("destination")

@@ -1,7 +1,7 @@
 .gallery-spread
     margin-bottom: 2rem
 
-    .row
+    &.card .row
         margin: 8px
 
     .spread-component
@@ -26,7 +26,7 @@
     .spread-image-backing img
         max-width: 100%
     
-    .spread-image-backing, .spread-image:first-child
+    .spread-image-backing:first-child, .spread-image-backing:first-child .spread-image
         border-radius: 8px 8px 0 0
 
     .spread-image-backing.unrls::after
@@ -52,7 +52,7 @@
             border: none
         .below-fold
             max-height: 0px
-    
+
     @include media-breakpoint-down(md)
         .gallery-card.folded .kars-stack-header
             padding-top: 8px

@@ -1,60 +1,69 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
 # Static definitions for search terms.
 msgid "kars.search_criteria.card_index.id"
-msgstr "Internal ID"
+msgstr "内部ID"
 
 msgid "kars.search_criteria.card_index.ordinal"
-msgstr "Card Number"
+msgstr "カード番号"
 
 msgid "kars.search_criteria.card_index.member"
-msgstr "Idol"
+msgstr "メンバー"
 
 msgid "kars.search_criteria.card_index.member_group"
-msgstr "Group"
+msgstr "学校"
 
 msgid "kars.search_criteria.card_index.member_subunit"
-msgstr "Subunit"
+msgstr "ユニット"
 
 msgid "kars.search_criteria.card_index.member_year"
-msgstr "School Year"
+msgstr "学年"
 
 msgid "kars.search_criteria.card_index.max_appeal"
-msgstr "Max Appeal"
+msgstr "最大アピール"
 
 msgid "kars.search_criteria.card_index.max_stamina"
-msgstr "Max Stamina"
+msgstr "最大スタミナ"
 
 msgid "kars.search_criteria.card_index.max_technique"
-msgstr "Max Technique"
+msgstr "最大テクニック"
 
 msgid "kars.search_criteria.card_index.rarity"
-msgstr "Rarity"
+msgstr "レアリティ"
 
 msgid "kars.search_criteria.card_index.source"
-msgstr "Source"
+msgstr "入手場所"
 
 msgid "kars.search_criteria.card_index.role"
-msgstr "Type"
+msgstr "タイプ"
 
 msgid "kars.search_criteria.card_index.attribute"
-msgstr "Attribute"
+msgstr "属性"
 
 msgid "kars.search_criteria.card_index.maximal_stat"
-msgstr "Highest Stat"
+msgstr "最大パラメ"
 
 msgid "kars.search_criteria.card_index.skills.effect"
-msgstr "Skill Effects"
+msgstr "スキル効果"
 
 msgid "kars.search_criteria.card_index.skills.activation_type"
-msgstr "Skill Activation Type"
+msgstr "スキル条件"
+
+msgid "kars.search_criteria.card_index.skills.apply_type"
+msgstr "スキル対象"
 
 msgid "kars.search_criteria.card_index.source.event"
-msgstr "Event"
+msgstr "イベント"
 
 msgid "kars.search_criteria.card_index.source.gacha"
-msgstr "Scouting"
+msgstr "ガシャ"
 
 msgid "kars.search_criteria.card_index.source.gachap2"
-msgstr "Scouting (2)"
+msgstr "ガシャ(2)"
 
 msgid "kars.search_criteria.card_index.rarity.ur"
 msgstr "UR"
@@ -66,55 +75,86 @@ msgid "kars.search_criteria.card_index.rarity.r"
 msgstr "R"
 
 msgid "kars.search_criteria.card_index.role.voltage"
-msgstr "Vo-type"
+msgstr "Voタイプ"
 
 msgid "kars.search_criteria.card_index.role.sp"
-msgstr "Sp-type"
+msgstr "Spタイプ"
 
 msgid "kars.search_criteria.card_index.role.guard"
-msgstr "Gd-type"
+msgstr "Gdタイプ"
 
 msgid "kars.search_criteria.card_index.role.skill"
-msgstr "Sk-type"
+msgstr "Skタイプ"
 
 msgid "kars.search_criteria.card_index.attribute.smile"
-msgstr "Smile"
+msgstr "スマイル"
 
 msgid "kars.search_criteria.card_index.attribute.pure"
-msgstr "Pure"
+msgstr "ピュア"
 
 msgid "kars.search_criteria.card_index.attribute.cool"
-msgstr "Cool"
+msgstr "クール"
 
 msgid "kars.search_criteria.card_index.attribute.active"
-msgstr "Active"
+msgstr "アクティブ"
 
 msgid "kars.search_criteria.card_index.attribute.natural"
-msgstr "Natural"
+msgstr "ナチュラル"
 
 msgid "kars.search_criteria.card_index.attribute.elegant"
-msgstr "Elegant"
+msgstr "エレガント"
 
 msgid "kars.search_criteria.card_index.maximal_stat.appeal"
-msgstr "Appeal"
+msgstr "アピール"
 
 msgid "kars.search_criteria.card_index.maximal_stat.stamina"
-msgstr "Stamina"
+msgstr "スタミナ"
 
 msgid "kars.search_criteria.card_index.maximal_stat.technique"
-msgstr "Technique"
+msgstr "テクニック"
 
 msgid "kars.search_criteria.card_index.member_year.year_1st"
-msgstr "1st"
+msgstr "1年生"
 
 msgid "kars.search_criteria.card_index.member_year.year_2nd"
-msgstr "2nd"
+msgstr "2年生"
 
 msgid "kars.search_criteria.card_index.member_year.year_3rd"
-msgstr "3rd"
+msgstr "3年生"
 
+msgid "kars.search_criteria.card_index.skills.apply_type.self"
+msgstr "自身"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.party"
+msgstr "同作戦"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.group"
+msgstr "同学校"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.year"
+msgstr "同学年"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.subunit"
+msgstr "同ユニット"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.attribute"
+msgstr "同属性"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.role"
+msgstr "同タイプ"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.everyone_not_self"
+msgstr "自身以外"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.everyone"
+msgstr "全員"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.none"
+msgstr "フィールド"
+
+#, fuzzy
 msgid "k.m_dic_member_name_210"
-msgstr "Shioriko Mifune"
+msgstr "虹ヶ咲"
 
 msgid "k.m_dic_unit_name_cyaron"
 msgstr "CYaRon!"
@@ -123,4 +163,4 @@ msgid "k.m_dic_unit_name_azuna"
 msgstr "AZUNA"
 
 msgid "k.m_dic_group_name_niji"
-msgstr "Nijigasaki"
+msgstr "虹ヶ咲"

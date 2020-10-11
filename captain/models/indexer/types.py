@@ -37,6 +37,7 @@ class Field(object):
     length: Optional[int] = None
     sub_fields: Optional[Sequence] = None
     behaviour: Optional[Dict[str, Any]] = None
+    order: Sequence[int] = field(init=False)
 
     @classmethod
     def enum(cls, name, choices, **kwargs):
@@ -81,40 +82,20 @@ class Field(object):
             return self.map_enum_to_id[v]
         return v
 
+    def set_order(self, order):
+        self.order = order
+        if self.sub_fields:
+            for i, f in enumerate(self.sub_fields):
+                f.set_order(order + (i,))
+
     def __getitem__(self, name):
         for v in (x for x in self.sub_fields if x.name == name):
             return v
 
         raise KeyError(name)
 
+
 T = TypeVar("T")
-
-# @dataclass
-# class Query(object):
-#     OrderBy = namedtuple("OrderBy", ("field", "desc"))
-#     Condition = Tuple[Field, str, Any]
-
-#     schema: Schema
-#     criteria: List[Condition] = field(default_factory=list)
-#     order: Union[OrderBy, List[OrderBy]] = None
-
-#     def to_field(self, field: Union[str, Field]):
-#         if isinstance(field, str):
-#             return next(f for f in self.schema.fields if f.name == field)
-#         return field
-
-#     def restrict(self, field: Union[str, Field], op: str, value: Any) -> Query:
-#         nextq = Query(self.schema, self.criteria[:])
-#         nextq.criteria.append((self.to_field(field), op, value))
-#         return nextq
-
-#     def order_by(self, field: Union[str, Field], desc=False):
-#         if not self.order:
-#             self.order = self.OrderBy(self.to_field(field), desc)
-#         elif isinstance(self.order, self.OrderBy):
-#             self.order = [self.order, self.OrderBy(self.to_field(field), desc)]
-#         else:
-#             self.order.append(self.OrderBy(self.to_field(field), desc))
 
 
 @dataclass
@@ -136,6 +117,9 @@ class Schema(Generic[T]):
 
         self.primary_key = tuple(f for f in self.fields if f.primary)
 
+        for i, f in enumerate(self.fields):
+            f.set_order((i,))
+
     def validate_or_error(self):
         encountered_first_multi = False
         for f in self.fields:
@@ -149,7 +133,7 @@ class Schema(Generic[T]):
     def __getitem__(self, name):
         for v in (x for x in self.fields if x.name == name):
             return v
-        
+
         raise KeyError(name)
 
     def sql_tuples_from_object(self, obj: T):

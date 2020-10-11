@@ -1,16 +1,16 @@
 import json
 import logging
-import pkg_resources
-
+from collections import OrderedDict
 from datetime import datetime
 
-from tornado.web import RequestHandler
+import pkg_resources
 from tornado.locale import get_supported_locales
+from tornado.web import RequestHandler
 
-from .models.indexer import types, db_expert
-from .models.mine_models import CardIndex
-from .dispatch import route, LanguageCookieMixin, DatabaseMixin
 from . import pageutils
+from .dispatch import DatabaseMixin, LanguageCookieMixin, route
+from .models.indexer import db_expert, types
+from .models.mine_models import CardIndex
 
 
 @route(r"/cards/search")
@@ -23,7 +23,7 @@ class CardSearch(LanguageCookieMixin, DatabaseMixin):
 class CardSearchExec(LanguageCookieMixin, DatabaseMixin):
     FIELD_BLACKLIST = ["release_dates"]
 
-    def look_up_schema_field(self, field_name):
+    def look_up_schema_field(self, field_name: str) -> types.Field:
         names = field_name.split(".")
         assert len(names) > 0
 
@@ -49,8 +49,11 @@ class CardSearchExec(LanguageCookieMixin, DatabaseMixin):
             self.write({"error": "Invalid payload."})
             return
 
-        clean_query = {}
+        clean_query_presort: List[Tuple[Iterable[int], str, dict]] = []
         for field, value in query.items():
+            if field.startswith("_"):
+                continue
+
             try:
                 scmfield = self.look_up_schema_field(field)
             except KeyError:
@@ -67,18 +70,22 @@ class CardSearchExec(LanguageCookieMixin, DatabaseMixin):
                             400, f"{field}: The value must be a list of integers for bit-sets."
                         )
 
-                    clean_query[field] = {"value": value, "exclude": True}
+                    clean_query_presort.append(
+                        (scmfield.order, field, {"value": value, "exclude": True})
+                    )
                 else:
                     if not isinstance(value, int):
                         return self._error(400, f"{field}: The value must be an integer.")
 
-                    clean_query[field] = {"value": value, "compare_type": "eq"}
+                    clean_query_presort.append(
+                        (scmfield.order, field, {"value": value, "compare_type": "eq"})
+                    )
             elif scmfield.field_type == types.FIELD_TYPE_INT:
                 if not isinstance(value, dict) or "compare_to" not in value:
                     return self._error(400, f"{field}: Invalid integer payload.")
 
                 value["value"] = value.pop("compare_to")
-                clean_query[field] = value
+                clean_query_presort.append((scmfield.order, field, value))
             elif (
                 scmfield.field_type == types.FIELD_TYPE_STRING
                 or scmfield.field_type == types.FIELD_TYPE_STRINGMAX
@@ -86,21 +93,44 @@ class CardSearchExec(LanguageCookieMixin, DatabaseMixin):
                 if not isinstance(value, str):
                     return self._error(400, f"{field}: Invalid string payload.")
 
-                clean_query[field] = {"value": str(value)}
+                clean_query_presort.append((scmfield.order, field, {"value": str(value)}))
             elif scmfield.field_type == types.FIELD_TYPE_DATETIME:
                 try:
-                    clean_query[field] = {"value": datetime.fromisoformat(value)}
+                    clean_query_presort.append(
+                        (scmfield.order, field, {"value": datetime.fromisoformat(value)})
+                    )
                 except ValueError:
                     return self._error(400, f"{field}: Invalid format")
+
+        clean_query_presort.sort(key=lambda x: x[0])
+        clean_query = OrderedDict(x[1:] for x in clean_query_presort)
 
         if "id" in clean_query:
             clean_query["id"]["return"] = True
         else:
             clean_query["id"] = {"return": True}
+            clean_query.move_to_end("id", last=False)
+
+        order_by = None
+        order_desc = False
+
+        sort_key = query.get("_sort")
+        if sort_key:
+            try:
+                f = self.look_up_schema_field(sort_key[1:])
+            except KeyError:
+                pass
+            else:
+                order_by = sort_key[1:]
+                order_desc = True if sort_key[0] == "-" else False
+
+        if order_by in clean_query:
+            clean_query[order_by]["return"] = True
+        elif order_by:
+            clean_query[order_by] = {"return": True}
 
         expert = db_expert.PostgresDBExpert(CardIndex)
         async with self.database().pool.acquire() as connection:
-            res = await expert.run_query(connection, clean_query)
+            res = await expert.run_query(connection, clean_query, order_by, order_desc)
 
         self.write({"result": [r["id"] for r in res]})
-        self.finish()

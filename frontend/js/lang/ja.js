@@ -119,5 +119,42 @@ export default {
         ],
         AllowButton: "Allow",
         DenyButton: "Deny",
+    },
+    Search: {
+        PaginationTitle: "Page",
+        RemoveCriteria: "Delete",
+        CriteriaBlocksTitle: "Add filters to your search:",
+        SortBy: "Sort By",
+        SortDesc: "(High to Low)",
+        SortAsc: "(Low to High)",
+        TextBoxSRLabel: "Search Box",
+        TextBoxHint: "Find filters...",
+        ButtonLabel: "Search",
+        SchemaLoadErrorTryAgain: "Try again",
+        EnumPlaceholder: "Choose one...",
+        Operator: {
+            Equals: "=",
+            LessThan: "<",
+            GreaterThan: ">",
+            LessThanEqual: "≤",
+            GreaterThanEqual: "≥",
+        },
+        DismissErrorModal: "Dismiss",
+        Error: {
+            NoCriteriaValues: `You need to add some filters before searching. 
+                Add filters by typing in the search box, or by selecting them from the grid.`,
+            SchemaLoad: "Error: {0} for URL: {1}.",
+            ExecuteFailed: "The server could not complete your search. The error code it returned was: {0}.",
+            NoResults: "Could not find any results. Please check your filters, or {0}."
+        },
+        PurgatoryDescriptionHighlightedPart: "Notice: ",
+        PurgatoryDescription: "I removed the \"{0}\" filter because it was mutually exclusive with \"{1}\".",
+        RestorePurgatoryLabel: "Undo",
+        StateMessage: {
+            Continue: "Continue Searching",
+            LoadingSchema: "Acquiring filter info...",
+            Searching: "Performing search...",
+            LoadingCards: "Preparing card displays...",
+        }
     }
 }
