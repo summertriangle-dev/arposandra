@@ -29,12 +29,8 @@ export class PAQueryEditor extends React.Component {
         super(props)
 
         const queryTemplateInitial = []
-        if (props.query) {
-            Object.keys(props.query).forEach((k) => {
-                if (k !== "_sort") {
-                    queryTemplateInitial.push(k)
-                }
-            })
+        if (props.template) {
+            queryTemplateInitial.push(...props.template)
         }
 
         this.state = {
@@ -126,7 +122,8 @@ export class PAQueryEditor extends React.Component {
     performSearchAction(e) {
         e.preventDefault()
 
-        this.props.performSearchAction(this.state.queryValues, this.state.sortBy)
+        this.props.performSearchAction(this.state.queryValues, this.state.sortBy, 
+            this.state.queryTemplate)
     }
 
     restorePurgatoryAction() {

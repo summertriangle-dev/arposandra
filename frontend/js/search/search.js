@@ -23,7 +23,9 @@ class PASearchContext {
         this.dictionary = null
 
         this.currentQuery = null
+        this.currentTemplate = null
         this.currentSort = null
+
         this.currentResults = []
         this.currentPage = 0
 
@@ -71,6 +73,7 @@ class PASearchContext {
             widget = <PAQueryEditor 
                 schema={this.schema} 
                 query={this.currentQuery}
+                template={this.currentTemplate}
                 sortBy={this.currentSort}
                 performSearchAction={this.performSearchAction.bind(this)} />
             break
@@ -116,7 +119,7 @@ class PASearchContext {
         })
     }
 
-    performSearchAction(query, sortBy) {
+    performSearchAction(query, sortBy, saveTemplate) {
         if (Object.keys(query).length == 0) {
             return this.displayErrorModal(Infra.strings.Search.Error.NoCriteriaValues)
         }
@@ -128,9 +131,10 @@ class PASearchContext {
         }
 
         const hash = serializeQuery(this.schema, nq)
-        history.replaceState(null, document.title, window.location.href.split("#")[0] + "#" + hash)
+        history.pushState(null, document.title, window.location.href.split("#")[0] + "#" + hash)
         this.currentQuery = query
         this.currentSort = sortBy
+        this.currentTemplate = saveTemplate.slice(0)
 
         this.transitionToState(PASearchProgressState.Searching)
         this.sendSearchRequest(nq).catch((error) => {
@@ -343,6 +347,7 @@ class PASearchContext {
             this.currentSort = queryFromURL._sort
             delete queryFromURL["_sort"]
             this.currentQuery = queryFromURL
+            this.currentTemplate = Object.keys(queryFromURL).slice(0)
         }
 
         if (history.state && Array.isArray(history.state.results)) {
