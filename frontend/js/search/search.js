@@ -2,7 +2,6 @@ import React from "react"
 import ReactDOM from "react-dom"
 import Infra from "../infra"
 import { ModalManager } from "../modals"
-// import { PAWordCompletionist } from "./completionist"
 import { PAFakeSearchButton, PAPageControl, PAQueryEditor } from "./components"
 import { serializeQuery, deserializeQuery, isActivationKey, /* simulatedNetworkDelay */ } from "./util"
 
@@ -135,10 +134,6 @@ class PASearchContext {
 
         this.transitionToState(PASearchProgressState.Searching)
         this.sendSearchRequest(nq).catch((error) => {
-            // this.displayErrorModal(Infra.strings.formatString(
-            //     Infra.strings.Search.Error.ExecuteFailed,
-            //     error.error
-            // ))
             this.displayResultList([], 0, true, error.error)
             this.transitionToState(PASearchProgressState.EditingQuery)
         }).then((results) => {
@@ -430,12 +425,23 @@ function PACardLoadErrorMessage(props) {
     </div>
 }
 
+function getConfig() {
+    const idxFilesNodes = document.querySelectorAll("meta[name=x-panther-index-discovery]")
+    const idxFiles = []
+    for (let i = 0; i < idxFilesNodes.length; i++) {
+        idxFiles.push(idxFilesNodes[i].content)
+    }
+
+    const dictNode = document.querySelector("meta[name=x-panther-dictionary-discovery]")
+
+    return {indexes: idxFiles, dictionary: dictNode.content}
+}
+
 export function initializeSearch() {
     const context = new PASearchContext()
-    context.reloadSchema(
-        ["/static/search/base.en.json", "/static/search/skills.enum.en.json"], 
-        "/static/search/dictionary.en.json"
-    ).then(() => {
+    const cfg = getConfig()
+
+    context.reloadSchema(cfg.indexes, cfg.dictionary).then(() => {
         if (context.schema && context.dictionary) {
             context.performFirstLoadStateRestoration()
         }

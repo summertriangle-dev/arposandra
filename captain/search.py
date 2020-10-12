@@ -15,8 +15,28 @@ from .models.mine_models import CardIndex
 
 @route(r"/cards/search")
 class CardSearch(LanguageCookieMixin, DatabaseMixin):
+    SUPPORTED_LANGS = ["en", "ja"]
+
+    def indexes_for_lang(self):
+        if self.locale.code in self.SUPPORTED_LANGS:
+            code = self.locale.code
+        else:
+            code = self.SUPPORTED_LANGS[0]
+
+        return [
+            self.static_url(f"search/base.{code}.json"),
+            self.static_url(f"search/skills.enum.{code}.json"),
+        ]
+
+    def dictionary_for_lang(self):
+        return self.static_url("search/dictionary.dummy.json")
+
     def get(self):
-        self.render("card_search_scaffold.html")
+        self.render(
+            "card_search_scaffold.html",
+            config_indexes=self.indexes_for_lang(),
+            config_dictionary=self.dictionary_for_lang(),
+        )
 
 
 @route("/api/private/search/cards/results.json")

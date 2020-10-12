@@ -3,8 +3,12 @@
 
 <head>
     <title>{{ _("PT.SearchCards") }} - {{ _("PT.SiteName") }}</title>
-
     {% include t_preamble.html %}
+
+    {% for index in config_indexes %}
+    <meta name="x-panther-index-discovery" content="{{ index }}">
+    {% end %}
+    <meta name="x-panther-dictionary-discovery" content="{{ config_dictionary }}">
 </head>
 
 <body data-master="{{ handler.settings["master"].version }}" data-inject="search">
