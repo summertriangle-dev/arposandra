@@ -63,6 +63,7 @@ def build_choices(string_src, clz, test=lambda n: True, default=make_systematic_
             }
         )
 
+    choices.sort(key=lambda x: x["display_name"])
     return {"choices": choices, "type": 1000}
 
 
@@ -84,6 +85,8 @@ async def main(output_file, debug=False):
     await dbc.init_models()
     skill_effects_in_use = await dbc.get_skill_ids()
     skill_acts_in_use = await dbc.get_act_ids()
+
+    skill_cs_enums.TT.IntActiveSkill = 65535
 
     table = {
         "criteria": {
