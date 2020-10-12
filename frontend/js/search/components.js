@@ -157,7 +157,7 @@ export class PAQueryEditor extends React.Component {
             restorePurgatory: this.restorePurgatoryAction.bind(this)
         }
 
-        return <>
+        return <div>
             <PASearchButton schema={this.props.schema} performSearchAction={this.performSearchAction.bind(this)} />
             <PAQueryList 
                 schema={this.props.schema} 
@@ -171,7 +171,7 @@ export class PAQueryEditor extends React.Component {
                 schema={this.props.schema} 
                 buttonList={this.state.buttonList}
                 actions={actions} />
-        </>
+        </div>
     }
 }
 
