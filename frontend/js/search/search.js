@@ -122,8 +122,11 @@ class PASearchContext {
             return this.displayErrorModal(Infra.strings.Search.Error.NoCriteriaValues)
         }
 
-        const nq = {_sort: sortBy}
+        const nq = {}
         Object.assign(nq, query)
+        if (sortBy) {
+            nq["_sort"] = sortBy
+        }
 
         const hash = serializeQuery(this.schema, nq)
         history.replaceState(null, document.title, window.location.href.split("#")[0] + "#" + hash)
