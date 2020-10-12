@@ -1,6 +1,7 @@
 import React from "react"
 import Infra from "../infra"
 import { isCompletionistSupported } from "./completionist"
+import { CardSearchDomainExpert } from "./domain"
 import { toHTMLDateInputFormat, isActivationKey } from "./util"
 
 export const CONTROL_TYPE = {
@@ -40,6 +41,7 @@ export class PAQueryEditor extends React.Component {
             buttonList: this.makeUnusedButtonList(queryTemplateInitial),
             purgatory: null,
             autofocus: null,
+            expert: new CardSearchDomainExpert()
         }
     }
 
@@ -83,7 +85,7 @@ export class PAQueryEditor extends React.Component {
         }
 
         newState.buttonList = this.makeUnusedButtonList(newState.queryTemplate)
-        this.setState(newState)
+        this.setState(this.state.expert.didAddCriteria(this, name, newState))
     }
 
     removeCriteriaAction(named) {
@@ -112,7 +114,7 @@ export class PAQueryEditor extends React.Component {
             nextState[key] = value
         }
 
-        this.setState({queryValues: nextState})
+        this.setState(this.state.expert.didChangeCriteria(this, key, {queryValues: nextState}))
     }
 
     setSortAction(value) {
@@ -133,9 +135,12 @@ export class PAQueryEditor extends React.Component {
         const toDelete = nextTemplate.indexOf(rec.inFavourOf)
 
         nextTemplate.splice(toDelete, 1)
-        nextTemplate.push(rec.removedName)
-        nextValues[rec.removedName] = rec.removedValue
         delete nextValues[rec.inFavourOf]
+
+        if (rec.removedName) {
+            nextTemplate.push(rec.removedName)
+            nextValues[rec.removedName] = rec.removedValue
+        }
 
         this.setState({
             queryTemplate: nextTemplate, 
