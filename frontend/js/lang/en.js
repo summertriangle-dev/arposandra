@@ -143,9 +143,12 @@ export default {
         Error: {
             NoCriteriaValues: `You need to add some filters before searching. 
                 Add filters by typing in the search box, or by selecting them from the grid.`,
-            SchemaLoad: "Error: {0} for URL: {1}.",
+            SchemaLoad: "There was a network error while acquiring filter info. {0}?",
+            CardLoad: "There was a network error while loading card displays. {0}, or {1}.",
             ExecuteFailed: "The server could not complete your search. The error code it returned was: {0}.",
-            NoResults: "Could not find any results. Please check your filters, or {0}."
+            NoResults: "Could not find any results. Please check your filters.",
+            TryAgain: "Try again",
+            GoBackToQueryEditor: "edit your query"
         },
         PurgatoryDescriptionHighlightedPart: "Notice: ",
         PurgatoryDescription: "I removed the \"{0}\" filter because it was mutually exclusive with \"{1}\".",

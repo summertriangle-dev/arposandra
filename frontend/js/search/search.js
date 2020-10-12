@@ -4,7 +4,7 @@ import Infra from "../infra"
 import { ModalManager } from "../modals"
 // import { PAWordCompletionist } from "./completionist"
 import { PAFakeSearchButton, PAPageControl, PAQueryEditor } from "./components"
-import { serializeQuery, deserializeQuery, /* simulatedNetworkDelay */ } from "./util"
+import { serializeQuery, deserializeQuery, isActivationKey, /* simulatedNetworkDelay */ } from "./util"
 
 const PASearchProgressState = {
     LoadingSchema: 0,
@@ -12,6 +12,8 @@ const PASearchProgressState = {
     Searching: 2,
     LoadingResults: 3,
     ContinueSearch: 4,
+    ErrorLoadingCards: 5,
+    ErrorLoadingSchema: 6
 }
 
 const RESULTS_PER_PAGE = 12
@@ -28,6 +30,8 @@ class PASearchContext {
 
         this.flightState = PASearchProgressState.LoadingSchema
         this.isFirstLoad = true
+
+        this.recoveryInfo = null
     }
 
     transitionToState(state) {
@@ -86,6 +90,15 @@ class PASearchContext {
         case PASearchProgressState.LoadingResults:
             widget = <PAGenericMessage message={Infra.strings.Search.StateMessage.LoadingCards} />
             break
+        case PASearchProgressState.ErrorLoadingCards:
+            widget = <PACardLoadErrorMessage 
+                action={this.performErrorRecovery.bind(this)}
+                editQueryAction={() => this.transitionToState(PASearchProgressState.EditingQuery)} />
+            break
+        case PASearchProgressState.ErrorLoadingSchema:
+            widget = <PASchemaLoadErrorMessage 
+                action={this.performErrorRecovery.bind(this)} />
+            break
         }
 
         ReactDOM.render(widget, placement)
@@ -119,10 +132,11 @@ class PASearchContext {
 
         this.transitionToState(PASearchProgressState.Searching)
         this.sendSearchRequest(nq).catch((error) => {
-            this.displayErrorModal(Infra.strings.formatString(
-                Infra.strings.Search.Error.ExecuteFailed,
-                error.error
-            ))
+            // this.displayErrorModal(Infra.strings.formatString(
+            //     Infra.strings.Search.Error.ExecuteFailed,
+            //     error.error
+            // ))
+            this.displayResultList([], 0, true, error.error)
             this.transitionToState(PASearchProgressState.EditingQuery)
         }).then((results) => {
             if (!results) {
@@ -142,7 +156,6 @@ class PASearchContext {
     moveToPageAction(pNum) {
         window.scrollTo(0, 0)
         // uhh....
-        console.log(`${document.querySelector("title").textContent} (${pNum}/${this.pageCount()})`)
         history.pushState(
             {results: this.currentResults, page: pNum - 1}, 
             `${document.title} (${pNum}/${this.pageCount()})`,
@@ -155,7 +168,7 @@ class PASearchContext {
         return Math.ceil(this.currentResults.length / RESULTS_PER_PAGE)
     }
 
-    async displayResultList(results, page, editHistory=true) {
+    async displayResultList(results, page, editHistory=true, error=null) {
         this.currentResults = results
         this.currentPage = page || 0
 
@@ -172,7 +185,17 @@ class PASearchContext {
                 (this.currentPage + 1) * RESULTS_PER_PAGE)
             
             // ----- async break point -----
-            const doc = await this.sendAjaxCardRequest(idl)    
+            let doc
+            try {
+                doc = await this.sendAjaxCardRequest(idl)
+            } catch (rejectReason) {
+                ReactDOM.render(null, document.getElementById("pager-host"))
+                document.getElementById("results-host").innerHTML = ""
+
+                this.recoveryInfo = {results, page}
+                this.transitionToState(PASearchProgressState.ErrorLoadingCards)
+                return
+            }
 
             this.transitionToState(PASearchProgressState.ContinueSearch)
             const host = document.getElementById("results-host")
@@ -191,14 +214,20 @@ class PASearchContext {
             this.transitionToState(PASearchProgressState.EditingQuery)
 
             const host = document.getElementById("results-host")
+            host.style.opacity = 1.0
             ReactDOM.render(<div className="text-center mb-5">
-                <span className="h6">{Infra.strings.Search.Error.NoResults}</span>
+                {error? 
+                    <span className="h6">{Infra.strings.formatString(
+                        Infra.strings.Search.Error.ExecuteFailed, error)}</span> :
+                    <span className="h6">{Infra.strings.Search.Error.NoResults}</span>}
             </div>, host)
+            ReactDOM.render(null, document.getElementById("pager-host"))
         }
     }
 
     async sendAjaxCardRequest(cardIds) {
         // await simulatedNetworkDelay(1000)
+        // return Promise.reject(555)
 
         return await new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest()
@@ -221,6 +250,7 @@ class PASearchContext {
 
     async sendSearchRequest(withParams) {
         // await simulatedNetworkDelay(3000)
+        // return Promise.reject({error: "error"})
 
         return await new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest()
@@ -250,6 +280,7 @@ class PASearchContext {
 
     async sendSchemaRequest(toUrl) {
         // await simulatedNetworkDelay(500)
+        // return Promise.reject({error: "error", url: toUrl})
 
         return await new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest()
@@ -277,10 +308,10 @@ class PASearchContext {
         let schemas = null
         try {
             schemas = await schemaPs
-            this.lastError = null
         } catch (rejection) {
-            this.lastError = rejection
-            this.transitionToState(PASearchProgressState.SchemaLoadFailed)
+            this.recoveryInfo = {overlayURLs, dictionaryURL}
+            this.transitionToState(PASearchProgressState.ErrorLoadingSchema)
+            return
         }
 
         if (schemas !== null) {
@@ -301,7 +332,8 @@ class PASearchContext {
             const dict = await dictionaryP
             this.dictionary = dict
         } catch (rejection) {
-            this.lastError = rejection
+            this.recoveryInfo = {overlayURLs, dictionaryURL}
+            this.transitionToState(PASearchProgressState.ErrorLoadingSchema)
         }
     }
 
@@ -318,6 +350,29 @@ class PASearchContext {
         } else {
             this.transitionToState(PASearchProgressState.EditingQuery)
         }
+
+        window.addEventListener("popstate", this.historyBackAction.bind(this))
+        this.isFirstLoad = false
+    }
+
+    performErrorRecovery() {
+        if (this.flightState === PASearchProgressState.ErrorLoadingCards) {
+            this.displayResultList(this.recoveryInfo.results, this.recoveryInfo.page, false)
+        } else {
+            this.reloadSchema(this.recoveryInfo.overlayURLs, this.recoveryInfo.dictionaryURL).then(() => {
+                if (!this.schema || !this.dictionary) {
+                    return 
+                }
+
+                if (this.isFirstLoad) {
+                    this.performFirstLoadStateRestoration()
+                } else {
+                    this.transitionToState(PASearchProgressState.EditingQuery)
+                }
+            })
+        }
+
+        this.recoveryInfo = null
     }
 }
 
@@ -328,14 +383,59 @@ function PAGenericMessage(props) {
     </div>
 }
 
+function PASchemaLoadErrorMessage(props) {
+    const eh = (e) => {
+        e.preventDefault()
+        if (e.key === undefined || isActivationKey(e.key)) {
+            props.action()
+        }
+    }
+
+    return <div className="text-center">
+        <p className="h6 mb-0">
+            <i className="icon ion-ios-warning text-danger"></i>
+            {Infra.strings.formatString(Infra.strings.Search.Error.SchemaLoad,
+                <a href="#" onClick={(e) => eh(e, props.action)} onKeyPress={(e) => eh(e, props.action)}>
+                    {Infra.strings.Search.Error.TryAgain}
+                </a>
+            )}
+        </p>
+    </div>
+}
+
+function PACardLoadErrorMessage(props) {
+    const eh = (e, a) => {
+        e.preventDefault()
+        if (e.key === undefined || isActivationKey(e.key)) {
+            a()
+        }
+    }
+
+    return <div className="text-center">
+        <p className="h6 mb-0">
+            <i className="icon ion-ios-warning text-danger"></i>
+            {Infra.strings.formatString(Infra.strings.Search.Error.CardLoad,
+                <a href="#" onClick={(e) => eh(e, props.action)} onKeyPress={(e) => eh(e, props.action)}>
+                    {Infra.strings.Search.Error.TryAgain}
+                </a>,
+                <a href="#" onClick={(e) => eh(e, props.editQueryAction)} 
+                    onKeyPress={(e) => eh(e, props.editQueryAction)}>
+                    {Infra.strings.Search.Error.GoBackToQueryEditor}
+                </a>
+            )}
+        </p>
+    </div>
+}
+
 export function initializeSearch() {
     const context = new PASearchContext()
     context.reloadSchema(
         ["/static/search/base.en.json", "/static/search/skills.enum.en.json"], 
         "/static/search/dictionary.en.json"
     ).then(() => {
-        context.performFirstLoadStateRestoration()
-        window.addEventListener("popstate", context.historyBackAction.bind(context))
+        if (context.schema && context.dictionary) {
+            context.performFirstLoadStateRestoration()
+        }
     })
     console.debug("The Panther context is:", context)
     console.debug("Happy debugging!")

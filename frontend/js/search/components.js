@@ -1,6 +1,6 @@
 import React from "react"
 import Infra from "../infra"
-import { toHTMLDateInputFormat } from "./util"
+import { toHTMLDateInputFormat, isActivationKey } from "./util"
 
 export const CONTROL_TYPE = {
     NUMBER: 1,
@@ -11,10 +11,6 @@ export const CONTROL_TYPE = {
     ENUM: 1000,
     // FIXME: remove
     ENUM_2: 1001,
-}
-
-function isActivationKey(key) {
-    return (key === "Enter" || key === " ")
 }
 
 // ----- FORM ---------------------------------------------------------
@@ -653,7 +649,7 @@ export class PAPageControl extends React.Component {
             items.push(
                 <li key={1} className={`page-item ${this.props.disabled? "disabled" : ""}`}>
                     <button className="page-link" onClick={() => go(1)}>1</button>
-                </li>, <li className="page-item disabled">
+                </li>, <li key="firstEllipsis" className="page-item disabled">
                     <a className="page-link" href="#" tabIndex="-1">...</a>
                 </li>
             )
@@ -669,7 +665,7 @@ export class PAPageControl extends React.Component {
 
         if (lastPage != this.props.pageCount) {
             items.push(
-                <li className="page-item disabled">
+                <li key="lastEllipsis" className="page-item disabled">
                     <a className="page-link" href="#" tabIndex="-1">...</a>
                 </li>,
                 <li key={this.props.pageCount} className={`page-item ${this.props.disabled? "disabled" : ""}`}>
