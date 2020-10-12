@@ -56,14 +56,23 @@ msgstr "スキル条件"
 msgid "kars.search_criteria.card_index.skills.apply_type"
 msgstr "スキル対象"
 
+msgid "kars.search_criteria.card_index.source.unspec"
+msgstr "初期/不詳"
+
 msgid "kars.search_criteria.card_index.source.event"
 msgstr "イベント"
 
-msgid "kars.search_criteria.card_index.source.gacha"
-msgstr "ガシャ"
+msgid "kars.search_criteria.card_index.source.e_gacha"
+msgstr "ガシャ（前編）"
 
-msgid "kars.search_criteria.card_index.source.gachap2"
-msgstr "ガシャ(2)"
+msgid "kars.search_criteria.card_index.source.e_gacha_p2"
+msgstr "ガシャ（後編）"
+
+msgid "kars.search_criteria.card_index.source.pickup"
+msgstr "ピックアップ"
+
+msgid "kars.search_criteria.card_index.source.fes"
+msgstr "フェス"
 
 msgid "kars.search_criteria.card_index.rarity.ur"
 msgstr "UR"

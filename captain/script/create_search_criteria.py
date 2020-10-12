@@ -95,9 +95,6 @@ def schema(master: master.MasterData):
             ],
         )
     )
-    criteria["source"].update(
-        dict(type=1000, choices=[{"name": "event", "value": 1}, {"name": "gacha", "value": 2},],)
-    )
 
     return {"criteria": criteria}
 

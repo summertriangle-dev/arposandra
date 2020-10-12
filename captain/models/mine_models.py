@@ -177,8 +177,9 @@ CardIndex = Schema(
             "rarity",
             behaviour={"captain_treat_as": "enum", "compare_type": "bit-set", "sort": "numeric"},
         ),
-        Field.integer(
+        Field.enum(
             "source",
+            ("unspec", "event", "e_gacha", "e_gacha_p2", "pickup", "fes"),
             behaviour={"captain_treat_as": "enum", "compare_type": "bit-set", "sort": False},
         ),
         Field.enum(
@@ -373,7 +374,7 @@ HistoryIndex = Schema(
         Field.composite(
             "card_ids",
             Field.integer("card_id", primary=True),
-            Field.enum("what", ("event", "gacha", "gachap2")),
+            Field.enum("what", ("unspec", "event", "e_gacha", "e_gacha_p2", "pickup", "fes")),
         ),
     ],
     expert=SRecordExpert,

@@ -78,7 +78,7 @@ class Field(object):
         return f
 
     def transform(self, v):
-        if self.map_enum_to_id:
+        if v is not Schema.Empty and self.map_enum_to_id:
             return self.map_enum_to_id[v]
         return v
 

@@ -145,7 +145,7 @@ def merge_gachas(tag, gachas: Iterable[DateMinedNewsItem]):
                     "gacha": (fh_start, fh_end - fh_start),
                     "part2": (sh_start, sh_end - sh_start),
                 }
-                card_refs = {id: "gacha" for id in json.loads(sp1_record["card_refs"])}
+                card_refs = {id: "e_gacha" for id in json.loads(sp1_record["card_refs"])}
 
                 if buf:
                     if card_refs == buf.feature_card_ids:
@@ -169,11 +169,13 @@ def merge_gachas(tag, gachas: Iterable[DateMinedNewsItem]):
                 # This is the post for the first half. If there's something buffered,
                 # hopefully it's the combined merge record. If it is, attach the thumbnail.
                 # But since the buffer only holds one, we need to send it on its way either way.
-                card_refs = {id: "gacha" for id in json.loads(sp1_record["card_refs"])}
+                card_refs = {id: "e_gacha" for id in json.loads(sp1_record["card_refs"])}
                 mentioned_cids_p1 = set(card_refs.keys())
 
                 if sp2_record:
-                    next_card_refs = {id: "gachap2" for id in json.loads(sp2_record["card_refs"])}
+                    next_card_refs = {
+                        id: "e_gacha_p2" for id in json.loads(sp2_record["card_refs"])
+                    }
                     have_part2 = bool(set(next_card_refs.keys()) & mentioned_cids_p1)
                 else:
                     have_part2 = False
@@ -237,12 +239,20 @@ def merge_gachas(tag, gachas: Iterable[DateMinedNewsItem]):
             sp1_start, sp1_end = sp1_timestamps[:2]
             ctspan = (sp1_start, sp1_end - sp1_start)
 
+            if gtype == SGachaMergeRecord.T_FES:
+                card_tag = "fes"
+            elif gtype == SGachaMergeRecord.T_PICK_UP:
+                card_tag = "pickup"
+            else:
+                logging.warn("not fes or pickup? %s", sp1_record["title"])
+                card_tag = "e_gacha"
+
             logging.debug("Yielding fes or pickup: %s.", sp1_record["title"])
             yield SGachaMergeRecord(
                 sp1_record["news_id"],
                 tag,
                 cleanup_func(1, sp1_record["title"]),
-                {id: "gacha" for id in json.loads(sp1_record["card_refs"])},
+                {id: card_tag for id in json.loads(sp1_record["card_refs"])},
                 gtype,
                 sp1_record["thumbnail"],
                 {"gacha": ctspan},
@@ -432,7 +442,7 @@ def prepare_old_evt_entries(sid):
         4537179,
         "jp",
         lang_specific.get_name_clean_func("jp")(1, "素敵なところへご招待！ガチャ開催"),
-        {id: "gacha" for id in {301013001, 300082001}},
+        {id: "e_gacha" for id in {301013001, 300082001}},
         SGachaMergeRecord.T_EVENT_TIE,
         base64.b64decode(b"JipD====").decode("utf8"),
         {"gacha": _tspan(_jst(2019, 12, 6, 15, 0), _jst(2019, 12, 16, 14, 59))},
@@ -450,7 +460,7 @@ def prepare_old_evt_entries(sid):
         5874664,
         "jp",
         lang_specific.get_name_clean_func("jp")(1, "スクスタフェス開催！！"),
-        {id: "gacha" for id in {200063001, 201053001, 202043001, 200032001, 201092001}},
+        {id: "fes" for id in {200063001, 201053001, 202043001, 200032001, 201092001}},
         SGachaMergeRecord.T_FES,
         base64.b64decode(b"VjBy====").decode("utf8"),
         {"gacha": _tspan(_jst(2019, 11, 30, 15, 00), _jst(2019, 12, 6, 14, 59))},
@@ -460,7 +470,7 @@ def prepare_old_evt_entries(sid):
         1594168,
         "jp",
         lang_specific.get_name_clean_func("jp")(1, "ハイキングでリフレッシュ！ガチャ開催"),
-        {id: "gacha" for id in {300023001, 301062001}},
+        {id: "e_gacha" for id in {300023001, 301062001}},
         SGachaMergeRecord.T_EVENT_TIE,
         base64.b64decode(b"cF5d====").decode("utf8"),
         {"gacha": _tspan(_jst(2019, 11, 21, 15, 00), _jst(2019, 11, 30, 14, 59))},
@@ -478,7 +488,7 @@ def prepare_old_evt_entries(sid):
         -300003,
         "jp",
         lang_specific.get_name_clean_func("jp")(1, "ピックアップガチャ開催"),
-        {id: "gacha" for id in {300072001, 301023001}},
+        {id: "pickup" for id in {300072001, 301023001}},
         SGachaMergeRecord.T_PICK_UP,
         None,
         {"gacha": _tspan(_jst(2019, 11, 15, 15, 00), _jst(2019, 11, 21, 12, 59))},
@@ -488,7 +498,7 @@ def prepare_old_evt_entries(sid):
         -200003,
         "jp",
         lang_specific.get_name_clean_func("jp")(1, "下町巡り珍道中ガチャ開催"),
-        {id: "gacha" for id in {300052001, 301033001}},
+        {id: "e_gacha" for id in {300052001, 301033001}},
         SGachaMergeRecord.T_EVENT_TIE,
         None,
         {"gacha": _tspan(_jst(2019, 11, 6, 15, 00), _jst(2019, 11, 15, 14, 59))},
@@ -506,7 +516,7 @@ def prepare_old_evt_entries(sid):
         -300002,
         "jp",
         lang_specific.get_name_clean_func("jp")(1, "ピックアップガチャ開催"),
-        {id: "gacha" for id in {300043001, 301072001, 302032001}},
+        {id: "pickup" for id in {300043001, 301072001, 302032001}},
         SGachaMergeRecord.T_PICK_UP,
         None,
         {"gacha": _tspan(_jst(2019, 10, 31, 15, 00), _jst(2019, 11, 6, 12, 59))},
@@ -515,7 +525,7 @@ def prepare_old_evt_entries(sid):
         -200002,
         "jp",
         lang_specific.get_name_clean_func("jp")(1, "和装モデルはお任せあれ！ガチャ開催"),
-        {id: "gacha" for id in {301043001, 300062001}},
+        {id: "e_gacha" for id in {301043001, 300062001}},
         SGachaMergeRecord.T_EVENT_TIE,
         None,
         {"gacha": _tspan(_jst(2019, 10, 21, 15, 00), _jst(2019, 10, 31, 14, 59))},
@@ -533,7 +543,7 @@ def prepare_old_evt_entries(sid):
         -300001,
         "jp",
         lang_specific.get_name_clean_func("jp")(1, "ピックアップガチャ開催"),
-        {id: "gacha" for id in {301063001, 300022001}},
+        {id: "pickup" for id in {301063001, 300022001}},
         SGachaMergeRecord.T_PICK_UP,
         None,
         {"gacha": _tspan(_jst(2019, 10, 15, 15, 00), _jst(2019, 10, 21, 12, 59))},
@@ -542,7 +552,7 @@ def prepare_old_evt_entries(sid):
         -200001,
         "jp",
         lang_specific.get_name_clean_func("jp")(1, "秘密のパーティ！ガチャ開催"),
-        {id: "gacha" for id in {300033001, 301052001}},
+        {id: "e_gacha" for id in {300033001, 301052001}},
         SGachaMergeRecord.T_EVENT_TIE,
         None,
         {"gacha": _tspan(_jst(2019, 9, 30, 15, 00), _jst(2019, 10, 13, 14, 59))},
