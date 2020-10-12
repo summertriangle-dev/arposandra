@@ -111,6 +111,7 @@ def translate_schema(schm: dict, langcode: str, sid: str, mv: str):
     )
     search_stab.add_fallback(DFallback(da.lookup_single_string))
 
+    schm["language"] = langcode
     for (key, value) in schm["criteria"].items():
         value["display_name"] = search_stab.gettext(f"kars.search_criteria.card_index.{key}")
 
@@ -119,12 +120,13 @@ def translate_schema(schm: dict, langcode: str, sid: str, mv: str):
                 choice["display_name"] = search_stab.gettext(
                     f"kars.search_criteria.card_index.{key}.{choice['name']}"
                 )
-                # choice.pop("name")
+                choice.pop("name")
         elif value["type"] == 1001:
             value["type"] = 1000
             for choice in value["choices"]:
                 s = search_stab.gettext(choice["name"])
                 choice["display_name"] = s if s else choice["name"]
+                choice.pop("name")
 
 
 @plac.pos("destination")
@@ -146,7 +148,7 @@ def main(
     translate_schema(base, langcode, t_master_sid, t_master_version)
 
     with open(destination, "w") as f:
-        json.dump(base, f)
+        json.dump(base, f, ensure_ascii=False)
 
 
 if __name__ == "__main__":

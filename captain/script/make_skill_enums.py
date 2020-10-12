@@ -106,7 +106,7 @@ async def main(output_file, debug=False):
     }
 
     with open(output_file, "w") as outjs:
-        json.dump(table, outjs, indent=2, ensure_ascii=False)
+        json.dump(table, outjs, indent=2 if debug else None, ensure_ascii=False)
 
 
 if __name__ == "__main__":
