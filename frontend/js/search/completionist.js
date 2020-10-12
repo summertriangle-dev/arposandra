@@ -1,5 +1,9 @@
 import React from "react"
 
+export function isCompletionistSupported(lang) {
+    return false
+}
+
 function fastFind(inArray, value) {
     let lo = 0
     let hi = inArray.length
@@ -46,7 +50,6 @@ export class PAWordCompletionist extends React.Component {
             }
         }
 
-        console.log(matches)
         return matches
     }
 

@@ -148,7 +148,8 @@ export default {
             ExecuteFailed: "The server could not complete your search. The error code it returned was: {0}.",
             NoResults: "Could not find any results. Please check your filters.",
             TryAgain: "Try again",
-            GoBackToQueryEditor: "edit your query"
+            GoBackToQueryEditor: "edit your query",
+            CompletionistUnsupported: "Typing suggestions aren't supported for the current language. Sorry."
         },
         PurgatoryDescriptionHighlightedPart: "Notice: ",
         PurgatoryDescription: "I removed the \"{0}\" filter because it was mutually exclusive with \"{1}\".",

@@ -1,5 +1,6 @@
 import React from "react"
 import Infra from "../infra"
+import { isCompletionistSupported } from "./completionist"
 import { toHTMLDateInputFormat, isActivationKey } from "./util"
 
 export const CONTROL_TYPE = {
@@ -154,7 +155,7 @@ export class PAQueryEditor extends React.Component {
         }
 
         return <>
-            <PASearchButton performSearchAction={this.performSearchAction.bind(this)} />
+            <PASearchButton schema={this.props.schema} performSearchAction={this.performSearchAction.bind(this)} />
             <PAQueryList 
                 schema={this.props.schema} 
                 editors={this.state.queryTemplate} 
@@ -172,13 +173,26 @@ export class PAQueryEditor extends React.Component {
 
 class PASearchButton extends React.Component {
     render() {
+        let tf
+        if (isCompletionistSupported(this.props.schema.language)) {
+            tf = <input type="text" 
+                className="form-control search-field" 
+                placeholder={Infra.strings.Search.TextBoxHint} />
+        } else {
+            tf = <input type="text" tabIndex="-1"
+                className="form-control search-field" 
+                onFocus={(e) => {
+                    setTimeout(() => alert(Infra.strings.Search.Error.CompletionistUnsupported))
+                    e.target.blur()
+                }}
+                placeholder={Infra.strings.Search.TextBoxHint} />
+        }
+
         return <div className="form-row mb-4">
             <label className="sr-only" htmlFor="criteria-finder">{Infra.strings.Search.TextBoxSRLabel}</label>
             <div className="search-overlay-grp">
                 <i className="overlay icon icon ion-ios-search"></i>
-                <input type="text" 
-                    className="form-control search-field" 
-                    placeholder={Infra.strings.Search.TextBoxHint} />
+                {tf}
                 <input type="submit" 
                     className="btn btn-primary" 
                     value={Infra.strings.Search.ButtonLabel}
