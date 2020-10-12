@@ -52,7 +52,6 @@ export function injectIntoPage() {
         if (e.button == 0) openSubmenu(e)
     }
     const keydownEvent = (e) => {
-        console.log(e)
         if (e.keyCode == 0x0d || e.keyCode == 0x20) openSubmenu(e)
     }
     const clickEvent = (e) => e.preventDefault()

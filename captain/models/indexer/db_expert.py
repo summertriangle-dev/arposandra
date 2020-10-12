@@ -335,8 +335,8 @@ class PostgresDBExpert(Generic[T]):
     async def run_query(
         self, connection: asyncpg.Connection, crit_list, order_by=None, order_desc=False
     ):
-        t = time.monotonic_ns()
+        # t = time.monotonic_ns()
         query, args = self.build_query(crit_list, order_by, order_desc)
-        logging.info("Query build time: %d", time.monotonic_ns() - t)
-        logging.debug("%s %s", query, args)
+        # logging.info("Query build time: %d", time.monotonic_ns() - t)
+        # logging.debug("%s %s", query, args)
         return await connection.fetch(query, *args)

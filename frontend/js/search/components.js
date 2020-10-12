@@ -622,7 +622,6 @@ export class PASortField extends React.Component {
                 const displayName = crit.display_name || choice
 
                 if (crit.type === 1000 || crit.type === 1001) {
-                    console.log(crit.behaviour)
                     if (!crit.behaviour || crit.behaviour.sort !== "numeric") {
                         return <option key={choice} value={"+" + choice}>
                             {displayName}
