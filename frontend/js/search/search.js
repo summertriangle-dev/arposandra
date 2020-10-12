@@ -212,7 +212,9 @@ class PASearchContext {
             this.transitionToState(PASearchProgressState.EditingQuery)
 
             const host = document.getElementById("results-host")
+            host.className = ""
             host.style.opacity = 1.0
+            
             ReactDOM.render(<div className="text-center mb-5">
                 {error? 
                     <span className="h6">{Infra.strings.formatString(

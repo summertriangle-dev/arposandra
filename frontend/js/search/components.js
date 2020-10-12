@@ -42,7 +42,8 @@ export class PAQueryEditor extends React.Component {
             queryValues: props.query || {},
             sortBy: props.sortBy || undefined,
             buttonList: this.makeUnusedButtonList(queryTemplateInitial),
-            purgatory: null
+            purgatory: null,
+            autofocus: null,
         }
     }
 
@@ -65,7 +66,8 @@ export class PAQueryEditor extends React.Component {
 
         const newState = {
             queryTemplate: this.state.queryTemplate,
-            purgatory: null
+            purgatory: null,
+            autofocus: name
         }
         const scm = this.props.schema.criteria[name]
         if (scm.behaviour && scm.behaviour.conflicts) {
@@ -99,7 +101,8 @@ export class PAQueryEditor extends React.Component {
                 queryTemplate: this.state.queryTemplate, 
                 buttonList: this.makeUnusedButtonList(this.state.queryTemplate),
                 queryValues: nextState,
-                purgatory: null
+                purgatory: null,
+                autofocus: null
             })
         }
     }
@@ -161,7 +164,8 @@ export class PAQueryEditor extends React.Component {
                 editors={this.state.queryTemplate} 
                 queryValues={this.state.queryValues}
                 sortBy={this.state.sortBy}
-                actions={actions} />
+                actions={actions}
+                autofocus={this.state.autofocus} />
             <PAPurgatoryMessage schema={this.props.schema} record={this.state.purgatory} actions={actions} />
             <PACriteriaList
                 schema={this.props.schema} 
@@ -248,14 +252,16 @@ class PAQueryList extends React.Component {
                 name={k}
                 criteria={criteria}
                 value={this.props.queryValues[k]} 
-                changeValue={this.props.actions.setQueryValue} />
+                changeValue={this.props.actions.setQueryValue}
+                autofocus={this.props.autofocus == k} />
             break
         case CONTROL_TYPE.DATETIME:
             input = <PADateField 
                 name={k}
                 criteria={criteria}
                 value={this.props.queryValues[k]} 
-                changeValue={this.props.actions.setQueryValue} />
+                changeValue={this.props.actions.setQueryValue}
+                autofocus={this.props.autofocus == k} />
             break
         case CONTROL_TYPE.STRING:
         case CONTROL_TYPE.STRING_MAX:
@@ -264,7 +270,8 @@ class PAQueryList extends React.Component {
                     className="form-control" 
                     type="text" 
                     placeholder={criteria.display_name} 
-                    maxLength={criteria.max_length} />
+                    maxLength={criteria.max_length}
+                    autoFocus={this.props.autofocus == k} />
             </div>
             break
         case CONTROL_TYPE.ENUM:
@@ -272,7 +279,8 @@ class PAQueryList extends React.Component {
             input = <PAEnumField name={k} 
                 criteria={criteria} 
                 value={this.props.queryValues[k]} 
-                changeValue={this.props.actions.setQueryValue} />
+                changeValue={this.props.actions.setQueryValue}
+                autofocus={this.props.autofocus == k} />
             break
         default:
             input = <div className="col-8">
@@ -448,7 +456,7 @@ export class PAEnumField extends React.Component {
                             className="form-check-input" 
                             type="checkbox" 
                             value={choice.value} 
-                            autoFocus={idx == 0? true : undefined}
+                            autoFocus={idx == 0? this.props.autofocus : undefined}
                             onChange={(e) => this.acceptInput(e)} 
                             checked={this.checkboxValue(choice.value)} />
                         <label htmlFor={key} className="form-check-label">{choice.display_name || choice.name}</label>
@@ -459,7 +467,7 @@ export class PAEnumField extends React.Component {
             control = <select id={`input-for-${this.props.name}`} 
                 className="custom-select" 
                 value={this.props.value} 
-                autoFocus={true}
+                autoFocus={this.props.autofocus}
                 onChange={(e) => this.acceptInput(e)}>
                 <option value=".empty">{Infra.strings.Search.EnumPlaceholder}</option>
 
@@ -515,7 +523,7 @@ export class PANumericField extends React.Component {
                 <input id={`input-for-${this.props.name}`}
                     className="form-control" 
                     type="text" pattern="[0-9]*" 
-                    autoFocus={true}
+                    autoFocus={this.props.autofocus}
                     placeholder={this.props.criteria.display_name} 
                     value={this.state.compare_to || ""}
                     onChange={(event) => this.acceptInput(event)} />
@@ -536,7 +544,7 @@ export class PANumericField extends React.Component {
                 <input id={`input-for-${this.props.name}`}
                     className="form-control" 
                     type="text" pattern="[0-9]*" 
-                    autoFocus={true}
+                    autoFocus={this.props.autofocus}
                     placeholder={this.props.criteria.display_name} 
                     value={this.state.compare_to || ""}
                     onChange={(event) => this.acceptInput(event)} />
@@ -586,7 +594,7 @@ class PADateField extends PANumericField {
                 <input id={`input-for-${this.props.name}`}
                     className="form-control" 
                     type="date"
-                    autoFocus={true}
+                    autoFocus={this.props.autofocus}
                     placeholder={this.props.criteria.display_name} 
                     value={ds}
                     onChange={(event) => this.acceptInput(event)} />
