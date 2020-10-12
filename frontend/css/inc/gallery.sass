@@ -52,8 +52,22 @@
             border: none
         .below-fold
             max-height: 0px
-
+    
     @include media-breakpoint-down(md)
-        .gallery-card.folded .kars-stack-header
+        .gallery-card .kars-stack-header
             padding-top: 8px
             padding-bottom: 8px
+
+.col-gsp
+    flex-basis: 33.3333%
+    max-width: 33.3333%
+
+@include media-breakpoint-down(lg)
+    .col-gsp
+        flex-basis: 50%
+        max-width: 50%
+
+@include media-breakpoint-down(sm)
+    .col-gsp
+        flex-basis: 100%
+        max-width: 100%
