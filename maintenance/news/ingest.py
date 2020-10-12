@@ -12,7 +12,7 @@ class DatabaseConnection(object):
         self.pool = None
 
     async def init_models(self):
-        self.pool = await asyncpg.create_pool(dsn=self.connection_url, max_size=1)
+        self.pool = await asyncpg.create_pool(dsn=self.connection_url, min_size=1)
         init_schema = pkg_resources.resource_string("captain", "init_schema.sql").decode("utf8")
         async with self.pool.acquire() as c, c.transaction():
             try:
