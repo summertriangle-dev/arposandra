@@ -72,3 +72,33 @@
 
     .completion
         padding: 0.5rem 0
+
+select.search-cap-input
+    border-top-right-radius: 0
+    border-bottom-right-radius: 0
+    min-width: 60px
+
+.search-crit-header
+    display: flex
+
+    label, a
+        margin-left: 0.5rem
+
+    @include media-breakpoint-down(xs)
+        padding-left: 1.5rem
+        padding-right: 1.5rem
+    
+        flex-direction: row-reverse
+        justify-content: space-between
+        align-items: flex-end
+
+        a
+            font-weight: bold
+            font-size: 80%
+
+        label, a
+            margin-left: 0rem
+
+@include media-breakpoint-down(xs)
+    .query-editor-row
+        margin-bottom: 0.5rem

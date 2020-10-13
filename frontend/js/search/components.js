@@ -245,6 +245,16 @@ export function PAFakeSearchButton() {
 }
 
 class PAQueryList extends React.Component {
+    removalWidget(k) {
+        return <a className="text-danger"
+            tabIndex={0} 
+            onClick={() => this.props.actions.removeCriteria(k)}
+            onKeyPress={(e) => { if (isActivationKey(e.key)) this.props.actions.removeCriteria(k) }}>
+            <i className="d-none d-sm-inline icon ion-ios-close-circle" title={Infra.strings.Search.RemoveCriteria}></i>
+            <span className="d-sm-none">{Infra.strings.Search.RemoveCriteria}</span>
+        </a>
+    }
+
     renderSingleEditor(k, criteria) {
         let input
 
@@ -267,7 +277,7 @@ class PAQueryList extends React.Component {
             break
         case CONTROL_TYPE.STRING:
         case CONTROL_TYPE.STRING_MAX:
-            input = <div className="col-8">
+            input = <div className="col-sm-8">
                 <input id={`input-for-${k}`}
                     className="form-control" 
                     type="text" 
@@ -285,24 +295,16 @@ class PAQueryList extends React.Component {
                 autofocus={this.props.autofocus == k} />
             break
         default:
-            input = <div className="col-8">
+            input = <div className="col-sm-8">
                 <i className="icon ion-ios-hand"></i>
                 Unsupported field type: {criteria.type}
             </div>
         }
 
         return <div key={k} className="query-editor-row form-group row">
-            <div className="col-4 col-form-label">
-                <label className="mb-0" htmlFor={`input-for-${k}`}>
-                    <a tabIndex={0} 
-                        onClick={() => this.props.actions.removeCriteria(k)}
-                        onKeyPress={(e) => { if (isActivationKey(e.key)) this.props.actions.removeCriteria(k) }}>
-                        <i className="icon icon ion-ios-close-circle text-danger" 
-                            title={Infra.strings.Search.RemoveCriteria}></i>
-                    </a>
-                    {" "}
-                    {criteria.display_name || k}
-                </label>
+            <div className="col-sm-4 col-form-label search-crit-header">
+                {this.removalWidget(k)}
+                <label className="mb-0" htmlFor={`input-for-${k}`}>{criteria.display_name || k}</label>
             </div>
             {input}
         </div>
@@ -319,7 +321,8 @@ class PAQueryList extends React.Component {
             )}
 
             <div className="query-editor-row form-group row">
-                <div className="col-4 col-form-label">
+                <div className="col-sm-4 col-form-label search-crit-header">
+                    <span></span>
                     <label className="mb-0" htmlFor="input-for-_sort">
                         {Infra.strings.Search.SortBy}
                     </label>
@@ -481,7 +484,7 @@ export class PAEnumField extends React.Component {
             </select>
         }
 
-        return <div className="col-8">
+        return <div className="col-sm-8">
             {control}            
         </div>
     }
@@ -523,7 +526,7 @@ export class PANumericField extends React.Component {
             this.props.criteria.behaviour.compare_type === "equal")
         
         if (isEqualOnly) {
-            return <div className="col-8">
+            return <div className="col-sm-8">
                 <input id={`input-for-${this.props.name}`}
                     className="form-control" 
                     type="text" pattern="[0-9]*" 
@@ -534,17 +537,17 @@ export class PANumericField extends React.Component {
             </div>
         }
 
-        return <>
-            {isEqualOnly? null : <div className="col-2">
-                <select className="custom-select" 
-                    value={this.state.compare_type} 
-                    onChange={(event) => this.acceptCompareType(event)}>
-                    <option value="gt">{Infra.strings.Search.Operator.GreaterThan}</option>
-                    <option value="lt">{Infra.strings.Search.Operator.LessThan}</option>
-                    <option value="eq">{Infra.strings.Search.Operator.Equals}</option>
-                </select>
-            </div>}
-            <div className={isEqualOnly? "col-8" : "col-6"}>
+        return <div className="col-sm-8">
+            <div className="input-group">
+                <div className="input-group-prepend">
+                    <select className="custom-select search-cap-input" 
+                        value={this.state.compare_type} 
+                        onChange={(event) => this.acceptCompareType(event)}>
+                        <option value="gt">{Infra.strings.Search.Operator.GreaterThan}</option>
+                        <option value="lt">{Infra.strings.Search.Operator.LessThan}</option>
+                        <option value="eq">{Infra.strings.Search.Operator.Equals}</option>
+                    </select>
+                </div>
                 <input id={`input-for-${this.props.name}`}
                     className="form-control" 
                     type="text" pattern="[0-9]*" 
@@ -552,8 +555,8 @@ export class PANumericField extends React.Component {
                     placeholder={this.props.criteria.display_name} 
                     value={this.state.compare_to || ""}
                     onChange={(event) => this.acceptInput(event)} />
-            </div>    
-        </>
+            </div>
+        </div>    
     }
 }
 
@@ -585,16 +588,16 @@ class PADateField extends PANumericField {
             ds = toHTMLDateInputFormat(d)
         }
 
-        return <>
-            <div className="col-2">
-                <select className="custom-select" 
-                    value={this.state.compare_type} 
-                    onChange={(event) => this.acceptCompareType(event)}>
-                    <option value="gte">{Infra.strings.Search.Operator.GreaterThanEqual}</option>
-                    <option value="lte">{Infra.strings.Search.Operator.LessThanEqual}</option>
-                </select>
-            </div>
-            <div className="col-6">
+        return <div className="col-sm-8">
+            <div className="input-group">
+                <div className="input-group-prepend">
+                    <select className="custom-select" 
+                        value={this.state.compare_type} 
+                        onChange={(event) => this.acceptCompareType(event)}>
+                        <option value="gte">{Infra.strings.Search.Operator.GreaterThanEqual}</option>
+                        <option value="lte">{Infra.strings.Search.Operator.LessThanEqual}</option>
+                    </select>
+                </div>
                 <input id={`input-for-${this.props.name}`}
                     className="form-control" 
                     type="date"
@@ -603,7 +606,7 @@ class PADateField extends PANumericField {
                     value={ds}
                     onChange={(event) => this.acceptInput(event)} />
             </div>
-        </>
+        </div>
     }
 }
 
@@ -652,7 +655,7 @@ export class PASortField extends React.Component {
             })}
         </select>
 
-        return <div className="col-8">
+        return <div className="col-sm-8">
             {control}            
         </div>
     }
