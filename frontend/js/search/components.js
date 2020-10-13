@@ -663,8 +663,8 @@ export class PASortField extends React.Component {
 
 export class PAPageControl extends React.Component {
     render() {
-        const firstPage = Math.max(this.props.page - 3, 1)
-        const lastPage = Math.min(this.props.page + 3, this.props.pageCount)
+        const firstPage = Math.max(this.props.page - 1, 1)
+        const lastPage = Math.min(this.props.page + 1, this.props.pageCount)
         const items = []
 
         const go = (p) => {
