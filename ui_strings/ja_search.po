@@ -30,7 +30,7 @@ msgid "kars.search_criteria.card_index.max_stamina"
 msgstr "最大スタミナ"
 
 msgid "kars.search_criteria.card_index.max_technique"
-msgstr "最大テクニック"
+msgstr "最大テクニー"
 
 msgid "kars.search_criteria.card_index.rarity"
 msgstr "レアリティ"
@@ -137,6 +137,9 @@ msgstr "自身"
 msgid "kars.search_criteria.card_index.skills.apply_type.party"
 msgstr "同作戦"
 
+msgid "kars.search_criteria.card_index.skills.apply_type.member"
+msgstr "同メンバー"
+
 msgid "kars.search_criteria.card_index.skills.apply_type.group"
 msgstr "同学校"
 
@@ -158,12 +161,11 @@ msgstr "自身以外"
 msgid "kars.search_criteria.card_index.skills.apply_type.everyone"
 msgstr "全員"
 
-msgid "kars.search_criteria.card_index.skills.apply_type.none"
-msgstr "フィールド"
+msgid "kars.search_criteria.card_index.skills.apply_type.special"
+msgstr "その他"
 
-#, fuzzy
-msgid "k.m_dic_member_name_210"
-msgstr "虹ヶ咲"
+msgid "kars.search_criteria.card_index.skills.apply_type.none"
+msgstr "ゲーム (ボルテージ、スタミナ、SP)"
 
 msgid "k.m_dic_unit_name_cyaron"
 msgstr "CYaRon!"

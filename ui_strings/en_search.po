@@ -135,22 +135,25 @@ msgid "kars.search_criteria.card_index.skills.apply_type.self"
 msgstr "Self"
 
 msgid "kars.search_criteria.card_index.skills.apply_type.party"
-msgstr "Same Party/Strategy"
+msgstr "Same party/strategy"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.member"
+msgstr "Same idol"
 
 msgid "kars.search_criteria.card_index.skills.apply_type.group"
-msgstr "Same Group"
+msgstr "Same group"
 
 msgid "kars.search_criteria.card_index.skills.apply_type.year"
-msgstr "Same Year"
+msgstr "Same year"
 
 msgid "kars.search_criteria.card_index.skills.apply_type.subunit"
-msgstr "Same Unit"
+msgstr "Same unit"
 
 msgid "kars.search_criteria.card_index.skills.apply_type.attribute"
-msgstr "Same Attribute"
+msgstr "Same attribute"
 
 msgid "kars.search_criteria.card_index.skills.apply_type.role"
-msgstr "Same Type"
+msgstr "Same type"
 
 msgid "kars.search_criteria.card_index.skills.apply_type.everyone_not_self"
 msgstr "Everyone (except self)"
@@ -158,8 +161,11 @@ msgstr "Everyone (except self)"
 msgid "kars.search_criteria.card_index.skills.apply_type.everyone"
 msgstr "Everyone"
 
+msgid "kars.search_criteria.card_index.skills.apply_type.special"
+msgstr "Special"
+
 msgid "kars.search_criteria.card_index.skills.apply_type.none"
-msgstr "Environment"
+msgstr "Live (voltage, SP, stamina, etc.)"
 
 msgid "k.m_dic_member_name_210"
 msgstr "Shioriko Mifune"

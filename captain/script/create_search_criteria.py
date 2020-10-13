@@ -17,6 +17,10 @@ class DFallback(object):
         self.call = call
 
     def gettext(self, s):
+        if s.startswith("kars."):
+            raise ValueError(
+                f"Dictionary fallback for '{s}'. This probably means you have to add it to search.pot."
+            )
         return self.call(s)
 
 

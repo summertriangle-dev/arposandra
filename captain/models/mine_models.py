@@ -119,10 +119,14 @@ class CardExpert(object):
             return "attribute"
         elif tt.owner_role:
             return "role"
+        elif tt.fixed_members and tt.fixed_members[0] == self.card.member.id:
+            return "member"
         elif tt.apply_count >= 8 and tt.not_self:
             return "everyone_not_self"
         elif tt.apply_count >= 8:
             return "everyone"
+        else:
+            return "special"
 
         return "none"
 
@@ -200,6 +204,7 @@ CardIndex = Schema(
                 (
                     "self",
                     "party",
+                    "member",
                     "role",
                     "attribute",
                     "subunit",
@@ -207,6 +212,7 @@ CardIndex = Schema(
                     "year",
                     "everyone_not_self",
                     "everyone",
+                    "special",
                     "none",
                 ),
                 behaviour={"sort": False},
