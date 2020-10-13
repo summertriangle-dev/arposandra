@@ -1,9 +1,9 @@
 const MatchValueForAutoSetApplyType = {
-    "member_group": 6, 
-    "member_subunit": 5, 
-    "member_year": 7, 
-    "role": 3,
-    "attribute": 4,
+    "member_group": 7, 
+    "member_subunit": 6, 
+    "member_year": 8, 
+    "role": 4,
+    "attribute": 5,
 }
 
 const CanAutoSetApplyTypeKeys = Object.keys(MatchValueForAutoSetApplyType).slice(0)
