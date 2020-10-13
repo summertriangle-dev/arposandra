@@ -53,15 +53,21 @@ class CardExpert(object):
 
     def max_appeal(self):
         c = self.card
-        return c.stats[-1].appeal + c.idolized_offset.appeal + c.tt_offset[-1].appeal
+        return c.stats[c.max_level - 1].appeal + c.idolized_offset.appeal + c.tt_offset[-1].appeal
 
     def max_stamina(self):
         c = self.card
-        return c.stats[-1].stamina + c.idolized_offset.stamina + c.tt_offset[-1].stamina
+        return (
+            c.stats[c.max_level - 1].stamina + c.idolized_offset.stamina + c.tt_offset[-1].stamina
+        )
 
     def max_technique(self):
         c = self.card
-        return c.stats[-1].technique + c.idolized_offset.technique + c.tt_offset[-1].technique
+        return (
+            c.stats[c.max_level - 1].technique
+            + c.idolized_offset.technique
+            + c.tt_offset[-1].technique
+        )
 
     def role(self):
         return self.ROLES.get(self.card.role)
