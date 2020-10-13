@@ -337,9 +337,9 @@ class PACriteriaList extends React.Component {
     iconClassForCriteriaName(name) {
         switch (name) {
         case "id":
-            return "ion-ios-grid"
+            return "ion-ios-cube"
         case "ordinal":
-            return "ion-ios-list"
+            return "ion-ios-images"
         case "member":
             return "ion-ios-bowtie"
         case "max_appeal":
@@ -349,25 +349,27 @@ class PACriteriaList extends React.Component {
         case "max_technique":
             return "ion-ios-flash"
         case "member_group":
-            return "ion-ios-people"
+            return "sp-icon-group"
         case "member_subunit":
             return "ion-ios-ribbon"
         case "maximal_stat":
             return "ion-ios-podium"
         case "member_year":
             return "ion-ios-calendar"
-        case "skill_major":
-            return "ion-ios-color-wand"
-        case "skill_minors":
-            return "ion-ios-medkit"
         case "rarity":
             return "ion-ios-star"
         case "source":
-            return "ion-ios-basket"
+            return "ion-ios-card"
         case "role":
-            return "ion-ios-move"
+            return "sp-icon-role"
         case "attribute":
             return "ion-ios-color-palette"
+        case "skills.effect":
+            return "ion-ios-color-wand"
+        case "skills.apply_type":
+            return "ion-ios-pricetags"
+        case "skills.activation_type":
+            return "ion-ios-clock"
         default:
             return "ion-ios-cube"
         }

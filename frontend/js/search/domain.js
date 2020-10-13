@@ -1,5 +1,4 @@
 const MatchValueForAutoSetApplyType = {
-    // "member": undefined,
     "member_group": 6, 
     "member_subunit": 5, 
     "member_year": 7, 
