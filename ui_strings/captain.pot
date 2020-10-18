@@ -187,6 +187,9 @@ msgstr "Nav.ScheduleListENServer"
 msgid "Nav.ScheduleListJPServer"
 msgstr "Nav.ScheduleListJPServer"
 
+msgid "Nav.SearchCards"
+msgstr "Nav.SearchCards"
+
 msgid "Nav.SendFeedback"
 msgstr "Nav.SendFeedback"
 

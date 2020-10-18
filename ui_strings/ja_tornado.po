@@ -201,6 +201,9 @@ msgstr "イベント/ガシャ記録 (外国のサーバー)"
 msgid "Nav.ScheduleListJPServer"
 msgstr "イベント/ガシャ記録 (本国のサーバー)"
 
+msgid "Nav.SearchCards"
+msgstr "Card search"
+
 msgid "Nav.SendFeedback"
 msgstr "Send comments, questions, and bugs"
 

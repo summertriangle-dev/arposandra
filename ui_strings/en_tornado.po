@@ -201,6 +201,9 @@ msgstr "Event/Scouting list (Global server)"
 msgid "Nav.ScheduleListJPServer"
 msgstr "Event/Scouting list (Japanese server)"
 
+msgid "Nav.SearchCards"
+msgstr "Card search"
+
 msgid "Nav.SendFeedback"
 msgstr "Send comments, questions, and bugs"
 
