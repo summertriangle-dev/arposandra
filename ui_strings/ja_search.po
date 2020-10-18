@@ -1,0 +1,177 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Static definitions for search terms.
+msgid "kars.search_criteria.card_index.id"
+msgstr "内部ID"
+
+msgid "kars.search_criteria.card_index.ordinal"
+msgstr "カード番号"
+
+msgid "kars.search_criteria.card_index.member"
+msgstr "メンバー"
+
+msgid "kars.search_criteria.card_index.member_group"
+msgstr "学校"
+
+msgid "kars.search_criteria.card_index.member_subunit"
+msgstr "ユニット"
+
+msgid "kars.search_criteria.card_index.member_year"
+msgstr "学年"
+
+msgid "kars.search_criteria.card_index.max_appeal"
+msgstr "最大アピール"
+
+msgid "kars.search_criteria.card_index.max_stamina"
+msgstr "最大スタミナ"
+
+msgid "kars.search_criteria.card_index.max_technique"
+msgstr "最大テクニー"
+
+msgid "kars.search_criteria.card_index.rarity"
+msgstr "レアリティ"
+
+msgid "kars.search_criteria.card_index.source"
+msgstr "入手場所"
+
+msgid "kars.search_criteria.card_index.role"
+msgstr "タイプ"
+
+msgid "kars.search_criteria.card_index.attribute"
+msgstr "属性"
+
+msgid "kars.search_criteria.card_index.maximal_stat"
+msgstr "最大パラメ"
+
+msgid "kars.search_criteria.card_index.skills.effect"
+msgstr "スキル効果"
+
+msgid "kars.search_criteria.card_index.skills.activation_type"
+msgstr "スキル条件"
+
+msgid "kars.search_criteria.card_index.skills.apply_type"
+msgstr "スキル対象"
+
+msgid "kars.search_criteria.card_index.source.unspec"
+msgstr "初期/不詳"
+
+msgid "kars.search_criteria.card_index.source.event"
+msgstr "イベント"
+
+msgid "kars.search_criteria.card_index.source.e_gacha"
+msgstr "ガシャ（前編）"
+
+msgid "kars.search_criteria.card_index.source.e_gacha_p2"
+msgstr "ガシャ（後編）"
+
+msgid "kars.search_criteria.card_index.source.pickup"
+msgstr "ピックアップ"
+
+msgid "kars.search_criteria.card_index.source.fes"
+msgstr "フェス"
+
+msgid "kars.search_criteria.card_index.rarity.ur"
+msgstr "UR"
+
+msgid "kars.search_criteria.card_index.rarity.sr"
+msgstr "SR"
+
+msgid "kars.search_criteria.card_index.rarity.r"
+msgstr "R"
+
+msgid "kars.search_criteria.card_index.role.voltage"
+msgstr "Voタイプ"
+
+msgid "kars.search_criteria.card_index.role.sp"
+msgstr "Spタイプ"
+
+msgid "kars.search_criteria.card_index.role.guard"
+msgstr "Gdタイプ"
+
+msgid "kars.search_criteria.card_index.role.skill"
+msgstr "Skタイプ"
+
+msgid "kars.search_criteria.card_index.attribute.smile"
+msgstr "スマイル"
+
+msgid "kars.search_criteria.card_index.attribute.pure"
+msgstr "ピュア"
+
+msgid "kars.search_criteria.card_index.attribute.cool"
+msgstr "クール"
+
+msgid "kars.search_criteria.card_index.attribute.active"
+msgstr "アクティブ"
+
+msgid "kars.search_criteria.card_index.attribute.natural"
+msgstr "ナチュラル"
+
+msgid "kars.search_criteria.card_index.attribute.elegant"
+msgstr "エレガント"
+
+msgid "kars.search_criteria.card_index.maximal_stat.appeal"
+msgstr "アピール"
+
+msgid "kars.search_criteria.card_index.maximal_stat.stamina"
+msgstr "スタミナ"
+
+msgid "kars.search_criteria.card_index.maximal_stat.technique"
+msgstr "テクニック"
+
+msgid "kars.search_criteria.card_index.member_year.year_1st"
+msgstr "1年生"
+
+msgid "kars.search_criteria.card_index.member_year.year_2nd"
+msgstr "2年生"
+
+msgid "kars.search_criteria.card_index.member_year.year_3rd"
+msgstr "3年生"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.self"
+msgstr "自身"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.party"
+msgstr "同作戦"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.member"
+msgstr "同メンバー"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.group"
+msgstr "同学校"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.year"
+msgstr "同学年"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.subunit"
+msgstr "同ユニット"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.attribute"
+msgstr "同属性"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.role"
+msgstr "同タイプ"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.everyone_not_self"
+msgstr "自身以外"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.everyone"
+msgstr "全員"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.special"
+msgstr "その他"
+
+msgid "kars.search_criteria.card_index.skills.apply_type.none"
+msgstr "ゲーム (ボルテージ、スタミナ、SP)"
+
+msgid "k.m_dic_unit_name_cyaron"
+msgstr "CYaRon!"
+
+msgid "k.m_dic_unit_name_azuna"
+msgstr "AZUNA"
+
+msgid "k.m_dic_group_name_niji"
+msgstr "虹ヶ咲"

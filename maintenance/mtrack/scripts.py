@@ -51,6 +51,7 @@ def update_card_release_dates(prefix):
 
         UPDATE card_index_v1 SET 
             source = (SELECT what FROM {prefix}history_v5__card_ids WHERE card_id = card_index_v1.id LIMIT 1)
+            WHERE source IS NULL
     """
 
 

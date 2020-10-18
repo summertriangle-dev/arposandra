@@ -371,13 +371,20 @@ insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord1'
 insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord1', 102091002) on conflict (representative, card_ids) do nothing;
 insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord1', 102101002) on conflict (representative, card_ids) do nothing;
 
+-----------------------------------------------------
+-- STEP 4: UPDATE CARD SOURCE
+-----------------------------------------------------
+-- COPYPASTED FROM mtrack scripts.py
+-- Hopefully all non-initial cards will have the source set by mtrack.
+
+UPDATE card_index_v1 SET source = 1 WHERE source IS NULL;
 
 -----------------------------------------------------
--- STEP 3: UPDATE SORT DATES
+-- STEP 4: UPDATE SORT DATES
 -----------------------------------------------------
 -- COPYPASTED FROM mtrack scripts.py
 -- Niji initial sets will order higher than normal due to Shioriko's initials being added
--- in August.
+-- in August 2020.
 
 INSERT INTO card_p_set_index_v1__sort_dates
     (SELECT representative, server_id, MAX(date) FROM card_index_v1__release_dates

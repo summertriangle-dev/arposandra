@@ -57,6 +57,7 @@ $table-border-color:          rgba(10, 10, 10, 0.2);
 // Forms
 
 $input-bg: scale-color($gray-900, $lightness: 5%);
+$input-disabled-bg: scale-color($gray-800, $lightness: 5%);
 $input-color: $gray-300;
 
 $input-border-color: scale-color($input-bg, $lightness: 20%);
@@ -201,6 +202,7 @@ $nav-menu-separator: scale-color($gray-800, $lightness: +15%);
 @import "inc/modal.sass";
 @import "inc/gallery.sass";
 @import "inc/gutter.sass";
+@import "inc/search.sass";
 
 @include media-breakpoint-up(sm) {
   .nav-submenu.open {

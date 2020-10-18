@@ -1,3 +1,4 @@
+{% set has_any_unavailable = False %}
 <h1 class="h4 mb-3 kars-negative-box">
     {% if set.is_systematic() %}
     {% raw tlinject_static(set.representative) %}
@@ -14,9 +15,10 @@
     <div class="kars-list-alternate">
         <div class="row">
             {% for member, ref in handler.matrix_order(set) %}
-            <div class="spread-component col-lg-4">
+            <div class="spread-component col-gsp">
                 {% if ref %}
                 {% module Template("uim_gallery_card.html", release_info=ref, card=ref.card, set_type=set.set_type, server_id=server_id) %}
+                {% if not ref.release %} {% set has_any_unavailable = True %} {% end %}
                 {% else %}
                 {% module Template("uim_gallery_member_placeholder.html", member=member) %}
                 {% end %}
@@ -44,6 +46,10 @@
                 {{ _("SetRecord.SetTypeDescriptionOrdFes") }}
             {% elif set.set_type == 5 %}
                 {{ _("SetRecord.SetTypeDescriptionPickup") }}
+            {% end %}
+
+            {% if has_any_unavailable %}
+                {{ _("SetRecord.UnavailableCardDescription{server_id}").format(server_id=server_id.upper()) }}
             {% end %}
             </span>
         </div>

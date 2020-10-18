@@ -37,10 +37,14 @@ async function initializeContextDependentModules() {
         const mod = await import("./transcript/transcript")
         Infra.registerComponent("StoryViewer", mod.StoryViewer)
     }
+    if (wantModules.indexOf("search") != -1) {
+        const mod = await import("./search/search")
+        mod.initializeSearch()
+    }
 }
 
-function initializeReactComponents() {
-    document.querySelectorAll(".kars-react-component").forEach((C) => {
+export function initializeReactComponents(root = undefined) {
+    (root? root : document).querySelectorAll(".kars-react-component").forEach((C) => {
         const Klass = Infra.componentRegistry[C.dataset.componentClass]
         if (!Klass) {
             console.warn(`Couldn't look up a class for ${C.dataset.componentClass}`)

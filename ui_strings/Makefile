@@ -7,15 +7,20 @@ msgfmt:
 	for f in *_static.po; do \
         mkdir -p ../captain/gettext/$${f%_static.po}/LC_MESSAGES && \
 		msgfmt -o ../captain/gettext/$${f%_static.po}/LC_MESSAGES/static.mo $$f; done
+	for f in *_search.po; do \
+        mkdir -p ../captain/gettext/$${f%_search.po}/LC_MESSAGES && \
+		msgfmt -o ../captain/gettext/$${f%_search.po}/LC_MESSAGES/search.mo $$f; done
 
 # use msgfmt instead, this is just an alias
 mo: msgfmt
 
-msgmerge: captain.pot
+msgmerge: captain.pot static.pot search.pot
 	for f in *_tornado.po; do \
 		msgmerge -U $$f captain.pot; done
 	for f in *_static.po; do \
 		msgmerge -U $$f static.pot; done
+	for f in *_search.po; do \
+		msgmerge -U $$f search.pot; done
 
 # Do not touch!
 genstrings:

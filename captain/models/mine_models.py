@@ -4,7 +4,8 @@ import zlib
 from binascii import hexlify
 from dataclasses import dataclass, field
 
-from libcard2.dataclasses import Card as libcard2_card
+from libcard2.dataclasses import Card as libcard2_card, Skill as libcard2_skill
+from libcard2 import skill_cs_enums
 from maintenance.mtrack.newsminer import AnySRecord, SEventRecord, SGachaMergeRecord
 
 from .indexer.types import Field, Schema
@@ -52,15 +53,21 @@ class CardExpert(object):
 
     def max_appeal(self):
         c = self.card
-        return c.stats[-1].appeal + c.idolized_offset.appeal + c.tt_offset[-1].appeal
+        return c.stats[c.max_level - 1].appeal + c.idolized_offset.appeal + c.tt_offset[-1].appeal
 
     def max_stamina(self):
         c = self.card
-        return c.stats[-1].stamina + c.idolized_offset.stamina + c.tt_offset[-1].stamina
+        return (
+            c.stats[c.max_level - 1].stamina + c.idolized_offset.stamina + c.tt_offset[-1].stamina
+        )
 
     def max_technique(self):
         c = self.card
-        return c.stats[-1].technique + c.idolized_offset.technique + c.tt_offset[-1].technique
+        return (
+            c.stats[c.max_level - 1].technique
+            + c.idolized_offset.technique
+            + c.tt_offset[-1].technique
+        )
 
     def role(self):
         return self.ROLES.get(self.card.role)
@@ -68,11 +75,66 @@ class CardExpert(object):
     def attribute(self):
         return self.ATTRIBUTES.get(self.card.attribute)
 
-    def skill_major(self):
-        return self.card.active_skill.levels[0].effect_type
+    def skills(self):
+        if self.card.active_skill:
+            yield (
+                self.card.active_skill.levels[0].effect_type,
+                0xFFFF,
+                self._to_skill_apply_type(
+                    self.card.active_skill.levels[0].effect_type, self.card.active_skill.target
+                ),
+            )
+            if self.card.active_skill.levels_2:
+                yield (
+                    self.card.active_skill.levels_2[0].effect_type,
+                    0xFFFF,
+                    self._to_skill_apply_type(
+                        self.card.active_skill.levels_2[0].effect_type,
+                        self.card.active_skill.target_2,
+                    ),
+                )
 
-    def skill_minors(self):
-        return [skill.levels[0].effect_type for skill in self.card.passive_skills]
+        for skill in self.card.passive_skills:
+            yield (
+                skill.levels[0].effect_type,
+                skill.trigger_type,
+                self._to_skill_apply_type(skill.levels[0].effect_type, skill.target),
+            )
+            if skill.levels_2:
+                yield (
+                    skill.levels_2[0].effect_type,
+                    skill.trigger_type,
+                    self._to_skill_apply_type(skill.levels_2[0].effect_type, skill.target_2),
+                )
+
+    def _to_skill_apply_type(self, eff, tt: libcard2_skill.TargetType):
+        if eff in skill_cs_enums.IMPLICIT_TARGET_SKILL_TYPES:
+            return "none"
+
+        if tt.self_only:
+            return "self"
+        elif tt.owner_party:
+            return "party"
+        elif tt.owner_school:
+            return "group"
+        elif tt.owner_year:
+            return "year"
+        elif tt.owner_subunit:
+            return "subunit"
+        elif tt.owner_attribute:
+            return "attribute"
+        elif tt.owner_role:
+            return "role"
+        elif tt.fixed_members and tt.fixed_members[0] == self.card.member.id:
+            return "member"
+        elif tt.apply_count >= 8 and tt.not_self:
+            return "everyone_not_self"
+        elif tt.apply_count >= 8:
+            return "everyone"
+        else:
+            return "special"
+
+        return "none"
 
     def maximal_stat(self):
         return max(
@@ -93,22 +155,78 @@ class CardExpert(object):
 CardIndex = Schema(
     "card_index_v1",
     fields=[
-        Field.integer("id", primary=True),
+        Field.integer(
+            "id", primary=True, behaviour={"digits": "9", "compare_type": "equal", "sort": False}
+        ),
         Field.integer("ordinal"),
-        Field.integer("member"),
-        Field.integer("member_group"),
-        Field.integer("member_subunit"),
-        Field.integer("member_year"),
+        Field.integer(
+            "member",
+            behaviour={"captain_treat_as": "enum", "conflicts": ["member_group", "member_subunit"]},
+        ),
+        Field.integer(
+            "member_group",
+            behaviour={
+                "captain_treat_as": "enum",
+                "sort": False,
+                "conflicts": ["member", "member_subunit"],
+            },
+        ),
+        Field.integer(
+            "member_subunit",
+            behaviour={
+                "captain_treat_as": "enum",
+                "sort": False,
+                "conflicts": ["member", "member_group"],
+            },
+        ),
+        Field.integer("member_year", behaviour={"captain_treat_as": "enum", "sort": False}),
         Field.integer("max_appeal"),
         Field.integer("max_stamina"),
         Field.integer("max_technique"),
-        Field.integer("rarity"),
-        Field.integer("source"),
-        Field.enum("role", ("voltage", "sp", "guard", "skill")),
-        Field.enum("attribute", ("smile", "pure", "cool", "active", "natural", "elegant")),
-        Field.integer("skill_major"),
-        Field.enum("maximal_stat", ("appeal", "stamina", "technique")),
-        Field.integer("skill_minors", multiple=True),
+        Field.integer(
+            "rarity",
+            behaviour={"captain_treat_as": "enum", "compare_type": "bit-set", "sort": "numeric"},
+        ),
+        Field.enum(
+            "source",
+            ("unspec", "event", "e_gacha", "e_gacha_p2", "pickup", "fes"),
+            behaviour={"captain_treat_as": "enum", "compare_type": "bit-set", "sort": False},
+        ),
+        Field.enum(
+            "role",
+            ("voltage", "sp", "guard", "skill"),
+            behaviour={"compare_type": "bit-set", "icons": "/static/images/search/role"},
+        ),
+        Field.enum(
+            "attribute",
+            ("smile", "pure", "cool", "active", "natural", "elegant"),
+            behaviour={"compare_type": "bit-set", "icons": "/static/images/search/attribute"},
+        ),
+        Field.enum("maximal_stat", ("appeal", "stamina", "technique"), behaviour={"sort": False}),
+        Field.composite(
+            "skills",
+            Field.integer("effect", behaviour={"captain_treat_as": "enum", "sort": False}),
+            Field.integer("activation_type", behaviour={"captain_treat_as": "enum", "sort": False}),
+            Field.enum(
+                "apply_type",
+                (
+                    "self",
+                    "party",
+                    "member",
+                    "role",
+                    "attribute",
+                    "subunit",
+                    "group",
+                    "year",
+                    "everyone_not_self",
+                    "everyone",
+                    "special",
+                    "none",
+                ),
+                behaviour={"sort": False},
+            ),
+            multiple=True,
+        ),
         Field.composite(
             "release_dates", Field.varchar("server_id", 8, primary=True), Field.datetime("date"),
         ),
@@ -270,7 +388,7 @@ HistoryIndex = Schema(
         Field.composite(
             "card_ids",
             Field.integer("card_id", primary=True),
-            Field.enum("what", ("event", "gacha", "gachap2")),
+            Field.enum("what", ("unspec", "event", "e_gacha", "e_gacha_p2", "pickup", "fes")),
         ),
     ],
     expert=SRecordExpert,

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+
+<body data-master="{{ handler.settings["master"].version }}">
+    <div id="results-host" class="card kars-card-box gallery-spread" style="overflow-x: hidden">
+        <div class="row">
+            {% for card in cards %}
+            <div class="spread-component col-gsp">
+                {% set max_level_id = card.max_level - 1 %}
+                <div class="kars-stack gallery-card" data-cid="{{ card.id }}">
+                    <div class="spead-image-multi position-relative">
+                        <div class="spread-image-backing" {% if not card_has_full_bg(card) %}
+                            style="background-image: url({{ image_url_reify(card.background_asset_path, "jpg") }})"
+                            {% end %}>
+                            <img class="spread-image" alt="{{ _("Card image") }}" src="{{ handler.thumbnail(card.normal_appearance, 400, "h", 
+                            "jpg" if card_has_full_bg(card) else "png") }}" />
+                        </div>
+                        <div class="spread-image-backing" {% if not card_has_full_bg(card) %}
+                            style="background-image: url({{ image_url_reify(card.background_asset_path, "jpg") }})"
+                            {% end %}>
+                            <img class="spread-image" alt="{{ _("Card image") }}" src="{{ handler.thumbnail(card.idolized_appearance, 400, "h", 
+                            "jpg" if card_has_full_bg(card) else "png") }}" />
+                        </div>
+                        <a href="/card/{{ card.ordinal }}" class="stretched-link"></a>
+                    </div>
+
+                    <div class="kars-stack-header">
+                        {% raw tlinject_static(card.member.name_romaji) %}:
+                        {% raw tlinject_static(f"kars.attribute_{card.attribute}", escape=False) %}
+                        / {% raw tlinject_static(f"kars.role_{card.role}", escape=False) %}
+                    </div>
+                    <div class="kars-stack-member">
+                        <table class="table table-sm kars-stats-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">{{ _("Appeal") }}</th>
+                                    <th scope="col">{{ _("Stam.") }}</th>
+                                    <th scope="col">{{ _("Tech.") }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set lb_appeal_base = card.stats[max_level_id].appeal + card.idolized_offset.appeal %}
+                                {% set lb_stamina_base = card.stats[max_level_id].stamina + card.idolized_offset.stamina %}
+                                {% set lb_tech_base = card.stats[max_level_id].technique + card.idolized_offset.technique %}
+
+                                {% if card.tt_offset %}
+                                <tr>
+                                    <td>{{ _("★ {star}").format(star=0) }}</td>
+                                    <td class="let">{{ lb_appeal_base + card.tt_offset[0].appeal }}</td>
+                                    <td class="let">{{ lb_stamina_base + card.tt_offset[0].stamina }}</td>
+                                    <td>
+                                        <span class="let">{{ lb_tech_base + card.tt_offset[0].technique }}</span>
+                                        <span class="stats-table-cr {% if card.has_critical_instinct() %} super {% end %}">
+                                            <i class="icon ion-ios-flash" title="{{ _("Critical Rate") }}"></i>
+                                            {{ card.calc_critical_rate_percent(lb_tech_base + card.tt_offset[0].technique) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>{{ _("★ {star}").format(star=len(card.tt_offset) - 1) }}</td>
+                                    <td class="let">{{ lb_appeal_base + card.tt_offset[-1].appeal }}</td>
+                                    <td class="let">{{ lb_stamina_base + card.tt_offset[-1].stamina }}</td>
+                                    <td>
+                                        <span class="let">{{ lb_tech_base + card.tt_offset[-1].technique }}</span>
+                                        <span class="stats-table-cr {% if card.has_critical_instinct() %} super {% end %}">
+                                            <i class="icon ion-ios-flash" title="{{ _("Critical Rate") }}"></i>
+                                            {{ card.calc_critical_rate_percent(lb_tech_base + card.tt_offset[-1].technique) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% end %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="kars-stack-member">
+                        <table class="table table-sm kars-skill-table">
+                            <tbody>
+                                {% if card.active_skill %}
+                                <tr>
+                                    <td><img width="32"
+                                            src="{{ image_url_reify(card.active_skill.thumbnail_asset_path, "png") }}" />
+                                    </td>
+                                    <td>
+                                        {% raw format_skill_effect(card.active_skill) %} <br/>
+                                        {% raw format_skill_target(card.active_skill, card) %}
+                                    </td>
+                                </tr>
+                                {% end %}
+
+                                {% if card.passive_skills %}
+                                {% for sk in card.passive_skills %}
+                                <tr>
+                                    <td><img width="32" src="{{ image_url_reify(sk.thumbnail_asset_path, "png") }}" />
+                                    </td>
+                                    <td>
+                                        {% raw format_skill_effect(sk) %} <br/>
+                                        {% raw format_skill_target(sk, card) %}
+                                    </td>
+                                </tr>
+                                {% end %}
+                                {% end %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% end %}
+        </div>
+    </div>
+</body>
+
+</html>

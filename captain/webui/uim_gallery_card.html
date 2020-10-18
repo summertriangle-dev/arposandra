@@ -73,7 +73,10 @@
                 {% if card.active_skill %}
                 <tr>
                     <td><img width="32" src="{{ image_url_reify(card.active_skill.thumbnail_asset_path, "png") }}" /></td>
-                    <td>{% raw format_skill_effect(card.active_skill) %}</td>
+                    <td>
+                        {% raw format_skill_effect(card.active_skill) %} <br/>
+                        {% raw format_skill_target(card.active_skill, card) %}
+                    </td>
                 </tr>
                 {% end %}
 
@@ -81,7 +84,10 @@
                 {% for sk in card.passive_skills %}
                 <tr>
                     <td><img width="32" src="{{ image_url_reify(sk.thumbnail_asset_path, "png") }}" /></td>
-                    <td>{% raw tlinject(sk.name) %}</td>
+                    <td>
+                        {% raw format_skill_effect(sk) %} <br/>
+                        {% raw format_skill_target(sk, card) %}
+                    </td>
                 </tr>
                 {% end %}
                 {% end %}
@@ -93,10 +99,16 @@
         {{ _("SetRecord.FirstFeaturedOn{server_id}").format(server_id=server_id.upper()) }} 
         <span class="kars-data-ts" data-style="date" data-orig-offset="32400,JST" data-ts="{{ release_info.release.timestamp() }}">{{ release_info.release }} UTC</span>
         &bull;
-        {% if release_info.source == 3 %}
+        {% if release_info.source == 6 %}
+            {{ _("SetRecord.AvailableFromGachaFes") }}
+        {% elif release_info.source == 5 %}
+            {{ _("SetRecord.AvailableFromGachaPickup") }}
+        {% elif release_info.source == 4 %}
             {{ _("SetRecord.AvailableFromGachaPart2") }}
+        {% elif release_info.source == 3 %}
+            {{ _("SetRecord.AvailableFromGacha") }}
         {% elif release_info.source == 2 %}
-            {{ _("SetRecord.AvailableFromEvent") }}
+            {{ _("SetRecord.AvailableFromEventReward") }}
         {% else %}
             {{ _("SetRecord.AvailableFromGacha") }}
         {% end %}

@@ -13,17 +13,26 @@
 
     <div class="card-body grouped-card-icon-list">
         {% set use_labels = len(release.feature_card_ids) > 1 %}
-        {% if "gacha" in release.feature_card_ids %}
+
+        {% for key in ["gacha", "gacha_part2", "event", "fes", "pickup"] %}
+        {% if key in release.feature_card_ids %}
         <div class="group">
             {% if use_labels %}
-            {% if "gacha_part2" in release.feature_card_ids %}
-            <div class="label">{{ _("HEvent.ScoutCardListLabelP1") }}</div>
-            {% else %}
-            <div class="label">{{ _("HEvent.ScoutCardListLabel") }}</div>
+                {% if key == "gacha" %}
+                    {% if "gacha_part2" in release.feature_card_ids %}
+                    <div class="label">{{ _("HEvent.ScoutCardListLabelP1") }}</div>
+                    {% else %}
+                    <div class="label">{{ _("HEvent.ScoutCardListLabel") }}</div>
+                    {% end %}
+                {% elif key == "gacha_part2" %}
+                    <div class="label">{{ _("HEvent.ScoutCardListLabelP2") }}</div>
+                {% elif key == "event" %}
+                    <div class="label">{{ _("HEvent.EventCardListLabel") }}</div>
+                {% end %}
             {% end %}
-            {% end %}
+
             <div class="card-body kars-card-brief-list">
-                {% for cl in release.feature_card_ids["gacha"] %}
+                {% for cl in release.feature_card_ids[key] %}
                 <a href="/card/{{ cl.ordinal }}" class="card-icon">
                     <img width="48" height="48" src="{{ card_icon_url(cl, cl.normal_appearance) }}"
                         alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">
@@ -32,37 +41,6 @@
             </div>
         </div>
         {% end %}
-
-        {% if "gacha_part2" in release.feature_card_ids %}
-        <div class="group">
-            {% if use_labels %}
-            <div class="label">{{ _("HEvent.ScoutCardListLabelP2") }}</div>
-            {% end %}
-            <div class="card-body kars-card-brief-list">
-                {% for cl in release.feature_card_ids["gacha_part2"] %}
-                <a href="/card/{{ cl.ordinal }}" class="card-icon">
-                    <img width="48" height="48" src="{{ card_icon_url(cl, cl.normal_appearance) }}"
-                        alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">
-                </a>
-                {% end %}
-            </div>
-        </div>
-        {% end %}
-
-        {% if "event" in release.feature_card_ids %}
-        <div class="group">
-            {% if use_labels %}
-            <div class="label">{{ _("HEvent.EventCardListLabel") }}</div>
-            {% end %}
-            <div class="card-body kars-card-brief-list">
-                {% for cl in release.feature_card_ids["event"] %}
-                <a href="/card/{{ cl.ordinal }}" class="card-icon">
-                    <img width="48" height="48" src="{{ card_icon_url(cl, cl.normal_appearance) }}"
-                        alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">
-                </a>
-                {% end %}
-            </div>
-        </div>
         {% end %}
 
         <div class="group">

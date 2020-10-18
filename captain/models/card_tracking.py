@@ -17,7 +17,7 @@ SUBTYPE_FES = 3
 SUBTYPE_ELSE = 4
 SUBTYPE_IGNORE = -1
 
-MAP_WHAT_TO_ID = {1: "event", 2: "gacha", 3: "gacha_part2"}
+MAP_WHAT_TO_ID = {1: "unspec", 2: "event", 3: "gacha", 4: "gacha_part2", 5: "pickup", 6: "fes"}
 
 
 @dataclass

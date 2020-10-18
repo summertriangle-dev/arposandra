@@ -187,6 +187,9 @@ msgstr "Nav.ScheduleListENServer"
 msgid "Nav.ScheduleListJPServer"
 msgstr "Nav.ScheduleListJPServer"
 
+msgid "Nav.SearchCards"
+msgstr "Nav.SearchCards"
+
 msgid "Nav.SendFeedback"
 msgstr "Nav.SendFeedback"
 
@@ -307,14 +310,20 @@ msgstr "SSF.WaitingForWebpack"
 msgid "Saint.WaitingForWebpack"
 msgstr "Saint.WaitingForWebpack"
 
-msgid "SetRecord.AvailableFromEvent"
-msgstr "SetRecord.AvailableFromEvent"
+msgid "SetRecord.AvailableFromEventReward"
+msgstr "SetRecord.AvailableFromEventReward"
 
 msgid "SetRecord.AvailableFromGacha"
 msgstr "SetRecord.AvailableFromGacha"
 
+msgid "SetRecord.AvailableFromGachaFes"
+msgstr "SetRecord.AvailableFromGachaFes"
+
 msgid "SetRecord.AvailableFromGachaPart2"
 msgstr "SetRecord.AvailableFromGachaPart2"
+
+msgid "SetRecord.AvailableFromGachaPickup"
+msgstr "SetRecord.AvailableFromGachaPickup"
 
 msgid "SetRecord.ExpandAll"
 msgstr "SetRecord.ExpandAll"
@@ -342,6 +351,9 @@ msgstr "SetRecord.SetTypeDescriptionPickup"
 
 msgid "SetRecord.SetTypeDescriptionSong"
 msgstr "SetRecord.SetTypeDescriptionSong"
+
+msgid "SetRecord.UnavailableCardDescription{server_id}"
+msgstr "SetRecord.UnavailableCardDescription{server_id}"
 
 msgid "SetRecord.Unreleased"
 msgstr "SetRecord.Unreleased"

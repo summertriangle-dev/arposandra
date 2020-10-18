@@ -104,9 +104,34 @@ class CardPage(LanguageCookieMixin):
         self.render("cards.html", cards=cards, custom_title=ct, og_context={})
 
 
+class CardThumbnailProviderMixin(RequestHandler):
+    def initialize(self, *args, **kwargs):
+        super().initialize(*args, **kwargs)
+        self.thumb_cache = {}
+
+    def thumbnail(self, appearance: Card.Appearance, size: int, axis: str, fmt: str):
+        first = (
+            base64.urlsafe_b64encode(appearance.image_asset_path.encode("utf8"))
+            .decode("ascii")
+            .rstrip("=")
+        )
+        key = f"thumb/{size}{axis}/{first}"
+
+        if key in self.thumb_cache:
+            return self.thumb_cache[key]
+
+        assr_b = hmac.new(get_as_secret(), key.encode("utf8"), hashlib.sha224).digest()[:10]
+        assr = base64.urlsafe_b64encode(assr_b).decode("ascii").rstrip("=")
+        isr = self.settings["image_server"]
+        signed = f"{isr}/thumb/{size}{axis}/{first}/{assr}.{fmt}"
+
+        self.thumb_cache[key] = signed
+        return signed
+
+
 @route(r"/cards/sets/?")
 @route(r"/cards/sets/([0-9]+)/?")
-class CardGallery(DatabaseMixin, LanguageCookieMixin):
+class CardGallery(DatabaseMixin, LanguageCookieMixin, CardThumbnailProviderMixin):
     # The largest known subunit size (QU4RTZ). This is checked so we don't treat
     # subunit costume sets as group sets.
     ALL_MEMBER_SET_THRES = 4
@@ -125,9 +150,9 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin):
     }
     SAME_GROUP_ORD_TYPES = [card_tracking.CardSetRecord.T_FES, card_tracking.CardSetRecord.T_PICKUP]
 
-    def initialize(self):
+    def initialize(self, *args, **kwargs):
+        super().initialize(*args, **kwargs)
         self._tlinject_base = ({}, set())
-        self.thumb_cache = {}
         self.tl_batch = set()
 
     # FIXME: We should be implementing this in SQL.
@@ -184,25 +209,6 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin):
         else:
             for cid in sorted(aset.card_refs, key=lambda x: x.card.rarity, reverse=True):
                 yield (cid.card.member, cid)
-
-    def thumbnail(self, appearance: Card.Appearance, size: int, axis: str, fmt: str):
-        first = (
-            base64.urlsafe_b64encode(appearance.image_asset_path.encode("utf8"))
-            .decode("ascii")
-            .rstrip("=")
-        )
-        key = f"thumb/{size}{axis}/{first}"
-
-        if key in self.thumb_cache:
-            return self.thumb_cache[key]
-
-        assr_b = hmac.new(get_as_secret(), key.encode("utf8"), hashlib.sha224).digest()[:10]
-        assr = base64.urlsafe_b64encode(assr_b).decode("ascii").rstrip("=")
-        isr = self.settings["image_server"]
-        signed = f"{isr}/thumb/{size}{axis}/{first}/{assr}.{fmt}"
-
-        self.thumb_cache[key] = signed
-        return signed
 
     def url_for_page(self, pageno: int):
         args = []
@@ -340,6 +346,51 @@ class CardGallerySingle(CardGallery):
             return
 
         self.render("cards.html", cards=cards, custom_title=custom_title, og_context={})
+
+
+# ----- AJAX (SEARCH) --------------------------------
+
+
+@route(r"/api/private/cards/ajax/([0-9,]+)")
+class CardPageAjax(LanguageCookieMixin, DatabaseMixin, CardThumbnailProviderMixin):
+    def card_spec(self, spec: str) -> list:
+        ret = []
+        unique = set()
+        for s in spec.split(","):
+            try:
+                v = int(s)
+            except ValueError:
+                continue
+            if v in unique:
+                continue
+            ret.append(v)
+            unique.add(v)
+        return ret
+
+    def get(self, ids):
+        ids = self.card_spec(ids)
+
+        cards = self.settings["master"].lookup_multiple_cards_by_id(ids)
+        cards = [c for c in cards if c]
+
+        tlbatch = set()
+        for card in cards:
+            if card:
+                tlbatch.update(card.get_tl_set())
+
+        self._tlinject_base = self.settings["string_access"].lookup_strings(
+            tlbatch, self.get_user_dict_preference()
+        )
+
+        if len(cards) == 0:
+            self.set_status(404)
+            self.render("error.html", message=self.locale.translate("ErrorMessage.ItemNotFound"))
+            return
+
+        self.render("cards_ajax.html", cards=cards)
+
+
+# ----- API ------------------------------------------
 
 
 @route(r"/api/private/cards/id_list\.json")
