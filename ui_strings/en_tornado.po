@@ -338,14 +338,20 @@ msgstr "Waiting for JavaScript components..."
 msgid "Saint.WaitingForWebpack"
 msgstr "Waiting for JavaScript components..."
 
-msgid "SetRecord.AvailableFromEvent"
+msgid "SetRecord.AvailableFromEventReward"
 msgstr "Event Reward"
 
 msgid "SetRecord.AvailableFromGacha"
 msgstr "Available from Scouting"
 
+msgid "SetRecord.AvailableFromGachaFes"
+msgstr "Available from Scouting (Festival)"
+
 msgid "SetRecord.AvailableFromGachaPart2"
 msgstr "Available from Scouting (Part 2)"
+
+msgid "SetRecord.AvailableFromGachaPickup"
+msgstr "Available from Scouting (Spotlight)"
 
 msgid "SetRecord.ExpandAll"
 msgstr "Show/Hide all stats"
@@ -379,6 +385,9 @@ msgstr ""
 
 msgid "SetRecord.SetTypeDescriptionSong"
 msgstr "Live costume SR sets are released over several events and gachas."
+
+msgid "SetRecord.UnavailableCardDescription{server_id}"
+msgstr "Cards that are cordoned off are not yet available on the {server_id} server."
 
 msgid "SetRecord.Unreleased"
 msgstr "Unreleased"
