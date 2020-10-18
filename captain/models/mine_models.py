@@ -193,12 +193,14 @@ CardIndex = Schema(
             behaviour={"captain_treat_as": "enum", "compare_type": "bit-set", "sort": False},
         ),
         Field.enum(
-            "role", ("voltage", "sp", "guard", "skill"), behaviour={"compare_type": "bit-set"},
+            "role",
+            ("voltage", "sp", "guard", "skill"),
+            behaviour={"compare_type": "bit-set", "icons": "/static/images/search/role"},
         ),
         Field.enum(
             "attribute",
             ("smile", "pure", "cool", "active", "natural", "elegant"),
-            behaviour={"compare_type": "bit-set"},
+            behaviour={"compare_type": "bit-set", "icons": "/static/images/search/attribute"},
         ),
         Field.enum("maximal_stat", ("appeal", "stamina", "technique"), behaviour={"sort": False}),
         Field.composite(

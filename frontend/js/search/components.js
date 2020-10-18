@@ -415,6 +415,11 @@ export class PAEnumField extends React.Component {
             this.props.criteria.behaviour.compare_type === "bit-set")
     }
 
+    hasIcons() {
+        return (this.props.criteria.behaviour && 
+            this.props.criteria.behaviour.icons)
+    }
+
     acceptInput(event) {
         const representedValue = parseInt(event.target.value)
         if (this.isSplitInput()) {
@@ -448,10 +453,20 @@ export class PAEnumField extends React.Component {
         return true
     }
 
+    labelContent(choice) {
+        if (!this.hasIcons()) {
+            return choice.display_name || choice.name
+        }
+
+        const lname = choice.display_name || choice.name
+        return <img className="bitset-icon" alt={lname} title={lname} 
+            src={`${this.props.criteria.behaviour.icons}/${choice.value}.png`} />
+    }
+
     render() {
         let control
         if (this.isSplitInput()) {
-            control = <div className="pt-2">
+            control = <div className="pt-2 bitset-row">
                 {this.props.criteria.choices.map((choice, idx) => {
                     // Make implicit focus work.
                     const key = (idx == 0)
@@ -466,7 +481,9 @@ export class PAEnumField extends React.Component {
                             autoFocus={idx == 0? this.props.autofocus : undefined}
                             onChange={(e) => this.acceptInput(e)} 
                             checked={this.checkboxValue(choice.value)} />
-                        <label htmlFor={key} className="form-check-label">{choice.display_name || choice.name}</label>
+                        <label htmlFor={key} className="form-check-label">
+                            {this.labelContent(choice)}
+                        </label>
                     </div>
                 })}
             </div>
