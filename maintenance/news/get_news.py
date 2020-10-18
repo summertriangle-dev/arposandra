@@ -96,7 +96,10 @@ async def get_daily_convo(ice, db, tag):
     if not next_info or "next_opened_at" not in next_info:
         next_ts = datetime.utcfromtimestamp(0)
     else:
-        next_ts = datetime.utcfromtimestamp(next_info["next_opened_at"])
+        try:
+            next_ts = datetime.utcfromtimestamp(next_info["next_opened_at"])
+        except (TypeError, ValueError):
+            next_ts = datetime.utcfromtimestamp(0)
 
     ent = ret["daily_theater_detail"]
     title = ent["title"]["dot_under_text"]
