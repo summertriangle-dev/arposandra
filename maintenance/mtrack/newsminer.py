@@ -352,7 +352,7 @@ def zip_records(events: List[AnySRecord], gachas: List[AnySRecord]):
             cor_gacha.feature_card_ids.update({id: "event" for id in r.feature_card_ids})
             cor_gacha.time_spans["event"] = r.time_span
             cor_gacha.maybe_type = SGachaMergeRecord.T_EVENT_TIE
-            l_out.append(r)
+            l_out.append(cor_gacha)
         else:
             l_out.append(r)
 
