@@ -40,7 +40,12 @@ def update_card_release_dates(prefix):
             INNER JOIN {prefix}history_v5__dates ON (
 				{prefix}history_v5__dates.id = {prefix}history_v5__card_ids.id
                 AND {prefix}history_v5__card_ids.serverid = {prefix}history_v5__dates.serverid
-                AND what = type
+                AND type = (CASE 
+                        WHEN what = 2 THEN 1 
+                        WHEN what = 3 THEN 2 
+                        WHEN what = 4 THEN 3 
+                        ELSE 2
+                    END)
             )
             ORDER BY card_id, {prefix}history_v5__dates.serverid, date
         )
