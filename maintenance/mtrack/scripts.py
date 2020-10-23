@@ -43,7 +43,7 @@ def update_card_release_dates(prefix):
                 AND type = (CASE 
                         WHEN what = 2 THEN 1 
                         WHEN what = 3 THEN 2 
-                        WHEN what = 4 THEN 3 
+                        WHEN what = 4 THEN 2 
                         ELSE 2
                     END)
             )
@@ -54,9 +54,10 @@ def update_card_release_dates(prefix):
             (SELECT card_id, serverid, date FROM rdates)
         ) ON CONFLICT DO NOTHING;
 
+        -- :(
         UPDATE card_index_v1 SET 
             source = (SELECT what FROM {prefix}history_v5__card_ids WHERE card_id = card_index_v1.id LIMIT 1)
-            WHERE source IS NULL
+            WHERE (SELECT what FROM {prefix}history_v5__card_ids WHERE card_id = card_index_v1.id LIMIT 1) IS NOT NULL
     """
 
 
