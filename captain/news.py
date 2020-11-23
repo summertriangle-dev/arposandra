@@ -78,7 +78,7 @@ class NewsList(DatabaseMixin, LanguageCookieMixin):
         for item in items:
             if not item.card_refs:
                 continue
-            cards = self.settings["master"].lookup_multiple_cards_by_id(item.card_refs)
+            cards = self.master().lookup_multiple_cards_by_id(item.card_refs, briefs_ok=True)
             item.card_refs = [c for c in cards if c]
 
 

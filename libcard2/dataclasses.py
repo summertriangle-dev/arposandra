@@ -40,7 +40,7 @@ class Member(object):
     signature_asset_path: str
     member_icon_asset_path: str
 
-    card_brief: List = field(default_factory=list)
+    card_brief: List["CardLite"] = field(default_factory=list)
 
     def css_color(self):
         if self.theme_color < 0:

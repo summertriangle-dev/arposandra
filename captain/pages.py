@@ -105,7 +105,7 @@ class HistoryRedirect(DatabaseMixin, LanguageCookieMixin):
 @route(r"/([a-z]+)/history/?")
 @route(r"/([a-z]+)/history/([0-9]+)/?")
 class CardHistory(DatabaseMixin, LanguageCookieMixin):
-    VALID_CATEGORIES = []
+    VALID_CATEGORIES: List[str] = []
 
     async def get(self, server_id, page=None):
         server = self.database().news_database.validate_server_id(server_id)
@@ -151,8 +151,8 @@ class CardHistory(DatabaseMixin, LanguageCookieMixin):
     def resolve_cards(self, items: Iterable[card_tracking.HistoryRecord]):
         for item in items:
             for key in list(item.feature_card_ids.keys()):
-                cards = self.settings["master"].lookup_multiple_cards_by_id(
-                    item.feature_card_ids[key]
+                cards = self.master().lookup_multiple_cards_by_id(
+                    item.feature_card_ids[key], briefs_ok=True
                 )
                 item.feature_card_ids[key] = [c for c in cards if c]
 

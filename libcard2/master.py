@@ -42,6 +42,7 @@ class MasterData(MasterDataLite):
         super().__init__(master_path)
         self.card_id_cache = LFUCache(256)
         self.member_cache = {}
+        self.card_brief_cache = {}
 
         self.ordinal_to_cid = {
             ord: id for ord, id in self.connection.execute("SELECT school_idol_no, id FROM m_card")
@@ -94,6 +95,9 @@ class MasterData(MasterDataLite):
 
     # ---- End of init-time functions -----------------------------------------
 
+    def _register_card_brief_cache(self, briefs: Iterable[D.CardLite]):
+        self.card_brief_cache.update({x.id: x for x in briefs})
+
     def lookup_member_by_id(self, member_id: int) -> D.Member:
         if member_id in self.member_cache:
             return self.member_cache[member_id]
@@ -130,6 +134,7 @@ class MasterData(MasterDataLite):
             D.CardLite(*row[:5], D.Card.Appearance(None, None, row[5]), None) for row in da
         ]
 
+        self._register_card_brief_cache(m.card_brief)
         self.member_cache[member_id] = m
         return m
 
@@ -153,17 +158,6 @@ class MasterData(MasterDataLite):
         )
 
         return [self.lookup_member_by_id(i) for i, in ids]
-
-    def do_not_use_get_all_card_briefs(self):
-        da = self.connection.execute(
-            """SELECT id, school_idol_no, card_rarity_type, card_attribute,
-                role, thumbnail_asset_path
-                FROM m_card
-                LEFT JOIN m_card_appearance ON (card_m_id = m_card.id AND appearance_type == 1)
-                ORDER BY m_card.school_idol_no"""
-        )
-
-        return [D.CardLite(*row[:5], D.CardAppearance(None, None, row[5])) for row in da]
 
     def all_ordinals(self):
         return sorted(self.ordinal_to_cid.keys())
@@ -249,13 +243,20 @@ class MasterData(MasterDataLite):
 
         return card
 
-    def lookup_multiple_cards_by_id(self, idset: Sequence[int]):
+    def lookup_multiple_cards_by_id(self, idset: Sequence[int], briefs_ok=False):
         if len(idset) >= 192:
             cache = False
         else:
             cache = True
 
-        return [self.lookup_card_by_id(i, cache) for i in idset]
+        retl = []
+        for id in idset:
+            if briefs_ok and id in self.card_brief_cache:
+                retl.append(self.card_brief_cache[id])
+            else:
+                retl.append(self.lookup_card_by_id(id, cache))
+
+        return retl
 
     def lookup_active_skill_by_card_id(self, card_id: int):
         EFFECT_1 = 11
@@ -766,7 +767,8 @@ class MasterData(MasterDataLite):
     @lru_cache(4)
     def lookup_role_effect(self, role_id):
         row = self.connection.execute(
-            "SELECT * FROM m_card_role_effect WHERE id = ?", (role_id,),
+            "SELECT * FROM m_card_role_effect WHERE id = ?",
+            (role_id,),
         ).fetchone()
 
         if not row:
