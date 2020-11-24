@@ -4,6 +4,8 @@
         <title>{{ _("PT.IdolList") }} - {{ _("PT.SiteName") }}</title>
 
         {% include t_preamble.html %}
+
+        {% module Template("ogm_idols.html") %}
     </head>
     <body data-inject="card">
         {% module Template("uim_nav.html", current="idol_list") %}
