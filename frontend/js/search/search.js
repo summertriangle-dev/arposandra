@@ -131,7 +131,10 @@ class PASearchContext {
         }
 
         const hash = serializeQuery(this.schema, nq)
-        history.pushState(null, document.title, window.location.href.split("#")[0] + "#" + hash)
+        // try not to clear the autosearch query
+        if (!this.isFirstLoad) {
+            history.pushState(null, document.title, window.location.href.split("#")[0] + "#" + hash)
+        }
         this.currentQuery = query
         this.currentSort = sortBy
         this.currentTemplate = saveTemplate.slice(0)
@@ -342,16 +345,21 @@ class PASearchContext {
     }
 
     performFirstLoadStateRestoration() {
+        let auto = false
         if (window.location.hash) {
             const queryFromURL = deserializeQuery(this.schema, window.location.hash.substring(1))
             this.currentSort = queryFromURL._sort
             delete queryFromURL["_sort"]
+            auto = queryFromURL["_auto"]
+            delete queryFromURL["_auto"]
             this.currentQuery = queryFromURL
             this.currentTemplate = Object.keys(queryFromURL).slice(0)
         }
 
         if (history.state && Array.isArray(history.state.results)) {
             this.displayResultList(history.state.results, history.state.page || 0)
+        } else if (auto) {
+            this.performSearchAction(this.currentQuery, this.currentSort, this.currentTemplate)
         } else {
             this.transitionToState(PASearchProgressState.EditingQuery)
         }

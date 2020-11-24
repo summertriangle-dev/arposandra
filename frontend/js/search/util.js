@@ -79,6 +79,11 @@ export function deserializeQuery(fromSchema, fragment) {
             return
         }
 
+        if (key === "_auto") {
+            builtQuery["_auto"] = true
+            return
+        }
+
         if (!Object.hasOwnProperty.call(fromSchema.criteria, key)) {
             return
         }
