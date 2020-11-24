@@ -1,15 +1,16 @@
 import json
-from collections import OrderedDict
-from tornado.web import RequestHandler
-from tornado.locale import get_supported_locales
-from typing import Iterable
-from datetime import datetime
-
-from .dispatch import route, LanguageCookieMixin, DatabaseMixin
-from . import pageutils
-from .models import card_tracking
-import libcard2.localization
 import sys
+from collections import OrderedDict
+from datetime import datetime
+from typing import Iterable, List
+
+from libcard2 import dataclasses
+from tornado.locale import get_supported_locales
+from tornado.web import RequestHandler
+
+from . import pageutils
+from .dispatch import DatabaseMixin, LanguageCookieMixin, route
+from .models import card_tracking
 
 
 @route("/")
@@ -27,20 +28,73 @@ class NavPageNoJS(RequestHandler):
             self.render("nav_other_nojs.html")
 
 
-@route("/(?:idols|idol)/?")
-@route("/idols/(unit)/([0-9]+)")
-@route("/idols/(group)/([0-9]+)")
-class IdolsRoot(LanguageCookieMixin):
+@route(r"/(?:idols|idol)/?")
+@route(r"/idols/(unit)/([0-9]+)/?")
+@route(r"/idols/(group)/([0-9]+)/?")
+@route(r"/idols/(id)/([0-9]+)/?")
+class IdolsRoot(DatabaseMixin, LanguageCookieMixin):
+    def base_member_preview_list(self, member: dataclasses.Member):
+        if "base_member_preview_list" in member.user_info:
+            lst = member.user_info["base_member_preview_list"]
+            return lst, len(member.card_brief) - len(lst)
+
+        r = []
+        sr = []
+        ur = []
+
+        for card in reversed(member.card_brief):
+            if card.rarity == 10:
+                r.append(card)
+            elif card.rarity == 20:
+                sr.append(card)
+            elif card.rarity == 30:
+                ur.append(card)
+
+        if len(member.card_brief) <= 9:
+            lst = ur + sr + r
+            member.user_info["base_member_preview_list"] = lst
+            return lst, 0
+
+        fill_r = min(len(r), 1)
+        fill_sr = min(len(sr), 1)
+        fill_ur = min(len(ur), 9 - fill_sr - fill_r)
+
+        s = fill_ur + fill_sr + fill_r
+        while s < 9:
+            if len(sr) > fill_sr:
+                fill_sr += 1
+                s += 1
+                continue
+            if len(r) > fill_r:
+                fill_r += 1
+                s += 1
+                continue
+
+        lst = ur[:fill_ur] + sr[:fill_sr] + r[:fill_r]
+        member.user_info["base_member_preview_list"] = lst
+        return (
+            lst,
+            len(member.card_brief) - s,
+        )
+
+    def search_url_for_event(self, member: dataclasses.Member):
+        return f"/cards/search#member={member.id}&source=[1,4,5,6,3]&_sort=-ordinal&_auto=t"
+
+    def search_url_for_scoutable(self, member: dataclasses.Member):
+        return f"/cards/search#member={member.id}&source=[2]&_sort=-ordinal&_auto=t"
+
     def get(self, specific=None, specific_value=None):
-        nav_crumb_level = 0
+        show_all_card_icons = False
+
         if specific == "unit":
-            members = self.settings["master"].lookup_member_list(subunit=int(specific_value))
-            nav_crumb_level = 2
+            members = self.master().lookup_member_list(subunit=int(specific_value))
         elif specific == "group":
-            members = self.settings["master"].lookup_member_list(group=int(specific_value))
-            nav_crumb_level = 1
+            members = self.master().lookup_member_list(group=int(specific_value))
+        elif specific == "id":
+            members = [self.master().lookup_member_by_id(int(specific_value))]
+            show_all_card_icons = True
         else:
-            members = self.settings["master"].lookup_member_list()
+            members = self.master().lookup_member_list()
 
         tlbatch = set()
         groups = OrderedDict()
@@ -55,7 +109,12 @@ class IdolsRoot(LanguageCookieMixin):
             tlbatch, self.get_user_dict_preference()
         )
 
-        self.render("member_list.html", member_groups=groups, nav_crumb_level=nav_crumb_level)
+        self.render(
+            "member_list.html",
+            member_groups=groups,
+            subpage_type=specific,
+            show_all_card_icons=show_all_card_icons,
+        )
 
 
 @route("/lives")
@@ -261,7 +320,10 @@ class APILanguageMenu(RequestHandler):
         ]
         dicts.extend(
             [
-                {"code": x.code, "name": x.name,}
+                {
+                    "code": x.code,
+                    "name": x.name,
+                }
                 for x in self.settings["string_access"].choices.values()
             ]
         )
@@ -271,3 +333,17 @@ class APILanguageMenu(RequestHandler):
             {"languages": list(get_supported_locales()), "dictionaries": dicts, "regions": regions}
         )
 
+
+@route(r"/api/private/member_icon_list/([0-9]+)\.json")
+class APIMemberIconList(DatabaseMixin):
+    def get(self, member_id):
+        member = self.master().lookup_member_by_id(int(member_id))
+        payload = {
+            "result": [
+                [clite.ordinal, pageutils.card_icon_url(self, clite, clite.normal_appearance)]
+                for clite in sorted(
+                    reversed(member.card_brief), key=lambda x: x.rarity, reverse=True
+                )
+            ]
+        }
+        self.write(payload)

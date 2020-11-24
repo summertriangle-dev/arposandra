@@ -1,8 +1,9 @@
     <div class="kars-list-alternate">
-        <div class="card-body kars-member-header">
-            <img class="item kars-mem-icon" src="{{ image_url_reify(member.thumbnail_image_asset_path, "png") }}" />
+        <div class="card-body kars-member-header pb-4">
+            <div class="kars-ornament-bottom-left" style="border-bottom-color: {{ member.css_color() }}; border-left-color: {{ member.css_color() }}"></div>
+            <img class="item kars-mem-icon" width="56" height="56" src="{{ image_url_reify(member.thumbnail_image_asset_path, "png") }}" />
             <div class="item">
-                <h1 class="h4">
+                <h1 class="h5">
                     {% raw tlinject_static(member.name_romaji) %}
                 </h1>
 
@@ -19,14 +20,27 @@
         </div>
 
         <div class="card-body kars-card-brief-list position-relative">
-            <div class="kars-ornament-top-left" style="border-top-color: {{ member.css_color() }}; border-left-color: {{ member.css_color() }}"></div>
-            {# get 9 newest cards, most recent left #}
-            {% for cl in member.card_brief[-1:-10:-1] %}
+            {% if show_all_card_icons %}
+                {% set icon_list, num_hidden = sorted(reversed(member.card_brief), key=lambda x: x.rarity, reverse=True), 0 %}
+            {% else %}
+                {% set icon_list, num_hidden = handler.base_member_preview_list(member) %}
+            {% end %}
+
+            {% for cl in icon_list %}
             <a href="/card/{{ cl.ordinal }}" class="card-icon">
                 <img width="64" height="64" src="{{ card_icon_url(cl, cl.normal_appearance) }}"
                     alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">
             </a>
             {% end %}
-            <a class="btn btn-primary card-icon-margin" href="/cards/by_idol/{{ member.id }}/{{ member.ascii_name() }}">{{ _("All...") }}</a>
+
+            {% if num_hidden > 0 %}
+            <a class="btn btn-sm btn-secondary card-icon-margin" data-memlist-expander data-member-id="{{ member.id }}" href="/idols/id/{{ member.id }}">{{ _("MemberList.{num}MoreIcons").format(num=num_hidden) }}<i class="icon ion-ios-arrow-forward"></i></a>
+            {% end %}
+        </div>
+
+        <div class="card-body pt-0">
+            <a href="/cards/by_idol/{{ member.id }}/">{{ _("MemberList.GoToAllCardsDetail") }}</a> &bull;
+            <a href="{{ handler.search_url_for_event(member) }}">{{ _("MemberList.SearchForEventCards") }}</a> &bull;
+            <a href="{{ handler.search_url_for_scoutable(member) }}">{{ _("MemberList.SearchForGachaCards") }}</a>
         </div>
     </div>

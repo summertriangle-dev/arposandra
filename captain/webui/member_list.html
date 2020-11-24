@@ -5,17 +5,19 @@
 
         {% include t_preamble.html %}
     </head>
-    <body>
+    <body data-inject="card">
         {% module Template("uim_nav.html", current="idol_list") %}
 
         {% for group_name, members in member_groups.items() %}
         <div class="container">
             <h1 class="h3 mb-3 kars-negative-box">
-                {% if nav_crumb_level > 1 %}
+                {% if subpage_type == "unit" %}
                     <a class="font-weight-light" href="/idols/group/{{ members[0].group }}">
                         {% raw tlinject_static(group_name) %}
                     </a> /
                     {% raw tlinject_static(members[0].subunit_name) %}
+                {% elif subpage_type == "member" %}
+                    {# nothing #}
                 {% else %}
                     {% raw tlinject_static(members[0].group_name) %}
                 {% end %}
@@ -23,7 +25,7 @@
 
             <div class="card kars-card-box">
             {% for member in members %}
-                {% module Template("uim_member.html", member=member) %}
+                {% module Template("uim_member.html", member=member, show_all_card_icons=show_all_card_icons) %}
             {% end %}
             </div>
         </div>

@@ -1,7 +1,7 @@
 import struct
 from collections import namedtuple
 from dataclasses import dataclass, field
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict, Any
 from weakref import ref
 
 from dataclasses_json import dataclass_json, config as JSONConfig
@@ -41,6 +41,8 @@ class Member(object):
     member_icon_asset_path: str
 
     card_brief: List["CardLite"] = field(default_factory=list)
+
+    user_info: Dict[str, Any] = field(default_factory=dict, init=False)
 
     def css_color(self):
         if self.theme_color < 0:

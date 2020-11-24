@@ -197,10 +197,6 @@ html[lang=ja] .kars-navbar-list
 .kars-mem-padding
     padding: 35px 20px 20px 20px
 
-.kars-mem-icon
-    width: 64px
-    height: 64px
-
 .kars-mem-inline-icons
     display: flex
     align-items: flex-end
@@ -227,6 +223,7 @@ html[lang=ja] .kars-navbar-list
 .kars-ornament-top-left
     pointer-events: none
     position: absolute
+    z-index: 0
     top: 0
     left: 0
     width: 100%
@@ -378,6 +375,9 @@ img.kars-skill-icon
     .group .kars-card-brief-list
         margin: 0
         padding: 0
+
+.kars-member-header .kars-mem-icon
+    z-index: 1
 
 .card-icon img, .kars-mem-icon
     border-radius: 3px

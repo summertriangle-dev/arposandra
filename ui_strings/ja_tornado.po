@@ -162,6 +162,18 @@ msgstr "レベル"
 msgid "Lv. {level}"
 msgstr "レベル {level}"
 
+msgid "MemberList.GoToAllCardsDetail"
+msgstr "詳細な情報"
+
+msgid "MemberList.SearchForEventCards"
+msgstr "イベントメンバー検索する"
+
+msgid "MemberList.SearchForGachaCards"
+msgstr "ガシャメンバー検索する"
+
+msgid "MemberList.{num}MoreIcons"
+msgstr "あと{num}枚"
+
 msgid "More..."
 msgstr "さらに表示..."
 
@@ -252,6 +264,12 @@ msgstr "イベント/ガシャ記録: {server_id}サーバー"
 msgid "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
 msgstr ""
 "An idol with {group} / {subunit} / {grade} affiliations, and {num} cards."
+
+msgid "OpengraphMembersDescription"
+msgstr "メンバー記録"
+
+msgid "OpengraphMembersTitle"
+msgstr "このメッセージの生成を余儀なくされたのSNSロボは、あゆぴょんを好。"
 
 msgid "OpengraphNewsDescription"
 msgstr "In-game news reader."
@@ -387,7 +405,8 @@ msgid "SetRecord.SetTypeDescriptionSong"
 msgstr "Live costume SR sets are released over several events and gachas."
 
 msgid "SetRecord.UnavailableCardDescription{server_id}"
-msgstr "Cards that are cordoned off are not yet available on the {server_id} server."
+msgstr ""
+"Cards that are cordoned off are not yet available on the {server_id} server."
 
 msgid "SetRecord.Unreleased"
 msgstr "Unreleased"

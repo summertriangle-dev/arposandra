@@ -162,6 +162,18 @@ msgstr "Lv."
 msgid "Lv. {level}"
 msgstr "Lv. {level}"
 
+msgid "MemberList.GoToAllCardsDetail"
+msgstr "Detailed Info"
+
+msgid "MemberList.SearchForEventCards"
+msgstr "Find Event Cards"
+
+msgid "MemberList.SearchForGachaCards"
+msgstr "Find Scoutable Cards"
+
+msgid "MemberList.{num}MoreIcons"
+msgstr "{num} More"
+
 msgid "More..."
 msgstr "More..."
 
@@ -252,6 +264,13 @@ msgstr "Event/Scouting List: {server_id} Server"
 msgid "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
 msgstr ""
 "An idol with {num} cards, and {group} / {subunit} / {grade} affiliations."
+
+msgid "OpengraphMembersDescription"
+msgstr ""
+"The social media bot that was forced to generate this prefers the pink one."
+
+msgid "OpengraphMembersTitle"
+msgstr "Idol List"
 
 msgid "OpengraphNewsDescription"
 msgstr "In-game news reader."
@@ -387,7 +406,8 @@ msgid "SetRecord.SetTypeDescriptionSong"
 msgstr "Live costume SR sets are released over several events and gachas."
 
 msgid "SetRecord.UnavailableCardDescription{server_id}"
-msgstr "Cards that are cordoned off are not yet available on the {server_id} server."
+msgstr ""
+"Cards that are cordoned off are not yet available on the {server_id} server."
 
 msgid "SetRecord.Unreleased"
 msgstr "Unreleased"

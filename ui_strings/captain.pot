@@ -148,6 +148,18 @@ msgstr "LevelShort"
 msgid "Lv. {level}"
 msgstr "Lv. {level}"
 
+msgid "MemberList.GoToAllCardsDetail"
+msgstr "MemberList.GoToAllCardsDetail"
+
+msgid "MemberList.SearchForEventCards"
+msgstr "MemberList.SearchForEventCards"
+
+msgid "MemberList.SearchForGachaCards"
+msgstr "MemberList.SearchForGachaCards"
+
+msgid "MemberList.{num}MoreIcons"
+msgstr "MemberList.{num}MoreIcons"
+
 msgid "More..."
 msgstr "More..."
 
@@ -228,6 +240,12 @@ msgstr "OpengraphHistoryTitle{server_id}"
 
 msgid "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
 msgstr "OpengraphMemberDescription:{grade}:{group}:{subunit}:{num}"
+
+msgid "OpengraphMembersDescription"
+msgstr "OpengraphMembersDescription"
+
+msgid "OpengraphMembersTitle"
+msgstr "OpengraphMembersTitle"
 
 msgid "OpengraphNewsDescription"
 msgstr "OpengraphNewsDescription"
