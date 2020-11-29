@@ -143,6 +143,9 @@ class CardSearchExec(LanguageCookieMixin, DatabaseMixin):
             else:
                 order_by = sort_key[1:]
                 order_desc = True if sort_key[0] == "-" else False
+        else:
+            order_by = "ordinal"
+            order_desc = True
 
         if order_by in clean_query:
             clean_query[order_by]["return"] = True
