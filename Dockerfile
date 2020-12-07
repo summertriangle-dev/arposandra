@@ -12,23 +12,26 @@ RUN yarn run node-sass css/theme-dark.scss static/css/theme-dark.css \
 RUN yarn run webpack --display-modules --output-path static/js
 
 # 2. Build wheels
-FROM python:3.7 as extension-builder
+FROM python:3.9 as extension-builder
 
+RUN mkdir /install
 WORKDIR /build
+
+COPY ./requirements.txt /build/requirements.txt
+RUN pip --no-cache-dir install --prefix=/install -r /build/requirements.txt
 COPY ./skyfarer/hwdecrypt_src /build/hwdecrypt_src
-RUN (cd hwdecrypt_src && python setup.py clean bdist_wheel)
+RUN pip --no-cache-dir install --prefix=/install ./hwdecrypt_src
+COPY ./maintenance/lib /build/lib
+# astool is an optional dependency... or so we say.
+RUN (test -f /build/lib/setup.py && pip --no-cache-dir install --prefix=/install "./lib[async_pkg]")
 
 # 3. Copy all in
-FROM python:3.7-slim
+FROM python:3.9-slim
 
 WORKDIR /usr/kars
-COPY ./requirements.txt /usr/kars/requirements.txt
-COPY --from=extension-builder /build/hwdecrypt_src/dist/hwdecrypt*.whl /tmp/wheels/
-RUN pip3 --no-cache-dir install /tmp/wheels/*.whl -r requirements.txt && rm -rf /tmp/wheels
 
 COPY . /usr/kars
-RUN ( cd maintenance/lib && python -m pip --no-cache-dir install '.[async_pkg]' )
-
+COPY --from=extension-builder /install /usr/local
 COPY --from=js-builder /usr/kars-fe-build/static/js ./captain/static/js
 COPY --from=js-builder /usr/kars-fe-build/static/css/* ./captain/static/css/
 
