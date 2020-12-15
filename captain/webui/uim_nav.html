@@ -1,3 +1,10 @@
+{% set banners = handler.settings["banner_manager"].banners(handler) %}
+{% if banners %}
+{% for banner_defn in banners %}
+    {% module Template(banner_defn.template_name(handler), **banner_defn.template_args(handler)) %}
+{% end %}
+{% end %}
+
 <div class="container">
     <nav class="kars-navbar kars-negative-box">
         <div class="kars-navbar-list kars-navbar-leading">

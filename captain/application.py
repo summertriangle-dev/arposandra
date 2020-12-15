@@ -15,6 +15,7 @@ from . import database
 from . import dispatch
 from . import pageutils
 from . import dict_aggregator
+from . import banners
 
 # Start of handlers
 from . import pages
@@ -116,23 +117,24 @@ def application(master, language, debug):
 
     application = Application(
         dispatch.ROUTES,
+        autoreload=debug,
+        banner_manager=banners.BannerManager(),
+        cookie_secret=os.environ.get("AS_COOKIE_SECRET"),
         db_coordinator=db_coordinator,
+        debug=debug,
+        feedback_link=os.environ.get("AS_FEEDBACK_URL"),
+        have_footer_extra=have_footer_extra,
+        have_preamble_extra=have_preamble_extra,
+        image_server=os.environ.get("AS_IMAGE_SERVER"),
         master=libcard2.master.MasterData(master),
         more_masters=create_more_masters(),
-        string_access=create_dict_aggregator(master, language),
-        image_server=os.environ.get("AS_IMAGE_SERVER"),
-        template_path=readonly_app_path("webui"),
         runtime_info=runtime_info,
-        tlinject_secret=os.environ.get("AS_TLINJECT_SECRET", "").encode("utf8"),
-        ui_methods=pageutils.UI_METHODS,
         static_path=readonly_app_path("static"),
         static_strings=strings,
-        debug=debug,
-        autoreload=debug,
+        string_access=create_dict_aggregator(master, language),
+        template_path=readonly_app_path("webui"),
+        tlinject_secret=os.environ.get("AS_TLINJECT_SECRET", "").encode("utf8"),
+        ui_methods=pageutils.UI_METHODS,
         wds_host=os.environ.get("AS_WDS_HOST", "//localhost:5002") if debug else None,
-        have_preamble_extra=have_preamble_extra,
-        have_footer_extra=have_footer_extra,
-        cookie_secret=os.environ.get("AS_COOKIE_SECRET"),
-        feedback_link=os.environ.get("AS_FEEDBACK_URL"),
     )
     return application

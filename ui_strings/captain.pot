@@ -25,6 +25,12 @@ msgstr "AppendixHiramekuSkills"
 msgid "Attribute"
 msgstr "Attribute"
 
+msgid "Banner.Birthday.MessageFor{name}On{date}"
+msgstr "Banner.Birthday.MessageFor{name}On{date}"
+
+msgid "Banner.Birthday.ShortDateStrftimeFormat"
+msgstr "Banner.Birthday.ShortDateStrftimeFormat"
+
 msgid "Basic Information"
 msgstr "Basic Information"
 

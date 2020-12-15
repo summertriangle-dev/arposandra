@@ -33,6 +33,12 @@ msgstr "AppendixHiramekuSkills"
 msgid "Attribute"
 msgstr "Attribute"
 
+msgid "Banner.Birthday.MessageFor{name}On{date}"
+msgstr "Today is {name}'s birthday ({date}). Happy birthday!"
+
+msgid "Banner.Birthday.ShortDateStrftimeFormat"
+msgstr "%m/%d"
+
 msgid "Basic Information"
 msgstr "Basic Information"
 
