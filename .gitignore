@@ -30,3 +30,8 @@ maintenance/border/tests
 maintenance/news/mocks
 
 ui_strings/*.po~
+
+# dev stuff
+psd_assets/
+vendor/
+maintenance/cron/debug
