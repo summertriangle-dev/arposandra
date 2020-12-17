@@ -81,6 +81,8 @@ async def update_card_index(
                 if card.idolized_appearance:
                     card_names[card.id] = (card.idolized_appearance.name, card.ordinal)
 
+        await setminer.generate_solo_sets(conn, db, daccess)
+
         # Group cards with the same idolized title.
         all_names = daccess.lookup_strings(x[0] for x in card_names.values())
         for (cid, (common_name, ordinal)) in card_names.items():
@@ -135,11 +137,17 @@ async def main(
 
     coordinator = IndexerDBCoordinator(os.environ.get("AS_POSTGRES_DSN"))
     await coordinator.create_pool()
+    hist_expert = db_expert.PostgresDBExpert(mine_models.HistoryIndex)
+    set_expert = db_expert.PostgresDBExpert(mine_models.SetIndex)
 
     need_reinit = False
     if clear_history_hard:
         await coordinator.drop_all_mtrack_tables()
         need_reinit = True
+
+    async with coordinator.pool.acquire() as conn:
+        await hist_expert.create_tables(conn)
+        await set_expert.create_tables(conn)
 
     authoritative = tag == "jp" and mv != "-"
     generated_sets: List[mine_models.SetRecord] = []
@@ -149,12 +157,7 @@ async def main(
     logging.debug("Master import done in %s ms", (time.monotonic() - cloc) * 1000)
     cloc = time.monotonic()
 
-    hist_expert = db_expert.PostgresDBExpert(mine_models.HistoryIndex)
-    set_expert = db_expert.PostgresDBExpert(mine_models.SetIndex)
     async with coordinator.pool.acquire() as conn:
-        await hist_expert.create_tables(conn)
-        await set_expert.create_tables(conn)
-
         if clear_history:
             need_reinit = True
             async with conn.transaction():

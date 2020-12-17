@@ -291,18 +291,6 @@ insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r3.ord0'
 
 -- Initial SR sets already exist.
 
-insert into card_p_set_index_v1 values ('niji-tokimeki-runners', 'synthetic.initial.g3.r2.ord0', 1, 1) on conflict (representative) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r2.ord0', 102012001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r2.ord0', 102022001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r2.ord0', 102032001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r2.ord0', 102042001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r2.ord0', 102052001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r2.ord0', 102062001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r2.ord0', 102072001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r2.ord0', 102082001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r2.ord0', 102092001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r2.ord0', 102102001) on conflict (representative, card_ids) do nothing;
-
 insert into card_p_set_index_v1 values ('muse-initial-r-uniform', 'synthetic.initial.g1.r1.ord0', 1, 0) on conflict (representative) do nothing;
 insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord0', 100011001) on conflict (representative, card_ids) do nothing;
 insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord0', 100021001) on conflict (representative, card_ids) do nothing;

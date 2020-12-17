@@ -245,7 +245,10 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin, CardThumbnailProviderMixin
         cat = self.VALID_CATEGORIES.get(_cat, None)
 
         sets = await self.database().card_tracker.get_card_sets(
-            page=pageno, n_entries=8, tag=tag, category=cat,
+            page=pageno,
+            n_entries=8,
+            tag=tag,
+            category=cat,
         )
         count = await self.database().card_tracker.get_card_set_count(tag=tag, category=cat)
         sets.sort(key=self.custom_sort_key, reverse=True)
