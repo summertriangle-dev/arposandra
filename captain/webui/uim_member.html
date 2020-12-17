@@ -19,7 +19,7 @@
             </div>
         </div>
 
-        <div class="card-body kars-card-brief-list position-relative">
+        <div class="card-body kars-card-brief-list position-relative pb-0">
             {% if show_all_card_icons %}
                 {% set icon_list, num_hidden = sorted(reversed(member.card_brief), key=lambda x: x.rarity, reverse=True), 0 %}
             {% else %}
@@ -38,9 +38,9 @@
             {% end %}
         </div>
 
-        <div class="card-body pt-0">
-            <a href="/cards/by_idol/{{ member.id }}/">{{ _("MemberList.GoToAllCardsDetail") }}</a> &bull;
-            <a href="{{ handler.search_url_for_event(member) }}">{{ _("MemberList.SearchForEventCards") }}</a> &bull;
-            <a href="{{ handler.search_url_for_scoutable(member) }}">{{ _("MemberList.SearchForGachaCards") }}</a>
+        <div class="card-body pt-0 pb-3">
+            <a class="link-like" href="/cards/by_idol/{{ member.id }}/">{{ _("MemberList.GoToAllCardsDetail") }}</a> &bull;
+            <a class="link-like" href="{{ handler.search_url_for_event(member) }}">{{ _("MemberList.SearchForEventCards") }}</a> &bull;
+            <a class="link-like" href="{{ handler.search_url_for_scoutable(member) }}">{{ _("MemberList.SearchForGachaCards") }}</a>
         </div>
     </div>
