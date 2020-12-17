@@ -8,7 +8,7 @@ from . import pageutils
 
 @route(r"/events/?")
 @route(r"/events/([0-9]+)(?:/[^/]*)")
-class EventServerRedirect(DatabaseMixin, RequestHandler):
+class EventServerRedirect(DatabaseMixin):
     def get(self, eid=None):
         target = self.get_cookie("dsid", "jp")
         # TODO: centralize list of servers
