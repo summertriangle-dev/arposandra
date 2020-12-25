@@ -25,7 +25,7 @@ class BannerManager(object):
         if bday_key in BIRTHDAYS:
             return [BIRTHDAYS[bday_key]]
 
-        if random.randint(1, 7) == 1:
+        if random.randint(1, 6) == 1:
             return [DonationBanner()]
 
 
