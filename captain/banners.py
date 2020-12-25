@@ -1,4 +1,5 @@
 import logging
+import random
 from dataclasses import dataclass
 from datetime import datetime, timezone, timedelta
 
@@ -21,12 +22,19 @@ class BannerManager(object):
     def banners(self, handler: RequestHandler):
         date = datetime.utcnow().astimezone(JST)
         bday_key = (date.month, date.day)
-
-        if handler.get_cookie("as_test_banner_check_date") == "yes":
-            bday_key = (4, 19)
-
         if bday_key in BIRTHDAYS:
             return [BIRTHDAYS[bday_key]]
+
+        if random.randint(1, 7) == 1:
+            return [DonationBanner()]
+
+
+class DonationBanner(BannerDefn):
+    def template_name(self, handler: RequestHandler):
+        return "uim_banner_donation.html"
+
+    def template_args(self, handler: RequestHandler):
+        return {}
 
 
 @dataclass
