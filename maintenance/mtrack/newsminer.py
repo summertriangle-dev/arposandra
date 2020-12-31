@@ -1,16 +1,15 @@
+import base64
 import json
 import logging
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, Iterable, List, Optional, Set, Tuple, Union, Sequence, cast
+from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple, Union, cast
 
 from asyncpg import Connection, Record
-
 from libcard2 import string_mgr
 
 from . import lang_specific
-import base64
 
 Timespan = Tuple[datetime, timedelta]
 
@@ -305,58 +304,41 @@ def take_gacha(fromlist, start, matching) -> Optional[int]:
 def zip_records(events: List[AnySRecord], gachas: List[AnySRecord]):
     serial = gachas + events
     serial.sort(key=lambda x: x.get_dedup_timespan())
-    i = 0
+    i = -1
     end = len(serial)
 
     l_out: List[AnySRecord] = []
     while i < end:
-        r = serial[i]
-        if isinstance(r, SGachaMergeRecord) and r.maybe_type in OK_TO_MERGE:
-            evt_i = take_event(serial, i, r.get_full_range())
-            if evt_i is None:
-                l_out.append(r)
-                i += 1
-                continue
-
-            cor_event = cast(SEventRecord, serial.pop(evt_i))
-            end -= 1
-            logging.debug(
-                "Determined that %s is the matching event for %s.",
-                cor_event.common_title,
-                r.common_title,
-            )
-
-            r.common_title = cor_event.common_title
-            r.thumbnail = cor_event.thumbnail
-            r.feature_card_ids.update({id: "event" for id in cor_event.feature_card_ids})
-            r.time_spans["event"] = cor_event.time_span
-            r.maybe_type = SGachaMergeRecord.T_EVENT_TIE
-            l_out.append(r)
-        elif isinstance(r, SEventRecord):
-            evt_i = take_gacha(serial, i, r.get_full_range())
-            if evt_i is None:
-                l_out.append(r)
-                i += 1
-                continue
-
-            cor_gacha = cast(SGachaMergeRecord, serial.pop(evt_i))
-            end -= 1
-            logging.debug(
-                "Determined that %s is the matching gacha for %s.",
-                cor_gacha.common_title,
-                r.common_title,
-            )
-
-            cor_gacha.common_title = r.common_title
-            cor_gacha.thumbnail = r.thumbnail
-            cor_gacha.feature_card_ids.update({id: "event" for id in r.feature_card_ids})
-            cor_gacha.time_spans["event"] = r.time_span
-            cor_gacha.maybe_type = SGachaMergeRecord.T_EVENT_TIE
-            l_out.append(cor_gacha)
-        else:
-            l_out.append(r)
-
         i += 1
+        c_gacha = serial[i]
+        if isinstance(c_gacha, SGachaMergeRecord) and c_gacha.maybe_type in OK_TO_MERGE:
+            evt_i = take_event(serial, i, c_gacha.get_full_range())
+            if evt_i is None:
+                l_out.append(c_gacha)
+                continue
+
+            c_event = cast(SEventRecord, serial.pop(evt_i))
+            end -= 1
+        elif isinstance(c_gacha, SEventRecord):
+            evt_i = take_gacha(serial, i, c_gacha.get_full_range())
+            if evt_i is None:
+                l_out.append(c_gacha)
+                continue
+
+            c_event = c_gacha
+            c_gacha = cast(SGachaMergeRecord, serial.pop(evt_i))
+        else:
+            l_out.append(c_gacha)
+            continue
+
+        logging.debug("Event: %s <-> Gacha: %s.", c_event.common_title, c_gacha.common_title)
+
+        c_gacha.common_title = c_event.common_title
+        c_gacha.thumbnail = c_event.thumbnail
+        c_gacha.feature_card_ids.update({id: "event" for id in c_event.feature_card_ids})
+        c_gacha.time_spans["event"] = c_event.time_span
+        c_gacha.maybe_type = SGachaMergeRecord.T_EVENT_TIE
+        l_out.append(c_gacha)
 
     return l_out
 
@@ -570,4 +552,3 @@ def prepare_old_evt_entries(sid):
         [e_SPARTY, e_MODELS, e_OLDTOWN, e_HIKE, e_STARS],
         [g_SPARTY, g_PICKUP1, g_MODELS, g_PICKUP2, g_OLDTOWN, g_PICKUP3, g_HIKE, g_FES_1, g_STARS],
     )
-
