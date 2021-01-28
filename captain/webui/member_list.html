@@ -10,9 +10,19 @@
     <body data-inject="card">
         {% module Template("uim_nav.html", current="idol_list") %}
 
+        <div class="container">
+            <div class="stretch-bar kars-negative-box">
+                <h1 class="h3 mb-3">
+                    {{ _("PT.IdolList") }}
+                </h1>
+                <span class="flexible-space"></span>
+                <a class="icon icon-lg clickable ion-ios-search" href="/cards/search" title="{{ _("CardSetsForm.OpenTooltip") }}"></a>
+            </div>
+        </div>
+
         {% for group_name, members in member_groups.items() %}
         <div class="container">
-            <h1 class="h3 mb-3 kars-negative-box">
+            <h1 class="h4 mb-3 kars-negative-box">
                 {% if subpage_type == "unit" %}
                     <a class="font-weight-light" href="/idols/group/{{ members[0].group }}">
                         {% raw tlinject_static(group_name) %}
