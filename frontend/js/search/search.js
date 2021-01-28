@@ -12,7 +12,7 @@ const PASearchProgressState = {
     LoadingResults: 3,
     ContinueSearch: 4,
     ErrorLoadingCards: 5,
-    ErrorLoadingSchema: 6
+    ErrorLoadingSchema: 6,
 }
 
 const RESULTS_PER_PAGE = 12
@@ -33,6 +33,7 @@ class PASearchContext {
         this.isFirstLoad = true
 
         this.recoveryInfo = null
+        this.inlineErrorMessage = null
     }
 
     transitionToState(state) {
@@ -70,12 +71,14 @@ class PASearchContext {
             </>
             break
         case PASearchProgressState.EditingQuery:
+        case PASearchProgressState.ErrorZeroResults:
             widget = <PAQueryEditor 
                 schema={this.schema} 
                 query={this.currentQuery}
                 template={this.currentTemplate}
                 sortBy={this.currentSort}
-                performSearchAction={this.performSearchAction.bind(this)} />
+                performSearchAction={this.performSearchAction.bind(this)}
+                errorMessage={this.inlineErrorMessage} />
             break
         case PASearchProgressState.ContinueSearch:
             widget = <div className="text-center">
@@ -83,7 +86,7 @@ class PASearchContext {
                 <a className="h6" onClick={(e) => { 
                     e.preventDefault()
                     this.transitionToState(PASearchProgressState.EditingQuery) 
-                }} href="#">{Infra.strings.Search.StateMessage.Continue}</a>         
+                }} href="#">{Infra.strings.Search.StateMessage.Continue}</a>
             </div>
             break
         case PASearchProgressState.Searching:
@@ -209,6 +212,13 @@ class PASearchContext {
             host.parentNode.insertBefore(incoming, host)
             host.parentNode.removeChild(host)
 
+            const header = document.getElementById("info-host")
+            ReactDOM.render(
+                <p>
+                    {Infra.strings.formatString(Infra.strings.Search.NumResultsLabel, results.length)}
+                </p>, header
+            )
+
             const pager = document.getElementById("pager-host")
             ReactDOM.render(
                 <PAPageControl page={this.currentPage + 1} 
@@ -216,18 +226,20 @@ class PASearchContext {
                     moveToPage={this.moveToPageAction.bind(this)} />,
                 pager)
         } else {
-            this.transitionToState(PASearchProgressState.EditingQuery)
+            if (!error) {
+                this.inlineErrorMessage = Infra.strings.Search.Error.NoResults
+                this.transitionToState(PASearchProgressState.EditingQuery)
+            } else {
+                this.inlineErrorMessage = Infra.strings.formatString(
+                    Infra.strings.Search.Error.ExecuteFailed, error)
+                // No transition - it's handled in performSearchAction
+            }
 
             const host = document.getElementById("results-host")
             host.className = ""
             host.style.opacity = 1.0
-            
-            ReactDOM.render(<div className="text-center mb-5">
-                {error? 
-                    <span className="h6">{Infra.strings.formatString(
-                        Infra.strings.Search.Error.ExecuteFailed, error)}</span> :
-                    <span className="h6">{Infra.strings.Search.Error.NoResults}</span>}
-            </div>, host)
+
+            ReactDOM.render(null, host)
             ReactDOM.render(null, document.getElementById("pager-host"))
         }
     }

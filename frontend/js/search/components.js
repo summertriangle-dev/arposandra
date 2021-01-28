@@ -161,6 +161,7 @@ export class PAQueryEditor extends React.Component {
 
         return <div>
             <PASearchButton schema={this.props.schema} performSearchAction={this.performSearchAction.bind(this)} />
+            <PAFormErrorBanner message={this.props.errorMessage} />
             <PAQueryList 
                 schema={this.props.schema} 
                 editors={this.state.queryTemplate} 
@@ -228,6 +229,16 @@ export function PAPurgatoryMessage(props) {
             {" "} <a href="#" className="font-weight-bold" onClick={eh}>{Infra.strings.Search.RestorePurgatoryLabel}</a>
         </small>
     </div>
+}
+
+function PAFormErrorBanner(props) {
+    if (props.message) {
+        return <div className="alert alert-danger">
+            {props.message}
+        </div>
+    }
+
+    return null
 }
 
 export function PAFakeSearchButton() {

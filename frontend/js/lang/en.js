@@ -159,6 +159,7 @@ export default {
             LoadingSchema: "Acquiring filter info...",
             Searching: "Performing search...",
             LoadingCards: "Preparing card displays...",
-        }
+        },
+        NumResultsLabel: "{0} results. You can share this search by copying the link from your browser's address bar."
     }
 }
