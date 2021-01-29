@@ -305,7 +305,7 @@ def zip_records(events: List[AnySRecord], gachas: List[AnySRecord]):
     serial = gachas + events
     serial.sort(key=lambda x: x.get_dedup_timespan())
     i = -1
-    end = len(serial)
+    end = len(serial) - 1
 
     l_out: List[AnySRecord] = []
     while i < end:
@@ -327,6 +327,7 @@ def zip_records(events: List[AnySRecord], gachas: List[AnySRecord]):
 
             c_event = c_gacha
             c_gacha = cast(SGachaMergeRecord, serial.pop(evt_i))
+            end -= 1
         else:
             l_out.append(c_gacha)
             continue
