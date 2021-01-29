@@ -163,6 +163,9 @@ msgstr "MemberList.SearchForEventCards"
 msgid "MemberList.SearchForGachaCards"
 msgstr "MemberList.SearchForGachaCards"
 
+msgid "MemberList.SearchLabel"
+msgstr "MemberList.SearchLabel"
+
 msgid "MemberList.{num}MoreIcons"
 msgstr "MemberList.{num}MoreIcons"
 
@@ -237,6 +240,12 @@ msgstr "OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribut
 
 msgid "OpengraphCardDescriptionMultiple"
 msgstr "OpengraphCardDescriptionMultiple"
+
+msgid "OpengraphCardSearchDescription"
+msgstr "OpengraphCardSearchDescription"
+
+msgid "OpengraphCardSearchTitle"
+msgstr "OpengraphCardSearchTitle"
 
 msgid "OpengraphHistoryDescription"
 msgstr "OpengraphHistoryDescription"

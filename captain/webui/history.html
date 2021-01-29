@@ -7,7 +7,9 @@
 
         {% include t_preamble.html %}
 
-        {% module Template("ogm_history.html", releases=releases, server=server.upper()) %}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="{{ _("OpengraphHistoryTitle{server_id}").format(server_id=server.upper()) }}" />
+        <meta property="og:description" content="{{ _("OpengraphHistoryDescription") }}" />
     </head>
     <body data-master="{{ handler.settings["master"].version }}">
         {% module Template("uim_nav.html", current="cards") %}

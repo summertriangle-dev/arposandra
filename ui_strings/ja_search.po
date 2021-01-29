@@ -167,6 +167,10 @@ msgstr "その他"
 msgid "kars.search_criteria.card_index.skills.apply_type.none"
 msgstr "ゲーム (ボルテージ、スタミナ、SP)"
 
+#, fuzzy
+msgid "k.m_dic_member_name_210"
+msgstr "虹ヶ咲"
+
 msgid "k.m_dic_unit_name_cyaron"
 msgstr "CYaRon!"
 

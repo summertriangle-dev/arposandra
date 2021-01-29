@@ -215,7 +215,9 @@ class PASearchContext {
             const header = document.getElementById("info-host")
             ReactDOM.render(
                 <p>
-                    {Infra.strings.formatString(Infra.strings.Search.NumResultsLabel, results.length)}
+                    {Infra.strings.formatString(
+                        Infra.strings.Search.NumResultsLabel, 
+                        Infra.strings.Search.NumResultsFormat(results.length))}
                 </p>, header
             )
 

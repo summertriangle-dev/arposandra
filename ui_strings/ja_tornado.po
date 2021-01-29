@@ -7,6 +7,83 @@ msgstr ""
 msgid "#{card_no}: {idol_name}"
 msgstr "#{card_no}: {idol_name}"
 
+msgid "("
+msgstr "("
+
+msgid ")"
+msgstr ")"
+
+msgid ","
+msgstr ","
+
+msgid "./async"
+msgstr "./async"
+
+msgid "./bind"
+msgstr "./bind"
+
+msgid "./cancel"
+msgstr "./cancel"
+
+msgid "./catch_filter"
+msgstr "./catch_filter"
+
+msgid "./context"
+msgstr "./context"
+
+msgid "./debuggability"
+msgstr "./debuggability"
+
+msgid "./direct_resolve"
+msgstr "./direct_resolve"
+
+msgid "./errors"
+msgstr "./errors"
+
+msgid "./es5"
+msgstr "./es5"
+
+msgid "./finally"
+msgstr "./finally"
+
+msgid "./join"
+msgstr "./join"
+
+msgid "./method"
+msgstr "./method"
+
+#, fuzzy
+msgid "./nodeback"
+msgstr "Send comments, questions, and bugs"
+
+msgid "./promise"
+msgstr "./promise"
+
+msgid "./promise_array"
+msgstr "./promise_array"
+
+msgid "./queue"
+msgstr "./queue"
+
+#, fuzzy
+msgid "./schedule"
+msgstr "イベント/ガシャ記録"
+
+msgid "./synchronous_inspection"
+msgstr "./synchronous_inspection"
+
+msgid "./thenables"
+msgstr "./thenables"
+
+msgid "./util"
+msgstr "./util"
+
+msgid ":"
+msgstr ":"
+
+msgid ";"
+msgstr ";"
+
 msgid "Acknowledgements"
 msgstr "謝辞"
 
@@ -177,6 +254,9 @@ msgstr "イベントメンバー検索する"
 msgid "MemberList.SearchForGachaCards"
 msgstr "ガシャメンバー検索する"
 
+msgid "MemberList.SearchLabel"
+msgstr "検索"
+
 msgid "MemberList.{num}MoreIcons"
 msgstr "あと{num}枚"
 
@@ -260,6 +340,12 @@ msgstr ""
 
 msgid "OpengraphCardDescriptionMultiple"
 msgstr "ほら、後ろに! 初音ミクさんだ!"
+
+msgid "OpengraphCardSearchDescription"
+msgstr "Search for cards by type, skills, and more."
+
+msgid "OpengraphCardSearchTitle"
+msgstr "Card Search"
 
 msgid "OpengraphHistoryDescription"
 msgstr "見逃したのフェスガチャを見ることができます。"

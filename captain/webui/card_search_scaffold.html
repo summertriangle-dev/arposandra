@@ -9,6 +9,10 @@
     <meta name="x-panther-index-discovery" content="{{ index }}">
     {% end %}
     <meta name="x-panther-dictionary-discovery" content="{{ config_dictionary }}">
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{ _("OpengraphCardSearchTitle") }}" />
+    <meta property="og:description" content="{{ _("OpengraphCardSearchDescription") }}" />
 </head>
 
 <body data-master="{{ handler.settings["master"].version }}" data-inject="search">

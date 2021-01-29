@@ -160,6 +160,12 @@ export default {
             Searching: "Performing search...",
             LoadingCards: "Preparing card displays...",
         },
-        NumResultsLabel: "{0} results. You can share this search by copying the link from your browser's address bar."
+        NumResultsLabel: "{0}. You can share this search by copying the link from your browser's address bar.",
+        NumResultsFormat: (n /* : int */) => {
+            switch (n) {
+            case 1: return `${n} result`
+            default: return `${n} results`
+            }
+        },
     }
 }

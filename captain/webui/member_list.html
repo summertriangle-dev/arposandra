@@ -5,7 +5,9 @@
 
         {% include t_preamble.html %}
 
-        {% module Template("ogm_idols.html") %}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="{{ _("OpengraphMembersTitle") }}" />
+        <meta property="og:description" content="{{ _("OpengraphMembersDescription") }}" />
     </head>
     <body data-inject="card">
         {% module Template("uim_nav.html", current="idol_list") %}
@@ -16,7 +18,7 @@
                     {{ _("PT.IdolList") }}
                 </h1>
                 <span class="flexible-space"></span>
-                <a class="icon icon-lg clickable ion-ios-search" href="/cards/search" title="{{ _("CardSetsForm.OpenTooltip") }}"></a>
+                <a class="icon icon-lg clickable ion-ios-search" href="/cards/search" title="{{ _("MemberList.SearchLabel") }}"></a>
             </div>
         </div>
 

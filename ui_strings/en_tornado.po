@@ -177,6 +177,9 @@ msgstr "Find Event Cards"
 msgid "MemberList.SearchForGachaCards"
 msgstr "Find Scoutable Cards"
 
+msgid "MemberList.SearchLabel"
+msgstr "Search for cards"
+
 msgid "MemberList.{num}MoreIcons"
 msgstr "{num} More"
 
@@ -260,6 +263,12 @@ msgstr ""
 
 msgid "OpengraphCardDescriptionMultiple"
 msgstr "Look, behind you! It's Hatsune Miku!"
+
+msgid "OpengraphCardSearchDescription"
+msgstr "Search for cards by type, skills, and more."
+
+msgid "OpengraphCardSearchTitle"
+msgstr "Card Search"
 
 msgid "OpengraphHistoryDescription"
 msgstr "\"All Star Festivals in mirror are closer than they appear.\""
