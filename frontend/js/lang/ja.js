@@ -55,14 +55,6 @@ export default {
         en: "英語",
         ja: "日本語"
     },
-
-    NewsFilter: {
-        Title: "イベントとガチャのみを表示",
-        Option: {
-            No: "○",
-            Yes: "｜",
-        }
-    },
     SST: {
         LoadingPleaseWait: "エピソード脚本をロード中...",
         Header: "エピソード脚本",

@@ -56,13 +56,6 @@ export default {
         en: "English",
         ja: "Japanese",
     },
-    NewsFilter: {
-        Title: "Only show events/gachas?",
-        Option: {
-            No: "No",
-            Yes: "Yes",
-        }
-    },
     SST: {
         LoadingPleaseWait: "Please wait while the script loads...",
         Header: "Story Transcript",

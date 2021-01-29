@@ -40,7 +40,7 @@ class NewsDatabase(object):
         async with self.coordinator.pool.acquire() as c:
             items = await c.fetch(
                 """SELECT news_id, title, thumbnail, ts, internal_category, NULL, card_refs
-                    FROM news_v2 WHERE ts < $1 AND (visible = TRUE OR internal_category IN (2, 3))
+                    FROM news_v2 WHERE ts < $1 AND visible = TRUE
                     AND serverid=$3 ORDER BY ts DESC, news_id LIMIT $2""",
                 before_time,
                 limit,
@@ -48,19 +48,6 @@ class NewsDatabase(object):
             )
 
         return [NewsItem(*i, json.loads(crefs) if crefs else []) for *i, crefs in items]
-
-    async def get_only_card_carrying_news_items(self, for_server, before_time, limit):
-        async with self.coordinator.pool.acquire() as c:
-            items = await c.fetch(
-                """SELECT news_id, title, thumbnail, ts, internal_category, NULL, card_refs
-                    FROM news_v2 WHERE ts < $1 AND internal_category IN (2, 3) AND card_refs IS NOT NULL
-                    AND serverid=$3 ORDER BY ts DESC, news_id LIMIT $2""",
-                before_time,
-                limit,
-                for_server,
-            )
-
-        return [NewsItem(*i, json.loads(crefs)) for *i, crefs in items]
 
     async def count_news_items(self, for_server):
         async with self.coordinator.pool.acquire() as c:

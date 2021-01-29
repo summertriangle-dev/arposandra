@@ -66,12 +66,6 @@ class NewsList(DatabaseMixin, LanguageCookieMixin):
         )
 
     async def get_items(self, server, before, nmax):
-        cookie = self.cookies.get("nfm", None)
-        if cookie and cookie.value == "1":
-            return await self.database().news_database.get_only_card_carrying_news_items(
-                server, before, nmax
-            )
-
         return await self.database().news_database.get_news_items(server, before, nmax)
 
     def resolve_cards(self, items):

@@ -7,7 +7,6 @@ import Infra from "./infra"
 import "react-localization"
 import * as TLInject from "./tlinject"
 import * as Album from "./album"
-import * as NewsFilter from "./news_filter"
 import * as Experiments from "./experiments"
 import { Appearance } from "./appearance"
 import { CardDisplayModeSwitcher, ImageSwitcher, SkillTreeLoader } from "./card_page_components"
@@ -109,7 +108,6 @@ function didChange(prev, next) {
 function init() {
     Infra.store.injectReducers({
         album: Album.AlbumStore.reducer,
-        newsFilter: NewsFilter.NewsFilter.reducer
     })
 
     let appearance = {}
@@ -129,11 +127,9 @@ function init() {
         CardDisplayModeSwitcher,
         ImageSwitcher,
         SkillTree: SkillTreeLoader,
-        NewsFilterSwitch: NewsFilter.NewsFilterSwitch,
     })
 
     TLInject.initialize()
-    NewsFilter.initWithRedux(Infra.store)
     initLangMenu()
     GutterMenu.injectIntoPage()
     NavMenu.injectIntoPage()
