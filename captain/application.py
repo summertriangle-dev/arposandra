@@ -95,6 +95,7 @@ def create_more_masters():
 
 # Some private packages might require readonly_app_path - so we'll import this late.
 from . import private
+from . import chara_bdays
 
 
 def application(master, language, debug):
@@ -115,10 +116,13 @@ def application(master, language, debug):
     vi_class = namedtuple("runtime_info_t", ("app_revision", "host_id"))
     runtime_info = vi_class(os.environ.get("AS_GIT_REVISION"), os.environ.get("AS_HOST_ID"))
 
+    banner_manager = banners.BannerManager()
+    banner_manager.by_date.update(chara_bdays.BIRTHDAYS)
+
     application = Application(
         dispatch.ROUTES,
         autoreload=debug,
-        banner_manager=banners.BannerManager(),
+        banner_manager=banner_manager,
         cookie_secret=os.environ.get("AS_COOKIE_SECRET"),
         db_coordinator=db_coordinator,
         debug=debug,
