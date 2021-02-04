@@ -364,10 +364,13 @@ class PASearchContext {
             const queryFromURL = deserializeQuery(this.schema, window.location.hash.substring(1))
             this.currentSort = queryFromURL._sort
             delete queryFromURL["_sort"]
-            auto = queryFromURL["_auto"]
             delete queryFromURL["_auto"]
             this.currentQuery = queryFromURL
             this.currentTemplate = Object.keys(queryFromURL).slice(0)
+
+            if (this.currentTemplate.length > 0) {
+                auto = true
+            }
         }
 
         if (history.state && Array.isArray(history.state.results)) {

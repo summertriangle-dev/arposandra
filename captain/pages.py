@@ -78,10 +78,10 @@ class IdolsRoot(DatabaseMixin, LanguageCookieMixin):
         )
 
     def search_url_for_event(self, member: dataclasses.Member):
-        return f"/cards/search#member={member.id}&source=[1,4,5,6,3]&_sort=-ordinal&_auto=t"
+        return f"/cards/search#member={member.id}&source=[1,4,5,6,3]&_sort=-ordinal"
 
     def search_url_for_scoutable(self, member: dataclasses.Member):
-        return f"/cards/search#member={member.id}&source=[2]&_sort=-ordinal&_auto=t"
+        return f"/cards/search#member={member.id}&source=[2]&_sort=-ordinal"
 
     def get(self, specific=None, specific_value=None):
         show_all_card_icons = False
