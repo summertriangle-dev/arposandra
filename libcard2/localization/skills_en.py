@@ -44,7 +44,7 @@ def fmt_apply(tt: Skill.TargetType, base, context: Card = None):
 
     complex_ = ["Applies to:"]
     if tt.owner_party:
-        complex_.append("This card's party")
+        complex_.append("This card's strategy")
     elif tt.owner_school:
         if context:
             synthetic = f"kars.group_{context.member.group}"
@@ -155,9 +155,9 @@ def fmt_finish_type(effect: Skill.Effect, tags):
             return f" for the next {tags['let']}{finish_value}{tags['end']} SP bursts"
     if finish_type == FT.ChangeSquadCount:
         if finish_value == 1:
-            return " until the next party switch"
+            return " until the next strategy switch"
         else:
-            return f" for the next {tags['let']}{finish_value}{tags['end']} party changes"
+            return f" for the next {tags['let']}{finish_value}{tags['end']} strategy changes"
     if finish_type == FT.WaveEnd:
         return " until appeal ends"
     return ""
@@ -177,7 +177,7 @@ def to_trigger_phrase(trigger_type):
     elif trigger_type == TT.OnGotVoltage:
         return "when gaining voltage"
     elif trigger_type == TT.OnChangeSquad:
-        return "on party rotation"
+        return "on strategy switch"
     elif trigger_type == TT.OnCollaboSkill:
         return "on SP burst"
     elif trigger_type == TT.OnNoteScore:

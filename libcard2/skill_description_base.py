@@ -65,7 +65,7 @@ class SkillEffectDescriberContext(object):
     def default_combiner(self, trigger: str, effect: str):
         return " ".join([trigger, effect])
 
-    def finish_clause(self, f: Callable[[Skill, dict], str]):
+    def finish_clause(self, f: Callable[[Skill.Effect, dict], str]):
         self.finish = f
         return f
 
