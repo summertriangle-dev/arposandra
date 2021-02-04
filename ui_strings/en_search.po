@@ -56,6 +56,9 @@ msgstr "Skill Trigger"
 msgid "kars.search_criteria.card_index.skills.apply_type"
 msgstr "Skill Target"
 
+msgid "kars.search_criteria.card_index.member_group.unspecified"
+msgstr "Unspecified"
+
 msgid "kars.search_criteria.card_index.source.unspec"
 msgstr "Initial/Unspecified"
 
@@ -135,7 +138,7 @@ msgid "kars.search_criteria.card_index.skills.apply_type.self"
 msgstr "Self"
 
 msgid "kars.search_criteria.card_index.skills.apply_type.party"
-msgstr "Same party/strategy"
+msgstr "Same strategy"
 
 msgid "kars.search_criteria.card_index.skills.apply_type.member"
 msgstr "Same idol"

@@ -161,7 +161,7 @@ CardIndex = Schema(
         Field.integer("ordinal"),
         Field.integer(
             "member",
-            behaviour={"captain_treat_as": "enum", "conflicts": ["member_group", "member_subunit"]},
+            behaviour={"captain_treat_as": "enum", "conflicts": ["member_group", "member_subunit"], "grouped": True},
         ),
         Field.integer(
             "member_group",
@@ -177,6 +177,7 @@ CardIndex = Schema(
                 "captain_treat_as": "enum",
                 "sort": False,
                 "conflicts": ["member", "member_group"],
+                "grouped": True
             },
         ),
         Field.integer("member_year", behaviour={"captain_treat_as": "enum", "sort": False}),

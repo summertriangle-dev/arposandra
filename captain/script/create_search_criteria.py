@@ -1,6 +1,8 @@
 import gettext
 import json
 import os
+from collections import OrderedDict
+from typing import OrderedDict
 
 import pkg_resources
 import plac
@@ -58,26 +60,44 @@ def core_schema(model: types.Schema) -> dict:
 
     return criteria
 
+def flatten_group(dog: OrderedDict[str, list]):
+    flat = []
+    for key, value in dog.items():
+        if value:
+            flat.append({"name": key, "separator": True})
+            flat.extend(value)
+    
+    return flat
 
+K_NO_GROUP = "kars.search_criteria.card_index.member_group.unspecified"
 def schema(master: master.MasterData):
     criteria = core_schema(mine_models.CardIndex)
 
     subids = []
     gids = []
-    subunits = []
     groups = []
-    idols = []
+    subunits = OrderedDict()
+    idols = OrderedDict({K_NO_GROUP: []})
     for member in master.lookup_member_list():
-        if member.group and member.group not in gids:
+        if member.group is not None and member.group not in gids:
             gids.append(member.group)
+            idols[member.group_name] = []
+            subunits[member.group_name] = []
             groups.append({"value": member.group, "name": member.group_name})
-        if member.subunit and member.subunit not in subids:
-            subids.append(member.subunit)
-            subunits.append({"value": member.subunit, "name": member.subunit_name})
-        idols.append({"value": member.id, "name": member.name})
 
-    criteria["member"].update(dict(type=1001, choices=idols))
-    criteria["member_subunit"].update(dict(type=1001, choices=subunits))
+        if member.subunit is not None and member.subunit not in subids:
+            subids.append(member.subunit)
+            subunits[member.group_name].append({"value": member.subunit, "name": member.subunit_name})
+
+        if member.group is not None:
+            idols[member.group_name].append({"value": member.id, "name": member.name})
+        else:
+            idols[K_NO_GROUP].append({"value": member.id, "name": member.name})
+        
+    idols.move_to_end(K_NO_GROUP)
+
+    criteria["member"].update(dict(type=1001, choices=flatten_group(idols)))
+    criteria["member_subunit"].update(dict(type=1001, choices=flatten_group(subunits)))
     criteria["member_group"].update(dict(type=1001, choices=groups))
     criteria["rarity"].update(
         dict(

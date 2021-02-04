@@ -474,6 +474,37 @@ export class PAEnumField extends React.Component {
             src={`${this.props.criteria.behaviour.icons}/${choice.value}.png`} />
     }
 
+    optionList(criteria) {
+        if (criteria.behaviour && criteria.behaviour.grouped) {
+            const ret = []
+            let target = ret
+            let label = undefined
+            
+            criteria.choices.forEach((choice) => {
+                if (choice.separator) {
+                    if (target !== ret) {
+                        ret.push(<optgroup key={label} label={label}>{target}</optgroup>)
+                    }
+                    
+                    target = []
+                    label = choice.display_name || choice.name
+                } else {
+                    target.push(<option key={choice.value} 
+                        value={choice.value}>{choice.display_name || choice.name}</option>)
+                }
+            })
+
+            if (target !== ret) {
+                ret.push(<optgroup key={label} label={label}>{target}</optgroup>)
+            }
+
+            return ret
+        } else {
+            return criteria.choices.map((choice) => 
+                <option key={choice.value} value={choice.value}>{choice.display_name || choice.name}</option>)
+        }
+    }
+
     render() {
         let control
         if (this.isSplitInput()) {
@@ -506,9 +537,7 @@ export class PAEnumField extends React.Component {
                 onChange={(e) => this.acceptInput(e)}>
                 <option value=".empty">{Infra.strings.Search.EnumPlaceholder}</option>
 
-                {this.props.criteria.choices.map((choice) => 
-                    <option key={choice.value} value={choice.value}>{choice.display_name || choice.name}</option>
-                )}
+                {this.optionList(this.props.criteria)}
             </select>
         }
 
