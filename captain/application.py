@@ -9,6 +9,7 @@ from tornado.web import Application
 from tornado import locale
 
 from . import readonly_app_path
+from .bases import DefaultHandler
 
 import libcard2
 from . import database
@@ -140,5 +141,6 @@ def application(master, language, debug):
         tlinject_secret=os.environ.get("AS_TLINJECT_SECRET", "").encode("utf8"),
         ui_methods=pageutils.UI_METHODS,
         wds_host=os.environ.get("AS_WDS_HOST", "//localhost:5002") if debug else None,
+        default_handler_class=DefaultHandler,
     )
     return application

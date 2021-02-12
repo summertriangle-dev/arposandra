@@ -4,13 +4,14 @@ import hmac
 import random
 import re
 from datetime import datetime
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, Optional, Tuple, cast
 
 from tornado.web import RequestHandler
 
 from libcard2.dataclasses import Card, Member
 from libcard2.utils import coding_context
 
+from .bases import BaseHTMLHandler, BaseAPIHandler
 from .dispatch import DatabaseMixin, LanguageCookieMixin, route
 from .models import card_tracking
 from .pageutils import get_as_secret, tlinject_static
@@ -18,7 +19,7 @@ import logging
 
 
 @route("/cards/by_idol/([0-9]+)(/.*)?")
-class CardPageByMemberID(LanguageCookieMixin):
+class CardPageByMemberID(BaseHTMLHandler, LanguageCookieMixin):
     def get(self, member_id, _):
         member = self.settings["master"].lookup_member_by_id(member_id)
 
@@ -49,7 +50,7 @@ class CardPageByMemberID(LanguageCookieMixin):
 
 
 @route("/card/(random|(?:[0-9,]+))(/.*)?")
-class CardPage(LanguageCookieMixin):
+class CardPage(BaseHTMLHandler, LanguageCookieMixin):
     def card_spec(self, spec: str) -> list:
         if spec == "everything":
             return self.settings["master"].all_ordinals()
@@ -104,12 +105,17 @@ class CardPage(LanguageCookieMixin):
         self.render("cards.html", cards=cards, custom_title=ct, og_context={})
 
 
-class CardThumbnailProviderMixin(RequestHandler):
+class CardThumbnailProviderMixin(object):
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if RequestHandler not in cls.__mro__:
+            raise TypeError("This mixin needs to be used with a subclass of RequestHandler.")
+
     def initialize(self, *args, **kwargs):
-        super().initialize(*args, **kwargs)
         self.thumb_cache = {}
 
     def thumbnail(self, appearance: Card.Appearance, size: int, axis: str, fmt: str):
+        h = cast(RequestHandler, self)
         first = (
             base64.urlsafe_b64encode(appearance.image_asset_path.encode("utf8"))
             .decode("ascii")
@@ -122,7 +128,7 @@ class CardThumbnailProviderMixin(RequestHandler):
 
         assr_b = hmac.new(get_as_secret(), key.encode("utf8"), hashlib.sha224).digest()[:10]
         assr = base64.urlsafe_b64encode(assr_b).decode("ascii").rstrip("=")
-        isr = self.settings["image_server"]
+        isr = h.settings["image_server"]
         signed = f"{isr}/thumb/{size}{axis}/{first}/{assr}.{fmt}"
 
         self.thumb_cache[key] = signed
@@ -131,7 +137,7 @@ class CardThumbnailProviderMixin(RequestHandler):
 
 @route(r"/cards/sets/?")
 @route(r"/cards/sets/([0-9]+)/?")
-class CardGallery(DatabaseMixin, LanguageCookieMixin, CardThumbnailProviderMixin):
+class CardGallery(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin, CardThumbnailProviderMixin):
     # The largest known subunit size (QU4RTZ). This is checked so we don't treat
     # subunit costume sets as group sets.
     ALL_MEMBER_SET_THRES = 4
@@ -152,6 +158,7 @@ class CardGallery(DatabaseMixin, LanguageCookieMixin, CardThumbnailProviderMixin
 
     def initialize(self, *args, **kwargs):
         super().initialize(*args, **kwargs)
+        CardThumbnailProviderMixin.initialize(self)
         self._tlinject_base = ({}, set())
         self.tl_batch = set()
 
@@ -355,7 +362,11 @@ class CardGallerySingle(CardGallery):
 
 
 @route(r"/api/private/cards/ajax/([0-9,]+)")
-class CardPageAjax(LanguageCookieMixin, DatabaseMixin, CardThumbnailProviderMixin):
+class CardPageAjax(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin, CardThumbnailProviderMixin):
+    def initialize(self, *args, **kwargs):
+        super().initialize(*args, **kwargs)
+        CardThumbnailProviderMixin.initialize(self)
+
     def card_spec(self, spec: str) -> list:
         ret = []
         unique = set()
@@ -437,7 +448,7 @@ class CardPageAPI(CardPage):
 
 
 @route(r"/api/private/cards/member/([0-9]+)\.json")
-class CardPageAPIByMemberID(LanguageCookieMixin):
+class CardPageAPIByMemberID(BaseAPIHandler, LanguageCookieMixin):
     def get(self, member_id):
         member = self.settings["master"].lookup_member_by_id(member_id)
 

@@ -10,7 +10,14 @@
         <div class="container">
             <div class="card kars-card-box">
                 <div class="card-body">
-                    {{ message }}
+                    <p class="mb-0">
+                        {{ message }}
+                    </p>
+                    
+                    {% try %}
+                        {% if traceback %} <pre>{{ traceback }}</pre> {% end %}
+                    {% except NameError %}
+                    {% end %}
                 </div>
             </div>
         </div>

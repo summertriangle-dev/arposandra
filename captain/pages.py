@@ -9,18 +9,19 @@ from tornado.locale import get_supported_locales
 from tornado.web import RequestHandler
 
 from . import pageutils
+from .bases import BaseHTMLHandler, BaseAPIHandler
 from .dispatch import DatabaseMixin, LanguageCookieMixin, route
 from .models import card_tracking
 
 
 @route("/")
-class Slash(LanguageCookieMixin):
+class Slash(BaseHTMLHandler, LanguageCookieMixin):
     def get(self):
         self.render("home.html")
 
 
 @route(r"/(cards|other)/")
-class NavPageNoJS(RequestHandler):
+class NavPageNoJS(BaseHTMLHandler):
     def get(self, where):
         if where == "cards":
             self.render("nav_cards_nojs.html")
@@ -32,7 +33,7 @@ class NavPageNoJS(RequestHandler):
 @route(r"/idols/(unit)/([0-9]+)/?")
 @route(r"/idols/(group)/([0-9]+)/?")
 @route(r"/idols/(id)/([0-9]+)/?")
-class IdolsRoot(DatabaseMixin, LanguageCookieMixin):
+class IdolsRoot(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
     def base_member_preview_list(self, member: dataclasses.Member):
         if "base_member_preview_list" in member.user_info:
             lst = member.user_info["base_member_preview_list"]
@@ -118,7 +119,7 @@ class IdolsRoot(DatabaseMixin, LanguageCookieMixin):
 
 
 @route("/lives")
-class LiveRoot(LanguageCookieMixin):
+class LiveRoot(BaseHTMLHandler, LanguageCookieMixin):
     def get(self):
         songs = self.settings["master"].lookup_song_list()
 
@@ -138,7 +139,7 @@ class LiveRoot(LanguageCookieMixin):
 
 
 @route("/live(?:s)?/([0-9]+)(/.*)?")
-class LiveSingle(LanguageCookieMixin):
+class LiveSingle(BaseHTMLHandler, LanguageCookieMixin):
     def get(self, live_id, _slug=None):
         song = self.settings["master"].lookup_song_difficulties(int(live_id))
 
@@ -152,7 +153,7 @@ class LiveSingle(LanguageCookieMixin):
 
 @route(r"/history/?")
 @route(r"/history/([0-9]+)/?")
-class HistoryRedirect(DatabaseMixin, LanguageCookieMixin):
+class HistoryRedirect(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
     def get(self, page=None):
         server = self.database().news_database.validate_server_id(self.get_cookie("dsid", None))
         if page is not None:
@@ -163,7 +164,7 @@ class HistoryRedirect(DatabaseMixin, LanguageCookieMixin):
 
 @route(r"/([a-z]+)/history/?")
 @route(r"/([a-z]+)/history/([0-9]+)/?")
-class CardHistory(DatabaseMixin, LanguageCookieMixin):
+class CardHistory(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
     VALID_CATEGORIES: List[str] = []
 
     async def get(self, server_id, page=None):
@@ -217,7 +218,7 @@ class CardHistory(DatabaseMixin, LanguageCookieMixin):
 
 
 @route("/accessory_skills")
-class Accessories(LanguageCookieMixin):
+class Accessories(BaseHTMLHandler, LanguageCookieMixin):
     def get(self):
         skills = self.settings["master"].lookup_all_accessory_skills()
         tlbatch = set()
@@ -231,7 +232,7 @@ class Accessories(LanguageCookieMixin):
 
 
 @route("/hirameku_skills")
-class Hirameku(LanguageCookieMixin):
+class Hirameku(BaseHTMLHandler, LanguageCookieMixin):
     def get(self):
         skills = self.settings["master"].lookup_all_hirameku_skills()
         skills.sort(key=lambda x: (x.levels[0][2], x.rarity))
@@ -247,13 +248,13 @@ class Hirameku(LanguageCookieMixin):
 
 
 @route("/experiments")
-class ExperimentPage(LanguageCookieMixin):
+class ExperimentPage(BaseHTMLHandler, LanguageCookieMixin):
     def get(self):
         self.render("experiments.html")
 
 
 @route(r"/([a-z]+)/story/(.+)")
-class StoryViewerScaffold(LanguageCookieMixin):
+class StoryViewerScaffold(BaseHTMLHandler, LanguageCookieMixin):
     def get(self, region, script):
         self.render(
             "story_scaffold.html",
@@ -264,7 +265,7 @@ class StoryViewerScaffold(LanguageCookieMixin):
 
 
 @route(r"/api/v1/(?:[^/]*)/skill_tree/([0-9]+).json")
-class APISkillTree(RequestHandler):
+class APISkillTree(BaseAPIHandler):
     def get(self, i):
         items, shape, locks = self.settings["master"].lookup_tt(int(i))
 
@@ -277,7 +278,7 @@ class APISkillTree(RequestHandler):
 
 
 @route(r"/api/private/change_experiment_flags")
-class APIChangeExperimentFlags(RequestHandler):
+class APIChangeExperimentFlags(BaseAPIHandler):
     FLAG_SHOW_DEV_TEXT = 1 << 1
 
     def post(self):
@@ -310,7 +311,7 @@ class APIChangeExperimentFlags(RequestHandler):
 
 
 @route(r"/api/private/langmenu.json")
-class APILanguageMenu(RequestHandler):
+class APILanguageMenu(BaseAPIHandler):
     def get(self):
         dicts = [
             {
@@ -335,7 +336,7 @@ class APILanguageMenu(RequestHandler):
 
 
 @route(r"/api/private/member_icon_list/([0-9]+)\.json")
-class APIMemberIconList(DatabaseMixin):
+class APIMemberIconList(BaseAPIHandler, DatabaseMixin):
     def get(self, member_id):
         member = self.master().lookup_member_by_id(int(member_id))
         payload = {

@@ -30,6 +30,9 @@ services:
       ### Change this or js-dev will not work
       AS_WDS_HOST: "//mari.local:5002"
       AS_FEEDBACK_URL: "http://example.com"
+      MT_CONFIG_PATH: "/run/secrets/mticket_config"
+    secrets:
+      - mticket_config
   utils:
     secrets:
       - webhook_config
@@ -39,7 +42,7 @@ services:
     environment:
       AS_POSTGRES_DSN: "postgres://postgres:example@db/postgres"
   db:
-    image: postgres:alpine
+    image: postgres:12-alpine
     ports:
       - "5432:5432"
     expose:
@@ -68,3 +71,5 @@ volumes:
 secrets:
   webhook_config:
     file: variants/webhook_url.txt
+  mticket_config:
+    file: variants/mticket_dev.ini

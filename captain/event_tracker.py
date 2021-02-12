@@ -2,13 +2,14 @@ from datetime import datetime, timedelta
 
 from tornado.web import RequestHandler
 
+from .bases import BaseHTMLHandler, BaseAPIHandler
 from .dispatch import route, LanguageCookieMixin, DatabaseMixin
 from . import pageutils
 
 
 @route(r"/events/?")
 @route(r"/events/([0-9]+)(?:/[^/]*)")
-class EventServerRedirect(DatabaseMixin):
+class EventServerRedirect(BaseHTMLHandler, DatabaseMixin):
     def get(self, eid=None):
         target = self.get_cookie("dsid", "jp")
         # TODO: centralize list of servers
@@ -22,7 +23,7 @@ class EventServerRedirect(DatabaseMixin):
 
 @route(r"/([a-z]+)/(events|events/top)/?")
 @route(r"/([a-z]+)/(events|events/top)/([0-9]+)(?:/[^/]*)?")
-class EventDash(DatabaseMixin, LanguageCookieMixin):
+class EventDash(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
     def to_track_mode(self, urltype):
         if urltype == "events/top":
             return "top10"
@@ -59,7 +60,7 @@ class EventDash(DatabaseMixin, LanguageCookieMixin):
 
 @route(r"/api/private/saint/([a-z]+)/current/setup.json")
 @route(r"/api/private/saint/([a-z]+)/([0-9]+)/setup.json")
-class APISaintInfo(DatabaseMixin):
+class APISaintInfo(BaseAPIHandler, DatabaseMixin):
     async def get(self, sid, eid=None):
         if self.database().event_tracker.validate_server_id(sid) != sid:
             self.set_status(400)
@@ -90,7 +91,7 @@ class APISaintInfo(DatabaseMixin):
 
 
 @route(r"/api/private/saint/([a-z]+)/([0-9]+)/tiers.json")
-class APISaintData(DatabaseMixin):
+class APISaintData(BaseAPIHandler, DatabaseMixin):
     MAX_LOOK_BACK_TIME = 86400
 
     async def get_data_validated(self, sid, eid, after_dt):

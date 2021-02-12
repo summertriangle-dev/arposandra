@@ -5,7 +5,7 @@ import binascii
 import base64
 import logging
 import json
-
+from typing import Dict, Set
 from tornado.escape import squeeze, xhtml_escape
 
 import libcard2.localization
@@ -49,8 +49,8 @@ def get_skill_describer(handler):
     return libcard2.localization.skill_describer_for_locale(code)
 
 
-TLINJECT_EMPTY = {}
-TLINJECT_ALT_EMPTY = set()
+TLINJECT_EMPTY: Dict[str, str] = {}
+TLINJECT_ALT_EMPTY: Set[str] = set()
 
 
 @export

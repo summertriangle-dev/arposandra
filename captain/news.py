@@ -18,14 +18,15 @@ import asyncpg
 from tornado.web import RequestHandler
 
 from . import pageutils
+from .bases import BaseHTMLHandler, BaseAPIHandler
 from .dispatch import DatabaseMixin, LanguageCookieMixin, route
 
 JP_OFFSET_FROM_UTC = 32400
 
 
-@route("/news/?")
-@route("/([a-z]+)/news/?")
-class NewsList(DatabaseMixin, LanguageCookieMixin):
+@route(r"/news/?")
+@route(r"/([a-z]+)/news/?")
+class NewsList(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
     NUM_ITEMS_PER_PAGE = 20
 
     async def get(self, region=None):
@@ -76,8 +77,8 @@ class NewsList(DatabaseMixin, LanguageCookieMixin):
             item.card_refs = [c for c in cards if c]
 
 
-@route("/([a-z]+)/news/([0-9]+)")
-class NewsSingle(DatabaseMixin, LanguageCookieMixin):
+@route(r"/([a-z]+)/news/([0-9]+)")
+class NewsSingle(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
     CARD_INCLUDE_INSTR = re.compile(r"<\?asi-include-card card-id:([0-9]+)\?>")
     TIMESTAMP_INSTR = re.compile(r"<\?asi-blind-ts t:(1|2|4|5);v:([0-9]+)\?>")
     JP_OFFSET_FROM_UTC = 32400
@@ -146,8 +147,8 @@ class NewsSingle(DatabaseMixin, LanguageCookieMixin):
         )
 
 
-@route("/api/private/ii")
-class InlineImageResolver(RequestHandler):
+@route(r"/api/private/ii")
+class InlineImageResolver(BaseAPIHandler):
     def get(self):
         imp = self.get_argument("p", None)
         if imp is None:
@@ -173,8 +174,8 @@ class InlineImageResolver(RequestHandler):
             self.write({"error": "The image could not be resolved."})
 
 
-@route("/api/private/intersitial")
-class NewsLinkDerefer(LanguageCookieMixin):
+@route(r"/api/private/intersitial")
+class NewsLinkDerefer(BaseHTMLHandler, LanguageCookieMixin):
     def get(self):
         imp = self.get_argument("p", None)
         if imp is None:

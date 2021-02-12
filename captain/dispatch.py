@@ -1,7 +1,7 @@
 import json
 import os
 import time
-from typing import Type, TypeVar, Optional, Callable, Iterable
+from typing import Type, TypeVar, Optional, Callable, Iterable, List, Union, Tuple, cast
 
 import tornado.web
 from tornado import locale
@@ -9,8 +9,10 @@ from tornado import locale
 from libcard2.master import MasterData
 from .database import DatabaseCoordinator
 
-ROUTES = []
 H = TypeVar("H", bound=tornado.web.RequestHandler)
+RouteDef = Union[Tuple[str, H, dict], Tuple[str, H]]
+
+ROUTES: List[RouteDef] = []
 
 
 def add_route(regex: str, handler: Type[H], inits: Optional[dict] = None):
@@ -33,7 +35,12 @@ def route(*regexes: str, **kwargs: dict) -> Callable[[Type[H]], Type[H]]:
     return wrapper
 
 
-class LanguageCookieMixin(tornado.web.RequestHandler):
+class LanguageCookieMixin(object):
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if tornado.web.RequestHandler not in cls.__mro__:
+            raise TypeError("This mixin needs to be used with a subclass of RequestHandler.")
+
     def get_user_locale(self):
         preferred_lang = self.get_cookie("lang", None)
         if preferred_lang not in locale.get_supported_locales():
@@ -47,9 +54,14 @@ class LanguageCookieMixin(tornado.web.RequestHandler):
         return preferred_lang
 
 
-class DatabaseMixin(tornado.web.RequestHandler):
+class DatabaseMixin(object):
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if tornado.web.RequestHandler not in cls.__mro__:
+            raise TypeError("This mixin needs to be used with a subclass of RequestHandler.")
+
     def master(self) -> MasterData:
-        return self.settings["master"]
+        return cast(tornado.web.RequestHandler, self).settings["master"]
 
     def database(self) -> DatabaseCoordinator:
-        return self.settings["db_coordinator"]
+        return cast(tornado.web.RequestHandler, self).settings["db_coordinator"]

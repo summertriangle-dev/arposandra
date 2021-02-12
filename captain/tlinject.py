@@ -11,12 +11,13 @@ from datetime import datetime
 import asyncpg
 from tornado.web import RequestHandler
 
+from .bases import BaseAPIHandler
 from .dispatch import route, DatabaseMixin
 from . import pageutils
 
 
 @route(r"/api/private/tlinject/([a-z_A-Z]+)/strings.json")
-class TLInjectReadAPI(DatabaseMixin):
+class TLInjectReadAPI(BaseAPIHandler, DatabaseMixin):
     PER_REQUEST_HARD_LIMIT = 500
 
     async def post(self, lang):
@@ -53,7 +54,7 @@ class TLInjectReadAPI(DatabaseMixin):
 
 
 @route(r"/api/private/tlinject/([a-z_A-Z]+)/submit.json")
-class TLInjectWriteAPI(DatabaseMixin):
+class TLInjectWriteAPI(BaseAPIHandler, DatabaseMixin):
     async def post(self, lang):
         try:
             load = json.loads(self.request.body.decode("utf8"))

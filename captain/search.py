@@ -8,13 +8,14 @@ from tornado.locale import get_supported_locales
 from tornado.web import RequestHandler
 
 from . import pageutils
+from .bases import BaseHTMLHandler, BaseAPIHandler
 from .dispatch import DatabaseMixin, LanguageCookieMixin, route
 from .models.indexer import db_expert, types
 from .models.mine_models import CardIndex
 
 
 @route(r"/cards/search")
-class CardSearch(LanguageCookieMixin, DatabaseMixin):
+class CardSearch(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin):
     SUPPORTED_LANGS = ["en", "ja"]
 
     def indexes_for_lang(self):
@@ -39,8 +40,8 @@ class CardSearch(LanguageCookieMixin, DatabaseMixin):
         )
 
 
-@route("/api/private/search/cards/results.json")
-class CardSearchExec(LanguageCookieMixin, DatabaseMixin):
+@route(r"/api/private/search/cards/results.json")
+class CardSearchExec(BaseAPIHandler, LanguageCookieMixin, DatabaseMixin):
     FIELD_BLACKLIST = ["release_dates"]
 
     def look_up_schema_field(self, field_name: str) -> types.Field:
