@@ -116,6 +116,9 @@ msgstr "ナチュラル"
 msgid "kars.search_criteria.card_index.attribute.elegant"
 msgstr "エレガント"
 
+msgid "kars.search_criteria.card_index.attribute.neutral"
+msgstr "全て"
+
 msgid "kars.search_criteria.card_index.maximal_stat.appeal"
 msgstr "アピール"
 
@@ -169,10 +172,6 @@ msgstr "その他"
 
 msgid "kars.search_criteria.card_index.skills.apply_type.none"
 msgstr "ゲーム (ボルテージ、スタミナ、SP)"
-
-#, fuzzy
-msgid "k.m_dic_member_name_210"
-msgstr "虹ヶ咲"
 
 msgid "k.m_dic_unit_name_cyaron"
 msgstr "CYaRon!"

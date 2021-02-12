@@ -23,6 +23,12 @@ msgstr "<span class=\"kars-attr-5\">Natural</span>"
 msgid "kars.attribute_6"
 msgstr "<span class=\"kars-attr-6\">Elegant</span>"
 
+msgid "kars.attribute_7"
+msgstr "<span class=\"kars-attr-7\">Neutral</span>"
+
+msgid "kars.attribute_9"
+msgstr "<span class=\"kars-attr-7\">Neutral</span>"
+
 msgid "kars.role_1"
 msgstr "<span class=\"kars-role-1\">Voltage-type</span>"
 
@@ -61,6 +67,14 @@ msgstr "Natural"
 
 msgid "kars.clean_attribute_6"
 msgstr "Elegant"
+
+#, fuzzy
+msgid "kars.clean_attribute_7"
+msgstr "Smile"
+
+#, fuzzy
+msgid "kars.clean_attribute_9"
+msgstr "Smile"
 
 msgid "kars.clean_role_1"
 msgstr "Voltage-type"

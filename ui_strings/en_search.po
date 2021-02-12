@@ -116,6 +116,9 @@ msgstr "Natural"
 msgid "kars.search_criteria.card_index.attribute.elegant"
 msgstr "Elegant"
 
+msgid "kars.search_criteria.card_index.attribute.neutral"
+msgstr "Neutral"
+
 msgid "kars.search_criteria.card_index.maximal_stat.appeal"
 msgstr "Appeal"
 
