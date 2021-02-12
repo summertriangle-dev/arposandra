@@ -93,6 +93,10 @@ IFI_ATTR = {
     4: "a",  # Active
     5: "n",  # Natural
     6: "e",  # Elegant
+    # FIXME: remove
+    7: "t",  # Neutral candidates
+    8: "l",  
+    9: "o",  
 }
 IFI_ROLE = {
     1: "v",  # Vo
