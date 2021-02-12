@@ -417,6 +417,10 @@ img.kars-skill-icon
         border-bottom-right-radius: 16px
         border-bottom: none
 
+.kars-long-var-container
+    border: 1px solid $kars-var-color
+    overflow-x: auto
+
 .kars-long-var-table
     width: 100%
 
@@ -426,8 +430,14 @@ img.kars-skill-icon
 
     th, td
         font-size: 80%
-        border: 1px solid $kars-var-color
         text-align: center
+    
+    tr:not(:first-child)
+        th, td
+            border-top: 1px solid $kars-var-color
+
+    th:not(:first-child), td:not(:first-child)
+        border-left: 1px solid $kars-var-color
 
 .kars-data-ts[data-orig-offset]
     border-bottom: 1px dashed

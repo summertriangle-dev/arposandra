@@ -1,25 +1,27 @@
 {% if len(skill.levels) > 1 %}
 {% set describer = get_skill_describer() %}
-<table class="kars-long-var-table mt-2 mb-1">
-    <tr>
-        <th>{{ _("LevelShort") }}</th>
-        {% for lv, _unused in enumerate(skill.levels) %}
-        <th>{{ lv + 1 }}</th>
+<div class="kars-long-var-container mt-2 mb-1">
+    <table class="kars-long-var-table">
+        <tr>
+            <th>{{ _("LevelShort") }}</th>
+            {% for lv, _unused in enumerate(skill.levels) %}
+            <th>{{ lv + 1 }}</th>
+            {% end %}
+        </tr>
+        <tr>
+            <th>{{ _("SkillValueShort") }}</th>
+            {% for lv in skill.levels %}
+            <td class="let">{{ describer.format_single_value(lv) }}</td>
+            {% end %}
+        </tr>
+        {% if skill.levels_2 %}
+        <tr>
+            <th>{{ _("SkillValueShort") }}</th>
+            {% for lv in skill.levels_2 %}
+            <td class="let2">{{ describer.format_single_value(lv) }}</td>
+            {% end %}
+        </tr>
         {% end %}
-    </tr>
-    <tr>
-        <th>{{ _("SkillValueShort") }}</th>
-        {% for lv in skill.levels %}
-        <td class="let">{{ describer.format_single_value(lv) }}</td>
-        {% end %}
-    </tr>
-    {% if skill.levels_2 %}
-    <tr>
-        <th>{{ _("SkillValueShort") }}</th>
-        {% for lv in skill.levels_2 %}
-        <td class="let2">{{ describer.format_single_value(lv) }}</td>
-        {% end %}
-    </tr>
-    {% end %}
-</table>
+    </table>
+</div>
 {% end %}
