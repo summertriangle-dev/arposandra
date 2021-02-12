@@ -26,6 +26,8 @@ class CardExpert(object):
         4: "active",
         5: "natural",
         6: "elegant",
+        7: "neutral",
+        9: "neutral",
     }
     SOURCES = {1: "initial", 2: "fes_gacha", 3: "event_gacha", 4: "event", 5: "promo"}
     card: libcard2_card
@@ -200,7 +202,7 @@ CardIndex = Schema(
         ),
         Field.enum(
             "attribute",
-            ("smile", "pure", "cool", "active", "natural", "elegant"),
+            ("smile", "pure", "cool", "active", "natural", "elegant", "neutral"),
             behaviour={"compare_type": "bit-set", "icons": "/static/images/search/attribute"},
         ),
         Field.enum("maximal_stat", ("appeal", "stamina", "technique"), behaviour={"sort": False}),
