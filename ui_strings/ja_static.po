@@ -24,10 +24,10 @@ msgid "kars.attribute_6"
 msgstr "<span class=\"kars-attr-6\">エレガント</span>"
 
 msgid "kars.attribute_7"
-msgstr "<span class=\"kars-attr-7\">全て</span>"
+msgstr "<span class=\"kars-attr-7\">無色</span>"
 
 msgid "kars.attribute_9"
-msgstr "<span class=\"kars-attr-7\">全て</span>"
+msgstr "<span class=\"kars-attr-7\">無色</span>"
 
 msgid "kars.role_1"
 msgstr "<span class=\"kars-role-1\">ボルテージタイプ</span>"
