@@ -132,6 +132,9 @@ msgstr "Festival"
 msgid "HEvent.GachaOther"
 msgstr "Other"
 
+msgid "HEvent.GachaParty"
+msgstr "Party"
+
 msgid "HEvent.GachaPickUp"
 msgstr "Spotlight"
 
@@ -383,6 +386,9 @@ msgstr "Available from Scouting (Festival)"
 
 msgid "SetRecord.AvailableFromGachaPart2"
 msgstr "Available from Scouting (Part 2)"
+
+msgid "SetRecord.AvailableFromGachaParty"
+msgstr "Available from Scouting (Party)"
 
 msgid "SetRecord.AvailableFromGachaPickup"
 msgstr "Available from Scouting (Spotlight)"

@@ -5,6 +5,7 @@ LANG_JA_EVT_FIRST_HALF = "（前編）"
 LANG_JA_EVT_SECOND_HALF = "（後編）"
 LANG_JA_FES_MARKER = "フェス開催"
 LANG_JA_PICKUP_MARKER = "ピックアップガチャ"
+LANG_JA_PARTY_MARKER = "パーティーガチャ"
 LANG_JA_EVT_OMNIBUS_MARKER = "スクールアイドル紹介"
 LANG_JA_POSTSCRIPT_MARKER = "【追記】"
 
@@ -20,6 +21,7 @@ T_EVENT_TIE = 1
 T_PICK_UP = 2
 T_FES = 3
 T_ELSE = 4
+T_PARTY = 5
 T_IGNORE = -1
 
 
@@ -32,6 +34,8 @@ def gacha_label_from_name_jp(name: str) -> int:
         return T_EVENT_TIE
     elif LANG_JA_EVT_SECOND_HALF in name:
         return T_IGNORE
+    elif LANG_JA_PARTY_MARKER in name:
+        return T_PARTY
     else:
         return T_ELSE
 

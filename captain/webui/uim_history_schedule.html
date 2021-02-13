@@ -11,6 +11,8 @@
         {{ _("HEvent.GachaPickUp") }}
     {% elif release.sub_type == 3 %}
         {{ _("HEvent.GachaFes") }}
+    {% elif release.sub_type == 5 %}
+        {{ _("HEvent.GachaParty") }}
     {% else %}
         {{ _("HEvent.GachaOther") }}
     {% end %}

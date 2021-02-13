@@ -77,6 +77,9 @@ msgstr "Spotlight"
 msgid "kars.search_criteria.card_index.source.fes"
 msgstr "Festival"
 
+msgid "kars.search_criteria.card_index.source.party"
+msgstr "Party"
+
 msgid "kars.search_criteria.card_index.rarity.ur"
 msgstr "UR"
 

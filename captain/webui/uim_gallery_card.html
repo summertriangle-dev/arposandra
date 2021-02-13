@@ -99,7 +99,9 @@
         {{ _("SetRecord.FirstFeaturedOn{server_id}").format(server_id=server_id.upper()) }} 
         <span class="kars-data-ts" data-style="date" data-orig-offset="32400,JST" data-ts="{{ release_info.release.timestamp() }}">{{ release_info.release }} UTC</span>
         &bull;
-        {% if release_info.source == 6 %}
+        {% if release_info.source == 7 %}
+            {{ _("SetRecord.AvailableFromGachaParty") }}
+        {% elif release_info.source == 6 %}
             {{ _("SetRecord.AvailableFromGachaFes") }}
         {% elif release_info.source == 5 %}
             {{ _("SetRecord.AvailableFromGachaPickup") }}

@@ -77,6 +77,9 @@ msgstr "ピックアップ"
 msgid "kars.search_criteria.card_index.source.fes"
 msgstr "フェス"
 
+msgid "kars.search_criteria.card_index.source.party"
+msgstr "パーティー"
+
 msgid "kars.search_criteria.card_index.rarity.ur"
 msgstr "UR"
 

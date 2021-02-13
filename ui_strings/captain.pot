@@ -118,6 +118,9 @@ msgstr "HEvent.GachaFes"
 msgid "HEvent.GachaOther"
 msgstr "HEvent.GachaOther"
 
+msgid "HEvent.GachaParty"
+msgstr "HEvent.GachaParty"
+
 msgid "HEvent.GachaPickUp"
 msgstr "HEvent.GachaPickUp"
 
@@ -354,6 +357,9 @@ msgstr "SetRecord.AvailableFromGachaFes"
 
 msgid "SetRecord.AvailableFromGachaPart2"
 msgstr "SetRecord.AvailableFromGachaPart2"
+
+msgid "SetRecord.AvailableFromGachaParty"
+msgstr "SetRecord.AvailableFromGachaParty"
 
 msgid "SetRecord.AvailableFromGachaPickup"
 msgstr "SetRecord.AvailableFromGachaPickup"

@@ -14,7 +14,7 @@
     <div class="card-body grouped-card-icon-list">
         {% set use_labels = len(release.feature_card_ids) > 1 %}
 
-        {% for key in ["gacha", "gacha_part2", "event", "fes", "pickup"] %}
+        {% for key in ["gacha", "gacha_part2", "event", "fes", "pickup", "party"] %}
         {% if key in release.feature_card_ids %}
         <div class="group">
             {% if use_labels %}

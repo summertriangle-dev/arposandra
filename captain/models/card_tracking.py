@@ -15,9 +15,10 @@ SUBTYPE_EVENT_TIE = 1
 SUBTYPE_PICK_UP = 2
 SUBTYPE_FES = 3
 SUBTYPE_ELSE = 4
+SUBTYPE_PARTY = 5
 SUBTYPE_IGNORE = -1
 
-MAP_WHAT_TO_ID = {1: "unspec", 2: "event", 3: "gacha", 4: "gacha_part2", 5: "pickup", 6: "fes"}
+MAP_WHAT_TO_ID = {1: "unspec", 2: "event", 3: "gacha", 4: "gacha_part2", 5: "pickup", 6: "fes", 7: "party"}
 
 
 @dataclass
