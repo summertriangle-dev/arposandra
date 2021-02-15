@@ -23,12 +23,6 @@ msgstr "<span class=\"kars-attr-5\">ナチュラル</span>"
 msgid "kars.attribute_6"
 msgstr "<span class=\"kars-attr-6\">エレガント</span>"
 
-msgid "kars.attribute_7"
-msgstr "<span class=\"kars-attr-7\">無色</span>"
-
-msgid "kars.attribute_9"
-msgstr "<span class=\"kars-attr-7\">無色</span>"
-
 msgid "kars.role_1"
 msgstr "<span class=\"kars-role-1\">ボルテージタイプ</span>"
 
@@ -68,16 +62,6 @@ msgstr "ナチュラル"
 
 msgid "kars.clean_attribute_6"
 msgstr "エレガント"
-
-# For skill descriptions.
-#, fuzzy
-msgid "kars.clean_attribute_7"
-msgstr "スマイル"
-
-# For skill descriptions.
-#, fuzzy
-msgid "kars.clean_attribute_9"
-msgstr "スマイル"
 
 msgid "kars.clean_role_1"
 msgstr "ボルテージタイプ"

@@ -38,7 +38,7 @@ def application(master, language, extras, debug):
                 # See libcard2/utils.py for the definitions.
                 # Replace a letter with z, y, or x depending on position to omit
                 # that element.
-                r"/s/ci/([sgrz][vpuky][mpcanetlox])/([^/]+)/([^/]+)\.(jpg|png)",
+                r"/s/ci/([sgrz][vpuky][mpcanex])/([^/]+)/([^/]+)\.(jpg|png)",
                 SyntheticCardIconHandler,
             ),
             (r"/adv/(.+)/([^/\.]+)\.json", AdvScriptHandler),

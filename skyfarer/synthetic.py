@@ -33,10 +33,6 @@ attribute_coordinate = {
     4: grid_calc((128, 0), (30, 30), (0, 1), (28, 28)),
     5: grid_calc((128, 0), (30, 30), (1, 1), (28, 28)),
     6: grid_calc((128, 0), (30, 30), (2, 1), (28, 28)),
-    # FIXME: see what number is used for the real id
-    7: grid_calc((128, 0), (30, 30), (3, 0), (28, 28)),
-    8: grid_calc((128, 0), (30, 30), (3, 0), (28, 28)),
-    9: grid_calc((128, 0), (30, 30), (3, 0), (28, 28)),
 }
 role_coordinate = {
     1: grid_calc((128, 0), (30, 30), (0, 2), (28, 28)),
@@ -81,7 +77,7 @@ def stack_card(image_load_args, fmt, frame_num, role_num, attr_num):
         return (1, None)
     if not role_num < 5:
         return (1, None)
-    if not attr_num < 10:
+    if not attr_num < 7:
         return (1, None)
 
     if not G_CARD_ICON_ATLAS:

@@ -119,9 +119,6 @@ msgstr "ナチュラル"
 msgid "kars.search_criteria.card_index.attribute.elegant"
 msgstr "エレガント"
 
-msgid "kars.search_criteria.card_index.attribute.neutral"
-msgstr "無色"
-
 msgid "kars.search_criteria.card_index.maximal_stat.appeal"
 msgstr "アピール"
 
