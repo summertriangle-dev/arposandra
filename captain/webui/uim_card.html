@@ -30,8 +30,8 @@
             </div>
 
             <div class="kars-card-image-float">
-                <div class="kars-image-switch neutral"><a class="selected">Normal</a>
-                    <a href="{{ image_url_reify(card.idolized_appearance.image_asset_path, Lext) }}">Idolized</a></div>
+                <div class="kars-image-switch neutral"><a class="selected">{{ _("CISwitch.Option.Normal") }}</a>
+                    <a href="{{ image_url_reify(card.idolized_appearance.image_asset_path, Lext) }}">{{ _("CISwitch.Option.Idolized") }}</a></div>
             </div>
             </div>
         </div>
@@ -74,8 +74,8 @@
                     <div class="kars-stack">
                         <div class="kars-stack-header">{{ _("Quick Links") }}</div>
                         <div class="kars-stack-member">
-                            <a class="btn btn-sm btn-primary" href="/card/{{ card.ordinal - 1 }}">Prev. card</a>
-                            <a class="btn btn-sm btn-primary" href="/card/{{ card.ordinal + 1 }}">Next card</a>
+                            <a class="btn btn-sm btn-primary" href="/card/{{ card.ordinal - 1 }}">{{ _("Card.QuickLinkPrevCard") }}</a>
+                            <a class="btn btn-sm btn-primary" href="/card/{{ card.ordinal + 1 }}">{{ _("Card.QuickLinkNextCard") }}</a>
                         </div>
                     </div>
                 </div>
@@ -95,12 +95,14 @@
 
                                 {% module Template("uim_skill_prog_box.html", skill=card.active_skill) %}
 
+                                {% if handler.get_show_devtext() %}
                                 <div class="dev-only small text-muted">
                                     {{ card.active_skill.levels[0] }}
                                     {% if card.active_skill.levels_2 %}
                                     {{ card.active_skill.levels_2[0] }}
                                     {% end %}
                                 </div>
+                                {% end %}
                             </div>
                         </div>
                     </div>
@@ -118,12 +120,14 @@
 
                                 {% module Template("uim_skill_prog_box.html", skill=skill) %}
 
+                                {% if handler.get_show_devtext() %}
                                 <div class="dev-only small text-muted">
                                     {{ skill.levels[0] }}
                                     {% if skill.levels_2 %}
                                     {{ skill.levels_2[0] }}
                                     {% end %}
                                 </div>
+                                {% end %}
                             </div>
                         </div>
                         {% end %}

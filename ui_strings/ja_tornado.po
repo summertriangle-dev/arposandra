@@ -49,8 +49,23 @@ msgstr ""
 "Be aware that external sites may contain malicious content. To continue, "
 "click the link."
 
+msgid "CISwitch.Option.Idolized"
+msgstr "覚醒"
+
+msgid "CISwitch.Option.Normal"
+msgstr "基本"
+
 msgid "Card image"
 msgstr "カードの画像"
+
+msgid "Card.QuickLinkNextCard"
+msgstr "Next card"
+
+msgid "Card.QuickLinkPrevCard"
+msgstr "Prev. card"
+
+msgid "Card.SkillTargets{what}"
+msgstr "対象: {what}"
 
 msgid "CardSetsForm.CategoryHelp"
 msgstr "Other includes initial cards and non-song themed sets."

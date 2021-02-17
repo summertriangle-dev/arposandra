@@ -24,7 +24,7 @@ export default {
     TTNode: {
         VOICE: "VOICE",
         STORY: "STORY",
-        AWAKEN: "AWAKEN",
+        AWAKEN: "IDOLIZE",
         COSTUME: "COSTUME",
         ACTIVE: "SKILL",
         INSPIRE: "INSIGHT",

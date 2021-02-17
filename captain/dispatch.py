@@ -41,6 +41,18 @@ class LanguageCookieMixin(object):
         if tornado.web.RequestHandler not in cls.__mro__:
             raise TypeError("This mixin needs to be used with a subclass of RequestHandler.")
 
+    def get_show_devtext(self):
+        f = self.get_secure_cookie("cs_fflg_v2")
+        if f is None:
+            return False
+
+        try:
+            flag = int(f)
+        except ValueError:
+            flag = 0
+
+        return flag & (1 << 1)
+
     def get_user_locale(self):
         preferred_lang = self.get_cookie("lang", None)
         if preferred_lang not in locale.get_supported_locales():

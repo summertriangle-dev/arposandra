@@ -40,9 +40,9 @@ def _times(value):
 @EN.target_clause
 def fmt_apply(tt: Skill.TargetType, base, context: Card = None):
     if tt.self_only:
-        return "Applies to: Just this card"
+        return "Just this card"
 
-    complex_ = ["Applies to:"]
+    complex_ = []
     if tt.owner_party:
         complex_.append("This card's strategy")
     elif tt.owner_school:
@@ -159,7 +159,7 @@ def fmt_finish_type(effect: Skill.Effect, tags):
         else:
             return f" for the next {tags['let']}{finish_value}{tags['end']} strategy changes"
     if finish_type == FT.WaveEnd:
-        return " until appeal ends"
+        return " until Appeal Chance ends"
     return ""
 
 
@@ -167,11 +167,11 @@ def to_trigger_phrase(trigger_type):
     if trigger_type == TT.LiveStart:
         return "when live starts"
     elif trigger_type == TT.WaveStart:
-        return "when appeal starts"
+        return "when Appeal Chance starts"
     elif trigger_type == TT.WaveSuccess:
-        return "after passing an appeal"
+        return "after passing an Appeal Chance"
     elif trigger_type == TT.WaveFail:
-        return "after failing an appeal"
+        return "after failing an Appeal Chance"
     elif trigger_type in {TT.OnChangeLife, TT.OnDamage}:
         return "when taking damage"
     elif trigger_type == TT.OnGotVoltage:

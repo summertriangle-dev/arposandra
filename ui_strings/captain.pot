@@ -37,8 +37,23 @@ msgstr "Basic Information"
 msgid "Be aware that external sites may contain malicious content. To continue, click the link."
 msgstr "Be aware that external sites may contain malicious content. To continue, click the link."
 
+msgid "CISwitch.Option.Idolized"
+msgstr "CISwitch.Option.Idolized"
+
+msgid "CISwitch.Option.Normal"
+msgstr "CISwitch.Option.Normal"
+
 msgid "Card image"
 msgstr "Card image"
+
+msgid "Card.QuickLinkNextCard"
+msgstr "Card.QuickLinkNextCard"
+
+msgid "Card.QuickLinkPrevCard"
+msgstr "Card.QuickLinkPrevCard"
+
+msgid "Card.SkillTargets{what}"
+msgstr "Card.SkillTargets{what}"
 
 msgid "CardSetsForm.CategoryHelp"
 msgstr "CardSetsForm.CategoryHelp"
