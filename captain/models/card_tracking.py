@@ -18,7 +18,15 @@ SUBTYPE_ELSE = 4
 SUBTYPE_PARTY = 5
 SUBTYPE_IGNORE = -1
 
-MAP_WHAT_TO_ID = {1: "unspec", 2: "event", 3: "gacha", 4: "gacha_part2", 5: "pickup", 6: "fes", 7: "party"}
+MAP_WHAT_TO_ID = {
+    1: "unspec",
+    2: "event",
+    3: "gacha",
+    4: "gacha_part2",
+    5: "pickup",
+    6: "fes",
+    7: "party",
+}
 
 
 @dataclass
@@ -41,7 +49,11 @@ class HistoryRecord(object):
     dates: Dict[int, Union[int, datetime]]
 
     def event_dates(self):
-        return (self.dates.get(self.T_DATE_EVENT_START), self.dates.get(self.T_DATE_EVENT_END))
+        maybe = (self.dates.get(self.T_DATE_EVENT_START), self.dates.get(self.T_DATE_EVENT_END))
+        if all(maybe):
+            return maybe
+
+        return self.gacha_dates()
 
     def gacha_dates(self):
         return (self.dates.get(self.T_DATE_GACHA_START), self.dates.get(self.T_DATE_GACHA_END))
@@ -133,7 +145,11 @@ class CardTrackingDatabase(object):
             return (await conn.fetchrow("\n".join(query), *args))["count"]
 
     async def get_history_entries(
-        self, for_server: str, subtype: int = None, page: int = 0, n_entries: int = 20,
+        self,
+        for_server: str,
+        subtype: int = None,
+        page: int = 0,
+        n_entries: int = 20,
     ) -> List[HistoryRecord]:
         offset = page * n_entries
 
@@ -196,7 +212,11 @@ class CardTrackingDatabase(object):
             return (await conn.fetchrow("\n".join(query), *args))["count"]
 
     async def get_card_sets(
-        self, category: int = None, page: int = None, n_entries: int = 20, tag: str = None,
+        self,
+        category: int = None,
+        page: int = None,
+        n_entries: int = 20,
+        tag: str = None,
     ) -> List[CardSetRecord]:
         if tag is None:
             tag = "jp"
@@ -273,4 +293,3 @@ class CardTrackingDatabase(object):
                 CardSetRecord.unpack_rdates(the_set["cards"]),
                 bool(the_set["shioriko_exists"]),
             )
-
