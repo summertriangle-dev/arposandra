@@ -151,6 +151,9 @@ def format_skill_effect(handler, skill):
 def format_skill_target(handler, skill, card=None):
     base = handler.settings["static_strings"].get(handler.locale.code, "en")
     target_text = get_skill_describer(handler).format_target(skill, base, card)
+    if not target_text:
+        return ""
+
     return xhtml_escape(handler.locale.translate("Card.SkillTargets{what}")).format(
         what=target_text
     )
