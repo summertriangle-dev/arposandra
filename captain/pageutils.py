@@ -246,7 +246,7 @@ def image_url_reify(handler, asset_tag, ext=None, region=None):
 
 
 @export
-def card_icon_url(handler, card, appearance):
+def card_icon_url(handler, card, appearance, ext="jpg"):
     try:
         base = handler._reified_tags
     except AttributeError:
@@ -270,7 +270,7 @@ def card_icon_url(handler, card, appearance):
     assr = hmac.new(get_as_secret(), key.encode("utf8"), hashlib.sha224).digest()[:10]
     assr = base64.urlsafe_b64encode(assr).decode("ascii").rstrip("=")
     isr = handler.settings["image_server"]
-    signed = f"{isr}/s/ci/{fspec}/-{first}/{assr}.jpg"
+    signed = f"{isr}/s/ci/{fspec}/-{first}/{assr}.{ext}"
 
     base[key] = signed
     return signed

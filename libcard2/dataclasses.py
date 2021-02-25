@@ -11,7 +11,11 @@ from .utils import get_coding_context
 
 
 def _load_tl(string):
-    return get_coding_context().get(string, string)
+    return get_coding_context().get_tl(string, string)
+
+
+def _load_img(string):
+    return get_coding_context().get_image(string, string)
 
 
 @dataclass
@@ -146,8 +150,8 @@ class Card(object):
     @dataclass
     class Appearance(object):
         name: str = field(metadata=JSONConfig(encoder=_load_tl))
-        image_asset_path: str
-        thumbnail_asset_path: str
+        image_asset_path: str = field(metadata=JSONConfig(encoder=_load_img))
+        thumbnail_asset_path: str = field(metadata=JSONConfig(encoder=_load_img))
 
     @dataclass
     class RoleEffect(object):

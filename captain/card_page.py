@@ -14,7 +14,7 @@ from libcard2.utils import coding_context
 from .bases import BaseHTMLHandler, BaseAPIHandler
 from .dispatch import DatabaseMixin, LanguageCookieMixin, route
 from .models import card_tracking
-from .pageutils import get_as_secret, tlinject_static
+from .pageutils import get_as_secret, tlinject_static, image_url_reify, card_icon_url
 import logging
 
 
@@ -416,6 +416,18 @@ class CardListAPI(RequestHandler):
         self.write({"result": [{"ordinal": ord, "id": id} for ord, id, in zip(ordinals, ids)]})
 
 
+class CodingContext(object):
+    def __init__(self, tls, images):
+        self.tls = tls
+        self.images = images
+
+    def get_tl(self, key, default=None):
+        return self.tls.get(key, default)
+
+    def get_image(self, key, default=None):
+        return self.images.get(key, default)
+
+
 @route(r"/api/private/cards/(id|ordinal)/([0-9,]+)\.json")
 class CardPageAPI(CardPage):
     def get(self, mode, spec):
@@ -427,8 +439,21 @@ class CardPageAPI(CardPage):
         cards = self.settings["master"].lookup_multiple_cards_by_id(id_list)
         cards = [c for c in cards if c]
 
+        signed_images = {}
         tlbatch = set()
         for card in cards:
+            ext = "jpg" if card.rarity >= 20 else "png"
+            if na := card.normal_appearance:
+                signed_images[na.image_asset_path] = image_url_reify(
+                    self, na.image_asset_path, ext=ext
+                )
+                signed_images[na.thumbnail_asset_path] = card_icon_url(self, card, na, ext="png")
+            if ia := card.idolized_appearance:
+                signed_images[ia.image_asset_path] = image_url_reify(
+                    self, ia.image_asset_path, ext=ext
+                )
+                signed_images[ia.thumbnail_asset_path] = card_icon_url(self, card, ia, ext="png")
+
             tlbatch.update(card.get_tl_set())
 
         if self.get_argument("with_accept_language", False):
@@ -437,9 +462,10 @@ class CardPageAPI(CardPage):
             dict_pref = None
 
         sd = self.settings["string_access"].lookup_strings(tlbatch, dict_pref)
+        ctx = CodingContext(sd[0], signed_images)
 
         if cards:
-            with coding_context(sd[0]):
+            with coding_context(ctx):
                 cards = [c.to_dict() for c in cards]
                 self.write({"result": cards})
         else:
@@ -461,8 +487,21 @@ class CardPageAPIByMemberID(BaseAPIHandler, LanguageCookieMixin):
         cards = self.settings["master"].lookup_multiple_cards_by_id(card_ids)
         cards = [c for c in cards if c]
 
+        signed_images = {}
         tlbatch = set()
         for card in cards:
+            ext = "jpg" if card.rarity >= 20 else "png"
+            if na := card.normal_appearance:
+                signed_images[na.image_asset_path] = image_url_reify(
+                    self, na.image_asset_path, ext=ext
+                )
+                signed_images[na.thumbnail_asset_path] = card_icon_url(self, card, na, ext="png")
+            if ia := card.idolized_appearance:
+                signed_images[ia.image_asset_path] = image_url_reify(
+                    self, ia.image_asset_path, ext=ext
+                )
+                signed_images[ia.thumbnail_asset_path] = card_icon_url(self, card, ia, ext="png")
+
             tlbatch.update(card.get_tl_set())
 
         if self.get_argument("with_accept_language", False):
@@ -471,9 +510,10 @@ class CardPageAPIByMemberID(BaseAPIHandler, LanguageCookieMixin):
             dict_pref = None
 
         sd = self.settings["string_access"].lookup_strings(tlbatch, dict_pref)
+        ctx = CodingContext(sd[0], signed_images)
 
         if cards:
-            with coding_context(sd[0]):
+            with coding_context(ctx):
                 cards = [c.to_dict() for c in cards]
                 self.write({"result": cards})
         else:
