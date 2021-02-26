@@ -422,7 +422,7 @@ def _tspan(t1, t2) -> Timespan:
 
 def prepare_old_evt_entries(sid):
     if sid != "jp":
-        return [], []
+        return zip_records([], [])
 
     g_STARS = SGachaMergeRecord(
         4537179,
