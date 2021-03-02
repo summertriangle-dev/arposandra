@@ -7,15 +7,6 @@ from weakref import ref
 from dataclasses_json import dataclass_json, config as JSONConfig
 
 from .skill_cs_enums import TT
-from .utils import get_coding_context
-
-
-def _load_tl(string):
-    return get_coding_context().get_tl(string, string)
-
-
-def _load_img(string):
-    return get_coding_context().get_image(string, string)
 
 
 @dataclass
@@ -30,14 +21,14 @@ class Member(object):
     group: int
     subunit: int
     year: int
-    name: str = field(metadata=JSONConfig(encoder=_load_tl))
-    name_romaji: str = field(metadata=JSONConfig(encoder=_load_tl))
+    name: str
+    name_romaji: str
     birth_month: int
     birth_day: int
     theme_color: int
 
-    group_name: str = field(metadata=JSONConfig(encoder=_load_tl))
-    subunit_name: str = field(metadata=JSONConfig(encoder=_load_tl))
+    group_name: str
+    subunit_name: str
 
     thumbnail_image_asset_path: str
     standing_image_asset_path: str
@@ -115,8 +106,8 @@ class Skill(object):
     )
 
     id: int
-    name: str = field(metadata=JSONConfig(encoder=_load_tl))
-    description: str = field(metadata=JSONConfig(encoder=_load_tl))
+    name: str
+    description: str
 
     skill_type: int
     sp_gauge_point: int
@@ -149,9 +140,9 @@ class Card(object):
 
     @dataclass
     class Appearance(object):
-        name: str = field(metadata=JSONConfig(encoder=_load_tl))
-        image_asset_path: str = field(metadata=JSONConfig(encoder=_load_img))
-        thumbnail_asset_path: str = field(metadata=JSONConfig(encoder=_load_img))
+        name: str
+        image_asset_path: str
+        thumbnail_asset_path: str
 
     @dataclass
     class RoleEffect(object):

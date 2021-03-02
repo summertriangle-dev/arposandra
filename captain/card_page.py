@@ -4,17 +4,22 @@ import hmac
 import random
 import re
 from datetime import datetime
-from typing import Iterable, Optional, Tuple, cast
+from typing import Iterable, Optional, Tuple, Dict, Any, cast
 
 from tornado.web import RequestHandler
 
 from libcard2.dataclasses import Card, Member
-from libcard2.utils import coding_context
 
 from .bases import BaseHTMLHandler, BaseAPIHandler
 from .dispatch import DatabaseMixin, LanguageCookieMixin, route
 from .models import card_tracking
-from .pageutils import get_as_secret, tlinject_static, image_url_reify, card_icon_url
+from .pageutils import (
+    get_as_secret,
+    tlinject_static,
+    image_url_reify,
+    card_icon_url,
+    get_skill_describer,
+)
 import logging
 
 
@@ -416,20 +421,96 @@ class CardListAPI(RequestHandler):
         self.write({"result": [{"ordinal": ord, "id": id} for ord, id, in zip(ordinals, ids)]})
 
 
-class CodingContext(object):
-    def __init__(self, tls, images):
-        self.tls = tls
-        self.images = images
+class CardAPIExtras(object):
+    def init_api_extra_mixin(self):
+        self.image_urls = {}
+        self.translations = {}
+        self.skill_fmts = {}
+        self.skill_targets = {}
 
-    def get_tl(self, key, default=None):
-        return self.tls.get(key, default)
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if RequestHandler not in cls.__mro__:
+            raise TypeError("This mixin needs to be used with a subclass of RequestHandler.")
 
-    def get_image(self, key, default=None):
-        return self.images.get(key, default)
+    def prepare_for_export(self, cards):
+        handler = cast(RequestHandler, self)
+        describer = get_skill_describer(handler)
+        skill_target_base = handler.settings["static_strings"].get(handler.locale.code, "en")
+        tlbatch = set()
+        f_args = None
+
+        for card in cards:
+            ext = "jpg" if card.rarity >= 20 else "png"
+            if na := card.normal_appearance:
+                self.image_urls[na.image_asset_path] = image_url_reify(
+                    self, na.image_asset_path, ext=ext
+                )
+                self.image_urls[na.thumbnail_asset_path] = card_icon_url(self, card, na, ext="png")
+            if ia := card.idolized_appearance:
+                self.image_urls[ia.image_asset_path] = image_url_reify(
+                    self, ia.image_asset_path, ext=ext
+                )
+                self.image_urls[ia.thumbnail_asset_path] = card_icon_url(self, card, ia, ext="png")
+
+            tlbatch.update(card.get_tl_set())
+
+            if skill := card.active_skill:
+                self.skill_fmts[skill.id] = describer.format_effect(
+                    skill, format_args=f_args, format_args_sec=f_args
+                )
+                self.skill_targets[(card.id, skill.id)] = describer.format_target(
+                    skill, skill_target_base, context=card
+                )
+
+            for passive in card.passive_skills:
+                self.skill_fmts[passive.id] = describer.format_effect(
+                    passive, format_args=f_args, format_args_sec=f_args
+                )
+                self.skill_targets[(card.id, passive.id)] = describer.format_target(
+                    passive, skill_target_base, context=card
+                )
+
+        dict_pref = self.get_user_dict_preference()
+        sd = handler.settings["string_access"].lookup_strings(tlbatch, dict_pref)
+        self.translations = sd[0]
+
+    def modify(self, cdict: Dict[str, Any]):
+        if appearance := cdict["normal_appearance"]:
+            appearance["name"] = self.translations.get(appearance["name"])
+            appearance["image_asset_path"] = self.image_urls.get(appearance["image_asset_path"])
+            appearance["thumbnail_asset_path"] = self.image_urls.get(
+                appearance["thumbnail_asset_path"]
+            )
+
+        if appearance := cdict["idolized_appearance"]:
+            appearance["name"] = self.translations.get(appearance["name"])
+            appearance["image_asset_path"] = self.image_urls.get(appearance["image_asset_path"])
+            appearance["thumbnail_asset_path"] = self.image_urls.get(
+                appearance["thumbnail_asset_path"]
+            )
+
+        if skill := cdict["active_skill"]:
+            skill["name"] = self.translations.get(skill["name"])
+            skill["description"] = self.translations.get(skill["description"])
+            skill["programmatic_description"] = self.skill_fmts.get(skill["id"])
+            skill["programmatic_target"] = self.skill_targets.get((cdict["id"], skill["id"]))
+
+        for passive in cdict["passive_skills"]:
+            passive["name"] = self.translations.get(passive["name"])
+            passive["description"] = self.translations.get(passive["description"])
+            passive["programmatic_description"] = self.skill_fmts.get(passive["id"])
+            passive["programmatic_target"] = self.skill_targets.get((cdict["id"], passive["id"]))
+
+        return cdict
 
 
 @route(r"/api/private/cards/(id|ordinal)/([0-9,]+)\.json")
-class CardPageAPI(CardPage):
+class CardPageAPI(CardPage, CardAPIExtras):
+    def initialize(self, *args, **kwargs):
+        super().initialize(*args, **kwargs)
+        self.init_api_extra_mixin()
+
     def get(self, mode, spec):
         id_list = self.card_spec(spec)
 
@@ -439,42 +520,21 @@ class CardPageAPI(CardPage):
         cards = self.settings["master"].lookup_multiple_cards_by_id(id_list)
         cards = [c for c in cards if c]
 
-        signed_images = {}
-        tlbatch = set()
-        for card in cards:
-            ext = "jpg" if card.rarity >= 20 else "png"
-            if na := card.normal_appearance:
-                signed_images[na.image_asset_path] = image_url_reify(
-                    self, na.image_asset_path, ext=ext
-                )
-                signed_images[na.thumbnail_asset_path] = card_icon_url(self, card, na, ext="png")
-            if ia := card.idolized_appearance:
-                signed_images[ia.image_asset_path] = image_url_reify(
-                    self, ia.image_asset_path, ext=ext
-                )
-                signed_images[ia.thumbnail_asset_path] = card_icon_url(self, card, ia, ext="png")
-
-            tlbatch.update(card.get_tl_set())
-
-        if self.get_argument("with_accept_language", False):
-            dict_pref = self.get_user_dict_preference()
-        else:
-            dict_pref = None
-
-        sd = self.settings["string_access"].lookup_strings(tlbatch, dict_pref)
-        ctx = CodingContext(sd[0], signed_images)
-
         if cards:
-            with coding_context(ctx):
-                cards = [c.to_dict() for c in cards]
-                self.write({"result": cards})
+            self.prepare_for_export(cards)
+            cards = [self.modify(c.to_dict()) for c in cards]
+            self.write({"result": cards})
         else:
             self.set_status(404)
             self.write({"error": "No results."})
 
 
 @route(r"/api/private/cards/member/([0-9]+)\.json")
-class CardPageAPIByMemberID(BaseAPIHandler, LanguageCookieMixin):
+class CardPageAPIByMemberID(BaseAPIHandler, LanguageCookieMixin, CardAPIExtras):
+    def initialize(self, *args, **kwargs):
+        super().initialize(*args, **kwargs)
+        self.init_api_extra_mixin()
+
     def get(self, member_id):
         member = self.settings["master"].lookup_member_by_id(member_id)
 
@@ -487,35 +547,10 @@ class CardPageAPIByMemberID(BaseAPIHandler, LanguageCookieMixin):
         cards = self.settings["master"].lookup_multiple_cards_by_id(card_ids)
         cards = [c for c in cards if c]
 
-        signed_images = {}
-        tlbatch = set()
-        for card in cards:
-            ext = "jpg" if card.rarity >= 20 else "png"
-            if na := card.normal_appearance:
-                signed_images[na.image_asset_path] = image_url_reify(
-                    self, na.image_asset_path, ext=ext
-                )
-                signed_images[na.thumbnail_asset_path] = card_icon_url(self, card, na, ext="png")
-            if ia := card.idolized_appearance:
-                signed_images[ia.image_asset_path] = image_url_reify(
-                    self, ia.image_asset_path, ext=ext
-                )
-                signed_images[ia.thumbnail_asset_path] = card_icon_url(self, card, ia, ext="png")
-
-            tlbatch.update(card.get_tl_set())
-
-        if self.get_argument("with_accept_language", False):
-            dict_pref = self.get_user_dict_preference()
-        else:
-            dict_pref = None
-
-        sd = self.settings["string_access"].lookup_strings(tlbatch, dict_pref)
-        ctx = CodingContext(sd[0], signed_images)
-
         if cards:
-            with coding_context(ctx):
-                cards = [c.to_dict() for c in cards]
-                self.write({"result": cards})
+            self.prepare_for_export(cards)
+            cards = [self.modify(c.to_dict()) for c in cards]
+            self.write({"result": cards})
         else:
             self.set_status(404)
             self.write({"error": "No results."})
