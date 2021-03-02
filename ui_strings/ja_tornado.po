@@ -58,6 +58,9 @@ msgstr "基本"
 msgid "Card image"
 msgstr "カードの画像"
 
+msgid "Card.IsPartOfSet"
+msgstr "Part of set:"
+
 msgid "Card.QuickLinkNextCard"
 msgstr "Next card"
 
@@ -66,6 +69,9 @@ msgstr "Prev. card"
 
 msgid "Card.SkillTargets{what}"
 msgstr "対象: {what}"
+
+msgid "CardRelatedHeader"
+msgstr "Related"
 
 msgid "CardSetsForm.CategoryHelp"
 msgstr "Other includes initial cards and non-song themed sets."
@@ -366,9 +372,6 @@ msgstr "+{num}ひきスキル枠"
 
 msgid "PrimarySkillHeader"
 msgstr "特技"
-
-msgid "Quick Links"
-msgstr "Quick Links"
 
 msgid "Render time (so far):"
 msgstr "ページ経過時間 (ここまで):"

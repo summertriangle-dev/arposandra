@@ -58,6 +58,9 @@ msgstr "Normal"
 msgid "Card image"
 msgstr "Card image"
 
+msgid "Card.IsPartOfSet"
+msgstr "Part of set:"
+
 msgid "Card.QuickLinkNextCard"
 msgstr "Next card"
 
@@ -66,6 +69,9 @@ msgstr "Prev. card"
 
 msgid "Card.SkillTargets{what}"
 msgstr "Applies to: {what}"
+
+msgid "CardRelatedHeader"
+msgstr "Related"
 
 msgid "CardSetsForm.CategoryHelp"
 msgstr "Other includes initial cards and non-song themed sets."
@@ -367,9 +373,6 @@ msgstr "+ {num} unlockable skill slots"
 
 msgid "PrimarySkillHeader"
 msgstr "Primary Skill"
-
-msgid "Quick Links"
-msgstr "Quick Links"
 
 msgid "Render time (so far):"
 msgstr "Render time (so far):"

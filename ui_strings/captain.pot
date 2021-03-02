@@ -46,6 +46,9 @@ msgstr "CISwitch.Option.Normal"
 msgid "Card image"
 msgstr "Card image"
 
+msgid "Card.IsPartOfSet"
+msgstr "Card.IsPartOfSet"
+
 msgid "Card.QuickLinkNextCard"
 msgstr "Card.QuickLinkNextCard"
 
@@ -54,6 +57,9 @@ msgstr "Card.QuickLinkPrevCard"
 
 msgid "Card.SkillTargets{what}"
 msgstr "Card.SkillTargets{what}"
+
+msgid "CardRelatedHeader"
+msgstr "CardRelatedHeader"
 
 msgid "CardSetsForm.CategoryHelp"
 msgstr "CardSetsForm.CategoryHelp"
@@ -342,9 +348,6 @@ msgstr "Plus{num}UnlockableSkillSlots"
 
 msgid "PrimarySkillHeader"
 msgstr "PrimarySkillHeader"
-
-msgid "Quick Links"
-msgstr "Quick Links"
 
 msgid "Render time (so far):"
 msgstr "Render time (so far):"
