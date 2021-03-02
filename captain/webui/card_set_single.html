@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+    <head>
+        <title>{{ title }} - {{ _("PT.CardSets") }} - {{ _("PT.SiteName") }}</title>
+        
+        {% include t_preamble.html %}
+    </head>
+    <body data-master="{{ handler.settings["master"].version }}" data-inject="card">
+        {% module Template("uim_nav.html", current="cards") %}
+
+        {% if view_type == "full" %}
+        
+            <div class="container">
+                <div class="kars-react-component kars-negative-box" data-component-class="CardDisplayModeSwitcher">
+                    <div class="mb-2" style="height: 32px"></div>
+                </div>
+            </div>
+
+            {% for member, ref in handler.matrix_order(set) %}
+                {% if ref %}
+                    {% module Template("uim_card.html", card=ref.card) %}
+                {% end %}
+            {% end %}
+
+        {% elif view_type == "compact" %}
+
+            <div class="container">
+                {% module Template("uim_gallery_record.html", set=set, server_id=server_id) %}
+            </div>
+
+        {% end %}
+
+        {% include t_footer.html %}
+    </body>
+</html>

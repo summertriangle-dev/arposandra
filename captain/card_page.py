@@ -327,40 +327,36 @@ class CardGallery(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin, CardThumb
 @route(r"/cards/set/([^/]+)")
 class CardGallerySingle(CardGallery):
     async def get(self, slug):
-        the_set = await self.database().card_tracker.get_single_card_set(slug)
+        raw_tag = self.get_argument("use_dates", None)
+        if not raw_tag:
+            raw_tag = self.get_cookie("dsid", None)
+        tag = self.database().news_database.validate_server_id(raw_tag)
 
+        the_set = await self.database().card_tracker.get_single_card_set(slug)
         if not the_set:
             self.set_status(404)
             self.render("error.html", message=self.locale.translate("ErrorMessage.ItemNotFound"))
             return
 
-        cards = self.settings["master"].lookup_multiple_cards_by_id(
-            list(x.id for x in the_set.card_refs)
+        self.resolve_cards((the_set,))
+
+        new_tl, new_alt = self.settings["string_access"].lookup_strings(
+            self.tl_batch, self.get_user_dict_preference()
         )
-        cards = [c for c in cards if c]
+        self._tlinject_base[0].update(new_tl)
+        self._tlinject_base[1].update(new_alt)
 
-        if the_set.set_type in self.FILL_SET_TYPES:
-            cards.sort(key=lambda x: x.member.id)
-        else:
-            cards.sort(key=lambda x: x.rarity, reverse=True)
+        view_tag = self.get_argument("view_type", None)
+        if view_tag != "compact":
+            view_tag = "full"
 
-        tlbatch = set()
-        for card in cards:
-            tlbatch.update(card.get_tl_set())
-
-        self._tlinject_base = self.settings["string_access"].lookup_strings(
-            tlbatch, self.get_user_dict_preference()
+        self.render(
+            "card_set_single.html",
+            set=the_set,
+            server_id=tag,
+            view_type=view_tag,
+            title=self._tlinject_base[0].get(the_set.representative),
         )
-
-        self.add_synthetic_name(the_set.representative)
-        custom_title = "Set: {0}".format(self._tlinject_base[0].get(the_set.representative))
-
-        if len(cards) == 0:
-            self.set_status(404)
-            self.render("error.html", message=self.locale.translate("ErrorMessage.ItemNotFound"))
-            return
-
-        self.render("cards.html", cards=cards, custom_title=custom_title, og_context={})
 
 
 # ----- AJAX (SEARCH) --------------------------------
