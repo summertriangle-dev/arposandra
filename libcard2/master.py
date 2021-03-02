@@ -4,7 +4,7 @@ from collections import OrderedDict, defaultdict
 from functools import lru_cache
 from typing import Iterable, Sequence
 
-from cachetools import LFUCache
+from cachetools import LRUCache
 
 from . import dataclasses as D
 from .skill_cs_enums import TT as TriggerType, CT as ConditionType
@@ -40,7 +40,7 @@ class MasterDataLite(object):
 class MasterData(MasterDataLite):
     def __init__(self, master_path):
         super().__init__(master_path)
-        self.card_id_cache = LFUCache(256)
+        self.card_id_cache = LRUCache(256)
         self.member_cache = {}
         self.card_brief_cache = {}
 
