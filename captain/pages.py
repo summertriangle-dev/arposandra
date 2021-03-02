@@ -94,6 +94,13 @@ class IdolsRoot(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
         elif specific == "id":
             members = [self.master().lookup_member_by_id(int(specific_value))]
             show_all_card_icons = True
+
+            if not members[0]:
+                self.set_status(404)
+                self.render(
+                    "error.html", message=self.locale.translate("ErrorMessage.ItemNotFound")
+                )
+                return
         else:
             members = self.master().lookup_member_list()
 
