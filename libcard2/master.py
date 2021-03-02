@@ -252,7 +252,7 @@ class MasterData(MasterDataLite):
         retl = []
         for id in idset:
             if briefs_ok and id in self.card_brief_cache:
-                retl.append(self.card_brief_cache[id])
+                retl.append(self.card_brief_cache.get(id))
             else:
                 retl.append(self.lookup_card_by_id(id, cache))
 

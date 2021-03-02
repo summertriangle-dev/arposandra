@@ -72,7 +72,25 @@
 
                     {% include t_card_stats_box.html %}
                     <div class="kars-stack">
-                        <div class="kars-stack-header">{{ _("Quick Links") }}</div>
+                        <div class="kars-stack-header">{{ _("CardRelatedHeader") }}</div>
+                        
+                        {% for set in related_sets %}
+                        <div class="kars-stack-member">
+                            {{ _("Card.IsPartOfSet") }} <a class="link-like" href="/cards/set/{{ set.name }}?view_type=compact">
+                                {% raw tlinject_static(set.representative) %}
+                            </a>
+                            {% if set.set_type == 2 %}
+                            <div class="kars-card-brief-list pt-2 pb-0">
+                                {% for ref in set.card_refs %}
+                                <a href="/card/{{ ref.card.ordinal }}" class="card-icon">
+                                    <img width="48" height="48" src="{{ card_icon_url(ref.card, ref.card.normal_appearance) }}">
+                                </a>
+                                {% end %}
+                            </div>
+                            {% end %}
+                        </div>
+                        {% end %}
+                        
                         <div class="kars-stack-member">
                             <a class="btn btn-sm btn-primary" href="/card/{{ card.ordinal - 1 }}">{{ _("Card.QuickLinkPrevCard") }}</a>
                             <a class="btn btn-sm btn-primary" href="/card/{{ card.ordinal + 1 }}">{{ _("Card.QuickLinkNextCard") }}</a>

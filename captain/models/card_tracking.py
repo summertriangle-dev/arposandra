@@ -126,6 +126,10 @@ class CardSetRecord(object):
     def unpack_rdates(lrecs):
         return [CardSetRecord.ID(*x) for x in lrecs]
 
+    @staticmethod
+    def unpack_id_only(lrecs):
+        return [CardSetRecord.ID(x, None, None) for x in lrecs]
+
 
 class CardTrackingDatabase(object):
     def __init__(self, coordinator):
@@ -293,3 +297,31 @@ class CardTrackingDatabase(object):
                 CardSetRecord.unpack_rdates(the_set["cards"]),
                 bool(the_set["shioriko_exists"]),
             )
+
+    async def get_containing_card_sets(self, card_ids: List[int]) -> List[CardSetRecord]:
+        query = f"""
+            WITH names AS (
+                SELECT DISTINCT representative FROM card_p_set_index_v1__card_ids
+                WHERE card_ids = ANY($1::INT[]) 
+            )
+            SELECT card_p_set_index_v1.id, card_p_set_index_v1.representative, set_type,
+            ARRAY(
+                SELECT (card_ids) FROM card_p_set_index_v1__card_ids 
+                WHERE card_p_set_index_v1__card_ids.representative = card_p_set_index_v1.representative 
+            ) AS cards
+            FROM names INNER JOIN card_p_set_index_v1 USING (representative)
+        """
+
+        async with self.coordinator.pool.acquire() as conn:
+            sets = await conn.fetch(query, card_ids)
+
+            return [
+                CardSetRecord(
+                    the_set["id"],
+                    the_set["representative"],
+                    the_set["set_type"],
+                    CardSetRecord.unpack_id_only(the_set["cards"]),
+                    False,
+                )
+                for the_set in sets
+            ]

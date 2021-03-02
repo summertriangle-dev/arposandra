@@ -23,39 +23,12 @@ from .pageutils import (
 import logging
 
 
-@route("/cards/by_idol/([0-9]+)(/.*)?")
-class CardPageByMemberID(BaseHTMLHandler, LanguageCookieMixin):
-    def get(self, member_id, _):
-        member = self.settings["master"].lookup_member_by_id(member_id)
-
-        if not member:
-            self.set_status(404)
-            self.render("error.html", message=self.locale.translate("ErrorMessage.ItemNotFound"))
-            return
-
-        card_ids = [cl.id for cl in reversed(member.card_brief)]
-        cards = self.settings["master"].lookup_multiple_cards_by_id(card_ids)
-
-        tlbatch = member.get_tl_set()
-        for card in cards:
-            tlbatch.update(card.get_tl_set())
-
-        self._tlinject_base = self.settings["string_access"].lookup_strings(
-            tlbatch, self.get_user_dict_preference()
-        )
-
-        self.render(
-            "cards.html",
-            cards=cards,
-            custom_title=self.locale.translate("Cards of {idol_name}").format(
-                idol_name=tlinject_static(self, member.name_romaji, escape=False)
-            ),
-            og_context={"type": "member", "member": member},
-        )
-
-
 @route("/card/(random|(?:[0-9,]+))(/.*)?")
-class CardPage(BaseHTMLHandler, LanguageCookieMixin):
+class CardPage(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin):
+    def initialize(self, *args, **kwargs):
+        super().initialize(*args, **kwargs)
+        self._tlinject_base = ({}, set())
+
     def card_spec(self, spec: str) -> list:
         if spec == "everything":
             return self.settings["master"].all_ordinals()
@@ -73,7 +46,52 @@ class CardPage(BaseHTMLHandler, LanguageCookieMixin):
             unique.add(v)
         return ret
 
-    def get(self, ordinal, _):
+    def find_sets(self, sets, card_id):
+        # This should be replaced with a faster method
+        for s in sets:
+            for cid in s.card_refs:
+                if card_id == cid.id:
+                    yield s
+
+    def resolve_related_sets(self, related_sets):
+        tlbatch = set()
+
+        # Put event sets at top
+        related_sets.sort(key=lambda x: -1 if x.set_type == x.T_EVENT else 0)
+        for cardset in related_sets:
+            if cardset.is_systematic():
+                self._tlinject_base[0][cardset.representative] = CardGallery.make_synthetic_name(
+                    self, cardset.representative
+                )
+
+            # FIXME: hack
+            if cardset.representative.startswith("k."):
+                tlbatch.add(cardset.representative)
+
+            if cardset.set_type == cardset.T_EVENT:
+                briefs = self.master().lookup_multiple_cards_by_id(
+                    [cref.id for cref in cardset.card_refs], briefs_ok=True
+                )
+                clean = []
+                for ref, clite in zip(cardset.card_refs, briefs):
+                    if clite:
+                        ref.card = clite
+                        clean.append(ref)
+
+                clean.sort(key=lambda x: (-x.card.rarity, x.card.ordinal))
+                cardset.card_refs = clean
+
+        self.translate_strings(tlbatch)
+        return related_sets
+
+    def translate_strings(self, batch):
+        s0, s1 = self.settings["string_access"].lookup_strings(
+            batch, self.get_user_dict_preference()
+        )
+        self._tlinject_base[0].update(s0)
+        self._tlinject_base[1].update(s1)
+
+    async def get(self, ordinal, _):
         if ordinal == "random":
             where = random.choice(self.settings["master"].all_ordinals())
             self.redirect(f"/card/{where}")
@@ -91,9 +109,10 @@ class CardPage(BaseHTMLHandler, LanguageCookieMixin):
             if card:
                 tlbatch.update(card.get_tl_set())
 
-        self._tlinject_base = self.settings["string_access"].lookup_strings(
-            tlbatch, self.get_user_dict_preference()
+        sets = self.resolve_related_sets(
+            await self.database().card_tracker.get_containing_card_sets([c.id for c in cards])
         )
+        self.translate_strings(tlbatch)
 
         if len(cards) == 0:
             self.set_status(404)
@@ -107,7 +126,40 @@ class CardPage(BaseHTMLHandler, LanguageCookieMixin):
         else:
             ct = self.locale.translate("{num_cards} cards").format(num_cards=len(cards))
 
-        self.render("cards.html", cards=cards, custom_title=ct, og_context={})
+        self.render("cards.html", cards=cards, custom_title=ct, related_sets=sets, og_context={})
+
+
+@route("/cards/by_idol/([0-9]+)(/.*)?")
+class CardPageByMemberID(CardPage, LanguageCookieMixin, DatabaseMixin):
+    async def get(self, member_id, _):
+        member = self.settings["master"].lookup_member_by_id(member_id)
+
+        if not member:
+            self.set_status(404)
+            self.render("error.html", message=self.locale.translate("ErrorMessage.ItemNotFound"))
+            return
+
+        card_ids = [cl.id for cl in reversed(member.card_brief)]
+        cards = self.settings["master"].lookup_multiple_cards_by_id(card_ids)
+
+        tlbatch = member.get_tl_set()
+        for card in cards:
+            tlbatch.update(card.get_tl_set())
+        self.translate_strings(tlbatch)
+
+        sets = self.resolve_related_sets(
+            await self.database().card_tracker.get_containing_card_sets([c.id for c in cards])
+        )
+
+        self.render(
+            "cards.html",
+            cards=cards,
+            custom_title=self.locale.translate("Cards of {idol_name}").format(
+                idol_name=tlinject_static(self, member.name_romaji, escape=False)
+            ),
+            related_sets=sets,
+            og_context={"type": "member", "member": member},
+        )
 
 
 class CardThumbnailProviderMixin(object):
@@ -283,12 +335,13 @@ class CardGallery(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin, CardThumb
             },
         )
 
-    def add_synthetic_name(self, rep: str):
+    @staticmethod
+    def make_synthetic_name(handler: RequestHandler, rep: str):
         m = re.match(r"synthetic.cat([0-9]+).g([0-9]+).ord([0-9]+)", rep)
         if not m:
             return
 
-        part_src = self.settings["static_strings"].get(self.locale.code, "en")
+        part_src = handler.settings["static_strings"].get(handler.locale.code, "en")
 
         sub_type = int(m.group(1))
         if sub_type == 2:
@@ -304,11 +357,9 @@ class CardGallery(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin, CardThumb
         else:
             school = part_src.gettext("k.m_dic_group_name_niji")
 
-        fmt_string = self.locale.translate("SetRecord.{school}{gacha_type}URsRound{set_num}")
+        fmt_string = handler.locale.translate("SetRecord.{school}{gacha_type}URsRound{set_num}")
         set_num = int(m.group(3)) + 1
-        self._tlinject_base[0][rep] = fmt_string.format(
-            school=school, gacha_type=gacha_type, set_num=set_num
-        )
+        return fmt_string.format(school=school, gacha_type=gacha_type, set_num=set_num)
 
     def resolve_cards(self, items: Iterable[card_tracking.CardSetRecord]):
         for item in items:
@@ -320,8 +371,10 @@ class CardGallery(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin, CardThumb
 
             for card in cards:
                 self.tl_batch.update(card.get_tl_set())
-            if item.representative.startswith("synthetic."):
-                self.add_synthetic_name(item.representative)
+            if item.is_systematic():
+                self._tlinject_base[0][item.representative] = CardGallery.make_synthetic_name(
+                    self, item.representative
+                )
 
 
 @route(r"/cards/set/([^/]+)")

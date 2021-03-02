@@ -17,7 +17,7 @@
         </div>
         
         {% for card in cards %}
-            {% module Template("uim_card.html", card=card) %}
+            {% module Template("uim_card.html", card=card, related_sets=handler.find_sets(related_sets, card.id)) %}
         {% end %}
 
         {% include t_footer.html %}

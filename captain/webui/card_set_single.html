@@ -18,7 +18,7 @@
 
             {% for member, ref in handler.matrix_order(set) %}
                 {% if ref %}
-                    {% module Template("uim_card.html", card=ref.card) %}
+                    {% module Template("uim_card.html", card=ref.card, related_sets=()) %}
                 {% end %}
             {% end %}
 
