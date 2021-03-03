@@ -275,7 +275,7 @@ class PostgresDBExpert(Generic[T]):
 
         raise ValueError("invalid operator")
 
-    def build_query(self, crit_list, order_by=None, order_desc=False):
+    def build_query(self, crit_list, fts_bond_list=None, order_by=None, order_desc=False):
         fetchresult = []
         wheres = []
         joins = set()
@@ -319,8 +319,24 @@ class PostgresDBExpert(Generic[T]):
             elif field.field_type == types.FIELD_TYPE_DATETIME:
                 compare_type = self._get_op(filter_value["compare_type"], equal=False)
 
-                wheres.append(f"{tablename}.{field.name} {compare_type} ${len(parameters + 1)}")
+                wheres.append(f"{tablename}.{field.name} {compare_type} ${len(parameters) + 1}")
                 parameters.append(raw_value)
+
+        for fts_bond_table_name, (langid, words) in fts_bond_list.items():
+            if fts_bond_table_name not in self.schema.fts_bond_tables:
+                continue
+
+            pks = []
+            for pk in self.schema.primary_key:
+                pks.append(
+                    f"{self.schema.table}.{pk.name} = {fts_bond_table_name}.referent_{pk.name}"
+                )
+            joins.add(f"INNER JOIN {fts_bond_table_name} ON ({' AND '.join(pks)})")
+            wheres.append(
+                f"{fts_bond_table_name}.terms @@ plainto_tsquery(${len(parameters) + 1}, ${len(parameters) + 2})"
+            )
+            parameters.append(langid)
+            parameters.append(words)
 
         if order_by:
             field, tablename = self.look_up_schema_field(order_by)
@@ -333,10 +349,15 @@ class PostgresDBExpert(Generic[T]):
         )
 
     async def run_query(
-        self, connection: asyncpg.Connection, crit_list, order_by=None, order_desc=False
+        self,
+        connection: asyncpg.Connection,
+        crit_list,
+        fts_bond_list=None,
+        order_by=None,
+        order_desc=False,
     ):
         # t = time.monotonic_ns()
-        query, args = self.build_query(crit_list, order_by, order_desc)
+        query, args = self.build_query(crit_list, fts_bond_list, order_by, order_desc)
         # logging.info("Query build time: %d", time.monotonic_ns() - t)
         # logging.debug("%s %s", query, args)
         return await connection.fetch(query, *args)

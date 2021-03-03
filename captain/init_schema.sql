@@ -144,3 +144,25 @@ CREATE TABLE IF NOT EXISTS tlinject_languages_v1 (
 );
 
 INSERT INTO tlinject_languages_v1 VALUES ('en') ON CONFLICT DO NOTHING;
+
+-- card name search
+
+DO $$ BEGIN
+    CREATE TYPE cfts_origin_t AS ENUM ('dict', 'tlinject', 'set', 'other');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+CREATE TABLE IF NOT EXISTS card_fts_v2 (
+    langid varchar(8),
+    key text,
+    -- soft fk to card_index because it gets erased regularly
+    referent_id INTEGER, 
+    terms TSVECTOR,
+    origin cfts_origin_t,
+    -- hash of original string used to derive `terms`
+    dupe BYTEA,
+    PRIMARY KEY(langid, key, origin, referent_id)
+);
+
+CREATE INDEX IF NOT EXISTS card_fts_v2_terms_idx ON card_fts_v2 USING gin(terms);

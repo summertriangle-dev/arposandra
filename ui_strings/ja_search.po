@@ -56,6 +56,9 @@ msgstr "スキル条件"
 msgid "kars.search_criteria.card_index.skills.apply_type"
 msgstr "スキル対象"
 
+msgid "kars.search_criteria.card_index.card_fts_v2"
+msgstr "カード題名"
+
 msgid "kars.search_criteria.card_index.member_group.unspecified"
 msgstr "不特定の学校"
 

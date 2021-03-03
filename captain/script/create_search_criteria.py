@@ -13,6 +13,9 @@ from libcard2 import master, string_mgr
 
 BLACKLIST = ["release_dates"]
 
+FIELD_TYPE_ENUM = 1000
+FIELD_TYPE_ENUM_FROM_STRING_MASTER = 1001
+
 
 class DFallback(object):
     def __init__(self, call):
@@ -30,7 +33,7 @@ def make_criteria(field: types.Field) -> dict:
     crit = {"type": field.field_type, "multi": field.multiple}
 
     if field.map_enum_to_id is not None:
-        crit["type"] = 1000
+        crit["type"] = FIELD_TYPE_ENUM
         crit["choices"] = list(
             {"name": key, "value": value} for key, value in field.map_enum_to_id.items()
         )
@@ -46,6 +49,12 @@ def make_criteria(field: types.Field) -> dict:
 
 def core_schema(model: types.Schema) -> dict:
     criteria = {}
+    for fts_field in model.fts_bond_tables:
+        criteria[fts_field] = {
+            "type": types.FIELD_TYPE_STRING,
+            "behaviour": {"fts": True},
+        }
+
     for field in model.fields:
         if field.name in BLACKLIST:
             continue
@@ -60,16 +69,20 @@ def core_schema(model: types.Schema) -> dict:
 
     return criteria
 
+
 def flatten_group(dog: OrderedDict[str, list]):
     flat = []
     for key, value in dog.items():
         if value:
             flat.append({"name": key, "separator": True})
             flat.extend(value)
-    
+
     return flat
 
+
 K_NO_GROUP = "kars.search_criteria.card_index.member_group.unspecified"
+
+
 def schema(master: master.MasterData):
     criteria = core_schema(mine_models.CardIndex)
 
@@ -87,21 +100,27 @@ def schema(master: master.MasterData):
 
         if member.subunit is not None and member.subunit not in subids:
             subids.append(member.subunit)
-            subunits[member.group_name].append({"value": member.subunit, "name": member.subunit_name})
+            subunits[member.group_name].append(
+                {"value": member.subunit, "name": member.subunit_name}
+            )
 
         if member.group is not None:
             idols[member.group_name].append({"value": member.id, "name": member.name})
         else:
             idols[K_NO_GROUP].append({"value": member.id, "name": member.name})
-        
+
     idols.move_to_end(K_NO_GROUP)
 
-    criteria["member"].update(dict(type=1001, choices=flatten_group(idols)))
-    criteria["member_subunit"].update(dict(type=1001, choices=flatten_group(subunits)))
-    criteria["member_group"].update(dict(type=1001, choices=groups))
+    criteria["member"].update(
+        dict(type=FIELD_TYPE_ENUM_FROM_STRING_MASTER, choices=flatten_group(idols))
+    )
+    criteria["member_subunit"].update(
+        dict(type=FIELD_TYPE_ENUM_FROM_STRING_MASTER, choices=flatten_group(subunits))
+    )
+    criteria["member_group"].update(dict(type=FIELD_TYPE_ENUM_FROM_STRING_MASTER, choices=groups))
     criteria["rarity"].update(
         dict(
-            type=1000,
+            type=FIELD_TYPE_ENUM,
             choices=[
                 {"name": "r", "value": 10},
                 {"name": "sr", "value": 20},
@@ -111,7 +130,7 @@ def schema(master: master.MasterData):
     )
     criteria["member_year"].update(
         dict(
-            type=1000,
+            type=FIELD_TYPE_ENUM,
             choices=[
                 {"name": "year_1st", "value": 1},
                 {"name": "year_2nd", "value": 2},
@@ -136,14 +155,14 @@ def translate_schema(schm: dict, langcode: str, sid: str, mv: str):
     for (key, value) in schm["criteria"].items():
         value["display_name"] = search_stab.gettext(f"kars.search_criteria.card_index.{key}")
 
-        if value["type"] == 1000:
+        if value["type"] == FIELD_TYPE_ENUM:
             for choice in value["choices"]:
                 choice["display_name"] = search_stab.gettext(
                     f"kars.search_criteria.card_index.{key}.{choice['name']}"
                 )
                 choice.pop("name")
-        elif value["type"] == 1001:
-            value["type"] = 1000
+        elif value["type"] == FIELD_TYPE_ENUM_FROM_STRING_MASTER:
+            value["type"] = FIELD_TYPE_ENUM
             for choice in value["choices"]:
                 s = search_stab.gettext(choice["name"])
                 choice["display_name"] = s if s else choice["name"]

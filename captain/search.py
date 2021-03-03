@@ -57,6 +57,9 @@ class CardSearchExec(BaseAPIHandler, LanguageCookieMixin, DatabaseMixin):
 
         return root
 
+    def is_fts_table(self, field_name: str) -> bool:
+        return field_name in CardIndex.fts_bond_tables
+
     def _error(self, status, message):
         self.set_status(status)
         self.write({"error": message})
@@ -70,9 +73,15 @@ class CardSearchExec(BaseAPIHandler, LanguageCookieMixin, DatabaseMixin):
             self.write({"error": "Invalid payload."})
             return
 
+        fts_bonds = {}
         clean_query_presort: List[Tuple[Iterable[int], str, dict]] = []
         for field, value in query.items():
             if field.startswith("_"):
+                continue
+
+            if self.is_fts_table(field):
+                if value:
+                    fts_bonds[field] = ("english", value)
                 continue
 
             try:
@@ -154,7 +163,10 @@ class CardSearchExec(BaseAPIHandler, LanguageCookieMixin, DatabaseMixin):
             clean_query[order_by] = {"return": True}
 
         expert = db_expert.PostgresDBExpert(CardIndex)
-        async with self.database().pool.acquire() as connection:
-            res = await expert.run_query(connection, clean_query, order_by, order_desc)
+        async with self.database().pool.acquire() as connection, connection.transaction():
+            # We generate a lot of SQL when building queries. Assuming there will eventually
+            # be a few injection bugs, set this to try and prevent some of the damage.
+            await connection.execute("SET TRANSACTION READ ONLY")
+            res = await expert.run_query(connection, clean_query, fts_bonds, order_by, order_desc)
 
         self.write({"result": [r["id"] for r in res]})

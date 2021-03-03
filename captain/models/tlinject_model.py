@@ -5,6 +5,8 @@ from datetime import datetime
 
 
 class TLInjectContext(object):
+    LANG_CODE_TO_FTS_CONFIG = {"en": "english"}
+
     def __init__(self, coordinator):
         self.coordinator = coordinator
         self.secret = os.environ.get("AS_TLINJECT_SECRET").encode("utf8")
@@ -63,6 +65,18 @@ class TLInjectContext(object):
                 key,
                 string,
             )
+            if cfg := self.LANG_CODE_TO_FTS_CONFIG.get(lang):
+                hash = hashlib.sha224(string.encode("utf8")).digest()
+                await c.execute(
+                    """
+                    UPDATE card_fts_v2 SET terms = to_tsvector($5, $3), dupe = $4
+                    WHERE origin = 'tlinject' AND key = $2 AND langid = $1""",
+                    lang,
+                    key,
+                    string,
+                    hash,
+                    cfg,
+                )
 
         return (0, "OK")
 

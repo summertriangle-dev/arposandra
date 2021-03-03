@@ -105,6 +105,7 @@ class Schema(Generic[T]):
     table: str
     fields: Sequence[Field]
     expert: Callable[[T], Any]
+    fts_bond_tables: List[str] = field(default_factory=list)
     first_multi_index: int = field(init=False)
     primary_key: Sequence[Field] = field(init=False)
 

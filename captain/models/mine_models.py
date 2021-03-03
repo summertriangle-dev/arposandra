@@ -161,7 +161,11 @@ CardIndex = Schema(
         Field.integer("ordinal"),
         Field.integer(
             "member",
-            behaviour={"captain_treat_as": "enum", "conflicts": ["member_group", "member_subunit"], "grouped": True},
+            behaviour={
+                "captain_treat_as": "enum",
+                "conflicts": ["member_group", "member_subunit"],
+                "grouped": True,
+            },
         ),
         Field.integer(
             "member_group",
@@ -177,7 +181,7 @@ CardIndex = Schema(
                 "captain_treat_as": "enum",
                 "sort": False,
                 "conflicts": ["member", "member_group"],
-                "grouped": True
+                "grouped": True,
             },
         ),
         Field.integer("member_year", behaviour={"captain_treat_as": "enum", "sort": False}),
@@ -229,10 +233,13 @@ CardIndex = Schema(
             multiple=True,
         ),
         Field.composite(
-            "release_dates", Field.varchar("server_id", 8, primary=True), Field.datetime("date"),
+            "release_dates",
+            Field.varchar("server_id", 8, primary=True),
+            Field.datetime("date"),
         ),
     ],
     expert=CardExpert,
+    fts_bond_tables=["card_fts_v2"],
 )
 
 
@@ -389,7 +396,9 @@ HistoryIndex = Schema(
         Field.composite(
             "card_ids",
             Field.integer("card_id", primary=True),
-            Field.enum("what", ("unspec", "event", "e_gacha", "e_gacha_p2", "pickup", "fes", "party")),
+            Field.enum(
+                "what", ("unspec", "event", "e_gacha", "e_gacha_p2", "pickup", "fes", "party")
+            ),
         ),
     ],
     expert=SRecordExpert,

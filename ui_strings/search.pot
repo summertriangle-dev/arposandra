@@ -34,6 +34,8 @@ msgid "kars.search_criteria.card_index.skills.activation_type"
 msgstr "Skill Activation Type"
 msgid "kars.search_criteria.card_index.skills.apply_type"
 msgstr "Skill Target"
+msgid "kars.search_criteria.card_index.card_fts_v2"
+msgstr "Card Name"
 
 msgid "kars.search_criteria.card_index.member_group.unspecified"
 msgstr "Unspecified"

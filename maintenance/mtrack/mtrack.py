@@ -5,6 +5,8 @@ import os
 import sqlite3
 import sys
 import time
+import hashlib
+import pkg_resources
 from collections import namedtuple
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -34,6 +36,9 @@ class IndexerDBCoordinator(object):
 
     async def create_pool(self):
         self.pool = await asyncpg.create_pool(dsn=self.connection_url, min_size=1)
+        init_schema = pkg_resources.resource_string("captain", "init_schema.sql").decode("utf8")
+        async with self.pool.acquire() as c, c.transaction():
+            await c.execute(init_schema)
 
     async def drop_all_mtrack_tables(self):
         async with self.pool.acquire() as conn, conn.transaction():
@@ -51,6 +56,51 @@ class IndexerDBCoordinator(object):
                 """
             )
             logging.warning("All mtrack tables dropped.")
+
+
+async def update_fts(
+    tag: str, lang: str, fts_lang: str, from_master: str, coordinator: IndexerDBCoordinator
+):
+    prefix = os.path.join(os.environ.get("ASTOOL_STORAGE", ""), tag, "masters", from_master)
+    db = MasterData(prefix)
+    daccess = string_mgr.DictionaryAccess(prefix, lang)
+
+    async with coordinator.pool.acquire() as conn, conn.transaction():
+        for id in db.card_ordinals_to_ids(db.all_ordinals()):
+            card = db.lookup_card_by_id(id, use_cache=False)
+
+            t_set = []
+            if card.normal_appearance:
+                t_set.append(card.normal_appearance.name)
+            if card.idolized_appearance:
+                t_set.append(card.idolized_appearance.name)
+
+            strings = daccess.lookup_strings(t_set)
+
+            for orig_key, value in strings.items():
+                hash = hashlib.sha224(value.encode("utf8"))
+                await conn.execute(
+                    """
+                    INSERT INTO card_fts_v2 VALUES ($1, $2, $3, to_tsvector($6, $4), 'dict', $5)
+                    ON CONFLICT (langid, key, origin, referent_id) DO UPDATE
+                        SET terms = excluded.terms WHERE card_fts_v2.dupe != excluded.dupe
+                    """,
+                    lang,
+                    orig_key,
+                    card.id,
+                    value,
+                    hash.digest(),
+                    fts_lang,
+                )
+                await conn.execute(
+                    """
+                    INSERT INTO card_fts_v2 VALUES ($1, $2, $3, NULL, 'tlinject', NULL)
+                    ON CONFLICT (langid, key, origin, referent_id) DO NOTHING
+                    """,
+                    lang,
+                    orig_key,
+                    card.id,
+                )
 
 
 async def update_card_index(
@@ -75,7 +125,7 @@ async def update_card_index(
 
         async with conn.transaction():
             for id in db.card_ordinals_to_ids(db.all_ordinals()):
-                card = db.lookup_card_by_id(id)
+                card = db.lookup_card_by_id(id, use_cache=False)
                 await cdb_expert.add_object(conn, card)
 
                 if card.idolized_appearance:
@@ -149,10 +199,15 @@ async def main(
         await hist_expert.create_tables(conn)
         await set_expert.create_tables(conn)
 
-    authoritative = tag == "jp" and mv != "-"
+    can_update_base_data = tag == "jp" and mv != "-"
+    can_update_dict_langs = tag == "en" and mv != "-"
+
     generated_sets: List[mine_models.SetRecord] = []
-    if authoritative:
+    if can_update_base_data:
         generated_sets = await update_card_index(tag, "ja", mv, coordinator)
+
+    if can_update_dict_langs:
+        await update_fts(tag, "en", "english", mv, coordinator)
 
     logging.debug("Master import done in %s ms", (time.monotonic() - cloc) * 1000)
     cloc = time.monotonic()
@@ -171,7 +226,9 @@ async def main(
                 pre_events = newsminer.prepare_old_evt_entries(tag)
                 events = pre_events + events
 
-            for set_ in setminer.filter_sets_against_history(generated_sets, events, authoritative):
+            for set_ in setminer.filter_sets_against_history(
+                generated_sets, events, can_update_base_data
+            ):
                 await set_expert.add_object(conn, set_, overwrite=False)
 
             if events:

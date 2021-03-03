@@ -160,7 +160,9 @@ export class PAQueryEditor extends React.Component {
         }
 
         return <div>
-            <PASearchButton schema={this.props.schema} performSearchAction={this.performSearchAction.bind(this)} />
+            <PASearchButton 
+                schema={this.props.schema}
+                performSearchAction={this.performSearchAction.bind(this)} />
             <PAFormErrorBanner message={this.props.errorMessage} />
             <PAQueryList 
                 schema={this.props.schema} 
@@ -179,11 +181,21 @@ export class PAQueryEditor extends React.Component {
 }
 
 class PASearchButton extends React.Component {
+    // updateText(toValue) {
+    //     let proposedValue = toValue.trim()
+    //     if (proposedValue.length === 0) {
+    //         this.props.setQueryValueAction(this.props.textBoxQueryTarget, undefined)    
+    //     } else {
+    //         this.props.setQueryValueAction(this.props.textBoxQueryTarget, proposedValue)
+    //     }
+    // }
+
     render() {
         let tf
         if (isCompletionistSupported(this.props.schema.language)) {
             tf = <input type="text" 
                 className="form-control search-field" 
+                // onChange={(e) => this.updateText(e.target.value)}
                 placeholder={Infra.strings.Search.TextBoxHint} />
         } else {
             tf = <input type="text" tabIndex="-1"
@@ -288,14 +300,11 @@ class PAQueryList extends React.Component {
             break
         case CONTROL_TYPE.STRING:
         case CONTROL_TYPE.STRING_MAX:
-            input = <div className="col-sm-8">
-                <input id={`input-for-${k}`}
-                    className="form-control" 
-                    type="text" 
-                    placeholder={criteria.display_name} 
-                    maxLength={criteria.max_length}
-                    autoFocus={this.props.autofocus == k} />
-            </div>
+            input = <PAStringField name={k} 
+                criteria={criteria} 
+                value={this.props.queryValues[k]} 
+                changeValue={this.props.actions.setQueryValue}
+                autofocus={this.props.autofocus == k} />
             break
         case CONTROL_TYPE.ENUM:
         case CONTROL_TYPE.ENUM_2:
@@ -614,6 +623,26 @@ export class PANumericField extends React.Component {
                     onChange={(event) => this.acceptInput(event)} />
             </div>
         </div>    
+    }
+}
+
+class PAStringField extends React.Component {
+    acceptInput(event) {
+        let s = event.target.value
+        this.props.changeValue(this.props.name, (s.trim().length > 0)? s : undefined)
+    }
+
+    render() {
+        return <div className="col-sm-8">
+            <input id={`input-for-${this.props.name}`}
+                className="form-control" 
+                type="text" 
+                value={this.props.value || ""} 
+                onChange={(e) => this.acceptInput(e)}
+                placeholder={this.props.criteria.display_name} 
+                maxLength={this.props.criteria.max_length}
+                autoFocus={this.props.autofocus} />
+        </div>
     }
 }
 
