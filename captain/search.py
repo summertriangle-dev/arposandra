@@ -95,14 +95,17 @@ class CardSearchExec(BaseAPIHandler, LanguageCookieMixin, DatabaseMixin):
                 scmfield.map_enum_to_id is not None or behaviour.get("captain_treat_as") == "enum"
             ):
                 if behaviour.get("compare_type") == "bit-set":
-                    if not isinstance(value, list) or not all(isinstance(x, int) for x in value):
-                        return self._error(
-                            400, f"{field}: The value must be a list of integers for bit-sets."
+                    if isinstance(value, int):
+                        clean_query_presort.append((scmfield.order, field, {"value": [value]}))
+                    elif isinstance(value, list) and all(isinstance(x, int) for x in value):
+                        clean_query_presort.append(
+                            (scmfield.order, field, {"value": value, "exclude": True})
                         )
-
-                    clean_query_presort.append(
-                        (scmfield.order, field, {"value": value, "exclude": True})
-                    )
+                    else:
+                        return self._error(
+                            400,
+                            f"{field}: The value must be a list of integers, or a single integer, for bit-sets.",
+                        )
                 else:
                     if not isinstance(value, int):
                         return self._error(400, f"{field}: The value must be an integer.")
