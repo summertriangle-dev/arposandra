@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 class TLInjectContext(object):
-    LANG_CODE_TO_FTS_CONFIG = {"en": "english"}
+    LANG_CODE_TO_FTS_CONFIG = {"en": "card_fts_cfg_english"}
 
     def __init__(self, coordinator):
         self.coordinator = coordinator

@@ -5,7 +5,6 @@ import os
 import sqlite3
 import sys
 import time
-import hashlib
 import pkg_resources
 from collections import namedtuple
 from dataclasses import dataclass, field
@@ -19,7 +18,7 @@ from captain.models import mine_models
 from captain.models.indexer import db_expert, types
 from libcard2 import string_mgr
 from libcard2.master import MasterData
-from maintenance.mtrack import newsminer, setminer, scripts as sql_scripts
+from maintenance.mtrack import newsminer, setminer, scripts as sql_scripts, fts
 
 T_EVENT = 4
 T_EVENT_GACHA = 3
@@ -27,6 +26,8 @@ T_GACHA = 2
 T_BASE = 1
 
 card_info_t = namedtuple("card_info_t", ("card_id", "ordinal", "probable_type"))
+
+TAG_TO_MAIN_LANG = {"en": "en", "jp": "ja"}
 
 
 class IndexerDBCoordinator(object):
@@ -56,51 +57,6 @@ class IndexerDBCoordinator(object):
                 """
             )
             logging.warning("All mtrack tables dropped.")
-
-
-async def update_fts(
-    tag: str, lang: str, fts_lang: str, from_master: str, coordinator: IndexerDBCoordinator
-):
-    prefix = os.path.join(os.environ.get("ASTOOL_STORAGE", ""), tag, "masters", from_master)
-    db = MasterData(prefix)
-    daccess = string_mgr.DictionaryAccess(prefix, lang)
-
-    async with coordinator.pool.acquire() as conn, conn.transaction():
-        for id in db.card_ordinals_to_ids(db.all_ordinals()):
-            card = db.lookup_card_by_id(id, use_cache=False)
-
-            t_set = []
-            if card.normal_appearance:
-                t_set.append(card.normal_appearance.name)
-            if card.idolized_appearance:
-                t_set.append(card.idolized_appearance.name)
-
-            strings = daccess.lookup_strings(t_set)
-
-            for orig_key, value in strings.items():
-                hash = hashlib.sha224(value.encode("utf8"))
-                await conn.execute(
-                    """
-                    INSERT INTO card_fts_v2 VALUES ($1, $2, $3, to_tsvector($6, $4), 'dict', $5)
-                    ON CONFLICT (langid, key, origin, referent_id) DO UPDATE
-                        SET terms = excluded.terms WHERE card_fts_v2.dupe != excluded.dupe
-                    """,
-                    lang,
-                    orig_key,
-                    card.id,
-                    value,
-                    hash.digest(),
-                    fts_lang,
-                )
-                await conn.execute(
-                    """
-                    INSERT INTO card_fts_v2 VALUES ($1, $2, $3, NULL, 'tlinject', NULL)
-                    ON CONFLICT (langid, key, origin, referent_id) DO NOTHING
-                    """,
-                    lang,
-                    orig_key,
-                    card.id,
-                )
 
 
 async def update_card_index(
@@ -200,14 +156,14 @@ async def main(
         await set_expert.create_tables(conn)
 
     can_update_base_data = tag == "jp" and mv != "-"
-    can_update_dict_langs = tag == "en" and mv != "-"
+    can_update_dict_langs = tag in ["en", "jp"] and mv != "-"
 
     generated_sets: List[mine_models.SetRecord] = []
     if can_update_base_data:
-        generated_sets = await update_card_index(tag, "ja", mv, coordinator)
+        generated_sets = await update_card_index(tag, TAG_TO_MAIN_LANG[tag], mv, coordinator)
 
     if can_update_dict_langs:
-        await update_fts(tag, "en", "english", mv, coordinator)
+        await fts.update_fts(tag, TAG_TO_MAIN_LANG[tag], mv, coordinator)
 
     logging.debug("Master import done in %s ms", (time.monotonic() - cloc) * 1000)
     cloc = time.monotonic()
