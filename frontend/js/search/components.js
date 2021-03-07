@@ -47,7 +47,11 @@ export class PAQueryEditor extends React.Component {
 
     makeUnusedButtonList(template) {
         const buttons = []
+        const lang = document.querySelector("html").getAttribute("lang")
         Object.keys(this.props.schema.criteria).forEach((v) => {
+            if (v.behaviour && v.behaviour.lang_whitelist && !v.behaviour.lang_whitelist.includes(lang)) {
+                return
+            }
             if (!template.includes(v)) {
                 buttons.push(v)
             }
@@ -361,6 +365,8 @@ class PACriteriaList extends React.Component {
         switch (name) {
         case "id":
             return "ion-ios-cube"
+        case "card_fts_v2":
+            return "ion-ios-quote"
         case "ordinal":
             return "ion-ios-images"
         case "member":

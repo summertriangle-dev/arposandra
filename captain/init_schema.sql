@@ -153,6 +153,20 @@ EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
 
+DO $$ BEGIN
+    CREATE TEXT SEARCH CONFIGURATION card_fts_cfg_english ( COPY = pg_catalog.english );
+    CREATE TEXT SEARCH DICTIONARY card_fts_stem_dict (
+        TEMPLATE = snowball,
+        Language = english
+    );
+    ALTER TEXT SEARCH CONFIGURATION card_fts_cfg_english
+    ALTER MAPPING FOR asciiword, asciihword, hword_asciipart,
+                      word, hword, hword_part
+    WITH card_fts_stem_dict;
+EXCEPTION
+    WHEN unique_violation THEN null;
+END $$;
+
 CREATE TABLE IF NOT EXISTS card_fts_v2 (
     langid varchar(8),
     key text,

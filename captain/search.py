@@ -81,7 +81,7 @@ class CardSearchExec(BaseAPIHandler, LanguageCookieMixin, DatabaseMixin):
 
             if self.is_fts_table(field):
                 if value:
-                    fts_bonds[field] = ("english", value)
+                    fts_bonds[field] = ("card_fts_cfg_english", value)
                 continue
 
             try:
