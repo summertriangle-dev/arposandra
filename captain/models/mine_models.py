@@ -236,6 +236,7 @@ CardIndex = Schema(
             "release_dates",
             Field.varchar("server_id", 8, primary=True),
             Field.datetime("date"),
+            behaviour={"hidden": True},
         ),
     ],
     expert=CardExpert,

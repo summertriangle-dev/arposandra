@@ -25,14 +25,14 @@ class DatabaseConnection(object):
     async def init_models(self):
         self.pool = await asyncpg.create_pool(dsn=self.connection_url, min_size=1, max_size=1)
 
-    async def get_skill_ids(self):
+    async def get_skill_ids(self, table):
         async with self.pool.acquire() as c:
-            t = await c.fetch("SELECT DISTINCT effect FROM card_index_v1__skills")
+            t = await c.fetch(f'SELECT DISTINCT effect FROM "{table}"')
             return [x["effect"] for x in t]
 
-    async def get_act_ids(self):
+    async def get_act_ids(self, table):
         async with self.pool.acquire() as c:
-            t = await c.fetch("SELECT DISTINCT activation_type FROM card_index_v1__skills")
+            t = await c.fetch(f'SELECT DISTINCT activation_type FROM "{table}"')
             return [x["activation_type"] for x in t]
 
 
@@ -71,9 +71,10 @@ def to_table(choice_list):
     return {c["value"]: c["display_name"] for c in choice_list}
 
 
+@plac.pos("table", "Table to retrieve used skill info from.")
 @plac.pos("output_file", "Where to write the definitions.")
 @plac.flg("debug", "Write enum names.")
-async def main(output_file, debug=False):
+async def main(table, output_file, debug=False):
     prev = {}
     try:
         with open(output_file, "r") as injs:
@@ -83,8 +84,8 @@ async def main(output_file, debug=False):
 
     dbc = DatabaseConnection()
     await dbc.init_models()
-    skill_effects_in_use = await dbc.get_skill_ids()
-    skill_acts_in_use = await dbc.get_act_ids()
+    skill_effects_in_use = await dbc.get_skill_ids(table)
+    skill_acts_in_use = await dbc.get_act_ids(table)
 
     skill_cs_enums.TT.IntActiveSkill = 65535
 
@@ -94,7 +95,7 @@ async def main(output_file, debug=False):
                 to_table(prev.get("skills.effect", {}).get("choices", {})),
                 skill_cs_enums.ST,
                 lambda x: getattr(skill_cs_enums.ST, x) in skill_effects_in_use,
-                default=lambda n: EN.skill_effect.get(getattr(skill_cs_enums.ST, n)).format(
+                default=lambda n: EN.skill_effect.get(getattr(skill_cs_enums.ST, n), str(n)).format(
                     **var_dict
                 ),
                 debug=debug,

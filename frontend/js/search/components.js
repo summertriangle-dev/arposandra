@@ -1,7 +1,6 @@
 import React from "react"
 import Infra from "../infra"
 import { isCompletionistSupported } from "./completionist"
-import { CardSearchDomainExpert } from "./domain"
 import { toHTMLDateInputFormat, isActivationKey } from "./util"
 
 export const CONTROL_TYPE = {
@@ -41,7 +40,6 @@ export class PAQueryEditor extends React.Component {
             buttonList: this.makeUnusedButtonList(queryTemplateInitial),
             purgatory: null,
             autofocus: null,
-            expert: new CardSearchDomainExpert()
         }
     }
 
@@ -89,7 +87,7 @@ export class PAQueryEditor extends React.Component {
         }
 
         newState.buttonList = this.makeUnusedButtonList(newState.queryTemplate)
-        this.setState(this.state.expert.didAddCriteria(this, name, newState))
+        this.setState(this.props.expert.didAddCriteria(this, name, newState))
     }
 
     removeCriteriaAction(named) {
@@ -118,7 +116,7 @@ export class PAQueryEditor extends React.Component {
             nextState[key] = value
         }
 
-        this.setState(this.state.expert.didChangeCriteria(this, key, {queryValues: nextState}))
+        this.setState(this.props.expert.didChangeCriteria(this, key, {queryValues: nextState}))
     }
 
     setSortAction(value) {

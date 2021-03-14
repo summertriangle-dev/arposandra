@@ -25,8 +25,8 @@ class CardSearch(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin):
             code = self.SUPPORTED_LANGS[0]
 
         return [
-            self.static_url(f"search/base.{code}.json"),
-            self.static_url(f"search/skills.enum.{code}.json"),
+            self.static_url(f"search/card.base.{code}.json"),
+            self.static_url(f"search/card.skills.enum.{code}.json"),
         ]
 
     def dictionary_for_lang(self):
@@ -43,6 +43,8 @@ class CardSearch(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin):
 @route(r"/api/private/search/cards/results.json")
 class CardSearchExec(BaseAPIHandler, LanguageCookieMixin, DatabaseMixin):
     FIELD_BLACKLIST = ["release_dates"]
+    INDEX = CardIndex
+    DEFAULT_SORT = ("ordinal", True)
 
     def look_up_schema_field(self, field_name: str) -> types.Field:
         names = field_name.split(".")
@@ -51,14 +53,14 @@ class CardSearchExec(BaseAPIHandler, LanguageCookieMixin, DatabaseMixin):
         if names[0] in self.FIELD_BLACKLIST or field_name in self.FIELD_BLACKLIST:
             raise KeyError(names[0])
 
-        root = CardIndex[names[0]]
+        root = self.INDEX[names[0]]
         for name in names[1:]:
             root = root[name]
 
         return root
 
     def is_fts_table(self, field_name: str) -> bool:
-        return field_name in CardIndex.fts_bond_tables
+        return field_name in self.INDEX.fts_bond_tables
 
     def _error(self, status, message):
         self.set_status(status)
@@ -157,15 +159,14 @@ class CardSearchExec(BaseAPIHandler, LanguageCookieMixin, DatabaseMixin):
                 order_by = sort_key[1:]
                 order_desc = True if sort_key[0] == "-" else False
         else:
-            order_by = "ordinal"
-            order_desc = True
+            order_by, order_desc = self.DEFAULT_SORT
 
         if order_by in clean_query:
             clean_query[order_by]["return"] = True
         elif order_by:
             clean_query[order_by] = {"return": True}
 
-        expert = db_expert.PostgresDBExpert(CardIndex)
+        expert = db_expert.PostgresDBExpert(self.INDEX)
         async with self.database().pool.acquire() as connection, connection.transaction():
             # We generate a lot of SQL when building queries. Assuming there will eventually
             # be a few injection bugs, set this to try and prevent some of the damage.

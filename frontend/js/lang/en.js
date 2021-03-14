@@ -137,7 +137,7 @@ export default {
             NoCriteriaValues: `You need to add some filters before searching. 
                 Add filters by typing in the search box, or by selecting them from the grid.`,
             SchemaLoad: "There was a network error while acquiring filter info. {0}?",
-            CardLoad: "There was a network error while loading card displays. {0}, or {1}.",
+            CardLoad: "There was a network error while loading the results. {0}, or {1}.",
             ExecuteFailed: "The server could not complete your search. The error code it returned was: {0}.",
             NoResults: "Could not find any results. Please check your filters.",
             TryAgain: "Try again",
@@ -151,7 +151,7 @@ export default {
             Continue: "Continue Searching",
             LoadingSchema: "Acquiring filter info...",
             Searching: "Performing search...",
-            LoadingCards: "Preparing card displays...",
+            LoadingCards: "Preparing results...",
         },
         NumResultsLabel: "{0}. You can share this search by copying the link from your browser's address bar.",
         NumResultsFormat: (n /* : int */) => {

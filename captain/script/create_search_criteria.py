@@ -2,7 +2,7 @@ import gettext
 import json
 import os
 from collections import OrderedDict
-from typing import OrderedDict
+from typing import OrderedDict, Dict, List, Any
 
 import pkg_resources
 import plac
@@ -10,8 +10,6 @@ import plac
 from captain.models import mine_models
 from captain.models.indexer import types
 from libcard2 import master, string_mgr
-
-BLACKLIST = ["release_dates"]
 
 FIELD_TYPE_ENUM = 1000
 FIELD_TYPE_ENUM_FROM_STRING_MASTER = 1001
@@ -56,7 +54,7 @@ def core_schema(model: types.Schema) -> dict:
         }
 
     for field in model.fields:
-        if field.name in BLACKLIST:
+        if field.behaviour and field.behaviour.get("hidden"):
             continue
 
         if field.field_type == types.FIELD_TYPE_COMPOSITE:
@@ -83,14 +81,14 @@ def flatten_group(dog: OrderedDict[str, list]):
 K_NO_GROUP = "kars.search_criteria.card_index.member_group.unspecified"
 
 
-def schema(master: master.MasterData):
+def augment_card_schema(master: master.MasterData):
     criteria = core_schema(mine_models.CardIndex)
 
     subids = []
     gids = []
     groups = []
-    subunits = OrderedDict()
-    idols = OrderedDict({K_NO_GROUP: []})
+    subunits: OrderedDict[str, List[Dict[str, Any]]] = OrderedDict()
+    idols: OrderedDict[str, List[Dict[str, Any]]] = OrderedDict({K_NO_GROUP: []})
     for member in master.lookup_member_list():
         if member.group is not None and member.group not in gids:
             gids.append(member.group)
@@ -142,23 +140,23 @@ def schema(master: master.MasterData):
     return {"criteria": criteria}
 
 
-def translate_schema(schm: dict, langcode: str, sid: str, mv: str):
+def translate_schema(schm: dict, langcode: str, sid: str, mv: str, string_table: str):
     catalog = pkg_resources.resource_filename("captain", "gettext")
     search_stab = gettext.translation("search", catalog, [langcode])
 
     da = string_mgr.DictionaryAccess(
         os.path.join(os.environ.get("ASTOOL_STORAGE", ""), sid, "masters", mv), langcode
     )
-    search_stab.add_fallback(DFallback(da.lookup_single_string))
+    search_stab.add_fallback(DFallback(da.lookup_single_string))  # type: ignore
 
     schm["language"] = langcode
     for (key, value) in schm["criteria"].items():
-        value["display_name"] = search_stab.gettext(f"kars.search_criteria.card_index.{key}")
+        value["display_name"] = search_stab.gettext(f"kars.search_criteria.{string_table}.{key}")
 
         if value["type"] == FIELD_TYPE_ENUM:
             for choice in value["choices"]:
                 choice["display_name"] = search_stab.gettext(
-                    f"kars.search_criteria.card_index.{key}.{choice['name']}"
+                    f"kars.search_criteria.{string_table}.{key}.{choice['name']}"
                 )
                 choice.pop("name")
         elif value["type"] == FIELD_TYPE_ENUM_FROM_STRING_MASTER:
@@ -184,11 +182,14 @@ def main(
         t_master_sid = master_sid
 
     mp = os.path.join(os.environ.get("ASTOOL_STORAGE", ""), master_sid, "masters", master_version)
-    base = schema(master.MasterData(mp))
-    translate_schema(base, langcode, t_master_sid, t_master_version)
+    mas = master.MasterData(mp)
 
-    with open(destination, "w") as f:
-        json.dump(base, f, ensure_ascii=False)
+    card_base = augment_card_schema(mas)
+    translate_schema(card_base, langcode, t_master_sid, t_master_version, "card_index")
+
+    with open(os.path.join(destination, f"card.base.{langcode}.json"), "w") as f:
+        json.dump(card_base, f, ensure_ascii=False)
+
 
 
 if __name__ == "__main__":

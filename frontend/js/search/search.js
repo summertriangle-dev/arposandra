@@ -4,6 +4,7 @@ import Infra from "../infra"
 import { ModalManager } from "../modals"
 import { PAFakeSearchButton, PAPageControl, PAQueryEditor } from "./components"
 import { serializeQuery, deserializeQuery, isActivationKey, /* simulatedNetworkDelay */ } from "./util"
+import { PACardSearchDomainExpert, PAAccessorySearchDomainExpert } from "./domain"
 
 const PASearchProgressState = {
     LoadingSchema: 0,
@@ -18,7 +19,7 @@ const PASearchProgressState = {
 const RESULTS_PER_PAGE = 12
 
 class PASearchContext {
-    constructor() {
+    constructor(apiType) {
         this.schema = null
         this.dictionary = null
 
@@ -34,6 +35,11 @@ class PASearchContext {
 
         this.recoveryInfo = null
         this.inlineErrorMessage = null
+
+        switch (apiType) {
+        case "cards": this.api = new PACardSearchDomainExpert(); break
+        case "accessories": this.api = new PAAccessorySearchDomainExpert(); break
+        }
     }
 
     transitionToState(state) {
@@ -78,7 +84,8 @@ class PASearchContext {
                 template={this.currentTemplate}
                 sortBy={this.currentSort}
                 performSearchAction={this.performSearchAction.bind(this)}
-                errorMessage={this.inlineErrorMessage} />
+                errorMessage={this.inlineErrorMessage}
+                expert={this.api} />
             break
         case PASearchProgressState.ContinueSearch:
             widget = <div className="text-center">
@@ -143,7 +150,7 @@ class PASearchContext {
         this.currentTemplate = saveTemplate.slice(0)
 
         this.transitionToState(PASearchProgressState.Searching)
-        this.sendSearchRequest(nq).catch((error) => {
+        this.api.sendSearchRequest(nq).catch((error) => {
             this.displayResultList([], 0, true, error.error)
             this.transitionToState(PASearchProgressState.EditingQuery)
         }).then((results) => {
@@ -195,7 +202,7 @@ class PASearchContext {
             // ----- async break point -----
             let doc
             try {
-                doc = await this.sendAjaxCardRequest(idl)
+                doc = await this.api.sendAjaxRequest(idl)
             } catch (rejectReason) {
                 ReactDOM.render(null, document.getElementById("pager-host"))
                 document.getElementById("results-host").innerHTML = ""
@@ -244,59 +251,6 @@ class PASearchContext {
             ReactDOM.render(null, host)
             ReactDOM.render(null, document.getElementById("pager-host"))
         }
-    }
-
-    async sendAjaxCardRequest(cardIds) {
-        // await simulatedNetworkDelay(1000)
-        // return Promise.reject(555)
-
-        return await new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest()
-            xhr.responseType = "document"
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState != 4) {
-                    return
-                }
-
-                if (xhr.status == 200) {
-                    resolve(xhr.responseXML)
-                } else {
-                    reject(xhr.status)
-                }
-            }
-            xhr.open("GET", "/api/private/cards/ajax/" + cardIds.join(","))
-            xhr.send()
-        })
-    }
-
-    async sendSearchRequest(withParams) {
-        // await simulatedNetworkDelay(3000)
-        // return Promise.reject({error: "error"})
-
-        return await new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest()
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState != 4) {
-                    return
-                }
-
-                if (xhr.status == 200) {
-                    resolve(JSON.parse(xhr.responseText))
-                } else {
-                    try {
-                        const err = JSON.parse(xhr.responseText)
-                        reject({error: err.error})
-                        return
-                    } catch {
-                        reject({error: `http(${xhr.status})`})
-                        return
-                    }
-                }
-            }
-            xhr.open("POST", "/api/private/search/cards/results.json")
-            xhr.setRequestHeader("Content-Type", "application/json")
-            xhr.send(JSON.stringify(withParams))
-        })
     }
 
     async sendSchemaRequest(toUrl) {
@@ -470,7 +424,8 @@ function getConfig() {
 }
 
 export function initializeSearch() {
-    const context = new PASearchContext()
+    const apiType = document.querySelector("meta[name=x-panther-api]").content
+    const context = new PASearchContext(apiType)
     const cfg = getConfig()
 
     context.reloadSchema(cfg.indexes, cfg.dictionary).then(() => {
