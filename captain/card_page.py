@@ -26,7 +26,7 @@ import logging
 @route(r"/cards/(random|(?:[0-9,]+))(/.*)?")
 class CardPageRedirect(BaseHTMLHandler):
     def get(self, spec, end):
-        self.redirect(f"/card/{spec}{end}", permanent=True)
+        self.redirect(f"/card/{spec}{end or ''}", permanent=True)
 
 
 @route(r"/card/(random|(?:[0-9,]+))(/.*)?")
