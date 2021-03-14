@@ -1,8 +1,9 @@
 import os
 import sqlite3
+import logging
 from collections import OrderedDict, defaultdict
 from functools import lru_cache
-from typing import Iterable, Sequence
+from typing import Iterable, Sequence, Optional, Dict
 
 from cachetools import LRUCache
 
@@ -98,7 +99,7 @@ class MasterData(MasterDataLite):
     def _register_card_brief_cache(self, briefs: Iterable[D.CardLite]):
         self.card_brief_cache.update({x.id: x for x in briefs})
 
-    def lookup_member_by_id(self, member_id: int) -> D.Member:
+    def lookup_member_by_id(self, member_id: int) -> Optional[D.Member]:
         if member_id in self.member_cache:
             return self.member_cache[member_id]
 
@@ -130,9 +131,7 @@ class MasterData(MasterDataLite):
             (member_id,),
         )
 
-        m.card_brief = [
-            D.CardLite(*row[:5], D.Card.Appearance(None, None, row[5]), None) for row in da
-        ]
+        m.card_brief = [D.CardLite(*row[:5], D.Card.Appearance("", "", row[5]), None) for row in da]
 
         self._register_card_brief_cache(m.card_brief)
         self.member_cache[member_id] = m
@@ -323,7 +322,7 @@ class MasterData(MasterDataLite):
         for remaining_row in da:
             skill.levels.append(D.Skill.Effect(*remaining_row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
             if has_secondary_effect:
-                skill.levels_2.append(
+                skill.levels_2.append(  # type: ignore
                     D.Skill.Effect(*remaining_row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])
                 )
 
@@ -764,6 +763,8 @@ class MasterData(MasterDataLite):
 
         return skills
 
+    ##### SKILL SUPPORT
+
     @lru_cache(4)
     def lookup_role_effect(self, role_id):
         row = self.connection.execute(
@@ -835,6 +836,8 @@ class MasterData(MasterDataLite):
             target_type.fixed_roles.extend(x[0] for x in group)
         return target_type
 
+    ##### ETC
+
     def lookup_batch_item_req_set(self, item_set_ids: Iterable[int]):
         id_list = ",".join(str(int(x)) for x in set(item_set_ids))
 
@@ -849,7 +852,7 @@ class MasterData(MasterDataLite):
         )
 
         items = {}
-        struct = defaultdict(lambda: defaultdict())
+        struct: Dict[int, Dict[str, int]] = defaultdict(lambda: defaultdict())
         for (
             group,
             content_type,

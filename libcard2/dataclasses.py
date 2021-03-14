@@ -285,7 +285,7 @@ class Live(object):
     member_unit_name: str
     order: int
 
-    difficulties: List[LiveDifficulty] = field(init=False, default=None)
+    difficulties: List[LiveDifficulty] = field(init=False, default_factory=list)
 
     def get_tl_set(self):
         s = {self.name, self.member_group_name, self.member_unit_name}
