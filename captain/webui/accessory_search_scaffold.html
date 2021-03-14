@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="{{ handler.locale.code }}">
+
+<head>
+    <title>{{ _("PT.SearchAccessories") }} - {{ _("PT.SiteName") }}</title>
+    {% include t_preamble.html %}
+
+    {% for index in config_indexes %}
+    <meta name="x-panther-index-discovery" content="{{ index }}">
+    {% end %}
+    <meta name="x-panther-dictionary-discovery" content="{{ config_dictionary }}">
+    <meta name="x-panther-api" content="accessories">
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{ _("OpengraphAccessorySearchTitle") }}" />
+    <meta property="og:description" content="{{ _("OpengraphAccessorySearchDescription") }}" />
+</head>
+
+<body data-master="{{ handler.settings["master"].version }}" data-inject="search">
+    {% module Template("uim_nav.html", current=None) %}
+
+    <div class="container">
+        <div class="card kars-card-box">
+            <div class="card-body">
+                <form id="query-editor-host" class="search-metrics">
+                    <div class="form-row">
+                        <div class="search-overlay-grp">
+                            <i class="overlay icon ion-ios-search"></i>
+                            <input type="text" class="form-control search-field" placeholder="" disabled>
+                            <input type="submit" class="btn btn-primary" style="width: 80px" disabled />
+                        </div>
+                    </div>
+                    <div id="completion-target"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="info-host" class="kars-negative-box"></div>
+        <div id="results-host" class="container"></div>
+        <div id="pager-host"></div>
+    </div>
+
+    {% include t_footer.html %}
+</body>
+
+</html>

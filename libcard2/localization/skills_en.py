@@ -40,11 +40,11 @@ def _times(value):
 @EN.target_clause
 def fmt_apply(tt: Skill.TargetType, base, context: Card = None):
     if tt.self_only:
-        return "Just this card"
+        return "Just this card" if context else "Self"
 
     complex_ = []
     if tt.owner_party:
-        complex_.append("This card's strategy")
+        complex_.append("This card's strategy" if context else "Strategy")
     elif tt.owner_school:
         if context:
             synthetic = f"kars.group_{context.member.group}"

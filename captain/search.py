@@ -11,7 +11,7 @@ from . import pageutils
 from .bases import BaseHTMLHandler, BaseAPIHandler
 from .dispatch import DatabaseMixin, LanguageCookieMixin, route
 from .models.indexer import db_expert, types
-from .models.mine_models import CardIndex
+from .models.mine_models import CardIndex, AccessoryIndex
 
 
 @route(r"/cards/search")
@@ -174,3 +174,36 @@ class CardSearchExec(BaseAPIHandler, LanguageCookieMixin, DatabaseMixin):
             res = await expert.run_query(connection, clean_query, fts_bonds, order_by, order_desc)
 
         self.write({"result": [r["id"] for r in res]})
+
+
+@route(r"/accessories")
+class AccessorySearch(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin):
+    SUPPORTED_LANGS = ["en"]
+
+    def indexes_for_lang(self):
+        if self.locale.code in self.SUPPORTED_LANGS:
+            code = self.locale.code
+        else:
+            code = self.SUPPORTED_LANGS[0]
+
+        return [
+            self.static_url(f"search/accessory.base.{code}.json"),
+            self.static_url(f"search/accessory.skills.enum.{code}.json"),
+        ]
+
+    def dictionary_for_lang(self):
+        return self.static_url("search/dictionary.dummy.json")
+
+    def get(self):
+        self.render(
+            "accessory_search_scaffold.html",
+            config_indexes=self.indexes_for_lang(),
+            config_dictionary=self.dictionary_for_lang(),
+        )
+
+
+@route(r"/api/private/search/accessories/results.json")
+class AccessorySearchExec(CardSearchExec):
+    FIELD_BLACKLIST = ["role"]
+    INDEX = AccessoryIndex
+    DEFAULT_SORT = ("ordinal", False)

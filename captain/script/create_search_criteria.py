@@ -21,9 +21,8 @@ class DFallback(object):
 
     def gettext(self, s):
         if s.startswith("kars."):
-            raise ValueError(
-                f"Dictionary fallback for '{s}'. This probably means you have to add it to search.pot."
-            )
+            return s
+
         return self.call(s)
 
 
@@ -140,6 +139,22 @@ def augment_card_schema(master: master.MasterData):
     return {"criteria": criteria}
 
 
+def augment_accessory_schema(master: master.MasterData):
+    criteria = core_schema(mine_models.AccessoryIndex)
+    criteria["rarity"].update(
+        dict(
+            type=FIELD_TYPE_ENUM,
+            choices=[
+                {"name": "r", "value": 10},
+                {"name": "sr", "value": 20},
+                {"name": "ur", "value": 30},
+            ],
+        )
+    )
+
+    return {"criteria": criteria}
+
+
 def translate_schema(schm: dict, langcode: str, sid: str, mv: str, string_table: str):
     catalog = pkg_resources.resource_filename("captain", "gettext")
     search_stab = gettext.translation("search", catalog, [langcode])
@@ -190,6 +205,11 @@ def main(
     with open(os.path.join(destination, f"card.base.{langcode}.json"), "w") as f:
         json.dump(card_base, f, ensure_ascii=False)
 
+    accessory_base = augment_accessory_schema(mas)
+    translate_schema(accessory_base, langcode, t_master_sid, t_master_version, "acc_index")
+
+    with open(os.path.join(destination, f"accessory.base.{langcode}.json"), "w") as f:
+        json.dump(accessory_base, f, ensure_ascii=False)
 
 
 if __name__ == "__main__":

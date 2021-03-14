@@ -48,6 +48,9 @@ class IndexerDBCoordinator(object):
                 DROP TABLE IF EXISTS card_index_v1;
                 DROP TABLE IF EXISTS card_index_v1__skill_minors;
                 DROP TABLE IF EXISTS card_index_v1__release_dates;
+                DROP TABLE IF EXISTS accessory_index_v1;
+                DROP TABLE IF EXISTS accessory_index_v1__skill_minors;
+                DROP TABLE IF EXISTS accessory_index_v1__release_dates;
                 DROP TABLE IF EXISTS card_p_set_index_v1;
                 DROP TABLE IF EXISTS card_p_set_index_v1__sort_dates;
                 DROP TABLE IF EXISTS card_p_set_index_v1__card_ids;
@@ -103,6 +106,24 @@ async def update_card_index(
     return list(sets.values())
 
 
+async def update_accessory_index(
+    tag: str, lang: str, from_master: str, coordinator: IndexerDBCoordinator
+):
+    adb_expert = db_expert.PostgresDBExpert(mine_models.AccessoryIndex)
+
+    prefix = os.path.join(os.environ.get("ASTOOL_STORAGE", ""), tag, "masters", from_master)
+    db = MasterData(prefix)
+    daccess = string_mgr.DictionaryAccess(prefix, lang)
+
+    async with coordinator.pool.acquire() as conn:
+        async with conn.transaction():
+            await adb_expert.create_tables(conn)
+
+        async with conn.transaction():
+            for accessory in db.lookup_all_accessories():
+                await adb_expert.add_object(conn, accessory)
+
+
 async def insert_timeline(expert, conn, events):
     # Use a temporary table with only the new history entries so we don't
     # query the entire list again for set ref updates.
@@ -145,6 +166,7 @@ async def main(
     await coordinator.create_pool()
     hist_expert = db_expert.PostgresDBExpert(mine_models.HistoryIndex)
     set_expert = db_expert.PostgresDBExpert(mine_models.SetIndex)
+    accessory_expert = db_expert.PostgresDBExpert(mine_models.AccessoryIndex)
 
     need_reinit = False
     if clear_history_hard:
@@ -154,6 +176,7 @@ async def main(
     async with coordinator.pool.acquire() as conn:
         await hist_expert.create_tables(conn)
         await set_expert.create_tables(conn)
+        await accessory_expert.create_tables(conn)
 
     can_update_base_data = tag == "jp" and mv != "-"
     can_update_dict_langs = tag in ["en", "jp"] and mv != "-"
@@ -161,6 +184,7 @@ async def main(
     generated_sets: List[mine_models.SetRecord] = []
     if can_update_base_data:
         generated_sets = await update_card_index(tag, TAG_TO_MAIN_LANG[tag], mv, coordinator)
+        await update_accessory_index(tag, TAG_TO_MAIN_LANG[tag], mv, coordinator)
 
     if can_update_dict_langs:
         await fts.update_fts(tag, TAG_TO_MAIN_LANG[tag], mv, coordinator)

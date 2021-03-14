@@ -1,34 +1,69 @@
 <!doctype html>
 <html lang="{{ handler.locale.code }}">
-    <head>
-        <title>{{ _("PT.Welcome") }} - {{ _("PT.SiteName") }}</title>
-
-        {% include t_preamble.html %}
-    </head>
-    <body>
-        {% module Template("uim_nav.html", current="cards") %}
-
-        <div class="container">
-            <h1 class="h3 ml-3 mb-3">
-                Appendix: AppendixHiramekuSkills
-            </h1>
-            <div class="kars-stack">
-                <div class="kars-stack-header">
-                    {{ _("AppendixHiramekuSkills") }}
-                </div>
-                {% for skill in skills %}
-                <div class="media kars-stack-member">
-                    <img class="kars-skill-icon mr-3" src="{{ image_url_reify(skill.thumbnail_asset_path, "png") }}" />
-                    <div class="media-body">
-                        <p class="kars-skill-name mb-0">{% raw tlinject_static(skill.name) %}</p>
-                        <p class="mb-0">{% raw format_skill_effect(skill) %}</p>
-                        <p class="mb-0">{% raw format_skill_target(skill) %}</p>
+    <body data-master="{{ handler.settings["master"].version }}">
+        <div id="results-host" class="">
+            <div class="card kars-card-box gallery-spread">
+                <div class="row">
+                    {% for accessory in accessories %}
+                    <div class="spread-component col-gsp">
+                    <div class="kars-stack">
+                        <div class="kars-stack-header">
+                            {{ _("Accessory.BasicInfo") }}
+                        </div>
+                        <div class="media kars-stack-member">
+                            <img class="mr-3" src="{{ image_url_reify(accessory.thumbnail_asset_path, "png") }}" width="64" height="64" />
+                            <div class="media-body">
+                                <p class="mb-0">
+                                    <strong class="font-weight-bold">{% raw tlinject_static(accessory.name) %}</strong>
+                                    ({% raw tlinject_static(f"kars.attribute_{accessory.attribute}", escape=False) %})
+                                </p>
+                            </div>
+                        </div>
+                        <div class="kars-stack-member">
+                            <table class="table table-sm kars-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col"></th>
+                                        <th scope="col">{{ _("Appeal") }}</th>
+                                        <th scope="col">{{ _("Stam.") }}</th>
+                                        <th scope="col">{{ _("Tech.") }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for lb_level in accessory.tiers %}
+                                    <tr>
+                                        <th scope="row">
+                                            {{ _("★ {star}").format(star=lb_level.tier) }}
+                                            ({{ _("Lv. {level}").format(level=lb_level.level) }})
+                                        </th>
+                                        <td class="let">{{ lb_level.appeal }}</td>
+                                        <td class="let">{{ lb_level.stamina }}</td>
+                                        <td class="let">{{ lb_level.technique }}</td>
+                                    </tr>
+                                    {% end %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="kars-stack-header">
+                            {{ _("Accessory.SkillHeader") }}
+                        </div>
+                        {% for skill in accessory.skills %}
+                        <div class="media kars-stack-member">
+                            <img class="kars-skill-icon mr-3" src="{{ image_url_reify(skill.thumbnail_asset_path, "png") }}" />
+                            <div class="media-body">
+                                <p class="kars-skill-name mb-0">{% raw tlinject_static(skill.name) %}</p>
+                                <p class="mb-0">{% raw format_skill_effect(skill) %}</p>
+                                <p class="mb-0">{% raw format_skill_target(skill) %}</p>
+                                <p class="dev-only text-muted small">Accessory SID: {{ skill.id }}</p>
+                                {# <p class="mb-0">{% raw tlinject_static(skill.description) %}</p> #}
+                            </div>
+                        </div>
+                        {% end %}
                     </div>
+                    </div>
+                    {% end %}
                 </div>
-                {% end %}
             </div>
         </div>
-
-        {% include t_footer.html %}
     </body>
 </html>

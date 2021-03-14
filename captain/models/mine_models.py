@@ -4,7 +4,11 @@ import zlib
 from binascii import hexlify
 from dataclasses import dataclass, field
 
-from libcard2.dataclasses import Card as libcard2_card, Skill as libcard2_skill
+from libcard2.dataclasses import (
+    Card as libcard2_card,
+    Skill as libcard2_skill,
+    Accessory as libcard2_accessory,
+)
 from libcard2 import skill_cs_enums
 from maintenance.mtrack.newsminer import AnySRecord, SEventRecord, SGachaMergeRecord
 
@@ -403,4 +407,148 @@ HistoryIndex = Schema(
         ),
     ],
     expert=SRecordExpert,
+)
+
+
+@dataclass
+class AccessoryExpert(object):
+    ROLES = {
+        1: "voltage",
+        2: "sp",
+        3: "guard",
+        4: "skill",
+    }
+    ATTRIBUTES = {
+        1: "smile",
+        2: "pure",
+        3: "cool",
+        4: "active",
+        5: "natural",
+        6: "elegant",
+    }
+    SOURCES = {1: "unspec_lives_probably", 2: "tower", 3: "other"}
+    accessory: libcard2_accessory
+
+    def id(self):
+        return self.accessory.id
+
+    def ordinal(self):
+        return self.accessory.ordinal
+
+    def rarity(self):
+        return self.accessory.rarity
+
+    def role(self):
+        return self.ROLES.get(self.accessory.role)
+
+    def attribute(self):
+        return self.ATTRIBUTES.get(self.accessory.attribute)
+
+    def kind(self):
+        return self.accessory.kind
+
+    def skills(self):
+        for skill in self.accessory.skills:
+            yield (
+                skill.levels[0].effect_type,
+                skill.trigger_type,
+                self._to_skill_apply_type(skill.levels[0].effect_type, skill.target),
+            )
+            if skill.levels_2:
+                yield (
+                    skill.levels_2[0].effect_type,
+                    skill.trigger_type,
+                    self._to_skill_apply_type(skill.levels_2[0].effect_type, skill.target_2),
+                )
+
+    def _to_skill_apply_type(self, eff, tt: libcard2_skill.TargetType):
+        if eff in skill_cs_enums.IMPLICIT_TARGET_SKILL_TYPES:
+            return "none"
+
+        if tt.self_only:
+            return "self"
+        elif tt.owner_party:
+            return "party"
+        elif tt.owner_school:
+            return "group"
+        elif tt.owner_year:
+            return "year"
+        elif tt.owner_subunit:
+            return "subunit"
+        elif tt.owner_attribute:
+            return "attribute"
+        elif tt.owner_role:
+            return "role"
+        elif tt.fixed_members:
+            return "member"
+        elif tt.apply_count >= 8 and tt.not_self:
+            return "everyone_not_self"
+        elif tt.apply_count >= 8:
+            return "everyone"
+        else:
+            return "special"
+
+        return "none"
+
+    def source(self):
+        return Schema.Empty
+
+
+AccessoryIndex = Schema(
+    "accessory_index_v1",
+    fields=[
+        Field.integer(
+            "id", primary=True, behaviour={"digits": "6", "compare_type": "equal", "sort": False}
+        ),
+        Field.integer("ordinal"),
+        Field.integer(
+            "rarity",
+            behaviour={"captain_treat_as": "enum", "compare_type": "bit-set", "sort": "numeric"},
+        ),
+        Field.enum(
+            "source",
+            ("unspec_lives_probably", "tower", "other"),
+            behaviour={"captain_treat_as": "enum", "compare_type": "bit-set", "sort": False},
+        ),
+        Field.enum(
+            "role",
+            ("voltage", "sp", "guard", "skill"),
+            # Accessories have roles, but they aren't displayed in game so we will hide them for now
+            behaviour={
+                "compare_type": "bit-set",
+                "icons": "/static/images/search/role",
+                "hidden": True,
+            },
+        ),
+        Field.enum(
+            "attribute",
+            ("smile", "pure", "cool", "active", "natural", "elegant"),
+            behaviour={"compare_type": "bit-set", "icons": "/static/images/search/attribute"},
+        ),
+        Field.integer(
+            "kind",
+            behaviour={"captain_treat_as": "enum", "compare_type": "bit-set", "sort": "numeric"},
+        ),
+        # Field.enum(
+        #     "kind",
+        #     ("smile", "pure", "cool", "active", "natural", "elegant"),
+        #     behaviour={"compare_type": "bit-set", "icons": "/static/images/search/attribute"},
+        # ),
+        Field.composite(
+            "skills",
+            Field.integer("effect", behaviour={"captain_treat_as": "enum", "sort": False}),
+            Field.integer("activation_type", behaviour={"captain_treat_as": "enum", "sort": False}),
+            Field.enum(
+                "apply_type",
+                (
+                    "self",
+                    "member",
+                    "none",
+                ),
+                behaviour={"sort": False},
+            ),
+            multiple=True,
+        ),
+    ],
+    expert=AccessoryExpert,
 )

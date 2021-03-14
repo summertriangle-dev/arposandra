@@ -641,27 +641,122 @@ class MasterData(MasterDataLite):
 
         return rlist
 
-    def lookup_all_accessory_skills(self):
-        EFFECT_1 = 15
-        EFFECT_2 = 23
+    ##### ACCESSORIES
+    def lookup_multiple_accessories_by_id(self, idset: Sequence[int]):
+        retl = []
+        for id in idset:
+            retl.append(self.lookup_accessory_by_id(id))
+
+        return retl
+
+    def lookup_all_accessories(self):
+        all_ids = self.connection.execute(
+            """SELECT id FROM m_accessory ORDER BY accessory_no""",
+        )
+
+        return (self.lookup_accessory_by_id(id) for id, in all_ids)
+
+    def lookup_accessory_by_id(self, aid: int):
+        base = self.connection.execute(
+            """SELECT id, name, accessory_no, thumbnail_asset_path,
+                accessory_type, rarity_type, attribute, role
+               FROM m_accessory WHERE id = ?
+            """,
+            (aid,),
+        ).fetchone()
+
+        if base is None:
+            return None
+
+        build = D.Accessory(
+            base["id"],
+            base["accessory_no"],
+            base["name"],
+            base["thumbnail_asset_path"],
+            base["accessory_type"],
+            base["rarity_type"],
+            base["attribute"],
+            base["role"],
+        )
+
+        base = self.connection.execute(
+            """SELECT grade, max_level, appeal, stamina, technique,
+                    accessory_passive_skill_1_master_id, accessory_passive_skill_2_master_id
+               FROM m_accessory_grade_up LEFT JOIN m_accessory_parameter ON
+                (m_accessory_grade_up.accessory_master_id = m_accessory_parameter.accessory_master_id
+                 AND max_level = level)
+               WHERE m_accessory_grade_up.accessory_master_id = ? ORDER BY max_level""",
+            (build.id,),
+        )
+
+        min_skill_id1 = None
+        max_skill_id1 = None
+        min_skill_id2 = None
+        max_skill_id2 = None
+        for grade, max_level, appeal, stamina, technique, skill_1, skill_2 in base:
+            # Some accessories change their skills on tier upgrades.
+            # As far as we know all of them are variants of the same base skills
+            # so we'll merge them into one logical skill.
+            if skill_1:
+                if min_skill_id1 is None:
+                    min_skill_id1 = skill_1
+                max_skill_id1 = skill_1
+
+            if skill_2:
+                if min_skill_id2 is None:
+                    min_skill_id2 = skill_2
+                max_skill_id2 = skill_2
+
+            build.tiers.append(
+                D.Accessory.LevelValues(grade, max_level, appeal, stamina, technique)
+            )
+
+        if min_skill_id1 is not None:
+            if min_skill_id1 == max_skill_id1:
+                build.skills.append(self.lookup_single_accessory_skill(min_skill_id1))
+            else:
+                s_base = self.lookup_single_accessory_skill(min_skill_id1)
+                # We assert that the max skill always exists if the min does.
+                s_mod = self.lookup_single_accessory_skill(max_skill_id1)  # type: ignore
+                # Accessory skills only have two levels.
+                s_base.levels[-1] = s_mod.levels[-1]
+                build.skills.append(s_base)
+
+        if min_skill_id2 is not None:
+            if min_skill_id2 == max_skill_id2:
+                build.skills.append(self.lookup_single_accessory_skill(min_skill_id2))
+            else:
+                s_base = self.lookup_single_accessory_skill(min_skill_id2)
+                # We assert that the max skill always exists if the min does.
+                s_mod = self.lookup_single_accessory_skill(max_skill_id2)  # type: ignore
+                # Accessory skills only have two levels.
+                s_base.levels[-1] = s_mod.levels[-1]
+                build.skills.append(s_base)
+
+        return build
+
+    def lookup_single_accessory_skill(self, skill_id: int):
+        EFFECT_1 = 14
         EFFECT_COUNT = 8
-        da = self.connection.execute(
+        row = self.connection.execute(
             """SELECT m_accessory_passive_skill.id,
                 name, description, rarity, trigger_type, probability_at_level_min,
                 m_accessory_passive_skill.icon_asset_path, m_accessory_passive_skill.thumbnail_asset_path,
                 _Cd1.condition_type, _Cd1.condition_value,
                 _Cd2.condition_type, _Cd2.condition_value,
-                skill_target_master_id1, skill_target_master_id2, skill_effect_master_id2,
+                skill_target_master_id1, skill_target_master_id2,
 
                 _Se1.target_parameter,
                 _Se1.effect_type, _Se1.effect_value,
                 _Se1.scale_type, _Se1.calc_type,
                 _Se1.timing, _Se1.finish_type, _Se1.finish_value,
 
-                _Se2.target_parameter,
-                _Se2.effect_type, _Se2.effect_value,
-                _Se2.scale_type, _Se2.calc_type,
-                _Se2.timing, _Se2.finish_type, _Se2.finish_value
+                probability_at_level_min,
+                probability_at_level_max,
+                effect_value_at_level_min,
+                effect_value_at_level_max,
+                evaluation_param_at_level_min,
+                evaluation_param_at_level_max
 
                 FROM m_accessory_passive_skill
                 LEFT JOIN m_accessory_passive_skill_level ON
@@ -671,37 +766,43 @@ class MasterData(MasterDataLite):
                 LEFT JOIN m_skill_condition AS _Cd1 ON (m_accessory_passive_skill.skill_condition_master_id1 == _Cd1.id)
                 LEFT JOIN m_skill_condition AS _Cd2 ON (m_accessory_passive_skill.skill_condition_master_id2 == _Cd2.id)
                 LEFT JOIN m_skill_effect AS _Se1 ON (m_skill.skill_effect_master_id1 == _Se1.id)
-                LEFT JOIN m_skill_effect AS _Se2 ON (m_skill.skill_effect_master_id2 == _Se2.id)
-                ORDER BY m_accessory_passive_skill.id"""
+                WHERE m_accessory_passive_skill.id = ?
+                ORDER BY m_accessory_passive_skill.id""",
+            (skill_id,),
+        ).fetchone()
+
+        if row is None:
+            return None
+
+        skill = D.Skill(
+            row[0],
+            row[1],
+            row[2],
+            None,
+            None,
+            row[6],
+            row[7],
+            row[3],
+            row[4],
+            row[5],
+            self.lookup_skill_target_type(row[12]),
+            self.lookup_skill_target_type(row[13]) if row[13] else None,
         )
+        if row[8] and row[8] != ConditionType.Non:
+            skill.conditions.append(D.Skill.Condition(row[8], row[9]))
+        if row[10] and row[10] != ConditionType.Non:
+            skill.conditions.append(D.Skill.Condition(row[10], row[11]))
 
-        skills = []
-        for row in da:
-            skill = D.Skill(
-                row[0],
-                row[1],
-                row[2],
-                None,
-                None,
-                row[6],
-                row[7],
-                row[3],
-                row[4],
-                row[5],
-                self.lookup_skill_target_type(row[12]),
-                self.lookup_skill_target_type(row[13]) if row[13] else None,
-            )
-            if row[8] and row[8] != ConditionType.Non:
-                skill.conditions.append(D.Skill.Condition(row[8], row[9]))
-            if row[10] and row[10] != ConditionType.Non:
-                skill.conditions.append(D.Skill.Condition(row[10], row[11]))
+        mut_effect = list(row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT])
+        mut_effect[2] = row["effect_value_at_level_min"]
+        level_min1 = D.Skill.Effect(*mut_effect)
+        mut_effect[2] = row["effect_value_at_level_max"]
+        level_max1 = D.Skill.Effect(*mut_effect)
 
-            skill.levels.append(D.Skill.Effect(*row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
-            if row[14]:
-                skill.levels_2 = [D.Skill.Effect(*row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT])]
-            skills.append(skill)
+        skill.levels.append(level_min1)
+        skill.levels.append(level_max1)
 
-        return skills
+        return skill
 
     def lookup_all_hirameku_skills(self):
         EFFECT_1 = 15

@@ -224,18 +224,37 @@ class CardHistory(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
                 item.feature_card_ids[key] = [c for c in cards if c]
 
 
-@route("/accessory_skills")
-class Accessories(BaseHTMLHandler, LanguageCookieMixin):
-    def get(self):
-        skills = self.settings["master"].lookup_all_accessory_skills()
+@route(r"/api/private/accessories/ajax/([0-9,]+)")
+class AccessoriesAjax(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
+    def spec(self, nums):
+        ret = []
+        unique = set()
+        for s in nums.split(","):
+            try:
+                v = int(s)
+            except ValueError:
+                continue
+            if v in unique:
+                continue
+            ret.append(v)
+            unique.add(v)
+        return ret
+
+    def get(self, accessory_nums):
+        nums = self.spec(accessory_nums)
+        if not nums:
+            self.set_status(404)
+            return
+
+        accessories = [x for x in self.master().lookup_multiple_accessories_by_id(nums) if x]
         tlbatch = set()
-        for skill in skills:
-            tlbatch.update(skill.get_tl_set())
+        for a in accessories:
+            tlbatch |= a.get_tl_set()
 
         self._tlinject_base = self.settings["string_access"].lookup_strings(
             tlbatch, self.get_user_dict_preference()
         )
-        self.render("accessories.html", skills=skills)
+        self.render("accessories.html", accessories=accessories)
 
 
 @route("/hirameku_skills")

@@ -293,3 +293,26 @@ class Live(object):
             for diff in self.difficulties:
                 s |= diff.get_tl_set()
         return s
+
+
+@dataclass
+class Accessory(object):
+    LevelValues = namedtuple("LevelValues", ("tier", "level", "appeal", "stamina", "technique"))
+
+    id: int
+    ordinal: int
+    name: str
+    thumbnail_asset_path: str
+    kind: int
+    rarity: int
+    attribute: int
+    role: int
+
+    tiers: List[LevelValues] = field(default_factory=list)
+    skills: List[Skill] = field(default_factory=list)
+
+    def get_tl_set(self):
+        s = {self.name}
+        for skill in self.skills:
+            s |= skill.get_tl_set()
+        return s
