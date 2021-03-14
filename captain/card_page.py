@@ -23,7 +23,13 @@ from .pageutils import (
 import logging
 
 
-@route("/card/(random|(?:[0-9,]+))(/.*)?")
+@route(r"/cards/(random|(?:[0-9,]+))(/.*)?")
+class CardPageRedirect(BaseHTMLHandler):
+    def get(self, spec, end):
+        self.redirect(f"/card/{spec}{end}", permanent=True)
+
+
+@route(r"/card/(random|(?:[0-9,]+))(/.*)?")
 class CardPage(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin):
     def initialize(self, *args, **kwargs):
         super().initialize(*args, **kwargs)
@@ -129,7 +135,7 @@ class CardPage(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin):
         self.render("cards.html", cards=cards, custom_title=ct, related_sets=sets, og_context={})
 
 
-@route("/cards/by_idol/([0-9]+)(/.*)?")
+@route(r"/cards/by_idol/([0-9]+)(/.*)?")
 class CardPageByMemberID(CardPage, LanguageCookieMixin, DatabaseMixin):
     async def get(self, member_id, _):
         member = self.settings["master"].lookup_member_by_id(member_id)
