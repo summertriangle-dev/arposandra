@@ -30,15 +30,14 @@ async def add_fts_string(lang: str, key: str, value: str, referent: int, connect
     )
 
 
-async def update_fts(tag: str, lang: str, from_master: str, coordinator):
-    prefix = os.path.join(os.environ.get("ASTOOL_STORAGE", ""), tag, "masters", from_master)
-    db = MasterData(prefix)
-    daccess = string_mgr.DictionaryAccess(prefix, lang)
+async def update_fts(
+    lang: str, master: MasterData, dicts: string_mgr.DictionaryAccess, coordinator
+):
     can_add_dictionary_tls = lang in LANG_TO_FTS_CONFIG
 
     async with coordinator.pool.acquire() as conn, conn.transaction():
-        for id in db.card_ordinals_to_ids(db.all_ordinals()):
-            card = db.lookup_card_by_id(id, use_cache=False)
+        for id in master.card_ordinals_to_ids(master.all_ordinals()):
+            card = master.lookup_card_by_id(id, use_cache=False)
 
             t_set = []
             if card.normal_appearance:
@@ -58,6 +57,6 @@ async def update_fts(tag: str, lang: str, from_master: str, coordinator):
                 )
 
             if can_add_dictionary_tls:
-                strings = daccess.lookup_strings(t_set)
+                strings = dicts.lookup_strings(t_set)
                 for orig_key, value in strings.items():
                     await add_fts_string(lang, orig_key, value, card.id, conn)

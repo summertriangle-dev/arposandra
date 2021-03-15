@@ -9,7 +9,7 @@ import pkg_resources
 from collections import namedtuple
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import asyncpg
 import plac
@@ -62,19 +62,39 @@ class IndexerDBCoordinator(object):
             logging.warning("All mtrack tables dropped.")
 
 
+async def perform_master_ops(tag: str, lang: str, master: str, coordinator: IndexerDBCoordinator):
+    can_update_base_data = tag == "jp"
+    can_update_dict_langs = tag in ["en", "jp"]
+
+    context = {}
+
+    prefix = os.path.join(os.environ.get("ASTOOL_STORAGE", ""), tag, "masters", master)
+    db = MasterData(prefix)
+    daccess = string_mgr.DictionaryAccess(prefix, lang)
+
+    if can_update_base_data:
+        context["generated_sets"] = await update_card_index(lang, db, daccess, coordinator)
+        await update_accessory_index(lang, db, daccess, coordinator)
+
+    if can_update_dict_langs:
+        await fts.update_fts(lang, db, daccess, coordinator)
+
+    return context
+
+
 async def update_card_index(
-    tag: str, lang: str, from_master: str, coordinator: IndexerDBCoordinator
+    lang: str,
+    master: MasterData,
+    dicts: string_mgr.DictionaryAccess,
+    coordinator: IndexerDBCoordinator,
 ) -> List[mine_models.SetRecord]:
     cdb_expert = db_expert.PostgresDBExpert(mine_models.CardIndex)
 
-    prefix = os.path.join(os.environ.get("ASTOOL_STORAGE", ""), tag, "masters", from_master)
-    db = MasterData(prefix)
-    daccess = string_mgr.DictionaryAccess(prefix, lang)
     sets = {
         common_name: mine_models.SetRecord(
             common_name, rep, stype="song" if is_song else "same_name"
         )
-        for rep, common_name, is_song in setminer.find_potential_set_names(daccess)
+        for rep, common_name, is_song in setminer.find_potential_set_names(dicts)
     }
     card_names = {}
 
@@ -83,17 +103,17 @@ async def update_card_index(
             await cdb_expert.create_tables(conn)
 
         async with conn.transaction():
-            for id in db.card_ordinals_to_ids(db.all_ordinals()):
-                card = db.lookup_card_by_id(id, use_cache=False)
+            for id in master.card_ordinals_to_ids(master.all_ordinals()):
+                card = master.lookup_card_by_id(id, use_cache=False)
                 await cdb_expert.add_object(conn, card)
 
                 if card.idolized_appearance:
                     card_names[card.id] = (card.idolized_appearance.name, card.ordinal)
 
-        await setminer.generate_solo_sets(conn, db, daccess)
+        await setminer.generate_solo_sets(conn, master, dicts)
 
         # Group cards with the same idolized title.
-        all_names = daccess.lookup_strings(x[0] for x in card_names.values())
+        all_names = dicts.lookup_strings(x[0] for x in card_names.values())
         for (cid, (common_name, ordinal)) in card_names.items():
             set_name = all_names.get(common_name)
             if set_name in sets:
@@ -107,20 +127,19 @@ async def update_card_index(
 
 
 async def update_accessory_index(
-    tag: str, lang: str, from_master: str, coordinator: IndexerDBCoordinator
+    lang: str,
+    master: MasterData,
+    dicts: string_mgr.DictionaryAccess,
+    coordinator: IndexerDBCoordinator,
 ):
     adb_expert = db_expert.PostgresDBExpert(mine_models.AccessoryIndex)
-
-    prefix = os.path.join(os.environ.get("ASTOOL_STORAGE", ""), tag, "masters", from_master)
-    db = MasterData(prefix)
-    daccess = string_mgr.DictionaryAccess(prefix, lang)
 
     async with coordinator.pool.acquire() as conn:
         async with conn.transaction():
             await adb_expert.create_tables(conn)
 
         async with conn.transaction():
-            for accessory in db.lookup_all_accessories():
+            for accessory in master.lookup_all_accessories():
                 await adb_expert.add_object(conn, accessory)
 
 
@@ -178,16 +197,11 @@ async def main(
         await set_expert.create_tables(conn)
         await accessory_expert.create_tables(conn)
 
-    can_update_base_data = tag == "jp" and mv != "-"
-    can_update_dict_langs = tag in ["en", "jp"] and mv != "-"
-
     generated_sets: List[mine_models.SetRecord] = []
-    if can_update_base_data:
-        generated_sets = await update_card_index(tag, TAG_TO_MAIN_LANG[tag], mv, coordinator)
-        await update_accessory_index(tag, TAG_TO_MAIN_LANG[tag], mv, coordinator)
 
-    if can_update_dict_langs:
-        await fts.update_fts(tag, TAG_TO_MAIN_LANG[tag], mv, coordinator)
+    if mv != "-":
+        context = await perform_master_ops(tag, TAG_TO_MAIN_LANG[tag], mv, coordinator)
+        generated_sets = context.get("generated_sets", generated_sets)
 
     logging.debug("Master import done in %s ms", (time.monotonic() - cloc) * 1000)
     cloc = time.monotonic()
@@ -206,9 +220,7 @@ async def main(
                 pre_events = newsminer.prepare_old_evt_entries(tag)
                 events = pre_events + events
 
-            for set_ in setminer.filter_sets_against_history(
-                generated_sets, events, can_update_base_data
-            ):
+            for set_ in setminer.filter_sets_against_history(generated_sets, events, tag == "jp"):
                 await set_expert.add_object(conn, set_, overwrite=False)
 
             if events:
