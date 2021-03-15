@@ -408,4 +408,9 @@ PERCENT_VALUE_SKILL_TYPES = {
     ST.AddCollaboGaugeGimmickDebuff,
 }
 
-MIXED_VALUE_SKILL_TYPES = {ST.AddVoltageBuff, ST.AddAppealBuff}
+MIXED_VALUE_SKILL_TYPES = {
+    ST.AddVoltageBuff,
+    ST.AddAppealBuff,
+    ST.AddNoteScoreBaseBonusUpLimitBuff,
+    ST.AddCriticalAppealBaseBonusChangingHpRateMax,
+}

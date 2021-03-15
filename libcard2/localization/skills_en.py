@@ -388,4 +388,9 @@ EN.skill_effect[ST.AddCriticalRateGimmickDebuff] = \
 EN.skill_effect[ST.AddCollaboGaugeGimmickDebuff] = \
     "Reduce base SP gain by {var}{value}{end}"
 
+EN.skill_effect[ST.AddNoteScoreBaseBonusUpLimitBuff] = \
+    "Raise tap voltage limit by {var}{value}{end}"
+EN.skill_effect[ST.AddCriticalAppealBaseBonusChangingHpRateMax] = \
+    "Increase voltage gain from critical notes based on current stamina (max. {var}{value}{end})"
+
 # fmt: on
