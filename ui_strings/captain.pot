@@ -1,6 +1,12 @@
 msgid "#{card_no}: {idol_name}"
 msgstr "#{card_no}: {idol_name}"
 
+msgid "Accessory.BasicInfo"
+msgstr "Accessory.BasicInfo"
+
+msgid "Accessory.SkillHeader"
+msgstr "Accessory.SkillHeader"
+
 msgid "Acknowledgements"
 msgstr "Acknowledgements"
 
@@ -18,9 +24,6 @@ msgstr "Appeal Chances"
 
 msgid "Appeal"
 msgstr "Appeal"
-
-msgid "AppendixHiramekuSkills"
-msgstr "AppendixHiramekuSkills"
 
 msgid "Attribute"
 msgstr "Attribute"
@@ -259,6 +262,12 @@ msgstr "NewsType.4"
 msgid "Note Gimmicks"
 msgstr "Note Gimmicks"
 
+msgid "OpengraphAccessorySearchDescription"
+msgstr "OpengraphAccessorySearchDescription"
+
+msgid "OpengraphAccessorySearchTitle"
+msgstr "OpengraphAccessorySearchTitle"
+
 msgid "OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:{group}:{subunit}:{grade}"
 msgstr "OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:{group}:{subunit}:{grade}"
 
@@ -315,6 +324,9 @@ msgstr "PT.IdolList"
 
 msgid "PT.News"
 msgstr "PT.News"
+
+msgid "PT.SearchAccessories"
+msgstr "PT.SearchAccessories"
 
 msgid "PT.SearchCards"
 msgstr "PT.SearchCards"

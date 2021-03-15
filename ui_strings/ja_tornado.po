@@ -7,6 +7,12 @@ msgstr ""
 msgid "#{card_no}: {idol_name}"
 msgstr "#{card_no}: {idol_name}"
 
+msgid "Accessory.BasicInfo"
+msgstr "Basic Information"
+
+msgid "Accessory.SkillHeader"
+msgstr "Skill"
+
 msgid "Acknowledgements"
 msgstr "謝辞"
 
@@ -26,9 +32,6 @@ msgstr "アピールチャンス"
 
 msgid "Appeal"
 msgstr "アピール"
-
-msgid "AppendixHiramekuSkills"
-msgstr "AppendixHiramekuSkills"
 
 msgid "Attribute"
 msgstr "属性"
@@ -277,6 +280,12 @@ msgstr "ショップ"
 msgid "Note Gimmicks"
 msgstr "ノーツギミック"
 
+msgid "OpengraphAccessorySearchDescription"
+msgstr "What even are those, anyway?"
+
+msgid "OpengraphAccessorySearchTitle"
+msgstr "Accessory Search"
+
 msgid ""
 "OpengraphCardDescription:{appeal}:{stamina}:{technique}:{role}:{attribute}:"
 "{group}:{subunit}:{grade}"
@@ -339,6 +348,9 @@ msgstr "アイドルリスト"
 
 msgid "PT.News"
 msgstr "お知らせ"
+
+msgid "PT.SearchAccessories"
+msgstr "アクセサリー検索"
 
 msgid "PT.SearchCards"
 msgstr "メンバー検索"
