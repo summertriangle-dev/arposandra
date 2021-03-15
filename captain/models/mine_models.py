@@ -2,14 +2,14 @@ import json
 import logging
 import zlib
 from binascii import hexlify
-from dataclasses import dataclass, field
+from dataclasses import InitVar, dataclass, field
+from typing import Dict
 
-from libcard2.dataclasses import (
-    Card as libcard2_card,
-    Skill as libcard2_skill,
-    Accessory as libcard2_accessory,
-)
 from libcard2 import skill_cs_enums
+from libcard2.dataclasses import Accessory as libcard2_accessory
+from libcard2.dataclasses import Card as libcard2_card
+from libcard2.dataclasses import Skill as libcard2_skill
+from libcard2.string_mgr import DictionaryAccess
 from maintenance.mtrack.newsminer import AnySRecord, SEventRecord, SGachaMergeRecord
 
 from .indexer.types import Field, Schema
@@ -411,6 +411,23 @@ HistoryIndex = Schema(
 
 
 @dataclass
+class AccessoryStringCache(object):
+    dicts: DictionaryAccess
+    cache: Dict[str, str] = field(init=False, default_factory=dict)
+
+    initial_set: InitVar[str] = None
+
+    def __post_init__(self, initial_set):
+        self.cache.update(self.dicts.lookup_strings(initial_set))
+
+    def get(self, key):
+        r = self.cache.get(key)
+        if r is None:
+            r = self.cache[key] = self.dicts.lookup_single_string(key)
+
+        return r
+
+
 class AccessoryExpert(object):
     ROLES = {
         1: "voltage",
@@ -427,7 +444,52 @@ class AccessoryExpert(object):
         6: "elegant",
     }
     SOURCES = {1: "unspec_lives_probably", 2: "tower", 3: "other"}
-    accessory: libcard2_accessory
+    KINDS = (
+        "bracelet",
+        "brooch",
+        "earring",
+        "hairpin",
+        "keychain",
+        "necklace",
+        "pouch",
+        "ribbon",
+        "towel",
+        "wristband",
+        "crest",
+        "pins",
+        "santa_hat",
+        "choker",
+        "belt",
+        "bangle",
+        "other",
+    )
+
+    KIND_MATCH = [
+        (False, r"サンタ帽", "santa_hat"),
+        (False, r"ユニットピンズ", "pins"),
+        (True, r"校章", "crest"),
+        (True, r"ポーチ", "pouch"),
+        (True, r"リボン", "ribbon"),
+        (True, r"タオル", "towel"),
+        (True, r"ブローチ", "brooch"),
+        (True, r"ヘアピン", "hairpin"),
+        (True, r"イヤリング", "earring"),
+        (True, r"ネックレス", "necklace"),
+        (True, r"ブレスレット", "bracelet"),
+        (True, r"キーホルダー", "keychain"),
+        (True, r"リストバンド", "wristband"),
+        (True, r"ベルト", "belt"),
+        (True, r"バングル", "bangle"),
+        (True, r"チョーカー", "choker"),
+    ]
+
+    @classmethod
+    def bind(cls, strings: AccessoryStringCache):
+        return lambda x: cls(strings, x)
+
+    def __init__(self, strings: AccessoryStringCache, accessory: libcard2_accessory):
+        self.strings_ref = strings
+        self.accessory = accessory
 
     def id(self):
         return self.accessory.id
@@ -445,7 +507,15 @@ class AccessoryExpert(object):
         return self.ATTRIBUTES.get(self.accessory.attribute)
 
     def kind(self):
-        return self.accessory.kind
+        # FIXME: this is slow
+        name = self.strings_ref.get(self.accessory.name)
+        for is_end, expr, kindid in self.KIND_MATCH:
+            if is_end and name.endswith(expr):
+                return kindid
+            elif not is_end and name.startswith(expr):
+                return kindid
+
+        return "other"
 
     def skills(self):
         for skill in self.accessory.skills:
@@ -525,15 +595,10 @@ AccessoryIndex = Schema(
             ("smile", "pure", "cool", "active", "natural", "elegant"),
             behaviour={"compare_type": "bit-set", "icons": "/static/images/search/attribute"},
         ),
-        Field.integer(
+        Field.enum(
             "kind",
-            behaviour={"captain_treat_as": "enum", "compare_type": "bit-set", "sort": "numeric"},
+            AccessoryExpert.KINDS,
         ),
-        # Field.enum(
-        #     "kind",
-        #     ("smile", "pure", "cool", "active", "natural", "elegant"),
-        #     behaviour={"compare_type": "bit-set", "icons": "/static/images/search/attribute"},
-        # ),
         Field.composite(
             "skills",
             Field.integer("effect", behaviour={"captain_treat_as": "enum", "sort": False}),

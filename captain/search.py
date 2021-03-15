@@ -176,7 +176,7 @@ class CardSearchExec(BaseAPIHandler, LanguageCookieMixin, DatabaseMixin):
         self.write({"result": [r["id"] for r in res]})
 
 
-@route(r"/accessories")
+@route(r"/accessories/search")
 class AccessorySearch(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin):
     SUPPORTED_LANGS = ["en"]
 

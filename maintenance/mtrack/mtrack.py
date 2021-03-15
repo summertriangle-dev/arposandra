@@ -100,9 +100,6 @@ async def update_card_index(
 
     async with coordinator.pool.acquire() as conn:
         async with conn.transaction():
-            await cdb_expert.create_tables(conn)
-
-        async with conn.transaction():
             for id in master.card_ordinals_to_ids(master.all_ordinals()):
                 card = master.lookup_card_by_id(id, use_cache=False)
                 await cdb_expert.add_object(conn, card)
@@ -132,12 +129,18 @@ async def update_accessory_index(
     dicts: string_mgr.DictionaryAccess,
     coordinator: IndexerDBCoordinator,
 ):
+    cur = master.connection.execute(
+        "SELECT COUNT(0) AS ct, name FROM m_accessory GROUP BY name HAVING ct > 1"
+    )
+    string_set = set(dkey for count, dkey in cur)
+    string_cache = mine_models.AccessoryStringCache(dicts, string_set)
+
+    expert = mine_models.AccessoryExpert.bind(string_cache)
+    # FIXME: weird
+    mine_models.AccessoryIndex.expert = expert
     adb_expert = db_expert.PostgresDBExpert(mine_models.AccessoryIndex)
 
     async with coordinator.pool.acquire() as conn:
-        async with conn.transaction():
-            await adb_expert.create_tables(conn)
-
         async with conn.transaction():
             for accessory in master.lookup_all_accessories():
                 await adb_expert.add_object(conn, accessory)
@@ -193,6 +196,7 @@ async def main(
         need_reinit = True
 
     async with coordinator.pool.acquire() as conn:
+        await db_expert.PostgresDBExpert(mine_models.CardIndex).create_tables(conn)
         await hist_expert.create_tables(conn)
         await set_expert.create_tables(conn)
         await accessory_expert.create_tables(conn)

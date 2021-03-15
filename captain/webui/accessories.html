@@ -51,6 +51,7 @@
                         <div class="media kars-stack-member">
                             <img class="kars-skill-icon mr-3" src="{{ image_url_reify(skill.thumbnail_asset_path, "png") }}" />
                             <div class="media-body">
+                                {# FIXME: need to make tlinject work on ajax #}
                                 <p class="kars-skill-name mb-0">{% raw tlinject_static(skill.name) %}</p>
                                 <p class="mb-0">{% raw format_skill_effect(skill) %}</p>
                                 <p class="mb-0">{% raw format_skill_target(skill) %}</p>

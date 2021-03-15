@@ -265,3 +265,54 @@ msgstr "Dream Live Parade Exchange"
 
 msgid "kars.search_criteria.acc_index.source.other"
 msgstr "Special"
+
+msgid "kars.search_criteria.acc_index.kind.bracelet"
+msgstr "Bracelets"
+
+msgid "kars.search_criteria.acc_index.kind.brooch"
+msgstr "Brooches"
+
+msgid "kars.search_criteria.acc_index.kind.earring"
+msgstr "Earrings"
+
+msgid "kars.search_criteria.acc_index.kind.hairpin"
+msgstr "Hairpins"
+
+msgid "kars.search_criteria.acc_index.kind.keychain"
+msgstr "Keychains"
+
+msgid "kars.search_criteria.acc_index.kind.necklace"
+msgstr "Necklaces"
+
+msgid "kars.search_criteria.acc_index.kind.pouch"
+msgstr "Pouches"
+
+msgid "kars.search_criteria.acc_index.kind.ribbon"
+msgstr "Ribbons"
+
+msgid "kars.search_criteria.acc_index.kind.towel"
+msgstr "Towels"
+
+msgid "kars.search_criteria.acc_index.kind.wristband"
+msgstr "Wristbands"
+
+msgid "kars.search_criteria.acc_index.kind.crest"
+msgstr "Crests"
+
+msgid "kars.search_criteria.acc_index.kind.pins"
+msgstr "Unit Pins"
+
+msgid "kars.search_criteria.acc_index.kind.santa_hat"
+msgstr "Santa Hats"
+
+msgid "kars.search_criteria.acc_index.kind.choker"
+msgstr "Chokers"
+
+msgid "kars.search_criteria.acc_index.kind.belt"
+msgstr "Belts"
+
+msgid "kars.search_criteria.acc_index.kind.bangle"
+msgstr "Bangles"
+
+msgid "kars.search_criteria.acc_index.kind.other"
+msgstr "Other"

@@ -224,6 +224,13 @@ class CardHistory(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
                 item.feature_card_ids[key] = [c for c in cards if c]
 
 
+@route(r"/accessories")
+class AccessoriesBase(BaseHTMLHandler):
+    def get(self):
+        # for now...
+        self.redirect("/accessories/search")
+
+
 @route(r"/api/private/accessories/ajax/([0-9,]+)")
 class AccessoriesAjax(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
     def spec(self, nums):
