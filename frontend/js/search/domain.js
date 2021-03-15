@@ -128,4 +128,12 @@ export class PAAccessorySearchDomainExpert {
             xhr.send(JSON.stringify(withParams))
         })
     }
+
+    didAddCriteria(context, addedCriteria, proposedState) {
+        return proposedState
+    }
+
+    didChangeCriteria(context, addedCriteria, proposedState) {
+        return proposedState
+    }
 }
