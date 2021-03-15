@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="{{ handler.locale.code }}">
     <body data-master="{{ handler.settings["master"].version }}">
-        <div id="results-host" class="">
+        <div id="results-host">
             <div class="card kars-card-box gallery-spread">
                 <div class="row">
                     {% for accessory in accessories %}
-                    <div class="spread-component col-gsp">
+                    <div class="spread-component col-gsp two-by">
                     <div class="kars-stack">
                         <div class="kars-stack-header">
                             {{ _("Accessory.BasicInfo") }}
@@ -55,7 +55,7 @@
                                 <p class="mb-0">{% raw format_skill_effect(skill) %}</p>
                                 <p class="mb-0">{% raw format_skill_target(skill) %}</p>
                                 <p class="dev-only text-muted small">Accessory SID: {{ skill.id }}</p>
-                                {# <p class="mb-0">{% raw tlinject_static(skill.description) %}</p> #}
+                                <p class="dev-only text-muted small">{% raw tlinject_static(skill.description) %}</p>
                             </div>
                         </div>
                         {% end %}
