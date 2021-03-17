@@ -148,6 +148,7 @@ class PASearchContext {
         this.currentQuery = query
         this.currentSort = sortBy
         this.currentTemplate = saveTemplate.slice(0)
+        this.inlineErrorMessage = null
 
         this.transitionToState(PASearchProgressState.Searching)
         this.api.sendSearchRequest(nq).catch((error) => {
@@ -187,6 +188,7 @@ class PASearchContext {
         this.currentResults = results
         this.currentPage = page || 0
 
+        const header = document.getElementById("info-host")
         if (this.currentResults.length > 0) {
             this.transitionToState(PASearchProgressState.LoadingResults)
 
@@ -204,8 +206,9 @@ class PASearchContext {
             try {
                 doc = await this.api.sendAjaxRequest(idl)
             } catch (rejectReason) {
+                ReactDOM.render(null, header)
+                ReactDOM.render(null, host)
                 ReactDOM.render(null, document.getElementById("pager-host"))
-                document.getElementById("results-host").innerHTML = ""
 
                 this.recoveryInfo = {results, page}
                 this.transitionToState(PASearchProgressState.ErrorLoadingCards)
@@ -219,7 +222,6 @@ class PASearchContext {
             host.parentNode.insertBefore(incoming, host)
             host.parentNode.removeChild(host)
 
-            const header = document.getElementById("info-host")
             ReactDOM.render(
                 <p>
                     {Infra.strings.formatString(
@@ -248,6 +250,7 @@ class PASearchContext {
             host.className = ""
             host.style.opacity = 1.0
 
+            ReactDOM.render(null, header)
             ReactDOM.render(null, host)
             ReactDOM.render(null, document.getElementById("pager-host"))
         }
