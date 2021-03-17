@@ -17,6 +17,7 @@
                                     <strong class="font-weight-bold">{% raw tlinject_static(accessory.name) %}</strong>
                                     ({% raw tlinject_static(f"kars.attribute_{accessory.attribute}", escape=False) %})
                                 </p>
+                                <p class="mb-0" title="{{ accessory.id }}">#{{ accessory.ordinal }}</p>
                             </div>
                         </div>
                         <div class="kars-stack-member">
@@ -55,6 +56,9 @@
                                 <p class="kars-skill-name mb-0">{% raw tlinject_static(skill.name) %}</p>
                                 <p class="mb-0">{% raw format_skill_effect(skill) %}</p>
                                 <p class="mb-0">{% raw format_skill_target(skill) %}</p>
+                                {% if skill.is_squashed %}
+                                <p class="mb-0 text-muted small">{{ _("Accessory.SkillIsSquashedLabel") }}</p>
+                                {% end %}
                                 <p class="dev-only text-muted small">Accessory SID: {{ skill.id }}</p>
                                 <p class="dev-only text-muted small">{% raw tlinject_static(skill.description) %}</p>
                             </div>

@@ -124,6 +124,8 @@ class Skill(object):
     levels: List[Effect] = field(default_factory=list)
     levels_2: Optional[List[Effect]] = field(default_factory=lambda: None)
 
+    is_squashed: bool = field(init=False, default=False)
+
     def has_complex_trigger(self):
         return self.trigger_type != TT.Non
 

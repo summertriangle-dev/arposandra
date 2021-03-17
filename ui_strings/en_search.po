@@ -258,13 +258,13 @@ msgid "kars.search_criteria.acc_index.rarity.r"
 msgstr "R"
 
 msgid "kars.search_criteria.acc_index.source.unspec_lives_probably"
-msgstr "Unspecified (probably live shows)"
+msgstr "Domain of Pain"
 
 msgid "kars.search_criteria.acc_index.source.tower"
-msgstr "Dream Live Parade Exchange"
+msgstr "Domain of Fear"
 
 msgid "kars.search_criteria.acc_index.source.other"
-msgstr "Special"
+msgstr "Domain of Secrets"
 
 msgid "kars.search_criteria.acc_index.kind.bracelet"
 msgstr "Bracelets"

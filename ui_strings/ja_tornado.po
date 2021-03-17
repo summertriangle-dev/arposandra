@@ -13,6 +13,9 @@ msgstr "Basic Information"
 msgid "Accessory.SkillHeader"
 msgstr "Skill"
 
+msgid "Accessory.SkillIsSquashedLabel"
+msgstr "This skill is improved as limit break levels are unlocked. Values shown here reflect both the min. and max. levels."
+
 msgid "Acknowledgements"
 msgstr "謝辞"
 

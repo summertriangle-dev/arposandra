@@ -720,6 +720,7 @@ class MasterData(MasterDataLite):
                 s_mod = self.lookup_single_accessory_skill(max_skill_id1)  # type: ignore
                 # Accessory skills only have two levels.
                 s_base.levels[-1] = s_mod.levels[-1]
+                s_base.is_squashed = True
                 build.skills.append(s_base)
 
         if min_skill_id2 is not None:
@@ -731,6 +732,7 @@ class MasterData(MasterDataLite):
                 s_mod = self.lookup_single_accessory_skill(max_skill_id2)  # type: ignore
                 # Accessory skills only have two levels.
                 s_base.levels[-1] = s_mod.levels[-1]
+                s_base.is_squashed = True
                 build.skills.append(s_base)
 
         return build

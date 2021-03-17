@@ -7,6 +7,9 @@ msgstr "Accessory.BasicInfo"
 msgid "Accessory.SkillHeader"
 msgstr "Accessory.SkillHeader"
 
+msgid "Accessory.SkillIsSquashedLabel"
+msgstr "Accessory.SkillIsSquashedLabel"
+
 msgid "Acknowledgements"
 msgstr "Acknowledgements"
 
