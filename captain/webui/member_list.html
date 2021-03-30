@@ -36,6 +36,23 @@
                     {% raw tlinject_static(members[0].group_name) %}
                 {% end %}
             </h1>
+            {% if subpage_type not in ["unit", "member"] %}
+            <p class="mb-3 font-italic kars-negative-box">
+                {% if members[0].group_name == "k.m_dic_group_name_muse" %}
+                A legendary punk rock group from the United Kingdom.
+                Their hard style ruled the airwaves of decades past. 
+                Although they no longer perform as a group, their music is fondly remembered by dads across the world.
+                {% elif members[0].group_name == "k.m_dic_group_name_aqours" %}
+                A country-pop group that appeared out of Georgia in the mid-2030s.
+                Their songs have become the unofficial anthem of weekenders across the country.
+                Ask anyone internationally what "American music" is, and they will mention Truckours without fail.
+                {% elif members[0].group_name == "k.m_dic_group_name_niji" %}
+                Formerly nationally recognized, Rainbow Ridge High School's glee club fell into disarray after
+                its key members graduated, leaving Cassie to pick up the pieces. With her friends (and sometimes rivals),
+                she is fighting to put the otherwise unremarkable West Coast town back on the map.
+                {% end %}
+            </p>
+            {% end %}
 
             <div class="card kars-card-box">
             {% for member in members %}
