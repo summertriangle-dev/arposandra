@@ -224,7 +224,9 @@ async def main(
                 pre_events = newsminer.prepare_old_evt_entries(tag)
                 events = pre_events + events
 
-            for set_ in setminer.filter_sets_against_history(generated_sets, events, tag == "jp"):
+            for set_ in setminer.filter_sets_against_history(
+                generated_sets, events, tag == "jp" and mv != "-"
+            ):
                 await set_expert.add_object(conn, set_, overwrite=False)
 
             if events:
