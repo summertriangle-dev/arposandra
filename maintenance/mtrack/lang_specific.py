@@ -15,6 +15,7 @@ LANG_EN_FES_MARKER_START = "scout in"
 LANG_EN_FES_MARKER_END = "festival!"
 LANG_EN_FES_MARKER_ALT = "festival scouting"
 LANG_EN_PICKUP_MARKER = "spotlight scouting"
+LANG_EN_PARTY_MARKER = "party scouting"
 LANG_EN_EVT_OMNIBUS_MARKER = "school idol lineup"
 LANG_EN_POSTSCRIPT_MARKER = "(UPDATED)"
 
@@ -54,6 +55,8 @@ def gacha_label_from_name_en(name: str) -> int:
         return T_EVENT_TIE
     elif LANG_EN_EVT_SECOND_HALF in name:
         return T_IGNORE
+    elif name.endswith(LANG_EN_PARTY_MARKER):
+        return T_PARTY
     else:
         return T_ELSE
 
