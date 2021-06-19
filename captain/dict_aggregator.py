@@ -32,6 +32,9 @@ class DictionaryAggregator(object):
             if key == "k.passive_skill_name_321030111":
                 to_remove.append(key)
 
+            if key == "k.passive_skill_name_321030121":
+                to_remove.append(key)
+
         for k in to_remove:
             stringsd.pop(k)
 
