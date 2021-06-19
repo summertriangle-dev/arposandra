@@ -66,7 +66,7 @@ class TLInjectContext(object):
                 string,
             )
             if cfg := self.LANG_CODE_TO_FTS_CONFIG.get(lang):
-                hash = hashlib.sha224(string.encode("utf8")).digest()
+                hash = hashlib.sha224((string or "").encode("utf8")).digest()
                 await c.execute(
                     """
                     UPDATE card_fts_v2 SET terms = to_tsvector($5, $3), dupe = $4
