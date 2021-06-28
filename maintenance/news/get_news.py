@@ -12,7 +12,7 @@ from maintenance.news import dm_parse
 from maintenance.news import theatre_parse
 
 
-DT_DISABLED_REGIONS = {"en"}
+DT_DISABLED_REGIONS = {"en", "jp"}
 
 
 def begin_session_2(context):
