@@ -10,12 +10,12 @@ from tornado.web import RequestHandler
 
 from . import pageutils
 from .bases import BaseHTMLHandler, BaseAPIHandler
-from .dispatch import DatabaseMixin, LanguageCookieMixin, route
+from .dispatch import DatabaseMixin, route
 from .models import card_tracking
 
 
 @route("/")
-class Slash(BaseHTMLHandler, LanguageCookieMixin):
+class Slash(BaseHTMLHandler):
     def get(self):
         self.render("home.html")
 
@@ -33,7 +33,7 @@ class NavPageNoJS(BaseHTMLHandler):
 @route(r"/idols/(unit)/([0-9]+)/?")
 @route(r"/idols/(group)/([0-9]+)/?")
 @route(r"/idols/(id)/([0-9]+)/?")
-class IdolsRoot(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
+class IdolsRoot(BaseHTMLHandler, DatabaseMixin):
     def base_member_preview_list(self, member: dataclasses.Member):
         if "base_member_preview_list" in member.user_info:
             lst = member.user_info["base_member_preview_list"]
@@ -126,7 +126,7 @@ class IdolsRoot(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
 
 
 @route("/lives")
-class LiveRoot(BaseHTMLHandler, LanguageCookieMixin):
+class LiveRoot(BaseHTMLHandler):
     def get(self):
         songs = self.settings["master"].lookup_song_list()
 
@@ -146,7 +146,7 @@ class LiveRoot(BaseHTMLHandler, LanguageCookieMixin):
 
 
 @route("/live(?:s)?/([0-9]+)(/.*)?")
-class LiveSingle(BaseHTMLHandler, LanguageCookieMixin):
+class LiveSingle(BaseHTMLHandler):
     def get(self, live_id, _slug=None):
         song = self.settings["master"].lookup_song_difficulties(int(live_id))
 
@@ -160,7 +160,7 @@ class LiveSingle(BaseHTMLHandler, LanguageCookieMixin):
 
 @route(r"/history/?")
 @route(r"/history/([0-9]+)/?")
-class HistoryRedirect(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
+class HistoryRedirect(BaseHTMLHandler, DatabaseMixin):
     def get(self, page=None):
         server = self.database().news_database.validate_server_id(self.get_cookie("dsid", None))
         if page is not None:
@@ -171,7 +171,7 @@ class HistoryRedirect(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
 
 @route(r"/([a-z]+)/history/?")
 @route(r"/([a-z]+)/history/([0-9]+)/?")
-class CardHistory(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
+class CardHistory(BaseHTMLHandler, DatabaseMixin):
     VALID_CATEGORIES: List[str] = []
 
     async def get(self, server_id, page=None):
@@ -232,7 +232,7 @@ class AccessoriesBase(BaseHTMLHandler):
 
 
 @route(r"/api/private/accessories/ajax/([0-9,]+)")
-class AccessoriesAjax(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
+class AccessoriesAjax(BaseHTMLHandler, DatabaseMixin):
     def spec(self, nums):
         ret = []
         unique = set()
@@ -265,7 +265,7 @@ class AccessoriesAjax(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
 
 
 @route("/hirameku_skills")
-class Hirameku(BaseHTMLHandler, LanguageCookieMixin):
+class Hirameku(BaseHTMLHandler):
     def get(self):
         skills = self.settings["master"].lookup_all_hirameku_skills()
         skills.sort(key=lambda x: (x.levels[0][2], x.rarity))
@@ -281,13 +281,13 @@ class Hirameku(BaseHTMLHandler, LanguageCookieMixin):
 
 
 @route("/experiments")
-class ExperimentPage(BaseHTMLHandler, LanguageCookieMixin):
+class ExperimentPage(BaseHTMLHandler):
     def get(self):
         self.render("experiments.html")
 
 
 @route(r"/([a-z]+)/story/(.+)")
-class StoryViewerScaffold(BaseHTMLHandler, LanguageCookieMixin):
+class StoryViewerScaffold(BaseHTMLHandler):
     def get(self, region, script):
         self.render(
             "story_scaffold.html",

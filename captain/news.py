@@ -19,14 +19,14 @@ from tornado.web import RequestHandler
 
 from . import pageutils
 from .bases import BaseHTMLHandler, BaseAPIHandler
-from .dispatch import DatabaseMixin, LanguageCookieMixin, route
+from .dispatch import DatabaseMixin, route
 
 JP_OFFSET_FROM_UTC = 32400
 
 
 @route(r"/news/?")
 @route(r"/([a-z]+)/news/?")
-class NewsList(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
+class NewsList(BaseHTMLHandler, DatabaseMixin):
     NUM_ITEMS_PER_PAGE = 20
 
     async def get(self, region=None):
@@ -78,7 +78,7 @@ class NewsList(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
 
 
 @route(r"/([a-z]+)/news/([0-9]+)")
-class NewsSingle(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
+class NewsSingle(BaseHTMLHandler, DatabaseMixin):
     CARD_INCLUDE_INSTR = re.compile(r"<\?asi-include-card card-id:([0-9]+)\?>")
     TIMESTAMP_INSTR = re.compile(r"<\?asi-blind-ts t:(1|2|4|5);v:([0-9]+)\?>")
     JP_OFFSET_FROM_UTC = 32400
@@ -175,7 +175,7 @@ class InlineImageResolver(BaseAPIHandler):
 
 
 @route(r"/api/private/intersitial")
-class NewsLinkDerefer(BaseHTMLHandler, LanguageCookieMixin):
+class NewsLinkDerefer(BaseHTMLHandler):
     def get(self):
         imp = self.get_argument("p", None)
         if imp is None:

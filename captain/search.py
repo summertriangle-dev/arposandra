@@ -9,13 +9,13 @@ from tornado.web import RequestHandler
 
 from . import pageutils
 from .bases import BaseHTMLHandler, BaseAPIHandler
-from .dispatch import DatabaseMixin, LanguageCookieMixin, route
+from .dispatch import DatabaseMixin, route
 from .models.indexer import db_expert, types
 from .models.mine_models import CardIndex, AccessoryIndex
 
 
 @route(r"/cards/search")
-class CardSearch(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin):
+class CardSearch(BaseHTMLHandler, DatabaseMixin):
     SUPPORTED_LANGS = ["en", "ja"]
 
     def indexes_for_lang(self):
@@ -41,7 +41,7 @@ class CardSearch(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin):
 
 
 @route(r"/api/private/search/cards/results.json")
-class CardSearchExec(BaseAPIHandler, LanguageCookieMixin, DatabaseMixin):
+class CardSearchExec(BaseAPIHandler, DatabaseMixin):
     FIELD_BLACKLIST = ["release_dates"]
     INDEX = CardIndex
     DEFAULT_SORT = ("ordinal", True)
@@ -177,7 +177,7 @@ class CardSearchExec(BaseAPIHandler, LanguageCookieMixin, DatabaseMixin):
 
 
 @route(r"/accessories/search")
-class AccessorySearch(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin):
+class AccessorySearch(BaseHTMLHandler, DatabaseMixin):
     SUPPORTED_LANGS = ["en"]
 
     def indexes_for_lang(self):

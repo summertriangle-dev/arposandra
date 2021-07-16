@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from tornado.web import RequestHandler
 
 from .bases import BaseHTMLHandler, BaseAPIHandler
-from .dispatch import route, LanguageCookieMixin, DatabaseMixin
+from .dispatch import route, DatabaseMixin
 from . import pageutils
 
 
@@ -23,7 +23,7 @@ class EventServerRedirect(BaseHTMLHandler, DatabaseMixin):
 
 @route(r"/([a-z]+)/(events|events/top)/?")
 @route(r"/([a-z]+)/(events|events/top)/([0-9]+)(?:/[^/]*)?")
-class EventDash(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin):
+class EventDash(BaseHTMLHandler, DatabaseMixin):
     def to_track_mode(self, urltype):
         if urltype == "events/top":
             return "top10"

@@ -11,7 +11,7 @@ from tornado.web import RequestHandler
 from libcard2.dataclasses import Card, Member
 
 from .bases import BaseHTMLHandler, BaseAPIHandler
-from .dispatch import DatabaseMixin, LanguageCookieMixin, route
+from .dispatch import DatabaseMixin, route
 from .models import card_tracking
 from .pageutils import (
     get_as_secret,
@@ -30,7 +30,7 @@ class CardPageRedirect(BaseHTMLHandler):
 
 
 @route(r"/card/(random|(?:[0-9,]+))(/.*)?")
-class CardPage(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin):
+class CardPage(BaseHTMLHandler, DatabaseMixin):
     def initialize(self, *args, **kwargs):
         super().initialize(*args, **kwargs)
         self._tlinject_base = ({}, set())
@@ -136,7 +136,7 @@ class CardPage(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin):
 
 
 @route(r"/cards/by_idol/([0-9]+)(/.*)?")
-class CardPageByMemberID(CardPage, LanguageCookieMixin, DatabaseMixin):
+class CardPageByMemberID(CardPage, DatabaseMixin):
     async def get(self, member_id, _):
         member = self.settings["master"].lookup_member_by_id(member_id)
 
@@ -200,7 +200,7 @@ class CardThumbnailProviderMixin(object):
 
 @route(r"/cards/sets/?")
 @route(r"/cards/sets/([0-9]+)/?")
-class CardGallery(BaseHTMLHandler, DatabaseMixin, LanguageCookieMixin, CardThumbnailProviderMixin):
+class CardGallery(BaseHTMLHandler, DatabaseMixin, CardThumbnailProviderMixin):
     # The largest known subunit size (QU4RTZ). This is checked so we don't treat
     # subunit costume sets as group sets.
     ALL_MEMBER_SET_THRES = 4
@@ -422,7 +422,7 @@ class CardGallerySingle(CardGallery):
 
 
 @route(r"/api/private/cards/ajax/([0-9,]+)")
-class CardPageAjax(BaseHTMLHandler, LanguageCookieMixin, DatabaseMixin, CardThumbnailProviderMixin):
+class CardPageAjax(BaseHTMLHandler, DatabaseMixin, CardThumbnailProviderMixin):
     def initialize(self, *args, **kwargs):
         super().initialize(*args, **kwargs)
         CardThumbnailProviderMixin.initialize(self)
@@ -585,7 +585,7 @@ class CardPageAPI(CardPage, CardAPIExtras):
 
 
 @route(r"/api/private/cards/member/([0-9]+)\.json")
-class CardPageAPIByMemberID(BaseAPIHandler, LanguageCookieMixin, CardAPIExtras):
+class CardPageAPIByMemberID(BaseAPIHandler, CardAPIExtras):
     def initialize(self, *args, **kwargs):
         super().initialize(*args, **kwargs)
         self.init_api_extra_mixin()
