@@ -327,6 +327,8 @@ EN.skill_effect[ST.ReduceActionSkillRateBaseBonus] = \
     "Base skill activation rate down by {var}{value}{end}"
 EN.skill_effect[ST.ReduceDamageActualBuff] = \
     "Buff. Reduce stamina drain by {var}{value}{end}"
+EN.skill_effect[ST.AddCollaboGaugeByStamina] = \
+    "Add {var}{value}{end} of this card's stamina to SP gauge"
 EN.skill_effect[ST.AddCollaboGaugeByTechnique] = \
     "Add {var}{value}{end} of this card's technique to SP gauge"
 EN.skill_effect[ST.RemoveAllBuff] = \

@@ -343,6 +343,7 @@ IMPLICIT_TARGET_SKILL_TYPES = {
     ST.AddShieldByMaxLife,
     ST.AddVoltageByStamina,
     ST.AddVoltageByTechnique,
+    ST.AddCollaboGaugeByStamina,
 }
 
 PERCENT_VALUE_SKILL_TYPES = {
