@@ -407,6 +407,7 @@ PERCENT_VALUE_SKILL_TYPES = {
     ST.AddAppealGimmickDebuff,
     ST.AddCriticalRateGimmickDebuff,
     ST.AddCollaboGaugeGimmickDebuff,
+    ST.AddCollaboGaugeByStamina,
 }
 
 MIXED_VALUE_SKILL_TYPES = {
