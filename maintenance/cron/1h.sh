@@ -29,13 +29,22 @@ function update_server() {
     python3 -m astool "${SID}" --quiet dl_master
     local NEW=$(python3 -m astool "${SID}" current_master)
 
+    local PSPIPE=$(mktemp -t -u "psync_signal_fd.${SID}.XXXXXXXX")
+    mkfifo "$PSPIPE"
+    trap "rm -f ${PSPIPE}" EXIT
+
     if [[ "$SID" == "jp" ]]; then
         debug "@${SID} phase: pkgsync"
-        python3 -m astool "${SID}" --quiet pkg_sync main card:% &
+        python3 -m astool "${SID}" pkg_sync --signal-cts="${PSPIPE}" main card:% &
     else
         debug "@${SID} phase: sync_region_banners"
-        python3 -m astool_extra.sync_region_banners -r ${SID} -l ${SID} --quiet &
+        python3 -m astool_extra.sync_region_banners -r ${SID} -l ${SID} --signal-cts="${PSPIPE}" &
     fi
+
+    # wait for input on the signal pipe from pkgsync
+    debug "@${SID} waiting for signal"
+    IFS='' read -t 10 _ < "${PSPIPE}"
+    debug "@${SID} signal received, continuing"
 
     debug "@${SID} phase: news"
     # This may conflict with the callout to sign asset urls.
