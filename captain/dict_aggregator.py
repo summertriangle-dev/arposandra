@@ -21,23 +21,9 @@ class DictionaryAggregator(object):
         self.master = master_dict
         self.choices = choices
 
+    # Currently unused since the servers have synced and all strings
+    # should be valid (hopefully).
     def filter_strings(self, stringsd: TStrings):
-        to_remove = []
-
-        # to be removed, hopefully when the sync happens
-        for key, value in stringsd.items():
-            if "仮" in value:
-                to_remove.append(key)
-
-            if key == "k.passive_skill_name_321030111":
-                to_remove.append(key)
-
-            if key == "k.passive_skill_name_321030121":
-                to_remove.append(key)
-
-        for k in to_remove:
-            stringsd.pop(k)
-
         return stringsd
 
     def lookup_strings(
@@ -50,7 +36,7 @@ class DictionaryAggregator(object):
             return self.master.lookup_strings(ss), set()
 
         stage1 = alt.access.lookup_strings(ss)
-        stage1 = self.filter_strings(stage1)
+        # stage1 = self.filter_strings(stage1)
 
         alt_set = set(stage1.keys())
         stage2 = self.master.lookup_strings(ss - alt_set)
