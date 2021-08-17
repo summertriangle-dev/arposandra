@@ -6,6 +6,7 @@ import Infra from "./infra"
 import { Appearance } from "./appearance"
 import { MultiValueSwitch } from "./ui_lib"
 import { requestStoragePermission } from "./storage_permission"
+import { ModalManager } from "./modals"
 
 class ImageSwitcherInternal extends MultiValueSwitch {
     getChoices() {
@@ -173,7 +174,7 @@ export function CardDisplayModeSwitcher() {
         <span className="item">{Infra.strings.CDM.Title}</span>
         <CardDisplayModeSwitcherInternal />
         <a className="has-icon item"
-            onClick={() => alert(Infra.strings.CDM.SwitchHint)}>
+            onClick={() => ModalManager.alert(Infra.strings.CDM.SwitchHint)}>
             <i className="icon icon-lg ion-ios-help-circle"></i>
         </a>
     </div>

@@ -1,3 +1,4 @@
+import Infra from "./infra"
 import React from "react"
 import ReactDOM from "react-dom"
 
@@ -138,6 +139,18 @@ class _ModalManager {
         } else {
             this.modals[this.modals.length - 1].dom.classList.remove("inactive")
         }
+    }
+
+    alert(message, onDismiss = null) {
+        this.pushModal((dismiss) => {
+            return <section className="modal-body">
+                {message}
+                <div className="form-row kars-fieldset-naturalorder">
+                    <button className="item btn btn-primary"
+                        onClick={dismiss}>{Infra.strings.AlertShim.Dismiss}</button>
+                </div>
+            </section>
+        }).onBeginDismiss(onDismiss)
     }
 }
 

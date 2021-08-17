@@ -159,5 +159,8 @@ export default {
             default: return `${n} results`
             }
         },
+    },
+    AlertShim: {
+        Dismiss: "OK"
     }
 }

@@ -2,6 +2,7 @@ import React from "react"
 import Infra from "../infra"
 import { isCompletionistSupported } from "./completionist"
 import { toHTMLDateInputFormat, isActivationKey } from "./util"
+import { ModalManager } from "../modals"
 
 export const CONTROL_TYPE = {
     NUMBER: 1,
@@ -203,7 +204,7 @@ class PASearchButton extends React.Component {
             tf = <input type="text" tabIndex="-1"
                 className="form-control search-field" 
                 onFocus={(e) => {
-                    setTimeout(() => alert(Infra.strings.Search.Error.CompletionistUnsupported))
+                    ModalManager.alert(Infra.strings.Search.Error.CompletionistUnsupported)
                     e.target.blur()
                 }}
                 placeholder={Infra.strings.Search.TextBoxHint} />
