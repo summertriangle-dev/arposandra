@@ -254,9 +254,10 @@ export class SkillTreeLoader extends React.Component {
                 <i className="icon ion-ios-hammer"></i>
                 {Infra.strings["TTWrapper.FailedToRetrieveTTFromServer"]}
             </div>
-        case 2: // Expanded
+        case 2: {  // Expanded
             const SkillTreeUI = this.state.nextComponent
             return <SkillTreeUI treeData={this.state.treeData} cardId={this.props.cardId} />
+        }
         }
     }
     
