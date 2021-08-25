@@ -323,8 +323,8 @@ class PASearchContext {
         let auto = false
         let queryFromURL = null
 
-        if (window.location.query) {
-            queryFromURL = deserializeQuery(this.schema, window.location.query.substring(1))            
+        if (window.location.search) {
+            queryFromURL = deserializeQuery(this.schema, window.location.search.substring(1))            
         } else if (window.location.hash) {
             const hash = window.location.hash.substring(1)
             queryFromURL = deserializeQuery(this.schema, hash)
