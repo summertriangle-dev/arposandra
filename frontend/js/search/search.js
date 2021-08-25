@@ -143,7 +143,7 @@ class PASearchContext {
         const hash = serializeQuery(this.schema, nq)
         // try not to clear the autosearch query
         if (!this.isFirstLoad) {
-            history.pushState(null, document.title, window.location.href.split("#")[0] + "#" + hash)
+            history.pushState(null, document.title, this.currentURLBase() + "?" + hash)
         }
         this.currentQuery = query
         this.currentSort = sortBy
@@ -178,6 +178,10 @@ class PASearchContext {
             window.location.href)
 
         this.displayResultList(this.currentResults, pNum - 1, false)
+    }
+
+    currentURLBase() {
+        return `${window.location.protocol}//${window.location.host}${window.location.pathname}`
     }
 
     pageCount() {
@@ -317,8 +321,17 @@ class PASearchContext {
 
     performFirstLoadStateRestoration() {
         let auto = false
-        if (window.location.hash) {
-            const queryFromURL = deserializeQuery(this.schema, window.location.hash.substring(1))
+        let queryFromURL = null
+
+        if (window.location.query) {
+            queryFromURL = deserializeQuery(this.schema, window.location.query.substring(1))            
+        } else if (window.location.hash) {
+            const hash = window.location.hash.substring(1)
+            queryFromURL = deserializeQuery(this.schema, hash)
+            history.replaceState(null, document.title, this.currentURLBase() + "?" + hash)
+        }
+
+        if (queryFromURL) {
             this.currentSort = queryFromURL._sort
             delete queryFromURL["_sort"]
             delete queryFromURL["_auto"]
