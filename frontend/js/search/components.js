@@ -403,6 +403,15 @@ class PACriteriaList extends React.Component {
         }
     }
 
+    iconClassForCriteria(key, criteria) {
+        const embeddedIcon = criteria.behaviour ? criteria.behaviour.icon_class : null
+        if (embeddedIcon) {
+            return embeddedIcon
+        } else {
+            return this.iconClassForCriteriaName(key)
+        }
+    }
+
     addCriteriaAction(event) {
         this.props.actions.addCriteria(event.currentTarget.dataset.selectedCriteriaId)
     }
@@ -411,7 +420,7 @@ class PACriteriaList extends React.Component {
         return <button key={key} data-selected-criteria-id={key} className="btn btn-secondary criteria-button"
             onClick={act}>
             <p className="criteria-icon">
-                <i className={`icon icon-lg ${this.iconClassForCriteriaName(key)}`}></i>
+                <i className={`icon icon-lg ${this.iconClassForCriteria(key, criteria)}`}></i>
             </p>
             <p className="criteria-label">{criteria.display_name || key}</p>
         </button>
