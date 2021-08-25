@@ -207,7 +207,7 @@ class PASearchContext {
                 doc = await this.api.sendAjaxRequest(idl)
             } catch (rejectReason) {
                 ReactDOM.render(null, header)
-                ReactDOM.render(null, host)
+                ReactDOM.render(null, document.getElementById("results-host"))
                 ReactDOM.render(null, document.getElementById("pager-host"))
 
                 this.recoveryInfo = {results, page}
