@@ -4,7 +4,7 @@ import hmac
 import random
 import re
 from datetime import datetime
-from typing import Iterable, Optional, Tuple, Dict, Any, cast
+from typing import Iterable, Optional, Tuple, Dict, List, Any, cast
 
 from tornado.web import RequestHandler
 
@@ -250,6 +250,20 @@ class CardGallery(BaseHTMLHandler, DatabaseMixin, CardThumbnailProviderMixin):
 
         return match
 
+    def get_skip_member_list(self, aset: card_tracking.CardSetRecord) -> List[int]:
+        if not (grp := self.get_same_group_for_all_members(aset)):
+            return []
+
+        if grp == 3:
+            if aset.nijigasaki_member_state == 0:
+                return [210, 211, 212]
+            elif aset.nijigasaki_member_state == 1:
+                return [211, 212]
+            else:
+                return []
+
+        return []
+
     def should_fill(self, aset: card_tracking.CardSetRecord):
         return (
             (self.get_same_group_for_all_members(aset) is not None)
@@ -264,11 +278,11 @@ class CardGallery(BaseHTMLHandler, DatabaseMixin, CardThumbnailProviderMixin):
 
         if self.should_fill(aset):
             the_group = aset.card_refs[0].card.member.group
-            skip_shioriko = not aset.shioriko_exists
+            skip_list = self.get_skip_member_list(aset)
             member_list = self.master().lookup_member_list(group=the_group)
             for member in member_list:
                 card = crefs_by_member.get(member.id)
-                if skip_shioriko and member.id == 210 and card is None:
+                if member.id in skip_list and card is None:
                     continue
                 yield (member, card)
 

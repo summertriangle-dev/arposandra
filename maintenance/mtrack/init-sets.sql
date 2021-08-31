@@ -267,97 +267,97 @@ insert into card_index_v1__release_dates values (102091002, 'en', '2020-02-24 15
 -- STEP 2: CREATE MISSING INITIAL SETS
 -----------------------------------------------------
 
-insert into card_p_set_index_v1 values ('muse-initial-ur', 'synthetic.initial.g1.r3.ord0', 1, 0) on conflict (representative) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r3.ord0', 100013001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r3.ord0', 100023001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r3.ord0', 100033001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r3.ord0', 100043001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r3.ord0', 100053001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r3.ord0', 100063001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r3.ord0', 100073001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r3.ord0', 100083001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r3.ord0', 100093001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2 values ('muse-initial-ur', 'synthetic.initial.g1.r3.ord0', 1, 0) on conflict (representative) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r3.ord0', 100013001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r3.ord0', 100023001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r3.ord0', 100033001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r3.ord0', 100043001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r3.ord0', 100053001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r3.ord0', 100063001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r3.ord0', 100073001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r3.ord0', 100083001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r3.ord0', 100093001) on conflict (representative, card_ids) do nothing;
 
-insert into card_p_set_index_v1 values ('aqours-initial-ur', 'synthetic.initial.g2.r3.ord0', 1, 0) on conflict (representative) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r3.ord0', 101013001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r3.ord0', 101023001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r3.ord0', 101033001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r3.ord0', 101043001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r3.ord0', 101053001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r3.ord0', 101063001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r3.ord0', 101073001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r3.ord0', 101083001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r3.ord0', 101093001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2 values ('aqours-initial-ur', 'synthetic.initial.g2.r3.ord0', 1, 0) on conflict (representative) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r3.ord0', 101013001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r3.ord0', 101023001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r3.ord0', 101033001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r3.ord0', 101043001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r3.ord0', 101053001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r3.ord0', 101063001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r3.ord0', 101073001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r3.ord0', 101083001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r3.ord0', 101093001) on conflict (representative, card_ids) do nothing;
 
 -- Initial SR sets already exist.
 
-insert into card_p_set_index_v1 values ('muse-initial-r-uniform', 'synthetic.initial.g1.r1.ord0', 1, 0) on conflict (representative) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord0', 100011001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord0', 100021001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord0', 100031001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord0', 100041001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord0', 100051001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord0', 100061001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord0', 100071001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord0', 100081001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord0', 100091001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2 values ('muse-initial-r-uniform', 'synthetic.initial.g1.r1.ord0', 1, 0) on conflict (representative) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord0', 100011001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord0', 100021001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord0', 100031001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord0', 100041001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord0', 100051001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord0', 100061001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord0', 100071001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord0', 100081001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord0', 100091001) on conflict (representative, card_ids) do nothing;
 
-insert into card_p_set_index_v1 values ('aqours-initial-r-uniform', 'synthetic.initial.g2.r1.ord0', 1, 0) on conflict (representative) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord0', 101011001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord0', 101021001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord0', 101031001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord0', 101041001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord0', 101051001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord0', 101061001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord0', 101071001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord0', 101081001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord0', 101091001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2 values ('aqours-initial-r-uniform', 'synthetic.initial.g2.r1.ord0', 1, 0) on conflict (representative) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord0', 101011001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord0', 101021001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord0', 101031001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord0', 101041001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord0', 101051001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord0', 101061001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord0', 101071001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord0', 101081001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord0', 101091001) on conflict (representative, card_ids) do nothing;
 
-insert into card_p_set_index_v1 values ('niji-initial-r-uniform', 'synthetic.initial.g3.r1.ord0', 1, 1) on conflict (representative) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord0', 102011001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord0', 102021001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord0', 102031001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord0', 102041001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord0', 102051001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord0', 102061001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord0', 102071001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord0', 102081001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord0', 102091001) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord0', 102101001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2 values ('niji-initial-r-uniform', 'synthetic.initial.g3.r1.ord0', 1, 1) on conflict (representative) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102011001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102021001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102031001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102041001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102051001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102061001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102071001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102081001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102091001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102101001) on conflict (representative, card_ids) do nothing;
 
-insert into card_p_set_index_v1 values ('muse-initial-r-prologue', 'synthetic.initial.g1.r1.ord1', 1, 0) on conflict (representative) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord1', 100011002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord1', 100021002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord1', 100031002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord1', 100041002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord1', 100051002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord1', 100061002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord1', 100071002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord1', 100081002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g1.r1.ord1', 100091002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2 values ('muse-initial-r-prologue', 'synthetic.initial.g1.r1.ord1', 1, 0) on conflict (representative) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord1', 100011002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord1', 100021002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord1', 100031002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord1', 100041002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord1', 100051002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord1', 100061002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord1', 100071002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord1', 100081002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord1', 100091002) on conflict (representative, card_ids) do nothing;
 
-insert into card_p_set_index_v1 values ('aqours-initial-r-prologue', 'synthetic.initial.g2.r1.ord1', 1, 0) on conflict (representative) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord1', 101011002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord1', 101021002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord1', 101031002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord1', 101041002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord1', 101051002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord1', 101061002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord1', 101071002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord1', 101081002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g2.r1.ord1', 101091002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2 values ('aqours-initial-r-prologue', 'synthetic.initial.g2.r1.ord1', 1, 0) on conflict (representative) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord1', 101011002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord1', 101021002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord1', 101031002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord1', 101041002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord1', 101051002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord1', 101061002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord1', 101071002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord1', 101081002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g2.r1.ord1', 101091002) on conflict (representative, card_ids) do nothing;
 
-insert into card_p_set_index_v1 values ('niji-initial-r-prologue', 'synthetic.initial.g3.r1.ord1', 1, 1) on conflict (representative) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord1', 102011002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord1', 102021002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord1', 102031002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord1', 102041002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord1', 102051002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord1', 102061002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord1', 102071002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord1', 102081002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord1', 102091002) on conflict (representative, card_ids) do nothing;
-insert into card_p_set_index_v1__card_ids values ('synthetic.initial.g3.r1.ord1', 102101002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2 values ('niji-initial-r-prologue', 'synthetic.initial.g3.r1.ord1', 1, 1) on conflict (representative) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102011002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102021002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102031002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102041002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102051002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102061002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102071002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102081002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102091002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102101002) on conflict (representative, card_ids) do nothing;
 
 -----------------------------------------------------
 -- STEP 4: UPDATE CARD SOURCE
@@ -374,24 +374,29 @@ UPDATE card_index_v1 SET source = 1 WHERE source IS NULL;
 -- Niji initial sets will order higher than normal due to Shioriko's initials being added
 -- in August 2020.
 
-INSERT INTO card_p_set_index_v1__sort_dates
-    (SELECT representative, server_id, MAX(date) FROM card_index_v1__release_dates
-        INNER JOIN card_p_set_index_v1__card_ids ON (id = card_ids)
+INSERT INTO card_p_set_index_v2__sort_dates
+    (SELECT representative, server_id, MAX(date) FROM card_index_v2__release_dates
+        INNER JOIN card_p_set_index_v2__card_ids ON (id = card_ids)
         GROUP BY (representative, server_id))
     ON CONFLICT (representative, server_id) DO UPDATE SET
         date = excluded.date;
 
 WITH rd AS (
-    SELECT representative, (CASE WHEN MIN(date) < '2020-08-05 08:00:00'::timestamp THEN 0 ELSE 1 END) AS have_shio
+    SELECT representative, 
+        (CASE 
+            WHEN MIN(date) < '2020-08-05 08:00:00'::timestamp THEN 0 
+            WHEN MIN(date) < '2021-09-03 08:00:00'::timestamp THEN 1 
+            ELSE 1 
+         END) AS nijigasaki_member_state
         FROM card_index_v1__release_dates
-        INNER JOIN card_p_set_index_v1__card_ids ON (id = card_ids)
+        INNER JOIN card_p_set_index_v2__card_ids ON (id = card_ids)
         WHERE server_id = 'jp'
         GROUP BY (representative)
 )
-UPDATE card_p_set_index_v1 SET shioriko_exists =
-    (SELECT have_shio FROM rd WHERE rd.representative = card_p_set_index_v1.representative)
-WHERE shioriko_exists IS NULL;
+UPDATE card_p_set_index_v2 SET nijigasaki_member_state =
+    (SELECT nijigasaki_member_state FROM rd WHERE rd.representative = card_p_set_index_v2.representative)
+WHERE nijigasaki_member_state IS NULL;
 
 -- Do it twice for sets without a release date.
-UPDATE card_p_set_index_v1 SET shioriko_exists = 0
-WHERE shioriko_exists IS NULL
+UPDATE card_p_set_index_v2 SET nijigasaki_member_state = 0
+WHERE nijigasaki_member_state IS NULL

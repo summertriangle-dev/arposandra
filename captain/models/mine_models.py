@@ -286,14 +286,14 @@ class SetRecord(object):
     def sort_dates(self):
         return Schema.Empty
 
-    def shioriko_exists(self):
+    def nijigasaki_member_state(self):
         if self.stype in ["ordinal_fes", "ordinal_pickup"]:
-            return 1
+            return 2
         return Schema.Empty
 
 
 SetIndex = Schema(
-    "card_p_set_index_v1",
+    "card_p_set_index_v2",
     fields=[
         Field.text("id"),
         Field.text("representative", primary=True),
@@ -301,7 +301,7 @@ SetIndex = Schema(
             "set_type",
             ("same_name", "event", "song", "ordinal_fes", "ordinal_pickup", "initial", "else"),
         ),
-        Field.integer("shioriko_exists"),
+        Field.integer("nijigasaki_member_state"),
         Field.composite(
             "sort_dates", Field.varchar("server_id", 8, primary=True), Field.datetime("date")
         ),

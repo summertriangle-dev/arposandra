@@ -51,9 +51,9 @@ class IndexerDBCoordinator(object):
                 DROP TABLE IF EXISTS accessory_index_v1;
                 DROP TABLE IF EXISTS accessory_index_v1__skill_minors;
                 DROP TABLE IF EXISTS accessory_index_v1__release_dates;
-                DROP TABLE IF EXISTS card_p_set_index_v1;
-                DROP TABLE IF EXISTS card_p_set_index_v1__sort_dates;
-                DROP TABLE IF EXISTS card_p_set_index_v1__card_ids;
+                DROP TABLE IF EXISTS card_p_set_index_v2;
+                DROP TABLE IF EXISTS card_p_set_index_v2__sort_dates;
+                DROP TABLE IF EXISTS card_p_set_index_v2__card_ids;
                 DROP TABLE IF EXISTS history_v5;
                 DROP TABLE IF EXISTS history_v5__card_ids;
                 DROP TABLE IF EXISTS history_v5__dates;

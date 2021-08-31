@@ -4,9 +4,9 @@
 # We sort based on latest release.
 def update_set_sort_table():
     return f"""
-        INSERT INTO card_p_set_index_v1__sort_dates
+        INSERT INTO card_p_set_index_v2__sort_dates
             (SELECT representative, server_id, MAX(date) FROM card_index_v1__release_dates
-                INNER JOIN card_p_set_index_v1__card_ids ON (id = card_ids)
+                INNER JOIN card_p_set_index_v2__card_ids ON (id = card_ids)
                 GROUP BY (representative, server_id))
             ON CONFLICT (representative, server_id) DO UPDATE SET
                 date = excluded.date;
@@ -14,17 +14,17 @@ def update_set_sort_table():
         WITH rd AS (
             SELECT representative, (CASE WHEN MIN(date) < '2020-08-05 08:00:00'::timestamp THEN 0 ELSE 1 END) AS have_shio
                 FROM card_index_v1__release_dates
-                INNER JOIN card_p_set_index_v1__card_ids ON (id = card_ids)
+                INNER JOIN card_p_set_index_v2__card_ids ON (id = card_ids)
                 WHERE server_id = 'jp'
                 GROUP BY (representative)
         )
-        UPDATE card_p_set_index_v1 SET shioriko_exists = 
-            (SELECT have_shio FROM rd WHERE rd.representative = card_p_set_index_v1.representative)
-        WHERE shioriko_exists IS NULL;
+        UPDATE card_p_set_index_v2 SET nijigasaki_member_state = 
+            (SELECT have_shio FROM rd WHERE rd.representative = card_p_set_index_v2.representative)
+        WHERE nijigasaki_member_state IS NULL;
 
         -- Do it twice for sets without a release date.
-        UPDATE card_p_set_index_v1 SET shioriko_exists = 0
-        WHERE shioriko_exists IS NULL 
+        UPDATE card_p_set_index_v2 SET nijigasaki_member_state = 0
+        WHERE nijigasaki_member_state IS NULL 
     """
 
 

@@ -114,7 +114,7 @@ class CardSetRecord(object):
     representative: str
     set_type: int
     card_refs: List[ID]
-    shioriko_exists: bool
+    nijigasaki_member_state: int
 
     def is_systematic(self):
         return self.set_type in [4, 5]
@@ -203,8 +203,8 @@ class CardTrackingDatabase(object):
         args: List[Any] = [tag]
         query = [
             """
-            SELECT COUNT(0) AS count FROM card_p_set_index_v1__sort_dates
-            INNER JOIN card_p_set_index_v1 USING (representative)
+            SELECT COUNT(0) AS count FROM card_p_set_index_v2__sort_dates
+            INNER JOIN card_p_set_index_v2 USING (representative)
             WHERE server_id = $1
         """
         ]
@@ -231,22 +231,22 @@ class CardTrackingDatabase(object):
 
         query = f"""
             WITH wanted_entries AS (
-                SELECT card_p_set_index_v1.id, card_p_set_index_v1.representative, set_type, shioriko_exists
-                FROM card_p_set_index_v1
-                INNER JOIN card_p_set_index_v1__sort_dates USING (representative)
+                SELECT card_p_set_index_v2.id, card_p_set_index_v2.representative, set_type, nijigasaki_member_state
+                FROM card_p_set_index_v2
+                INNER JOIN card_p_set_index_v2__sort_dates USING (representative)
                 WHERE server_id = $1
                 {"AND set_type = $2" if category is not None else ""}
 			    ORDER BY date DESC LIMIT {n_entries} OFFSET {offset}
             )
 			
 			SELECT *, ARRAY(
-                SELECT (card_ids, source, date) FROM card_p_set_index_v1__card_ids 
-                INNER JOIN card_index_v1 ON (card_index_v1.id = card_p_set_index_v1__card_ids.card_ids)
+                SELECT (card_ids, source, date) FROM card_p_set_index_v2__card_ids 
+                INNER JOIN card_index_v1 ON (card_index_v1.id = card_p_set_index_v2__card_ids.card_ids)
                 LEFT JOIN card_index_v1__release_dates ON (
                     card_index_v1.id = card_index_v1__release_dates.id 
                     AND server_id = $1
                 )
-                WHERE card_p_set_index_v1__card_ids.representative = wanted_entries.representative 
+                WHERE card_p_set_index_v2__card_ids.representative = wanted_entries.representative 
             ) AS cards
 			FROM wanted_entries
         """
@@ -263,25 +263,25 @@ class CardTrackingDatabase(object):
                     r["representative"],
                     r["set_type"],
                     CardSetRecord.unpack_rdates(r["cards"]),
-                    bool(r["shioriko_exists"]),
+                    r["nijigasaki_member_state"],
                 )
                 for r in set_ids
             ]
 
     async def get_single_card_set(self, name: str) -> Optional[CardSetRecord]:
         query = f"""
-            SELECT card_p_set_index_v1.id, card_p_set_index_v1.representative, set_type, shioriko_exists,
+            SELECT card_p_set_index_v2.id, card_p_set_index_v2.representative, set_type, nijigasaki_member_state,
             ARRAY(
-                SELECT (card_ids, source, date) FROM card_p_set_index_v1__card_ids 
-                INNER JOIN card_index_v1 ON (card_index_v1.id = card_p_set_index_v1__card_ids.card_ids)
+                SELECT (card_ids, source, date) FROM card_p_set_index_v2__card_ids 
+                INNER JOIN card_index_v1 ON (card_index_v1.id = card_p_set_index_v2__card_ids.card_ids)
                 LEFT JOIN card_index_v1__release_dates ON (
                     card_index_v1.id = card_index_v1__release_dates.id 
                     AND server_id = $1
                 )
-                WHERE card_p_set_index_v1__card_ids.representative = card_p_set_index_v1.representative 
+                WHERE card_p_set_index_v2__card_ids.representative = card_p_set_index_v2.representative 
             ) AS cards
-            FROM card_p_set_index_v1__sort_dates
-            INNER JOIN card_p_set_index_v1 USING (representative)
+            FROM card_p_set_index_v2__sort_dates
+            INNER JOIN card_p_set_index_v2 USING (representative)
             WHERE server_id = $1 AND id = $2 LIMIT 1
         """
 
@@ -295,21 +295,21 @@ class CardTrackingDatabase(object):
                 the_set["representative"],
                 the_set["set_type"],
                 CardSetRecord.unpack_rdates(the_set["cards"]),
-                bool(the_set["shioriko_exists"]),
+                the_set["nijigasaki_member_state"],
             )
 
     async def get_containing_card_sets(self, card_ids: List[int]) -> List[CardSetRecord]:
         query = f"""
             WITH names AS (
-                SELECT DISTINCT representative FROM card_p_set_index_v1__card_ids
+                SELECT DISTINCT representative FROM card_p_set_index_v2__card_ids
                 WHERE card_ids = ANY($1::INT[]) 
             )
-            SELECT card_p_set_index_v1.id, card_p_set_index_v1.representative, set_type,
+            SELECT card_p_set_index_v2.id, card_p_set_index_v2.representative, set_type, nijigasaki_member_state,
             ARRAY(
-                SELECT (card_ids) FROM card_p_set_index_v1__card_ids 
-                WHERE card_p_set_index_v1__card_ids.representative = card_p_set_index_v1.representative 
+                SELECT (card_ids) FROM card_p_set_index_v2__card_ids 
+                WHERE card_p_set_index_v2__card_ids.representative = card_p_set_index_v2.representative 
             ) AS cards
-            FROM names INNER JOIN card_p_set_index_v1 USING (representative)
+            FROM names INNER JOIN card_p_set_index_v2 USING (representative)
         """
 
         async with self.coordinator.pool.acquire() as conn:
@@ -321,7 +321,7 @@ class CardTrackingDatabase(object):
                     the_set["representative"],
                     the_set["set_type"],
                     CardSetRecord.unpack_id_only(the_set["cards"]),
-                    False,
+                    the_set["nijigasaki_member_state"],
                 )
                 for the_set in sets
             ]
