@@ -162,6 +162,8 @@ class InlineImageResolver(BaseAPIHandler):
             if not sub:
                 self.set_status(404)
                 self.write({"error": "No such region."})
+                return
+
             asset_path = sub.lookup_inline_image(imp)
         else:
             asset_path = self.settings["master"].lookup_inline_image(imp)

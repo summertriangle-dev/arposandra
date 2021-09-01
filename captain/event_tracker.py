@@ -65,6 +65,7 @@ class APISaintInfo(BaseAPIHandler, DatabaseMixin):
         if self.database().event_tracker.validate_server_id(sid) != sid:
             self.set_status(400)
             self.write({"error": "This is not a valid server ID."})
+            return
 
         if not eid:
             current = datetime.utcnow()
@@ -74,6 +75,7 @@ class APISaintInfo(BaseAPIHandler, DatabaseMixin):
             if not event:
                 self.set_status(404)
                 self.write({"error": "No such event ID."})
+                return
 
         self.write(
             {
@@ -101,6 +103,7 @@ class APISaintData(BaseAPIHandler, DatabaseMixin):
         if self.database().event_tracker.validate_server_id(sid) != sid:
             self.set_status(400)
             self.write({"error": "This is not a valid server ID."})
+            return
 
         is_new = False
         now = datetime.utcnow()
