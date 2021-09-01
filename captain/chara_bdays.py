@@ -34,4 +34,6 @@ BIRTHDAYS = {
     (2, 5): BirthdayBanner(208, datetime(3048, 2, 5, tzinfo=JST)),
     (11, 13): BirthdayBanner(209, datetime(3048, 11, 13, tzinfo=JST)),
     (10, 5): BirthdayBanner(210, datetime(3048, 10, 5, tzinfo=JST)),
+    (12, 6): BirthdayBanner(211, datetime(3048, 12, 6, tzinfo=JST)),
+    (2, 15): BirthdayBanner(212, datetime(3048, 2, 15, tzinfo=JST)),
 }
