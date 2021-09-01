@@ -40,6 +40,15 @@ class ExtractFailure(Exception):
         super().__init__(ExtractFailure.reason_string(reason))
         self.reason = reason
 
+    def to_http_status(self):
+        if self.reason == 1:
+            return 404
+        else:
+            return 503
+
+    def to_user_reason(self):
+        return self.reason_string(self.reason)
+
     @staticmethod
     def reason_string(r):
         if r == 1:

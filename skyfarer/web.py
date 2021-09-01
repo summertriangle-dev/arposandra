@@ -141,14 +141,9 @@ class BareReifyHandler(RequestHandler):
                 self.write(bytes(buf[:size]))
                 await self.flush()
         except ExtractFailure as e:
-            if e.reason == 1:
-                self.set_status(404)
-                self.write(str(e))
-                return
-            else:
-                self.set_status(503)
-                self.write(str(e))
-                return
+            self.set_status(e.to_http_status())
+            self.write(e.to_user_reason())
+            return
 
 
 class ReifyHandler(BareReifyHandler):
@@ -198,14 +193,9 @@ class SyntheticCardIconHandler(BaseAssrValidating):
                 asset_id, filetype, *fsp
             )
         except ExtractFailure as e:
-            if e.reason == 1:
-                self.set_status(404)
-                self.write(str(e))
-                return
-            else:
-                self.set_status(503)
-                self.write(str(e))
-                return
+            self.set_status(e.to_http_status())
+            self.write(e.to_user_reason())
+            return
 
         self.set_status(200)
 
@@ -231,14 +221,9 @@ class SyntheticCardResizeHandler(BaseAssrValidating):
                 asset_id, filetype, int(size), axis
             )
         except ExtractFailure as e:
-            if e.reason == 1:
-                self.set_status(404)
-                self.write(str(e))
-                return
-            else:
-                self.set_status(503)
-                self.write(str(e))
-                return
+            self.set_status(e.to_http_status())
+            self.write(e.to_user_reason())
+            return
 
         self.set_status(200)
 
@@ -268,16 +253,22 @@ class AdvScriptHandler(BaseAssrValidating):
 
         try:
             scpt_bundle = ec.get_script(scpt_name)
-        except ExtractFailure:
-            self.set_status(404)
-            self.write({"error": "Script not found."})
+        except ExtractFailure as e:
+            self.set_status(e.to_http_status())
+            self.write({"error": e.to_user_reason()})
             return
 
         script = adv_script_parser.load_script(scpt_bundle)
 
         self.write(
             json.dumps(
-                {"result": {"rsrc": script.res_seg, "data": script.data_seg,}}, ensure_ascii=False
+                {
+                    "result": {
+                        "rsrc": script.res_seg,
+                        "data": script.data_seg,
+                    }
+                },
+                ensure_ascii=False,
             )
         )
 
@@ -309,5 +300,6 @@ class AdvScriptGraphicHandler(RequestHandler):
                 self.write(bytes(buf[:size]))
                 await self.flush()
         except ExtractFailure as e:
-            self.set_status(404)
-            self.write(str(e))
+            self.set_status(e.to_http_status())
+            self.write(e.to_user_reason())
+            return
