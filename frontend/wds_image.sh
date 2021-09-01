@@ -28,7 +28,7 @@ yarn run node-sass --output $CONTENT_BASE/static/css css/theme-light.scss &
 
 # Needed so if yarn exits non-zero it still kills the canary
 set +e
-(NODE_ENV=development yarn run webpack-dev-server --mode=development --content-base=$CONTENT_BASE ; \
+(NODE_ENV=development yarn run webpack-dev-server --mode=development --static-directory=$CONTENT_BASE ; \
     kill $CANARYPID) &
 JS_WATCH_PID=$!
 

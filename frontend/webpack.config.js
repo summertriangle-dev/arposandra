@@ -46,11 +46,18 @@ module.exports = {
         headers: {
             "Access-Control-Allow-Origin": "*"
         },
-        disableHostCheck: true,
+        allowedHosts: "all",
     },
     optimization: {
         splitChunks: {
-            chunks: "all"
+            chunks: "all",
+            // restore webpack 4 vendor chunk names
+            // https://stackoverflow.com/questions/66986664/webpack-5-vendors-chunks-naming
+            name: (module, chunks, cacheGroupKey) => {
+                const allChunksNames = chunks.map((chunk) => chunk.name).join('~');
+                const prefix = cacheGroupKey === 'defaultVendors' ? 'vendors' : cacheGroupKey;
+                return `${prefix}~${allChunksNames}`;
+            },
         },
         runtimeChunk: "single",
     },

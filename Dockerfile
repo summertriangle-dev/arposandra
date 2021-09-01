@@ -9,7 +9,7 @@ COPY ./frontend /usr/kars-fe-build
 RUN mkdir -p static/css static/js
 RUN yarn run node-sass css/theme-dark.scss static/css/theme-dark.css \
     && yarn run node-sass css/theme-light.scss static/css/theme-light.css
-RUN yarn run webpack --display-modules --output-path static/js
+RUN yarn run webpack --output-path static/js
 
 # 2. Build wheels
 FROM python:3.9 as extension-builder

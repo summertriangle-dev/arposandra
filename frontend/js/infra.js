@@ -1,7 +1,6 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit"
 import LocalizedStrings from "localized-strings"
 import { Appearance } from "./appearance"
-import { env } from "process"
 
 function initializeShared(name, newFunc) {
     if (window[name] === undefined) {
@@ -63,10 +62,6 @@ async function initialize() {
     strings.setLanguage(locale)
 }
 
-function isDevelopmentEnv() {
-    return env.NODE_ENV === "development"
-}
-
 function registerComponent(name, aClass) {
     componentRegistry[name] = aClass
 }
@@ -84,6 +79,5 @@ export default {
     registerComponents,
     canWritebackState,
     enableStateWriteback,
-    isDevelopmentEnv,
     getDocumentLocale,
 }
