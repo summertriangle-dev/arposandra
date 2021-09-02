@@ -177,6 +177,12 @@ msgstr "Rina Tennoji"
 msgid "k.m_dic_member_name_romaji_210"
 msgstr "Shioriko Mifune"
 
+msgid "k.m_dic_member_name_romaji_211"
+msgstr "Mia Taylor"
+
+msgid "k.m_dic_member_name_romaji_212"
+msgstr "Lanzhu Zhong"
+
 # Get rid of the fullwidth ! mark
 msgid "k.m_dic_unit_name_cyaron"
 msgstr "CYaRon!"

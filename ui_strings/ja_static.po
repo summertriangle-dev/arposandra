@@ -178,6 +178,12 @@ msgstr "天王寺 璃奈"
 msgid "k.m_dic_member_name_romaji_210"
 msgstr "三船 栞子"
 
+msgid "k.m_dic_member_name_romaji_211"
+msgstr "ミア・テイラー"
+
+msgid "k.m_dic_member_name_romaji_212"
+msgstr "ショウ ランジュ"
+
 # Get rid of the fullwidth ! mark
 msgid "k.m_dic_unit_name_cyaron"
 msgstr "CYaRon!"
