@@ -179,10 +179,10 @@ msgid "k.m_dic_member_name_romaji_210"
 msgstr "三船 栞子"
 
 msgid "k.m_dic_member_name_romaji_211"
-msgstr "ミア・テイラー"
+msgstr "ショウ・ランジュ"
 
 msgid "k.m_dic_member_name_romaji_212"
-msgstr "ショウ ランジュ"
+msgstr "ミア・テイラー"
 
 # Get rid of the fullwidth ! mark
 msgid "k.m_dic_unit_name_cyaron"

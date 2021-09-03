@@ -178,10 +178,10 @@ msgid "k.m_dic_member_name_romaji_210"
 msgstr "Shioriko Mifune"
 
 msgid "k.m_dic_member_name_romaji_211"
-msgstr "Mia Taylor"
+msgstr "Lanzhu Zhong"
 
 msgid "k.m_dic_member_name_romaji_212"
-msgstr "Lanzhu Zhong"
+msgstr "Mia Taylor"
 
 # Get rid of the fullwidth ! mark
 msgid "k.m_dic_unit_name_cyaron"
