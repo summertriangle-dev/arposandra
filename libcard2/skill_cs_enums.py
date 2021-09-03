@@ -311,8 +311,11 @@ class ST:
     AddNoteScoreBaseBonusUpLimitDebuff = 258
     AddNoteScoreUpLimitGimmickBuff = 259
     AddNoteScoreUpLimitGimmickDebuff = 260
-    # temporary!! need a new classdump for correct name
-    T_SCORE_LIMIT_UP_ON_CRITICAL = 261
+    AddNoteScoreUpLimitBuffByCritical = 261
+    AddDirectDamage = 262
+    AddDirectRateDamage = 263
+    AddStaminaBlockDebuff = 264
+    AddStaminaBlockGimmickDebuff = 265
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -410,7 +413,7 @@ PERCENT_VALUE_SKILL_TYPES = {
     ST.AddCriticalRateGimmickDebuff,
     ST.AddCollaboGaugeGimmickDebuff,
     ST.AddCollaboGaugeByStamina,
-    ST.T_SCORE_LIMIT_UP_ON_CRITICAL,
+    ST.AddNoteScoreUpLimitBuffByCritical,
 }
 
 MIXED_VALUE_SKILL_TYPES = {
