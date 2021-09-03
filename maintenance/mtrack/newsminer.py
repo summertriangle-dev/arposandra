@@ -4,7 +4,8 @@ import logging
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple, Union, cast
+from difflib import SequenceMatcher
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Set, Tuple, Union, cast
 
 from asyncpg import Connection, Record
 from libcard2 import string_mgr
@@ -268,40 +269,52 @@ def merge_gachas(tag, gachas: Iterable[DateMinedNewsItem]):
 OK_TO_MERGE = [SGachaMergeRecord.T_EVENT_TIE, SGachaMergeRecord.T_ELSE]
 
 
-def take_event(fromlist, start, matching) -> Optional[int]:
+def take_matching(
+    fromlist: List[AnySRecord], 
+    filtfunc: Callable[[AnySRecord], bool], 
+    start: int, 
+    match_ent: AnySRecord
+) -> Optional[int]:
     end = len(fromlist)
+    best = None
+    matcher = SequenceMatcher(None, match_ent.common_title, "")
+    matching = match_ent.get_full_range()
+
     while start < end:
         r = fromlist[start]
-        if not isinstance(r, SEventRecord):
+        if not filtfunc(r):
             start += 1
             continue
 
         fr = r.get_full_range()
+        if fr[0] >= matching[1]:
+            return best
+
         if (fr[0] >= matching[0] and fr[0] < matching[1]) or (
             fr[1] > matching[0] and fr[1] <= matching[1]
         ):
-            return start
+            matcher.set_seq2(r.common_title)
+            if m := matcher.find_longest_match():
+                p_flg = bool(m.size > 5)
+            else:
+                p_flg = False
+
+            if not p_flg:
+                start += 1
+                continue
+        
+            best = start
         start += 1
 
-    return None
+    return best
+
+
+def take_event(fromlist, start, matching) -> Optional[int]:
+    return take_matching(fromlist, lambda r: isinstance(r, SEventRecord), start, matching)
 
 
 def take_gacha(fromlist, start, matching) -> Optional[int]:
-    end = len(fromlist)
-    while start < end:
-        r = fromlist[start]
-        if not isinstance(r, SGachaMergeRecord) or r.maybe_type not in OK_TO_MERGE:
-            start += 1
-            continue
-
-        fr = r.get_full_range()
-        if (fr[0] >= matching[0] and fr[0] < matching[1]) or (
-            fr[1] > matching[0] and fr[1] <= matching[1]
-        ):
-            return start
-        start += 1
-
-    return None
+    return take_matching(fromlist, lambda r: isinstance(r, SGachaMergeRecord) and r.maybe_type in OK_TO_MERGE, start, matching)
 
 
 def zip_records(events: List[AnySRecord], gachas: List[AnySRecord]):
@@ -315,7 +328,7 @@ def zip_records(events: List[AnySRecord], gachas: List[AnySRecord]):
         i += 1
         c_gacha = serial[i]
         if isinstance(c_gacha, SGachaMergeRecord) and c_gacha.maybe_type in OK_TO_MERGE:
-            evt_i = take_event(serial, i, c_gacha.get_full_range())
+            evt_i = take_event(serial, i, c_gacha)
             if evt_i is None:
                 l_out.append(c_gacha)
                 continue
@@ -323,7 +336,7 @@ def zip_records(events: List[AnySRecord], gachas: List[AnySRecord]):
             c_event = cast(SEventRecord, serial.pop(evt_i))
             end -= 1
         elif isinstance(c_gacha, SEventRecord):
-            evt_i = take_gacha(serial, i, c_gacha.get_full_range())
+            evt_i = take_gacha(serial, i, c_gacha)
             if evt_i is None:
                 l_out.append(c_gacha)
                 continue
@@ -332,6 +345,7 @@ def zip_records(events: List[AnySRecord], gachas: List[AnySRecord]):
             c_gacha = cast(SGachaMergeRecord, serial.pop(evt_i))
             end -= 1
         else:
+            logging.debug("Passthrough: %s", c_gacha.common_title)
             l_out.append(c_gacha)
             continue
 

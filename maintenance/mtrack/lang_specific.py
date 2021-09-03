@@ -7,6 +7,7 @@ LANG_JA_FES_MARKER = "フェス開催"
 LANG_JA_PICKUP_MARKER = "ピックアップガチャ"
 LANG_JA_PARTY_MARKER = "パーティーガチャ"
 LANG_JA_EVT_OMNIBUS_MARKER = "スクールアイドル紹介"
+LANG_JA_STEP_UP_MARKER = "ステップアップガチャ"
 LANG_JA_POSTSCRIPT_MARKER = "【追記】"
 
 LANG_EN_EVT_FIRST_HALF = "scouting (part 1)"
@@ -17,6 +18,7 @@ LANG_EN_FES_MARKER_ALT = "festival scouting"
 LANG_EN_PICKUP_MARKER = "spotlight scouting"
 LANG_EN_PARTY_MARKER = "party scouting"
 LANG_EN_EVT_OMNIBUS_MARKER = "school idol lineup"
+LANG_EN_STEP_UP_MARKER = "step-up scouting"
 LANG_EN_POSTSCRIPT_MARKER = "(UPDATED)"
 
 T_EVENT_TIE = 1
@@ -34,7 +36,7 @@ def gacha_label_from_name_jp(name: str) -> int:
         return T_PICK_UP
     elif LANG_JA_EVT_OMNIBUS_MARKER in name or LANG_JA_EVT_FIRST_HALF in name:
         return T_EVENT_TIE
-    elif LANG_JA_EVT_SECOND_HALF in name:
+    elif LANG_JA_EVT_SECOND_HALF in name or LANG_JA_STEP_UP_MARKER in name:
         return T_IGNORE
     elif LANG_JA_PARTY_MARKER in name:
         return T_PARTY
@@ -53,7 +55,7 @@ def gacha_label_from_name_en(name: str) -> int:
         return T_PICK_UP
     elif name.endswith(LANG_EN_EVT_OMNIBUS_MARKER) or LANG_EN_EVT_FIRST_HALF in name:
         return T_EVENT_TIE
-    elif LANG_EN_EVT_SECOND_HALF in name:
+    elif LANG_EN_EVT_SECOND_HALF in name or name.endswith(LANG_EN_STEP_UP_MARKER):
         return T_IGNORE
     elif name.endswith(LANG_EN_PARTY_MARKER):
         return T_PARTY
