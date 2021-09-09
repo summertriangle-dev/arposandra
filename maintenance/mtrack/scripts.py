@@ -54,10 +54,17 @@ def update_card_release_dates(prefix):
             (SELECT card_id, serverid, date FROM rdates)
         ) ON CONFLICT DO NOTHING;
 
-        -- :(
+        -- First try the entire history table, because we want the oldest source, but restrict to cards that appeared in the partial update.
+        UPDATE card_index_v1 SET 
+            source = (SELECT history_v5__card_ids.what FROM history_v5__card_ids 
+                      INNER JOIN history_v5 USING (id, serverid) WHERE card_id = card_index_v1.id 
+                      ORDER BY sort_date LIMIT 1)
+            WHERE (SELECT what FROM {prefix}history_v5__card_ids WHERE card_id = card_index_v1.id LIMIT 1) IS NOT NULL;
+        
+        -- If still null it wasn't featured before, so go ahead and use the new hist list
         UPDATE card_index_v1 SET 
             source = (SELECT what FROM {prefix}history_v5__card_ids WHERE card_id = card_index_v1.id LIMIT 1)
-            WHERE (SELECT what FROM {prefix}history_v5__card_ids WHERE card_id = card_index_v1.id LIMIT 1) IS NOT NULL
+            WHERE source IS NULL
     """
 
 
