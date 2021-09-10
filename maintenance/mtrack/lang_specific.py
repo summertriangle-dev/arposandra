@@ -1,4 +1,5 @@
 import re
+from html import unescape
 from typing import Callable
 
 LANG_JA_EVT_FIRST_HALF = "（前編）"
@@ -64,6 +65,7 @@ def gacha_label_from_name_en(name: str) -> int:
 
 
 def cleanup_name_jp(etyp: int, name: str) -> str:
+    name = unescape(name)
     if etyp == 1:
         m = re.search(r"(.*ピックアップガチャ|.*ガチャ|.*フェス)", name)
         return m.group(1) if m else name
@@ -73,6 +75,7 @@ def cleanup_name_jp(etyp: int, name: str) -> str:
 
 
 def cleanup_name_en(etyp: int, name: str) -> str:
+    name = unescape(name)
     if etyp == 1:
         m = re.sub(r"school idol lineup", "", name, flags=re.IGNORECASE).strip()
         return m
