@@ -375,7 +375,7 @@ UPDATE card_index_v1 SET source = 1 WHERE source IS NULL;
 -- in August 2020.
 
 INSERT INTO card_p_set_index_v2__sort_dates
-    (SELECT representative, server_id, MAX(date) FROM card_index_v2__release_dates
+    (SELECT representative, server_id, MAX(date) FROM card_index_v1__release_dates
         INNER JOIN card_p_set_index_v2__card_ids ON (id = card_ids)
         GROUP BY (representative, server_id))
     ON CONFLICT (representative, server_id) DO UPDATE SET
