@@ -187,6 +187,8 @@ insert into card_index_v1__release_dates values (102071001, 'jp', '2019-09-26 15
 insert into card_index_v1__release_dates values (102081001, 'jp', '2019-09-26 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
 insert into card_index_v1__release_dates values (102091001, 'jp', '2019-09-26 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
 insert into card_index_v1__release_dates values (102101001, 'jp', '2020-08-05 06:00:00'::timestamp) on conflict (id, server_id) do nothing;
+insert into card_index_v1__release_dates values (102111001, 'jp', '2020-09-03 06:00:00'::timestamp) on conflict (id, server_id) do nothing;
+insert into card_index_v1__release_dates values (102121001, 'jp', '2021-09-03 06:00:00'::timestamp) on conflict (id, server_id) do nothing;
 
 insert into card_index_v1__release_dates values (102011002, 'jp', '2019-09-26 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
 insert into card_index_v1__release_dates values (102021002, 'jp', '2019-09-26 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
@@ -198,6 +200,8 @@ insert into card_index_v1__release_dates values (102071002, 'jp', '2019-09-26 15
 insert into card_index_v1__release_dates values (102081002, 'jp', '2019-09-26 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
 insert into card_index_v1__release_dates values (102091002, 'jp', '2019-09-26 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
 insert into card_index_v1__release_dates values (102101002, 'jp', '2020-08-05 06:00:00'::timestamp) on conflict (id, server_id) do nothing;
+insert into card_index_v1__release_dates values (102111002, 'jp', '2020-09-03 06:00:00'::timestamp) on conflict (id, server_id) do nothing;
+insert into card_index_v1__release_dates values (102121002, 'jp', '2021-09-03 06:00:00'::timestamp) on conflict (id, server_id) do nothing;
 
 -- MUSE
 insert into card_index_v1__release_dates values (100011001, 'en', '2020-02-24 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
@@ -251,6 +255,8 @@ insert into card_index_v1__release_dates values (102061001, 'en', '2020-02-24 15
 insert into card_index_v1__release_dates values (102071001, 'en', '2020-02-24 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
 insert into card_index_v1__release_dates values (102081001, 'en', '2020-02-24 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
 insert into card_index_v1__release_dates values (102091001, 'en', '2020-02-24 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
+insert into card_index_v1__release_dates values (102111001, 'en', '2020-09-03 06:00:00'::timestamp) on conflict (id, server_id) do nothing;
+insert into card_index_v1__release_dates values (102121001, 'en', '2021-09-03 06:00:00'::timestamp) on conflict (id, server_id) do nothing;
 
 insert into card_index_v1__release_dates values (102011002, 'en', '2020-02-24 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
 insert into card_index_v1__release_dates values (102021002, 'en', '2020-02-24 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
@@ -261,6 +267,8 @@ insert into card_index_v1__release_dates values (102061002, 'en', '2020-02-24 15
 insert into card_index_v1__release_dates values (102071002, 'en', '2020-02-24 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
 insert into card_index_v1__release_dates values (102081002, 'en', '2020-02-24 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
 insert into card_index_v1__release_dates values (102091002, 'en', '2020-02-24 15:00:00'::timestamp) on conflict (id, server_id) do nothing;
+insert into card_index_v1__release_dates values (102111002, 'en', '2020-09-03 06:00:00'::timestamp) on conflict (id, server_id) do nothing;
+insert into card_index_v1__release_dates values (102121002, 'en', '2021-09-03 06:00:00'::timestamp) on conflict (id, server_id) do nothing;
 
 
 -----------------------------------------------------
@@ -324,6 +332,8 @@ insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0'
 insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102081001) on conflict (representative, card_ids) do nothing;
 insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102091001) on conflict (representative, card_ids) do nothing;
 insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102101001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102111001) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord0', 102121001) on conflict (representative, card_ids) do nothing;
 
 insert into card_p_set_index_v2 values ('muse-initial-r-prologue', 'synthetic.initial.g1.r1.ord1', 1, 0) on conflict (representative) do nothing;
 insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g1.r1.ord1', 100011002) on conflict (representative, card_ids) do nothing;
@@ -358,6 +368,8 @@ insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1'
 insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102081002) on conflict (representative, card_ids) do nothing;
 insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102091002) on conflict (representative, card_ids) do nothing;
 insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102101002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102111002) on conflict (representative, card_ids) do nothing;
+insert into card_p_set_index_v2__card_ids values ('synthetic.initial.g3.r1.ord1', 102121002) on conflict (representative, card_ids) do nothing;
 
 -----------------------------------------------------
 -- STEP 4: UPDATE CARD SOURCE
