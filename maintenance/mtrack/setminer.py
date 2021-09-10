@@ -198,7 +198,7 @@ def get_card_list(rec: AnySRecord):
     )
 
 
-def filter_sets_against_history(
+def filter_sets(
     sets: List[SetRecord], events: List[AnySRecord], is_authoritative: bool
 ):
     cache = {
@@ -210,6 +210,9 @@ def filter_sets_against_history(
     marks = []
 
     for s in sets:
+        if len(s.members) < 2:
+            continue
+
         for rid, cset in cache.items():
             # Avoid being overzealous and consuming sr costume sets.
             if cset.issuperset(s.members) and len(cset.intersection(s.members)) > 1:
