@@ -24,6 +24,8 @@ inspector
 
 # User-customizable
 captain/webui/uim_homecontent.html
+captain/private
+
 maintenance/lib
 
 maintenance/border/tests
@@ -34,4 +36,3 @@ ui_strings/*.po~
 # dev stuff
 psd_assets/
 vendor/
-maintenance/cron/debug
