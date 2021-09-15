@@ -33,6 +33,7 @@ class SEventRecord(object):
 
 @dataclass
 class SGachaMergeRecord(object):
+    # These are values for the subtype field in HistoryIndex.
     T_EVENT_TIE = 1
     T_PICK_UP = 2
     T_FES = 3

@@ -209,6 +209,7 @@ class CardGallery(BaseHTMLHandler, DatabaseMixin, CardThumbnailProviderMixin):
         card_tracking.CardSetRecord.T_SONG,
         card_tracking.CardSetRecord.T_FES,
         card_tracking.CardSetRecord.T_PICKUP,
+        card_tracking.CardSetRecord.T_PARTY,
     ]
     VALID_CATEGORIES = {
         "other": card_tracking.CardSetRecord.T_DEFAULT,
@@ -216,8 +217,13 @@ class CardGallery(BaseHTMLHandler, DatabaseMixin, CardThumbnailProviderMixin):
         "song": card_tracking.CardSetRecord.T_SONG,
         "fes": card_tracking.CardSetRecord.T_FES,
         "pickup": card_tracking.CardSetRecord.T_PICKUP,
+        "party": card_tracking.CardSetRecord.T_PARTY,
     }
-    SAME_GROUP_ORD_TYPES = [card_tracking.CardSetRecord.T_FES, card_tracking.CardSetRecord.T_PICKUP]
+    SAME_GROUP_ORD_TYPES = [
+        card_tracking.CardSetRecord.T_FES,
+        card_tracking.CardSetRecord.T_PICKUP,
+        card_tracking.CardSetRecord.T_PARTY
+    ]
 
     def initialize(self, *args, **kwargs):
         super().initialize(*args, **kwargs)
@@ -235,8 +241,10 @@ class CardGallery(BaseHTMLHandler, DatabaseMixin, CardThumbnailProviderMixin):
             return (aset.max_date(), 5)
         elif aset.set_type == card_tracking.CardSetRecord.T_FES:
             return (aset.max_date(), 9)
-        elif aset.set_type == card_tracking.CardSetRecord.T_PICKUP:
+        elif aset.set_type == card_tracking.CardSetRecord.T_PARTY:
             return (aset.max_date(), 8)
+        elif aset.set_type == card_tracking.CardSetRecord.T_PICKUP:
+            return (aset.max_date(), 7)
         return (aset.max_date(), -9999)
 
     def get_same_group_for_all_members(self, aset: card_tracking.CardSetRecord) -> Optional[int]:
@@ -366,8 +374,10 @@ class CardGallery(BaseHTMLHandler, DatabaseMixin, CardThumbnailProviderMixin):
         sub_type = int(m.group(1))
         if sub_type == 2:
             gacha_type = part_src.gettext("kars.gallery.fragment.gacha_type_pickup")
-        else:
+        elif sub_type == 3:
             gacha_type = part_src.gettext("kars.gallery.fragment.gacha_type_fes")
+        else:
+            gacha_type = part_src.gettext("kars.gallery.fragment.gacha_type_party")
 
         group = int(m.group(2))
         if group == 1:

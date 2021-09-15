@@ -4,7 +4,7 @@ from typing import Dict, Iterable, List, Tuple
 
 import asyncpg
 
-from captain.models.card_tracking import SUBTYPE_FES, SUBTYPE_PICK_UP
+from captain.models.card_tracking import SUBTYPE_FES, SUBTYPE_PICK_UP, SUBTYPE_PARTY
 from captain.models.indexer.db_expert import PostgresDBExpert
 from captain.models.mine_models import SetRecord, SetIndex
 from libcard2 import dataclasses, string_mgr, master
@@ -21,10 +21,13 @@ SUBTYPE_SONG = 1001
 
 class OrdinalSetWatcher(object):
     GROUP_NAMES = {1: "muse", 2: "aqours", 3: "nijigasaki"}
-    CATEGORY_NAMES = {3: "fes", 2: "pickup", SUBTYPE_SONG: "singles"}
+    CATEGORY_NAMES = {5: "party", 3: "fes", 2: "pickup", SUBTYPE_SONG: "singles"}
     # Maps gacha subtype (CATEGORY_NAMES) to set type (see card_tracking.py).
     #   SUBTYPE_SONG isn't a real subtype, it's just there for solo songs.
-    SET_TYPES = {3: "ordinal_fes", 2: "ordinal_pickup", SUBTYPE_SONG: "song"}
+    SET_TYPES = {
+        5: "ordinal_party", 3: "ordinal_fes", 
+        2: "ordinal_pickup", SUBTYPE_SONG: "song"
+    }
     NEW_MEMBER_HOLDS = {
         # Initial Shio should belong to the Just Believe!!! set.
         # (which is ordinal 1 because LUMF is handled by the common-name code.)
@@ -35,6 +38,7 @@ class OrdinalSetWatcher(object):
     def __init__(self):
         self.fes: TSetMemory = []
         self.pickup: TSetMemory = []
+        self.party: TSetMemory = []
         self.song: TSetMemory = []
         self.max_ordinal = 0
 
@@ -47,6 +51,8 @@ class OrdinalSetWatcher(object):
             src = self.pickup
         elif cat == SUBTYPE_FES:
             src = self.fes
+        elif cat == SUBTYPE_PARTY:
+            src = self.party
         elif cat == SUBTYPE_SONG:
             src = self.song
         else:
@@ -97,6 +103,10 @@ class OrdinalSetWatcher(object):
             for _, collection in lst:
                 yield collection
 
+        for gid, lst in self.party:
+            for _, collection in lst:
+                yield collection
+
         for gid, lst in self.song:
             for _, collection in lst:
                 yield collection
@@ -111,7 +121,7 @@ async def update_ordinal_sets(conn: asyncpg.Connection, set_expert: PostgresDBEx
         FROM history_v5__card_ids 
         INNER JOIN history_v5 USING (id, serverid) 
         INNER JOIN card_index_v1 ON (card_id = card_index_v1.id) 
-        WHERE (subtype = 2 OR subtype = 3) AND rarity = 30 AND serverid = 'jp' AND history_v5__card_ids.what > 1
+        WHERE (subtype = 2 OR subtype = 3 OR subtype = 5) AND rarity = 30 AND serverid = 'jp' AND history_v5__card_ids.what > 1
         ORDER BY ordinal, sort_date
         """
     )

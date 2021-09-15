@@ -11,6 +11,7 @@ Timespan = Tuple[datetime, timedelta]
 TYPE_GACHA = 1
 TYPE_EVENT = 2
 
+# These correspond to the set_type enum in SetIndex.
 SUBTYPE_EVENT_TIE = 1
 SUBTYPE_PICK_UP = 2
 SUBTYPE_FES = 3
@@ -102,6 +103,7 @@ class CardSetRecord(object):
     T_SONG = 3
     T_FES = 4
     T_PICKUP = 5
+    T_PARTY = 6
 
     @dataclass
     class ID(object):

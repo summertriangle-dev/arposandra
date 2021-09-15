@@ -203,3 +203,6 @@ msgstr "フェス"
 
 msgid "kars.gallery.fragment.gacha_type_pickup"
 msgstr "ピックアップ"
+
+msgid "kars.gallery.fragment.gacha_type_party"
+msgstr "パーティー"

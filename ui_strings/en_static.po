@@ -202,3 +202,6 @@ msgstr "Festival"
 
 msgid "kars.gallery.fragment.gacha_type_pickup"
 msgstr "Spotlight"
+
+msgid "kars.gallery.fragment.gacha_type_party"
+msgstr "Party"
