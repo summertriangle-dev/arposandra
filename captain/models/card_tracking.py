@@ -119,7 +119,7 @@ class CardSetRecord(object):
     nijigasaki_member_state: int
 
     def is_systematic(self):
-        return self.set_type in [4, 5]
+        return self.set_type in [4, 5, 6]
 
     def max_date(self):
         return max(x.release for x in self.card_refs if x.release)

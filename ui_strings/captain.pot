@@ -109,6 +109,9 @@ msgstr "CardSetsForm.SetType.Live"
 msgid "CardSetsForm.SetType.Other"
 msgstr "CardSetsForm.SetType.Other"
 
+msgid "CardSetsForm.SetType.Party"
+msgstr "CardSetsForm.SetType.Party"
+
 msgid "CardSetsForm.SetType.Pickup"
 msgstr "CardSetsForm.SetType.Pickup"
 
@@ -417,6 +420,9 @@ msgstr "SetRecord.SetTypeDescriptionEventPair"
 
 msgid "SetRecord.SetTypeDescriptionOrdFes"
 msgstr "SetRecord.SetTypeDescriptionOrdFes"
+
+msgid "SetRecord.SetTypeDescriptionParty"
+msgstr "SetRecord.SetTypeDescriptionParty"
 
 msgid "SetRecord.SetTypeDescriptionPickup"
 msgstr "SetRecord.SetTypeDescriptionPickup"

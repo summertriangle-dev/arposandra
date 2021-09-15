@@ -46,6 +46,8 @@
                 {{ _("SetRecord.SetTypeDescriptionOrdFes") }}
             {% elif set.set_type == 5 %}
                 {{ _("SetRecord.SetTypeDescriptionPickup") }}
+            {% elif set.set_type == 6 %}
+                {{ _("SetRecord.SetTypeDescriptionParty") }}
             {% end %}
 
             {% if has_any_unavailable %}

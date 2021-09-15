@@ -14,7 +14,9 @@ msgid "Accessory.SkillHeader"
 msgstr "Skill"
 
 msgid "Accessory.SkillIsSquashedLabel"
-msgstr "This skill is improved as limit break levels are unlocked. Values shown here reflect both the min. and max. levels."
+msgstr ""
+"This skill is improved as limit break levels are unlocked. Values shown here "
+"reflect both the min. and max. levels."
 
 msgid "Acknowledgements"
 msgstr "謝辞"
@@ -122,6 +124,9 @@ msgstr "Live outfit sets"
 
 msgid "CardSetsForm.SetType.Other"
 msgstr "Other sets"
+
+msgid "CardSetsForm.SetType.Party"
+msgstr "Party sets"
 
 msgid "CardSetsForm.SetType.Pickup"
 msgstr "Spotlight sets"
@@ -449,6 +454,9 @@ msgid "SetRecord.SetTypeDescriptionOrdFes"
 msgstr ""
 "Released in All Star Festival boxes. Festival cards are only scoutable in "
 "other Festival gachas."
+
+msgid "SetRecord.SetTypeDescriptionParty"
+msgstr "Released in Party Scouting boxes. Party cards are somewhat easier to build without limit breaks."
 
 msgid "SetRecord.SetTypeDescriptionPickup"
 msgstr ""
