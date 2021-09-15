@@ -275,6 +275,7 @@ def take_matching(
     start: int, 
     match_ent: AnySRecord
 ) -> Optional[int]:
+    MATCH_THRESHOLD = 8
     end = len(fromlist)
     best = None
     matcher = SequenceMatcher(None, match_ent.common_title, "")
@@ -295,7 +296,11 @@ def take_matching(
         ):
             matcher.set_seq2(r.common_title)
             if m := matcher.find_longest_match():
-                p_flg = bool(m.size > 5)
+                # This really should be a custom factor per language, but we are lazy
+                # so use the UTF-8 byte size of the match instead. For kanji/kana
+                # each char is 3 bytes, so the minimum is roughly 3 characters matching.
+                cmp_sz = len(r.common_title[m.b:m.b + m.size].encode("utf8"))
+                p_flg = bool(cmp_sz > MATCH_THRESHOLD)
             else:
                 p_flg = False
 
