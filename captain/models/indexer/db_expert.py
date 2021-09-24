@@ -53,7 +53,7 @@ class SQLiteDBExpert(Generic[T]):
 
         for multi_field in self.schema.fields[self.schema.first_multi_index :]:
             m_fields = pk_header
-            m_fields.append(f"{multi_field.name} {self.sql_type(field)}")
+            m_fields.append(f"{multi_field.name} {self.sql_type(multi_field)}")
             cur.execute(
                 f"""
                 CREATE TABLE IF NOT EXISTS {self.schema.table}__{multi_field.name} (
