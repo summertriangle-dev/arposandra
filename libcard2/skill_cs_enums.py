@@ -316,6 +316,8 @@ class ST:
     AddDirectRateDamage = 263
     AddStaminaBlockDebuff = 264
     AddStaminaBlockGimmickDebuff = 265
+    AddSpSkillOverChargeBaseBonus = 266
+    AddSpSkillVoltageBaseBonusByOverChargeMax = 267
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~
