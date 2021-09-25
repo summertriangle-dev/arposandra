@@ -122,6 +122,18 @@ class SkillEffectDescriberContext(object):
             value = self.birdseye(levels[0], levels[-1])
         return value
 
+    def display_dual_effect(
+        self, 
+        effect_1: str, 
+        effect_2: str,
+        format_args: dict = None,
+        format_args_sec: dict = None
+    ):
+        return (
+            f"{format_args['let']}①{format_args['end']} {effect_1} "
+            f"{format_args_sec['let']}②{format_args_sec['end']} {effect_2}"
+        )
+
     def format_effect(
         self,
         skill: Skill,
@@ -161,7 +173,6 @@ class SkillEffectDescriberContext(object):
                     self.finish(skill.levels_2[0], format_args_sec),
                 )
             )
-            # FIXME: Not happy with this formatting but will do for now
-            effect = " / ".join((effect, effect_2))
+            effect = self.display_dual_effect(effect, effect_2, format_args, format_args_sec)
 
         return self.combiner(trigger, effect)
