@@ -45,6 +45,7 @@ class CT:
     VoltageMoreThanValue = 4
     TriggerLessThanValue = 5
     OnlyOwner = 6
+    AttributeMatch = 7
     Non = 255
 
 
@@ -351,6 +352,8 @@ IMPLICIT_TARGET_SKILL_TYPES = {
     ST.AddVoltageByStamina,
     ST.AddVoltageByTechnique,
     ST.AddCollaboGaugeByStamina,
+    ST.AddSpSkillOverChargeBaseBonus,
+    ST.AddSpSkillVoltageBaseBonusByOverChargeMax,
 }
 
 PERCENT_VALUE_SKILL_TYPES = {
@@ -416,6 +419,7 @@ PERCENT_VALUE_SKILL_TYPES = {
     ST.AddCollaboGaugeGimmickDebuff,
     ST.AddCollaboGaugeByStamina,
     ST.AddNoteScoreUpLimitBuffByCritical,
+    ST.AddSpSkillVoltageBaseBonusByOverChargeMax
 }
 
 MIXED_VALUE_SKILL_TYPES = {
