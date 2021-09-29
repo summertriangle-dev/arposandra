@@ -130,27 +130,43 @@ def format_grade(handler, n):
         return _format_grade_ja(n)
     return _format_grade_en(n)
 
+# Colour coding tags for first skill effect (green)
+SKILL_EFFECT_FORMAT_ARGS = {
+    "let": "<span class='let'>",
+    "var": "<span class='var'>",
+    "end": "</span>",
+}
+
+# and second effect (blue)
+SKILL_EFFECT_FORMAT_ARGS_SEC = {
+    "let": "<span class='let2'>",
+    "var": "<span class='var2'>",
+    "end": "</span>",
+}
 
 @export
 def format_skill_effect(handler, skill):
     es = get_skill_describer(handler).format_effect(
         skill,
-        format_args={"let": "<span class='let'>", "var": "<span class='var'>", "end": "</span>"},
-        format_args_sec={
-            "let": "<span class='let2'>",
-            "var": "<span class='var2'>",
-            "end": "</span>",
-        },
+        format_args=SKILL_EFFECT_FORMAT_ARGS,
+        format_args_sec=SKILL_EFFECT_FORMAT_ARGS_SEC
     )
+    
     if not es:
         return f"{tlinject_static(handler, skill.description)} ({skill.levels[0].effect_type})"
+    
     return es
 
 
 @export
 def format_skill_target(handler, skill, card=None):
     base = handler.settings["static_strings"].get(handler.locale.code, "en")
-    target_text = get_skill_describer(handler).format_target(skill, base, card)
+    target_text = get_skill_describer(handler).format_target(
+        skill, base, card,
+        format_args=SKILL_EFFECT_FORMAT_ARGS,
+        format_args_sec=SKILL_EFFECT_FORMAT_ARGS_SEC
+    )
+    
     if not target_text:
         return ""
 

@@ -88,16 +88,30 @@ class SkillEffectDescriberContext(object):
     def format_single_value(self, level_struct):
         return self.mod_value(level_struct)
 
-    def format_target(self, tt: Skill, strings: DictionaryAccess, context: Card = None):
+    def format_target(
+        self,
+        tt: Skill,
+        strings: DictionaryAccess,
+        context: Card = None,
+        format_args: dict = None,
+        format_args_sec: dict = None
+    ):
+        if format_args is None:
+            format_args = {"var": "", "let": "", "end": ""}
+        if format_args_sec is None:
+            format_args_sec = format_args
+
         e1 = None
         e2 = None
+
         if tt.levels[0].effect_type not in IMPLICIT_TARGET_SKILL_TYPES:
             e1 = self.target(tt.target, strings, context)
-        if tt.levels_2 and tt.levels_2[0].effect_type not in IMPLICIT_TARGET_SKILL_TYPES:
+        if (tt.levels_2 and tt.levels_2[0].effect_type not in IMPLICIT_TARGET_SKILL_TYPES 
+            and tt.target_2.id != tt.target.id):
             e2 = self.target(tt.target_2, strings, context)
 
         if e1 and e2:
-            return " / ".join((e1, e2))
+            return self.display_dual_effect(e1, e2, format_args=format_args, format_args_sec=format_args_sec)
         elif e1:
             return e1
         elif e2:
@@ -126,8 +140,8 @@ class SkillEffectDescriberContext(object):
         self, 
         effect_1: str, 
         effect_2: str,
-        format_args: dict = None,
-        format_args_sec: dict = None
+        format_args: dict,
+        format_args_sec: dict
     ):
         return (
             f"{format_args['let']}①{format_args['end']} {effect_1} "
