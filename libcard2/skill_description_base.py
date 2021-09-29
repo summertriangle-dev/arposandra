@@ -144,8 +144,8 @@ class SkillEffectDescriberContext(object):
         format_args_sec: dict
     ):
         return (
-            f"{format_args['let']}①{format_args['end']} {effect_1} "
-            f"{format_args_sec['let']}②{format_args_sec['end']} {effect_2}"
+            f"{format_args['let']}①{format_args['end']}&nbsp;{effect_1} "
+            f"{format_args_sec['let']}②{format_args_sec['end']}&nbsp;{effect_2}"
         )
 
     def format_effect(
