@@ -223,6 +223,10 @@ def filter_sets(
         if len(s.members) < 2:
             continue
 
+        if s.stype == "song":
+            yield s 
+            continue
+
         for rid, cset in cache.items():
             # Avoid being overzealous and consuming sr costume sets.
             if cset.issuperset(s.members) and len(cset.intersection(s.members)) > 1:
