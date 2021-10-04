@@ -2,7 +2,7 @@ import json
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
-from typing import List, Optional, Tuple, Any, Dict, Union
+from typing import List, Optional, Tuple, Any, Dict, Union, Iterable
 
 from libcard2.dataclasses import Card
 
@@ -124,12 +124,23 @@ class CardSetRecord(object):
     def max_date(self):
         return max(x.release for x in self.card_refs if x.release)
 
+    def format_event_date(self, fmt: str) -> Optional[str]:
+        use_date = None
+        for cid in self.card_refs:
+            if use_date := cid.release:
+                break
+        
+        if use_date:
+            # FIXME: the format for English uses a locale-dependent format for month names.
+            # We should get our own list.
+            return use_date.strftime(fmt)
+
     @staticmethod
-    def unpack_rdates(lrecs):
+    def unpack_rdates(lrecs: Iterable[Tuple[int, int, datetime]]):
         return [CardSetRecord.ID(*x) for x in lrecs]
 
     @staticmethod
-    def unpack_id_only(lrecs):
+    def unpack_id_only(lrecs: Iterable[int]):
         return [CardSetRecord.ID(x, None, None) for x in lrecs]
 
 

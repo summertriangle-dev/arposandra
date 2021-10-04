@@ -430,6 +430,9 @@ msgstr "Available from Scouting (Party)"
 msgid "SetRecord.AvailableFromGachaPickup"
 msgstr "Available from Scouting (Spotlight)"
 
+msgid "SetRecord.EventDateFormat"
+msgstr "%Y年%m月"
+
 msgid "SetRecord.ExpandAll"
 msgstr "Show/Hide all stats"
 
@@ -456,7 +459,9 @@ msgstr ""
 "other Festival gachas."
 
 msgid "SetRecord.SetTypeDescriptionParty"
-msgstr "Released in Party Scouting boxes. Party cards are somewhat easier to build without limit breaks."
+msgstr ""
+"Released in Party Scouting boxes. Party cards are somewhat easier to build "
+"without limit breaks."
 
 msgid "SetRecord.SetTypeDescriptionPickup"
 msgstr ""

@@ -400,6 +400,9 @@ msgstr "SetRecord.AvailableFromGachaParty"
 msgid "SetRecord.AvailableFromGachaPickup"
 msgstr "SetRecord.AvailableFromGachaPickup"
 
+msgid "SetRecord.EventDateFormat"
+msgstr "SetRecord.EventDateFormat"
+
 msgid "SetRecord.ExpandAll"
 msgstr "SetRecord.ExpandAll"
 
