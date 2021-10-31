@@ -150,9 +150,18 @@ html[lang=ja] .kars-navbar-list
 .stretch-bar
     display: flex
     flex-direction: row
+    flex-wrap: wrap
 
     .flexible-space
         flex-grow: 2
+    
+    .embedded-form
+        /* ideally it would just use the intrinsic size but...  */
+        min-width: 300px
+    
+@include media-breakpoint-down(md)
+    .embedded-form
+        width: 100%
 
 .kars-footer
     font-size: 0.8rem

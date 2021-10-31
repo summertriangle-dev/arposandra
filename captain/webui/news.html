@@ -14,30 +14,42 @@
     </head>
     <body data-master="{{ handler.settings["master"].version }}">
         {% module Template("uim_nav.html", current="news") %}
-        
-        <div class="container">
-            <h1 class="h3 mb-3 kars-negative-box">
-                {% if has_offset or is_single %}
-                <a href="/{{ server }}/news">{{ _("PT.News") }}</a>
-                {% else %}
-                {{ _("PT.News") }}
-                {% end %}
-            </h1>
-        </div>
 
         <div class="container">
-            <div class="card kars-card-box">
-            {% for news_item in news_items %}
-                {% module Template("uim_news_item.html", news_item=news_item, server=server, expand=expand, show_ts_msg=show_ts_msg, time_offset=time_offset) %}
-            {% end %}
+            <div class="stretch-bar kars-negative-box">
+                <h1 class="h3">
+                    {% if has_offset or is_single %}
+                    <a href="/{{ server }}/news">{{ _("PT.News") }}</a>
+                    {% else %}
+                    {{ _("PT.News") }}
+                    {% end %}
+                </h1>
 
-            {% if has_next_page %}
-            <div class="kars-list-alternate">
-                <div class="card-body">
-                    <a class="btn btn-primary" href="/{{ server }}/news/?before={{ news_items[-1].timestamp() }}">{{ _("More...") }}</a>
+                {% if not is_single %}
+                <span class="flexible-space"></span>
+                <div class="embedded-form">
+                    <form method="get" action="/{{ server }}/news">
+                        <div class="form-group row mx-0 mb-0">
+                            <input name="before" class="form-control col mr-2" type="date" />
+                            <input class="form-control col-2 btn btn-md btn-primary" type="submit" value="{{ _("NewsForm.Go") }}" />
+                        </div>
+                    </form>
                 </div>
+                {% end %}
             </div>
-            {% end %}
+    
+            <div class="card kars-card-box">
+                {% for news_item in news_items %}
+                    {% module Template("uim_news_item.html", news_item=news_item, server=server, expand=expand, show_ts_msg=show_ts_msg, time_offset=time_offset) %}
+                {% end %}
+    
+                {% if has_next_page %}
+                <div class="kars-list-alternate">
+                    <div class="card-body">
+                        <a class="btn btn-primary" href="/{{ server }}/news/?before={{ news_items[-1].timestamp() }}">{{ _("More...") }}</a>
+                    </div>
+                </div>
+                {% end %}
             </div>
         </div>
 

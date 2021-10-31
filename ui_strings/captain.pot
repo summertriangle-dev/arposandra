@@ -247,6 +247,9 @@ msgstr "Nav.SearchCards"
 msgid "Nav.SendFeedback"
 msgstr "Nav.SendFeedback"
 
+msgid "NewsForm.Go"
+msgstr "NewsForm.Go"
+
 msgid "NewsPostDisclaimer"
 msgstr "NewsPostDisclaimer"
 
