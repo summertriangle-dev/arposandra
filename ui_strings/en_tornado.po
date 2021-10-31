@@ -434,6 +434,9 @@ msgstr "Available from Scouting (Party)"
 msgid "SetRecord.AvailableFromGachaPickup"
 msgstr "Available from Scouting (Spotlight)"
 
+msgid "SetRecord.EventDateFormat"
+msgstr "%b %Y"
+
 msgid "SetRecord.ExpandAll"
 msgstr "Show/Hide all stats"
 

@@ -201,6 +201,8 @@ def to_condition_phrase(trigger_type, condition_type, condition_value, tags):
         return f"{tags['let']}{condition_value}{tags['end']} or more"
     elif condition_type == CT.OnlyOwner:
         return "this card's turn"
+    elif condition_type == CT.AttributeMatch:
+        return "if song attribute matches this card's"
     else:
         return f"undocumented condition {condition_type}, {condition_value}"
 
@@ -361,6 +363,11 @@ EN.skill_effect[ST.AddVoltageByStamina] = \
     "Add {var}{value}{end} of this card's stamina to voltage"
 EN.skill_effect[ST.AddVoltageByTechnique] = \
     "Add {var}{value}{end} of this card's technique to voltage"
+# 200% appears to be hardcoded
+EN.skill_effect[ST.AddSpSkillOverChargeBaseBonus] = \
+    "Allow SP gauge to be charged to {let}200%{end}"
+EN.skill_effect[ST.AddSpSkillVoltageBaseBonusByOverChargeMax] = \
+    "Increase voltage gain from SP burst by up to {var}{value}{end}, based on extra SP"
 
 EN.skill_effect[ST.AddCollaboGaugeGimmickBuff] = \
     EN.skill_effect[ST.AddCollaboGaugeBaseBonus]
