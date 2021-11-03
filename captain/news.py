@@ -12,7 +12,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from html import unescape
-from typing import List, Union
+from typing import List, Union, Optional
 
 import asyncpg
 from tornado.web import RequestHandler
@@ -29,16 +29,15 @@ JP_OFFSET_FROM_UTC = 32400
 class NewsList(BaseHTMLHandler, DatabaseMixin):
     NUM_ITEMS_PER_PAGE = 20
 
-    def convert_user_date(self, arg) -> datetime:
+    def convert_user_date(self, arg: str) -> Optional[datetime]:
+        if arg.isdigit():
+            return datetime.utcfromtimestamp(int(arg))
+        
         try:
-            timestamp = int(arg)
-            return datetime.utcfromtimestamp(timestamp)
+            isodate = datetime.strptime(arg, "%Y-%m-%d")
+            return isodate + timedelta(days=1)
         except ValueError:
-            try:
-                isodate = datetime.strptime(arg, "%Y-%m-%d")
-                return isodate + timedelta(days=1)
-            except ValueError:
-                return datetime.utcnow()
+            return None
 
     async def get(self, region=None):
         if not region:
@@ -48,12 +47,15 @@ class NewsList(BaseHTMLHandler, DatabaseMixin):
         else:
             server = self.database().news_database.validate_server_id(region)
 
-        before_arg = self.get_argument("before", None)
-        has_offset = False
-        if not before_arg:
-            before = datetime.utcnow()
-        else:
+        before = None
+        has_offset = True
+
+        if before_arg := self.get_argument("before", None):
             before = self.convert_user_date(before_arg)
+        
+        if not before:
+            before = datetime.utcnow()
+            has_offset = False
 
         count = await self.database().news_database.count_news_items(server)
         items = await self.get_items(server, before, self.NUM_ITEMS_PER_PAGE + 1)
