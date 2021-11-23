@@ -59,6 +59,21 @@ export class PAQueryEditor extends React.Component {
         return buttons
     }
 
+    _firstCriteriaConflict(withAny, criteriaName) {
+        const scm = this.props.schema.criteria[criteriaName]
+        if (scm.behaviour && scm.behaviour.conflicts) {
+            for (let i = 0; i < scm.behaviour.conflicts.length; i++) {
+                const cfname = scm.behaviour.conflicts[i]
+                const where = withAny.indexOf(cfname)
+                if (where >= 0) {
+                    return cfname
+                }
+            }
+        }
+
+        return null
+    }
+
     addCriteriaAction(name) {
         console.debug("Panther: add criteria id:", name)
         if (this.state.queryTemplate.indexOf(name) === -1) {
@@ -70,21 +85,16 @@ export class PAQueryEditor extends React.Component {
             purgatory: null,
             autofocus: name
         }
-        const scm = this.props.schema.criteria[name]
-        if (scm.behaviour && scm.behaviour.conflicts) {
-            for (let i = 0; i < scm.behaviour.conflicts.length; i++) {
-                const cfname = scm.behaviour.conflicts[i]
-                const where = newState.queryTemplate.indexOf(cfname)
 
-                if (where >= 0) {
-                    newState.queryTemplate.splice(where, 1)
-                    newState.queryValues = this.state.queryValues
+        const conflictKey = this._firstCriteriaConflict(newState.queryTemplate, name)
+        if (conflictKey !== null) {
+            const where = newState.queryTemplate.indexOf(conflictKey)
+            newState.queryTemplate.splice(where, 1)
+            newState.queryValues = this.state.queryValues
 
-                    const rec = new PurgatoryRecord(cfname, newState.queryValues[cfname], name)
-                    delete newState.queryValues[cfname] 
-                    newState.purgatory = rec
-                }
-            }
+            const rec = new PurgatoryRecord(conflictKey, newState.queryValues[conflictKey], name)
+            delete newState.queryValues[conflictKey] 
+            newState.purgatory = rec
         }
 
         newState.buttonList = this.makeUnusedButtonList(newState.queryTemplate)
@@ -211,14 +221,21 @@ export class PAQueryEditor extends React.Component {
                 })
             } else {
                 const newTemplate = preset.template.slice(0)
+                const newVals = Object.assign({}, this.state.queryValues)
                 this.state.queryTemplate.forEach((v) => {
                     if (this.state.queryValues[v] && !preset.template.includes(v)) {
-                        newTemplate.push(v)
+                        const hasConflict = this._firstCriteriaConflict(newTemplate, v)
+                        if (hasConflict) {
+                            delete newVals[hasConflict]
+                        } else {
+                            newTemplate.push(v)
+                        }
                     }
                 })
     
                 this.setState({
                     queryTemplate: newTemplate,
+                    queryValues: newVals,
                     buttonList: this.makeUnusedButtonList(newTemplate),
                     purgatory: null
                 })
