@@ -515,7 +515,7 @@ class PACriteriaList extends React.Component {
             {this.props.schema.presets.length > 0?
                 <p className="h6 mb-3">{Infra.strings.Search.PresetsTitle}</p> : null}
             {this.props.schema.presets.map(
-                (ps) => <button key={ps.name} className="btn btn-primary mx-2 mb-3" 
+                (ps) => <button key={ps.name} className="btn btn-secondary mx-2 mb-3" 
                     onClick={(e) => this.applyPresetAction(e, ps)}>{ps.name}</button>
             )}
             <p className="h6">{Infra.strings.Search.CriteriaBlocksTitle}</p>
