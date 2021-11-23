@@ -22,7 +22,7 @@ module.exports = {
     output: {
         filename: "[name].bundle.js",
         chunkFilename: "[name].bundle.js?v=[chunkhash:8]",
-        sourceMapFilename: "[name].bundle.js.map",
+        // sourceMapFilename: "[name].bundle.js.map",
         publicPath: process.env["WDS_PUBLIC_PATH"] || "/static/js/",
     },
     module: {
@@ -54,9 +54,9 @@ module.exports = {
             // restore webpack 4 vendor chunk names
             // https://stackoverflow.com/questions/66986664/webpack-5-vendors-chunks-naming
             name: (module, chunks, cacheGroupKey) => {
-                const allChunksNames = chunks.map((chunk) => chunk.name).join('~');
-                const prefix = cacheGroupKey === 'defaultVendors' ? 'vendors' : cacheGroupKey;
-                return `${prefix}~${allChunksNames}`;
+                const allChunksNames = chunks.map((chunk) => chunk.name).join("~")
+                const prefix = cacheGroupKey === "defaultVendors" ? "vendors" : cacheGroupKey
+                return `${prefix}~${allChunksNames}`
             },
         },
         runtimeChunk: "single",

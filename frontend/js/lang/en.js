@@ -160,6 +160,13 @@ export default {
             default: return `${n} results`
             }
         },
+        ClearBitsetLabel: "Clear",
+        PresetsTitle: "Add filter sets:",
+        ReplacePresetPromptText: `You already have search filters set. Would you like me to remove them for you? 
+            (If you choose to keep them, the existing filters will be merged with the ones from the preset.)`,
+        ReplacePresetPromptMerge: "Merge",
+        ReplacePresetPromptReplace: "Replace",
+        ReplacePresetPromptCancel: "Cancel",
     },
     AlertShim: {
         Dismiss: "OK"

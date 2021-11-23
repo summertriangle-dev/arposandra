@@ -27,6 +27,7 @@ class CardSearch(BaseHTMLHandler, DatabaseMixin):
         return [
             self.static_url(f"search/card.base.{code}.json"),
             self.static_url(f"search/card.skills.enum.{code}.json"),
+            self.static_url(f"search/card.presets.{code}.json"),
         ]
 
     def dictionary_for_lang(self):

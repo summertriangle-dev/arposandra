@@ -298,6 +298,9 @@ class PASearchContext {
 
         if (schemas !== null) {
             this.schema = schemas[0]
+            if (!this.schema.presets) {
+                this.schema.presets = []
+            }
 
             for (let i = 1; i < schemas.length; ++i) {
                 const overlay = schemas[i].criteria
@@ -305,6 +308,9 @@ class PASearchContext {
                     if (Object.hasOwnProperty.call(overlay, j)) {
                         Object.assign(this.schema.criteria[j], overlay[j])
                     }
+                }
+                if (schemas[i].presets) {
+                    this.schema.presets.push(...schemas[i].presets)
                 }
             }
         }
@@ -340,6 +346,11 @@ class PASearchContext {
 
             if (this.currentTemplate.length > 0) {
                 auto = true
+            }
+        } else {
+            if (this.schema.presets[0]) {
+                this.currentTemplate = this.schema.presets[0].template.slice(0)
+                this.currentQuery = {}
             }
         }
 

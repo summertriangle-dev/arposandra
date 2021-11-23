@@ -153,13 +153,87 @@ export class PAQueryEditor extends React.Component {
         })
     }
 
+    haveAnyFilterValues() {
+        let ret = false
+        const keys = Object.keys(this.state.queryValues)
+        for (let i = 0; i < keys.length; ++i) {
+            if (this.state.queryValues[keys[i]] !== undefined) {
+                ret = true
+            }
+        }
+
+        return ret
+    }
+
+    askUserForPresetMergeBehaviour() {
+        return new Promise((resolve) => {
+            if (!this.haveAnyFilterValues()) {
+                resolve("replace")
+                return
+            }
+
+            ModalManager.pushModal((dismiss) => {
+                const dismissReturn = (v) => {
+                    resolve(v)
+                    dismiss()
+                }
+    
+                return <section className="modal-body">
+                    <p>{Infra.strings.Search.ReplacePresetPromptText}</p>
+                    <div className="form-row kars-fieldset-naturalorder">
+                        <button className="item btn btn-primary" autoFocus={true}
+                            onClick={() => dismissReturn("merge")}>
+                            {Infra.strings.Search.ReplacePresetPromptMerge}</button>
+                        <button className="item btn btn-secondary"
+                            onClick={() => dismissReturn("replace")}>
+                            {Infra.strings.Search.ReplacePresetPromptReplace}</button>
+                        <button className="item btn btn-tertiary"
+                            onClick={() => dismissReturn("cancel")}>
+                            {Infra.strings.Search.ReplacePresetPromptCancel}</button>
+                    </div>
+                </section>
+            }).onDismiss(() => resolve("cancel"))
+        })
+    }
+
+    applyPresetAction(preset) {
+        if (!preset) return
+
+        this.askUserForPresetMergeBehaviour().then((behaviour) => {
+            if (behaviour === "cancel") {
+                return
+            } else if (behaviour === "replace") {
+                this.setState({
+                    queryTemplate: preset.template.slice(0),
+                    queryValues: {},
+                    buttonList: this.makeUnusedButtonList(preset.template),
+                    purgatory: null
+                })
+            } else {
+                const newTemplate = preset.template.slice(0)
+                this.state.queryTemplate.forEach((v) => {
+                    if (this.state.queryValues[v] && !preset.template.includes(v)) {
+                        newTemplate.push(v)
+                    }
+                })
+    
+                this.setState({
+                    queryTemplate: newTemplate,
+                    buttonList: this.makeUnusedButtonList(newTemplate),
+                    purgatory: null
+                })
+            }
+        })
+    }
+
     render() {
         const actions = {
             addCriteria: this.addCriteriaAction.bind(this),
             removeCriteria: this.removeCriteriaAction.bind(this),
             setQueryValue: this.setQueryValueAction.bind(this),
             setSort: this.setSortAction.bind(this),
-            restorePurgatory: this.restorePurgatoryAction.bind(this)
+            restorePurgatory: this.restorePurgatoryAction.bind(this),
+            applyPreset: this.applyPresetAction.bind(this)
         }
 
         return <div>
@@ -416,6 +490,11 @@ class PACriteriaList extends React.Component {
         this.props.actions.addCriteria(event.currentTarget.dataset.selectedCriteriaId)
     }
 
+    applyPresetAction(event, preset) {
+        event.preventDefault()
+        this.props.actions.applyPreset(preset)
+    }
+
     renderSingleCriteriaButton(key, criteria, act) {
         return <button key={key} data-selected-criteria-id={key} className="btn btn-secondary criteria-button"
             onClick={act}>
@@ -433,6 +512,12 @@ class PACriteriaList extends React.Component {
 
         const act = this.addCriteriaAction.bind(this)
         return <div className="criteria-list pt-3">
+            {this.props.schema.presets.length > 0?
+                <p className="h6 mb-3">{Infra.strings.Search.PresetsTitle}</p> : null}
+            {this.props.schema.presets.map(
+                (ps) => <button key={ps.name} className="btn btn-primary mx-2 mb-3" 
+                    onClick={(e) => this.applyPresetAction(e, ps)}>{ps.name}</button>
+            )}
             <p className="h6">{Infra.strings.Search.CriteriaBlocksTitle}</p>
             {this.props.buttonList.map(
                 (k) => this.renderSingleCriteriaButton(k, this.props.schema.criteria[k], act)
@@ -477,6 +562,12 @@ export class PAEnumField extends React.Component {
                 this.props.changeValue(this.props.name, undefined)
             }
         }
+    }
+
+    clearBitset(event) {
+        event.preventDefault()
+        const val = this.props.criteria.choices.map((choice) => choice.value)
+        this.props.changeValue(this.props.name, val)
     }
 
     checkboxValue(forEnumValue) {
@@ -551,6 +642,9 @@ export class PAEnumField extends React.Component {
                         </label>
                     </div>
                 })}
+                <button onClick={(e) => this.clearBitset(e)} className="btn btn-sm btn-secondary">
+                    {Infra.strings.Search.ClearBitsetLabel}
+                </button>
             </div>
         } else {
             control = <select id={`input-for-${this.props.name}`} 
@@ -756,7 +850,7 @@ export class PASortField extends React.Component {
         </select>
 
         return <div className="col-sm-8">
-            {control}            
+            {control}
         </div>
     }
 }

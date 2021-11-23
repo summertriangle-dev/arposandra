@@ -1,0 +1,16 @@
+{
+    "presets": [
+        {
+            "name": "Search by Type",
+            "template": ["member", "rarity", "attribute", "role", "source"]
+        }, 
+        {
+            "name": "Search by Skills",
+            "template": ["skills.effect", "skills.activation_type", "skills.apply_type"]
+        },
+        {
+            "name": "Remove All Filters",
+            "template": []
+        }
+    ]
+}
