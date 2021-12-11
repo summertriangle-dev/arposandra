@@ -275,7 +275,7 @@ class PostgresDBExpert(Generic[T]):
 
         raise ValueError("invalid operator")
 
-    def build_query(self, crit_list, fts_bond_list=None, order_by=None, order_desc=False):
+    def build_query(self, crit_list, fts_bond_list, order_by=None, order_desc=False):
         fetchresult = []
         wheres = []
         joins = set()
@@ -288,12 +288,12 @@ class PostgresDBExpert(Generic[T]):
             if filter_value.get("return"):
                 fetchresult.append(f"{tablename}.{field.name}")
 
+            if tablename != self.schema.table:
+                joins.add(f"INNER JOIN {tablename} USING ({pkspec})")
+
             raw_value = filter_value.get("value")
             if raw_value is None:
                 continue
-
-            if tablename != self.schema.table:
-                joins.add(f"INNER JOIN {tablename} USING ({pkspec})")
 
             if field.field_type == types.FIELD_TYPE_INT:
                 if isinstance(raw_value, int):
@@ -357,7 +357,7 @@ class PostgresDBExpert(Generic[T]):
         order_desc=False,
     ):
         # t = time.monotonic_ns()
-        query, args = self.build_query(crit_list, fts_bond_list, order_by, order_desc)
+        query, args = self.build_query(crit_list, fts_bond_list or {}, order_by, order_desc)
         # logging.info("Query build time: %d", time.monotonic_ns() - t)
         # logging.debug("%s %s", query, args)
         return await connection.fetch(query, *args)
