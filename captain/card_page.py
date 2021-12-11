@@ -13,6 +13,8 @@ from libcard2.dataclasses import Card, Member
 from .bases import BaseHTMLHandler, BaseAPIHandler
 from .dispatch import DatabaseMixin, route
 from .models import card_tracking
+from .models.indexer import db_expert, types
+from .models.mine_models import CardIndex
 from .pageutils import (
     get_as_secret,
     tlinject_static,
@@ -222,7 +224,7 @@ class CardGallery(BaseHTMLHandler, DatabaseMixin, CardThumbnailProviderMixin):
     SAME_GROUP_ORD_TYPES = [
         card_tracking.CardSetRecord.T_FES,
         card_tracking.CardSetRecord.T_PICKUP,
-        card_tracking.CardSetRecord.T_PARTY
+        card_tracking.CardSetRecord.T_PARTY,
     ]
 
     def initialize(self, *args, **kwargs):
@@ -554,7 +556,7 @@ class CardAPIExtras(object):
         sd = handler.settings["string_access"].lookup_strings(tlbatch, dict_pref)
         self.translations = sd[0]
 
-    def modify(self, cdict: Dict[str, Any]):
+    def modify(self, cdict: Dict[str, Any], with_index_data: Dict[str, Dict[str, Any]]):
         if appearance := cdict["normal_appearance"]:
             appearance["name"] = self.translations.get(appearance["name"])
             appearance["image_asset_path"] = self.image_urls.get(appearance["image_asset_path"])
@@ -581,6 +583,14 @@ class CardAPIExtras(object):
             passive["programmatic_description"] = self.skill_fmts.get(passive["id"])
             passive["programmatic_target"] = self.skill_targets.get((cdict["id"], passive["id"]))
 
+        if db_ent := with_index_data.get(cdict["id"]):
+            source_id = db_ent.get("source")
+            # XXX: hack: this is e_gacha_p2, which will eventually be removed
+            #      for now, map it to e_gacha
+            if source_id == 4:
+                source_id = 3
+            cdict["source"] = source_id
+
         return cdict
 
 
@@ -590,18 +600,29 @@ class CardPageAPI(CardPage, CardAPIExtras):
         super().initialize(*args, **kwargs)
         self.init_api_extra_mixin()
 
-    def get(self, mode, spec):
+    async def get_index_data(self, for_ids: List[int]):
+        query = {"id": {"value": for_ids, "return": True}, "source": {"return": True}}
+
+        expert = db_expert.PostgresDBExpert(CardIndex)
+        async with self.database().pool.acquire() as connection, connection.transaction():
+            await connection.execute("SET TRANSACTION READ ONLY")
+            res = await expert.run_query(connection, query, {}, "id", False)
+
+        return {r["id"]: {"source": r["source"]} for r in res}
+
+    async def get(self, mode, spec):
         id_list = self.card_spec(spec)
 
         if mode == "ordinal":
             id_list = self.settings["master"].card_ordinals_to_ids(id_list)
 
+        index_data = await self.get_index_data(id_list)
         cards = self.settings["master"].lookup_multiple_cards_by_id(id_list)
         cards = [c for c in cards if c]
 
         if cards:
             self.prepare_for_export(cards)
-            cards = [self.modify(c.to_dict()) for c in cards]
+            cards = [self.modify(c.to_dict(), index_data) for c in cards]
             self.write({"result": cards})
         else:
             self.set_status(404)
@@ -609,12 +630,12 @@ class CardPageAPI(CardPage, CardAPIExtras):
 
 
 @route(r"/api/private/cards/member/([0-9]+)\.json")
-class CardPageAPIByMemberID(BaseAPIHandler, CardAPIExtras):
+class CardPageAPIByMemberID(CardPageAPI, CardAPIExtras):
     def initialize(self, *args, **kwargs):
         super().initialize(*args, **kwargs)
         self.init_api_extra_mixin()
 
-    def get(self, member_id):
+    async def get(self, member_id):
         member = self.settings["master"].lookup_member_by_id(member_id)
 
         if not member:
@@ -623,12 +644,13 @@ class CardPageAPIByMemberID(BaseAPIHandler, CardAPIExtras):
             return
 
         card_ids = [cl.id for cl in reversed(member.card_brief)]
+        index_data = await self.get_index_data(card_ids)
         cards = self.settings["master"].lookup_multiple_cards_by_id(card_ids)
         cards = [c for c in cards if c]
 
         if cards:
             self.prepare_for_export(cards)
-            cards = [self.modify(c.to_dict()) for c in cards]
+            cards = [self.modify(c.to_dict(), index_data) for c in cards]
             self.write({"result": cards})
         else:
             self.set_status(404)
