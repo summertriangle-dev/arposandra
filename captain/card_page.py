@@ -3,7 +3,7 @@ import hashlib
 import hmac
 import random
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Iterable, Optional, Tuple, Dict, List, Any, cast
 
 from tornado.web import RequestHandler
@@ -22,7 +22,6 @@ from .pageutils import (
     card_icon_url,
     get_skill_describer,
 )
-import logging
 
 
 @route(r"/cards/(random|(?:[0-9,]+))(/.*)?")
@@ -591,6 +590,11 @@ class CardAPIExtras(object):
                 source_id = 3
             cdict["source"] = source_id
 
+            cdict["release_dates"] = {
+                k: v.astimezone(timezone.utc).isoformat() if v else v
+                for k, v in db_ent.get("release_dates", {}).items()
+            }
+
         return cdict
 
 
@@ -601,14 +605,29 @@ class CardPageAPI(CardPage, CardAPIExtras):
         self.init_api_extra_mixin()
 
     async def get_index_data(self, for_ids: List[int]):
-        query = {"id": {"value": for_ids, "return": True}, "source": {"return": True}}
+        query = {
+            "id": {"value": for_ids, "return": True},
+            "source": {"return": True},
+            "release_dates.server_id": {"return": True},
+            "release_dates.date": {"return": True},
+        }
 
         expert = db_expert.PostgresDBExpert(CardIndex)
         async with self.database().pool.acquire() as connection, connection.transaction():
             await connection.execute("SET TRANSACTION READ ONLY")
-            res = await expert.run_query(connection, query, {}, "id", False)
+            search_result = await expert.run_query(connection, query, order_by="id")
 
-        return {r["id"]: {"source": r["source"]} for r in res}
+        ret = {}
+        for row in search_result:
+            if row["id"] not in ret:
+                ret[row["id"]] = {
+                    "source": row["source"],
+                    "release_dates": {row["server_id"]: row["date"]},
+                }
+            else:
+                ret[row["id"]]["release_dates"][row["server_id"]] = row["date"]
+
+        return ret
 
     async def get(self, mode, spec):
         id_list = self.card_spec(spec)
