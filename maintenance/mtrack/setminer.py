@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from html import unescape
 from typing import Dict, Iterable, List, Tuple
 
 import asyncpg
@@ -24,10 +25,7 @@ class OrdinalSetWatcher(object):
     CATEGORY_NAMES = {5: "party", 3: "fes", 2: "pickup", SUBTYPE_SONG: "singles"}
     # Maps gacha subtype (CATEGORY_NAMES) to set type (see card_tracking.py).
     #   SUBTYPE_SONG isn't a real subtype, it's just there for solo songs.
-    SET_TYPES = {
-        5: "ordinal_party", 3: "ordinal_fes", 
-        2: "ordinal_pickup", SUBTYPE_SONG: "song"
-    }
+    SET_TYPES = {5: "ordinal_party", 3: "ordinal_fes", 2: "ordinal_pickup", SUBTYPE_SONG: "song"}
     NEW_MEMBER_HOLDS = {
         # Initial Shio should belong to the Just Believe!!! set.
         # (which is ordinal 1 because LUMF is handled by the common-name code.)
@@ -151,7 +149,11 @@ def find_potential_set_names(from_lang: string_mgr.DictionaryAccess) -> List[Tup
                 AND length(m_dictionary.id) = length("card_name_awaken_400092001"))
         GROUP BY m_dictionary.message HAVING COUNT(m_dictionary.message) > 1 ORDER BY COUNT(m_dictionary.message) DESC
     """
-    return db.execute(script).fetchall()
+    m_list = []
+    for string_id, message, is_song in db.execute(script).fetchall():
+        m_list.append((string_id, unescape(message), is_song))
+
+    return m_list
 
 
 def find_solo_song_card_names(from_lang: string_mgr.DictionaryAccess) -> List[str]:
@@ -208,9 +210,7 @@ def get_card_list(rec: AnySRecord):
     )
 
 
-def filter_sets(
-    sets: List[SetRecord], events: List[AnySRecord], is_authoritative: bool
-):
+def filter_sets(sets: List[SetRecord], events: List[AnySRecord], is_authoritative: bool):
     cache = {
         x.record_id: x.feature_card_ids
         if isinstance(x, SEventRecord)
@@ -224,7 +224,7 @@ def filter_sets(
             continue
 
         if s.stype == "song":
-            yield s 
+            yield s
             continue
 
         for rid, cset in cache.items():
