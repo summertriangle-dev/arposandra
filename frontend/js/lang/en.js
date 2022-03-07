@@ -162,10 +162,9 @@ export default {
         },
         ClearBitsetLabel: "Clear",
         PresetsTitle: "Add filter sets:",
-        ReplacePresetPromptText: `You already have search filters set. Would you like me to remove them for you? 
-            (If you choose to keep them, the existing filters will be merged with the ones from the preset.)`,
+        ReplacePresetPromptText: "You already have search filters set. Do you want me to merge them with the new filters, or just remove them?",
         ReplacePresetPromptMerge: "Merge",
-        ReplacePresetPromptReplace: "Replace",
+        ReplacePresetPromptReplace: "Remove",
         ReplacePresetPromptCancel: "Cancel",
     },
     AlertShim: {
