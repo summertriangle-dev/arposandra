@@ -69,14 +69,16 @@ class LanguageMenu extends React.Component {
         }
 
         loadLanguages().then((l) => {
-            this.setState(localizeReturnedLanguageList(l), () => this.fixDefaults())
-        })
-    }
-
-    fixDefaults() {
-        this.setState({
-            dictionary: Cookies.get("mdic") || this.state.dataLangs[0].code,
-            region: Cookies.get("dsid") || this.state.regions[0],
+            const menuData = localizeReturnedLanguageList(l)
+            this.setState({
+                dictionary: Cookies.get("mdic") || menuData.dataLangs[0].code,
+                region: Cookies.get("dsid") || menuData.regions[0],
+                ...menuData
+            }, () => {
+                if (this.firstInput) {
+                    this.firstInput.focus()
+                }
+            })
         })
     }
 
@@ -91,10 +93,6 @@ class LanguageMenu extends React.Component {
 
             this.props.dismiss()
         })        
-    }
-
-    componentDidMount() {
-        this.firstInput && this.firstInput.focus()
     }
 
     render() {
