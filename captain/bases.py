@@ -11,6 +11,9 @@ class BaseAPIHandler(RequestHandler):
             return None
         return locale.get(preferred_lang)
 
+    def get_browser_locale(self, default: str = "en_US"):
+        return locale.get(default)
+
     def get_user_dict_preference(self):
         preferred_lang = self.get_cookie("mdic", None)
         if not preferred_lang:
