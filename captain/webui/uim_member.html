@@ -29,7 +29,8 @@
             {% for cl in icon_list %}
             <a href="/card/{{ cl.ordinal }}" class="card-icon">
                 <img width="64" height="64" src="{{ make_icon_url(cl) }}"
-                    alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}">
+                    alt="{{ _('Card icon #{ordinal}').format(ordinal=cl.ordinal) }}"
+                    loading="lazy">
             </a>
             {% end %}
 
