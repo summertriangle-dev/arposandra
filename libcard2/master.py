@@ -124,14 +124,20 @@ class MasterData(MasterDataLite):
 
         da = self.connection.execute(
             """SELECT id, school_idol_no, card_rarity_type, card_attribute,
-                role, thumbnail_asset_path
+                role, tnorm.thumbnail_asset_path, tidlz.thumbnail_asset_path
                 FROM m_card
-                LEFT JOIN m_card_appearance ON (card_m_id = m_card.id AND appearance_type == 1)
+                LEFT JOIN m_card_appearance AS tnorm ON (tnorm.card_m_id = m_card.id AND tnorm.appearance_type == 1)
+                LEFT JOIN m_card_appearance AS tidlz ON (tidlz.card_m_id = m_card.id AND tidlz.appearance_type == 2)
                 WHERE member_m_id = ? ORDER BY m_card.school_idol_no""",
             (member_id,),
         )
 
-        m.card_brief = [D.CardLite(*row[:5], D.Card.Appearance("", "", row[5]), None) for row in da]
+        m.card_brief = [
+            D.CardLite(
+                *row[:5], D.Card.Appearance("", "", row[5]), D.Card.Appearance("", "", row[6])
+            )
+            for row in da
+        ]
 
         self._register_card_brief_cache(m.card_brief)
         self.member_cache[member_id] = m
