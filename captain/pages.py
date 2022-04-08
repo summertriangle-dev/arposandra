@@ -2,7 +2,7 @@ import json
 import sys
 from collections import OrderedDict
 from datetime import datetime
-from typing import Iterable, List
+from typing import Iterable, List, cast
 
 from libcard2 import dataclasses
 from tornado.locale import get_supported_locales
@@ -29,11 +29,27 @@ class NavPageNoJS(BaseHTMLHandler):
             self.render("nav_other_nojs.html")
 
 
+class MemberListDisplayPreferencesMixin(object):
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if RequestHandler not in cls.__mro__:
+            raise TypeError("This mixin needs to be used with a subclass of RequestHandler.")
+
+    def member_list_wants_idolized_icons(self):
+        return cast(RequestHandler, self).get_cookie("ml_icon_type") == "idolized"
+
+    def create_icon_func(self):
+        if self.member_list_wants_idolized_icons():
+            return lambda card: pageutils.card_icon_url(self, card, card.idolized_appearance)
+        else:
+            return lambda card: pageutils.card_icon_url(self, card, card.normal_appearance)
+
+
 @route(r"/(?:idols|idol)/?")
 @route(r"/idols/(unit)/([0-9]+)/?")
 @route(r"/idols/(group)/([0-9]+)/?")
 @route(r"/idols/(id)/([0-9]+)/?")
-class IdolsRoot(BaseHTMLHandler, DatabaseMixin):
+class IdolsRoot(BaseHTMLHandler, DatabaseMixin, MemberListDisplayPreferencesMixin):
     def base_member_preview_list(self, member: dataclasses.Member):
         if "base_member_preview_list" in member.user_info:
             lst = member.user_info["base_member_preview_list"]
@@ -122,6 +138,7 @@ class IdolsRoot(BaseHTMLHandler, DatabaseMixin):
             member_groups=groups,
             subpage_type=specific,
             show_all_card_icons=show_all_card_icons,
+            make_icon_url=self.create_icon_func(),
         )
 
 
@@ -369,12 +386,13 @@ class APILanguageMenu(BaseAPIHandler):
 
 
 @route(r"/api/private/member_icon_list/([0-9]+)\.json")
-class APIMemberIconList(BaseAPIHandler, DatabaseMixin):
+class APIMemberIconList(BaseAPIHandler, DatabaseMixin, MemberListDisplayPreferencesMixin):
     def get(self, member_id):
         member = self.master().lookup_member_by_id(int(member_id))
+        icon_func = self.create_icon_func()
         payload = {
             "result": [
-                [clite.ordinal, pageutils.card_icon_url(self, clite, clite.normal_appearance)]
+                [clite.ordinal, icon_func(clite)]
                 for clite in sorted(
                     reversed(member.card_brief), key=lambda x: x.rarity, reverse=True
                 )

@@ -39,7 +39,7 @@
 
             <div class="card kars-card-box">
             {% for member in members %}
-                {% module Template("uim_member.html", member=member, show_all_card_icons=show_all_card_icons) %}
+                {% module Template("uim_member.html", member=member, show_all_card_icons=show_all_card_icons, make_icon_url=make_icon_url) %}
             {% end %}
             </div>
         </div>
