@@ -12,6 +12,8 @@ from .skill_cs_enums import TT as TriggerType, CT as ConditionType
 from .utils import construct_tt_from_sql_shape
 from .wave_description_base import LANGUAGE_DEFINITION_JA
 
+LIBCARD2_LOG = logging.getLogger("libcard2")
+
 
 class MasterDataLite(object):
     def __init__(self, master_path):
@@ -50,7 +52,7 @@ class MasterData(MasterDataLite):
         }
         self.tt_stat_increases = self.distill_tt_stat_increases()
         self.constants = self.fetch_required_constants()
-        print(f"MasterData: alloc with {len(self.ordinal_to_cid)} cards")
+        LIBCARD2_LOG.info("MasterData: alloc with %d cards", len(self.ordinal_to_cid))
 
     def distill_tt_stat_increases(self):
         rs = self.connection.execute(
