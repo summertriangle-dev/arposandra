@@ -13,11 +13,12 @@
         {% module Template("uim_nav.html", current="idol_list") %}
 
         <div class="container">
-            <div class="stretch-bar kars-negative-box">
-                <h1 class="h3 mb-3">
+            <div class="stretch-bar kars-negative-box mb-3">
+                <h1 class="h3 mb-0">
                     {{ _("PT.IdolList") }}
                 </h1>
                 <span class="flexible-space"></span>
+                <div class="kars-react-component kars-negative-box" data-component-class="MemberListDisplaySwitcher"></div>
                 <a class="icon icon-lg clickable ion-ios-search" href="/cards/search" title="{{ _("MemberList.SearchLabel") }}"></a>
             </div>
         </div>

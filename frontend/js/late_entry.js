@@ -14,6 +14,7 @@ import { initLangMenu } from "./lang_menu"
 import { hasStoragePermission, requestStoragePermission } from "./storage_permission"
 import * as GutterMenu from "./gutter"
 import * as NavMenu from "./nav_menu"
+import { MemberListDisplaySwitcher } from "./member_list"
 
 const FLG_CS_SHOW_DEV_INFO_E = 0x2
 
@@ -127,6 +128,7 @@ function init() {
         CardDisplayModeSwitcher,
         ImageSwitcher,
         SkillTree: SkillTreeLoader,
+        MemberListDisplaySwitcher,
     })
 
     TLInject.initialize()
