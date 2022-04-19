@@ -56,28 +56,20 @@ export class PACardSearchDomainExpert {
         })
     }
 
-    didAddCriteria(context, addedCriteria, proposedState) {
+    didAddCriteria(context, addedCriteria) {
         if (addedCriteria === "skills.apply_type") {
-            if (!proposedState.queryValues) {
-                const addValues = {}
-                Object.assign(addValues, context.state.queryValues)
-                proposedState.queryValues = addValues
-            }
-
-            const keys = Object.keys(proposedState.queryValues)
+            const keys = Object.keys(context.queryValues)
             for (let key in keys) {
                 if (CanAutoSetApplyTypeKeys.includes(keys[key])) {
-                    proposedState.queryValues[addedCriteria] = MatchValueForAutoSetApplyType[keys[key]]
+                    context.queryValues[addedCriteria] = MatchValueForAutoSetApplyType[keys[key]]
                     break
                 }
             }
         }
-
-        return proposedState
     }
 
-    didChangeCriteria(context, addedCriteria, proposedState) {
-        return proposedState
+    didChangeCriteria(context, addedCriteria) {
+
     }
 }
 
@@ -129,11 +121,11 @@ export class PAAccessorySearchDomainExpert {
         })
     }
 
-    didAddCriteria(context, addedCriteria, proposedState) {
-        return proposedState
+    didAddCriteria(context, addedCriteria) {
+
     }
 
-    didChangeCriteria(context, addedCriteria, proposedState) {
-        return proposedState
+    didChangeCriteria(context, addedCriteria) {
+
     }
 }

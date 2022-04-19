@@ -17,37 +17,23 @@ export const CONTROL_TYPE = {
 
 // ----- FORM ---------------------------------------------------------
 
-class PurgatoryRecord {
-    constructor(removedName, removedValue, inFavourOf) {
-        this.removedName = removedName
-        this.removedValue = removedValue
-        this.inFavourOf = inFavourOf
-    }
-}
-
 export class PAQueryEditor extends React.Component {
     constructor(props) {
         super(props)
-
-        const queryTemplateInitial = []
-        if (props.template) {
-            queryTemplateInitial.push(...props.template)
-        }
-
         this.state = {
-            queryTemplate: queryTemplateInitial,
-            queryValues: props.query || {},
-            sortBy: props.sortBy || undefined,
-            buttonList: this.makeUnusedButtonList(queryTemplateInitial),
-            purgatory: null,
             autofocus: null,
         }
     }
 
-    makeUnusedButtonList(template) {
+    static getDerivedStateFromProps(props, state) {
+        state.buttonList = PAQueryEditor.makeUnusedButtonList(props.schema, props.template)
+        return state
+    }
+
+    static makeUnusedButtonList(schema, template) {
         const buttons = []
         const lang = document.querySelector("html").getAttribute("lang")
-        Object.keys(this.props.schema.criteria).forEach((v) => {
+        Object.keys(schema.criteria).forEach((v) => {
             if (v.behaviour && v.behaviour.lang_whitelist && !v.behaviour.lang_whitelist.includes(lang)) {
                 return
             }
@@ -59,213 +45,30 @@ export class PAQueryEditor extends React.Component {
         return buttons
     }
 
-    _firstCriteriaConflict(withAny, criteriaName) {
-        const scm = this.props.schema.criteria[criteriaName]
-        if (scm.behaviour && scm.behaviour.conflicts) {
-            for (let i = 0; i < scm.behaviour.conflicts.length; i++) {
-                const cfname = scm.behaviour.conflicts[i]
-                const where = withAny.indexOf(cfname)
-                if (where >= 0) {
-                    return cfname
-                }
-            }
-        }
-
-        return null
-    }
-
     addCriteriaAction(name) {
-        console.debug("Panther: add criteria id:", name)
-        if (this.state.queryTemplate.indexOf(name) === -1) {
-            this.state.queryTemplate.push(name)
-        }
-
-        const newState = {
-            queryTemplate: this.state.queryTemplate,
-            purgatory: null,
-            autofocus: name
-        }
-
-        const conflictKey = this._firstCriteriaConflict(newState.queryTemplate, name)
-        if (conflictKey !== null) {
-            const where = newState.queryTemplate.indexOf(conflictKey)
-            newState.queryTemplate.splice(where, 1)
-            newState.queryValues = this.state.queryValues
-
-            const rec = new PurgatoryRecord(conflictKey, newState.queryValues[conflictKey], name)
-            delete newState.queryValues[conflictKey] 
-            newState.purgatory = rec
-        }
-
-        newState.buttonList = this.makeUnusedButtonList(newState.queryTemplate)
-        this.setState(this.props.expert.didAddCriteria(this, name, newState))
-    }
-
-    removeCriteriaAction(named) {
-        const where = this.state.queryTemplate.indexOf(named)
-        const nextState = this.state.queryValues
-        if (where >= 0) {
-            this.state.queryTemplate.splice(where, 1)
-            delete nextState[named]
-
-            this.setState({
-                queryTemplate: this.state.queryTemplate, 
-                buttonList: this.makeUnusedButtonList(this.state.queryTemplate),
-                queryValues: nextState,
-                purgatory: null,
-                autofocus: null
-            })
-        }
-    }
-
-    setQueryValueAction(key, value) {
-        const nextState = this.state.queryValues
-        
-        if (value === undefined) {
-            delete nextState[key]
-        } else {
-            nextState[key] = value
-        }
-
-        this.setState(this.props.expert.didChangeCriteria(this, key, {queryValues: nextState}))
-    }
-
-    setSortAction(value) {
-        this.setState({sortBy: value})
-    }
-
-    performSearchAction(e) {
-        e.preventDefault()
-
-        this.props.performSearchAction(this.state.queryValues, this.state.sortBy, 
-            this.state.queryTemplate)
-    }
-
-    restorePurgatoryAction() {
-        const rec = this.state.purgatory
-        const nextTemplate = this.state.queryTemplate
-        const nextValues = this.state.queryValues
-        const toDelete = nextTemplate.indexOf(rec.inFavourOf)
-
-        nextTemplate.splice(toDelete, 1)
-        delete nextValues[rec.inFavourOf]
-
-        if (rec.removedName) {
-            nextTemplate.push(rec.removedName)
-            nextValues[rec.removedName] = rec.removedValue
-        }
-
-        this.setState({
-            queryTemplate: nextTemplate, 
-            queryValues: nextValues, 
-            buttonList: this.makeUnusedButtonList(nextTemplate),
-            purgatory: null
-        })
-    }
-
-    haveAnyFilterValues() {
-        let ret = false
-        const keys = Object.keys(this.state.queryValues)
-        for (let i = 0; i < keys.length; ++i) {
-            if (this.state.queryValues[keys[i]] !== undefined) {
-                ret = true
-            }
-        }
-
-        return ret
-    }
-
-    askUserForPresetMergeBehaviour() {
-        return new Promise((resolve) => {
-            if (!this.haveAnyFilterValues()) {
-                resolve("replace")
-                return
-            }
-
-            ModalManager.pushModal((dismiss) => {
-                const dismissReturn = (v) => {
-                    resolve(v)
-                    dismiss()
-                }
-    
-                return <section className="modal-body">
-                    <p>{Infra.strings.Search.ReplacePresetPromptText}</p>
-                    <div className="form-row kars-fieldset-naturalorder">
-                        <button className="item btn btn-primary" autoFocus={true}
-                            onClick={() => dismissReturn("merge")}>
-                            {Infra.strings.Search.ReplacePresetPromptMerge}</button>
-                        <button className="item btn btn-secondary"
-                            onClick={() => dismissReturn("replace")}>
-                            {Infra.strings.Search.ReplacePresetPromptReplace}</button>
-                        <button className="item btn btn-tertiary"
-                            onClick={() => dismissReturn("cancel")}>
-                            {Infra.strings.Search.ReplacePresetPromptCancel}</button>
-                    </div>
-                </section>
-            }).onDismiss(() => resolve("cancel"))
-        })
-    }
-
-    applyPresetAction(preset) {
-        if (!preset) return
-
-        this.askUserForPresetMergeBehaviour().then((behaviour) => {
-            if (behaviour === "cancel") {
-                return
-            } else if (behaviour === "replace") {
-                this.setState({
-                    queryTemplate: preset.template.slice(0),
-                    queryValues: {},
-                    buttonList: this.makeUnusedButtonList(preset.template),
-                    purgatory: null
-                })
-            } else {
-                const newTemplate = preset.template.slice(0)
-                const newVals = Object.assign({}, this.state.queryValues)
-                this.state.queryTemplate.forEach((v) => {
-                    if (this.state.queryValues[v] && !preset.template.includes(v)) {
-                        const hasConflict = this._firstCriteriaConflict(newTemplate, v)
-                        if (hasConflict) {
-                            delete newVals[hasConflict]
-                        } else {
-                            newTemplate.push(v)
-                        }
-                    }
-                })
-    
-                this.setState({
-                    queryTemplate: newTemplate,
-                    queryValues: newVals,
-                    buttonList: this.makeUnusedButtonList(newTemplate),
-                    purgatory: null
-                })
-            }
-        })
+        console.debug("hooked addCriteriaAction")
+        this.props.actionSet.addCriteria(name)
+        this.setState({ autofocus: name })
     }
 
     render() {
-        const actions = {
-            addCriteria: this.addCriteriaAction.bind(this),
-            removeCriteria: this.removeCriteriaAction.bind(this),
-            setQueryValue: this.setQueryValueAction.bind(this),
-            setSort: this.setSortAction.bind(this),
-            restorePurgatory: this.restorePurgatoryAction.bind(this),
-            applyPreset: this.applyPresetAction.bind(this)
-        }
+        const actions = {}
+        Object.assign(actions, this.props.actionSet)
+        actions.addCriteria = this.addCriteriaAction.bind(this)
 
         return <div>
             <PASearchButton 
                 schema={this.props.schema}
-                performSearchAction={this.performSearchAction.bind(this)} />
+                performSearchAction={this.props.actionSet.performSearch} />
             <PAFormErrorBanner message={this.props.errorMessage} />
             <PAQueryList 
                 schema={this.props.schema} 
-                editors={this.state.queryTemplate} 
-                queryValues={this.state.queryValues}
-                sortBy={this.state.sortBy}
+                editors={this.props.template} 
+                queryValues={this.props.queryValues}
+                sortBy={this.props.sortBy}
                 actions={actions}
                 autofocus={this.state.autofocus} />
-            <PAPurgatoryMessage schema={this.props.schema} record={this.state.purgatory} actions={actions} />
+            <PAPurgatoryMessage schema={this.props.schema} record={this.props.purgatory} actions={actions} />
             <PACriteriaList
                 schema={this.props.schema} 
                 buttonList={this.state.buttonList}
@@ -283,6 +86,11 @@ class PASearchButton extends React.Component {
     //         this.props.setQueryValueAction(this.props.textBoxQueryTarget, proposedValue)
     //     }
     // }
+
+    performSearchAction(event) {
+        event.preventDefault()
+        this.props.performSearchAction()
+    }
 
     render() {
         let tf
@@ -309,7 +117,7 @@ class PASearchButton extends React.Component {
                 <input type="submit" 
                     className="btn btn-primary" 
                     value={Infra.strings.Search.ButtonLabel}
-                    onClick={this.props.performSearchAction} />
+                    onClick={(e) => this.performSearchAction(e)} />
             </div>
         </div>
     }
@@ -504,6 +312,7 @@ class PACriteriaList extends React.Component {
     }
 
     addCriteriaAction(event) {
+        event.preventDefault()
         this.props.actions.addCriteria(event.currentTarget.dataset.selectedCriteriaId)
     }
 
@@ -835,7 +644,7 @@ export class PASortField extends React.Component {
         let control = <select 
             id="input-for-_sort"
             className="custom-select" 
-            value={this.props.value} 
+            value={this.props.value || ""} 
             onChange={(e) => this.acceptInput(e)}>
             <option value=".empty">{Infra.strings.Search.EnumPlaceholder}</option>
 

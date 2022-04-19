@@ -18,14 +18,165 @@ const PASearchProgressState = {
 
 const RESULTS_PER_PAGE = 12
 
+class PurgatoryRecord {
+    constructor(removedName, removedValue, inFavourOf) {
+        this.removedName = removedName
+        this.removedValue = removedValue
+        this.inFavourOf = inFavourOf
+    }
+}
+
+class PAQueryManager {
+    constructor(schema, hooks) {
+        this.schema = schema
+        this.queryValues = {}
+        this.template = []
+        this.sort = null
+        this.purgatory = null
+        this.expert = hooks
+    }
+
+    _firstCriteriaConflict(withAny, criteriaName) {
+        const scm = this.schema.criteria[criteriaName]
+        if (scm.behaviour && scm.behaviour.conflicts) {
+            for (let i = 0; i < scm.behaviour.conflicts.length; i++) {
+                const cfname = scm.behaviour.conflicts[i]
+                const where = withAny.indexOf(cfname)
+                if (where >= 0) {
+                    return cfname
+                }
+            }
+        }
+
+        return null
+    }
+
+    setFromURLParameters(queryString) {
+        const params = deserializeQuery(this.schema, queryString)
+        this.sort = params._sort
+        delete params["_sort"]
+        delete params["_auto"]
+        this.queryValues = params
+        this.template = Object.keys(params).slice(0)
+    }
+
+    addCriteria(name) {
+        console.debug("Panther: add criteria id:", name)
+        const nextTemplate = this.template.slice()
+        if (nextTemplate.indexOf(name) === -1) {
+            nextTemplate.push(name)
+        }
+
+        const conflictKey = this._firstCriteriaConflict(nextTemplate, name)
+        if (conflictKey !== null) {
+            const where = nextTemplate.indexOf(conflictKey)
+            nextTemplate.splice(where, 1)
+            const nextValues = this.queryValues
+
+            const rec = new PurgatoryRecord(conflictKey, nextValues[conflictKey], name)
+            delete nextValues[conflictKey] 
+
+            this.purgatory = rec
+            this.queryValues = nextValues
+        }
+
+        this.template = nextTemplate
+        this.expert.didAddCriteria(this, name)
+    }
+
+    removeCriteria(named) {
+        const where = this.template.indexOf(named)
+        if (where >= 0) {
+            this.template.splice(where, 1)
+            delete this.queryValues[named]
+            this.purgatory = null
+        }
+    }
+
+    setQueryValue(key, value) {
+        if (value === undefined) {
+            delete this.queryValues[key]
+        } else {
+            this.queryValues[key] = value
+        }
+
+        this.expert.didChangeCriteria(this, key)
+    }
+
+    setSort(value) {
+        this.sort = value
+    }
+
+    restorePurgatory() {
+        const rec = this.purgatory
+        if (!rec) {
+            return
+        }
+
+        const toDelete = this.template.indexOf(rec.inFavourOf)
+        this.template.splice(toDelete, 1)
+        delete this.queryValues[rec.inFavourOf]
+
+        if (rec.removedName) {
+            this.template.push(rec.removedName)
+            this.queryValues[rec.removedName] = rec.removedValue
+        }
+
+        this.purgatory = null
+    }
+
+    hasAnyFilterValues() {
+        let ret = false
+        const keys = Object.keys(this.queryValues)
+        for (let i = 0; i < keys.length; ++i) {
+            if (this.queryValues[keys[i]] !== undefined) {
+                ret = true
+            }
+        }
+
+        return ret
+    }
+
+    setFromPreset(preset, strategy) {
+        if (strategy === "replace") {
+            this.template = preset.template.slice(0)
+            this.queryValues = {}
+            this.purgatory = null
+        } else {
+            const newTemplate = preset.template.slice(0)
+            const newVals = Object.assign({}, this.queryValues)
+            this.template.forEach((v) => {
+                if (this.queryValues[v] && !preset.template.includes(v)) {
+                    const hasConflict = this._firstCriteriaConflict(newTemplate, v)
+                    if (hasConflict) {
+                        delete newVals[hasConflict]
+                    } else {
+                        newTemplate.push(v)
+                    }
+                }
+            })
+
+            this.template = newTemplate
+            this.queryValues = newVals
+            this.purgatory = null
+        }
+    }
+}
+
 class PASearchContext {
     constructor(apiType) {
         this.schema = null
         this.dictionary = null
 
-        this.currentQuery = null
-        this.currentTemplate = null
-        this.currentSort = null
+        this.actionSet = {
+            addCriteria: (name) => { this.queryManager.addCriteria(name); this.render() },
+            removeCriteria: (name) => { this.queryManager.removeCriteria(name); this.render() },
+            setQueryValue: (key, value) => { this.queryManager.setQueryValue(key, value); this.render() },
+            setSort: (column) => { this.queryManager.setSort(column); this.render() },
+            restorePurgatory: () => { this.queryManager.restorePurgatory(); this.render() },
+            applyPreset: (preset) => { this.applyPresetAction(preset) },
+            performSearch: () => this.performSearchAction(),
+        }
 
         this.currentResults = []
         this.currentPage = 0
@@ -40,6 +191,52 @@ class PASearchContext {
         case "cards": this.api = new PACardSearchDomainExpert(); break
         case "accessories": this.api = new PAAccessorySearchDomainExpert(); break
         }
+
+        this.queryManager = new PAQueryManager(this.schema, this.api)
+    }
+
+    askUserForPresetMergeBehaviour() {
+        return new Promise((resolve) => {
+            if (!this.queryManager.hasAnyFilterValues()) {
+                resolve("replace")
+                return
+            }
+
+            ModalManager.pushModal((dismiss) => {
+                const dismissReturn = (v) => {
+                    resolve(v)
+                    dismiss()
+                }
+    
+                return <section className="modal-body">
+                    <p>{Infra.strings.Search.ReplacePresetPromptText}</p>
+                    <div className="form-row kars-fieldset-naturalorder">
+                        <button className="item btn btn-primary" autoFocus={true}
+                            onClick={() => dismissReturn("merge")}>
+                            {Infra.strings.Search.ReplacePresetPromptMerge}</button>
+                        <button className="item btn btn-secondary"
+                            onClick={() => dismissReturn("replace")}>
+                            {Infra.strings.Search.ReplacePresetPromptReplace}</button>
+                        <button className="item btn btn-tertiary"
+                            onClick={() => dismissReturn("cancel")}>
+                            {Infra.strings.Search.ReplacePresetPromptCancel}</button>
+                    </div>
+                </section>
+            }).onDismiss(() => resolve("cancel"))
+        })
+    }
+
+    applyPresetAction(preset) {
+        if (!preset) return
+
+        this.askUserForPresetMergeBehaviour().then((behaviour) => {
+            if (behaviour === "cancel") {
+                return
+            }
+
+            this.queryManager.setFromPreset(preset, behaviour)
+            this.render()
+        })
     }
 
     transitionToState(state) {
@@ -80,10 +277,11 @@ class PASearchContext {
         case PASearchProgressState.ErrorZeroResults:
             widget = <PAQueryEditor 
                 schema={this.schema} 
-                query={this.currentQuery}
-                template={this.currentTemplate}
-                sortBy={this.currentSort}
-                performSearchAction={this.performSearchAction.bind(this)}
+                queryValues={this.queryManager.queryValues}
+                template={this.queryManager.template}
+                sortBy={this.queryManager.sort}
+                purgatory={this.queryManager.purgatory}
+                actionSet={this.actionSet}
                 errorMessage={this.inlineErrorMessage}
                 expert={this.api} />
             break
@@ -129,15 +327,15 @@ class PASearchContext {
         })
     }
 
-    performSearchAction(query, sortBy, saveTemplate) {
-        if (Object.keys(query).length == 0) {
+    performSearchAction() {
+        if (Object.keys(this.queryManager.queryValues).length == 0) {
             return this.displayErrorModal(Infra.strings.Search.Error.NoCriteriaValues)
         }
 
         const nq = {}
-        Object.assign(nq, query)
-        if (sortBy) {
-            nq["_sort"] = sortBy
+        Object.assign(nq, this.queryManager.queryValues)
+        if (this.queryManager.sort) {
+            nq["_sort"] = this.queryManager.sort
         }
 
         const hash = serializeQuery(this.schema, nq)
@@ -145,9 +343,6 @@ class PASearchContext {
         if (!this.isFirstLoad) {
             history.pushState(null, document.title, this.currentURLBase() + "?" + hash)
         }
-        this.currentQuery = query
-        this.currentSort = sortBy
-        this.currentTemplate = saveTemplate.slice(0)
         this.inlineErrorMessage = null
 
         this.transitionToState(PASearchProgressState.Searching)
@@ -313,6 +508,7 @@ class PASearchContext {
                     this.schema.presets.push(...schemas[i].presets)
                 }
             }
+            this.queryManager.schema = this.schema
         }
 
         const dictionaryP = this.sendSchemaRequest(dictionaryURL)
@@ -330,34 +526,25 @@ class PASearchContext {
         let queryFromURL = null
 
         if (window.location.search) {
-            queryFromURL = deserializeQuery(this.schema, window.location.search.substring(1))            
+            queryFromURL = window.location.search.substring(1)
         } else if (window.location.hash) {
-            const hash = window.location.hash.substring(1)
-            queryFromURL = deserializeQuery(this.schema, hash)
-            history.replaceState(null, document.title, this.currentURLBase() + "?" + hash)
+            queryFromURL = window.location.hash.substring(1)
+            history.replaceState(null, document.title, this.currentURLBase() + "?" + queryFromURL)
         }
 
         if (queryFromURL) {
-            this.currentSort = queryFromURL._sort
-            delete queryFromURL["_sort"]
-            delete queryFromURL["_auto"]
-            this.currentQuery = queryFromURL
-            this.currentTemplate = Object.keys(queryFromURL).slice(0)
-
-            if (this.currentTemplate.length > 0) {
+            this.queryManager.setFromURLParameters(queryFromURL)
+            if (this.queryManager.template.length > 0) {
                 auto = true
             }
         } else {
-            if (this.schema.presets[0]) {
-                this.currentTemplate = this.schema.presets[0].template.slice(0)
-                this.currentQuery = {}
-            }
+            this.queryManager.setFromPreset(this.schema.presets?.[0], "replace")
         }
 
         if (history.state && Array.isArray(history.state.results)) {
             this.displayResultList(history.state.results, history.state.page || 0)
         } else if (auto) {
-            this.performSearchAction(this.currentQuery, this.currentSort, this.currentTemplate)
+            this.performSearchAction()
         } else {
             this.transitionToState(PASearchProgressState.EditingQuery)
         }
