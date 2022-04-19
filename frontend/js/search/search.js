@@ -518,7 +518,7 @@ class PASearchContext {
         try {
             schemas = await schemaPs
         } catch (rejection) {
-            this.recoveryInfo = {overlayURLs, dictionaryURL}
+            this.recoveryInfo = {overlayURLs, dictionaryURLs}
             this.transitionToState(PASearchProgressState.ErrorLoadingSchema)
             return
         }
@@ -548,7 +548,7 @@ class PASearchContext {
         try {
             dicts = await dictionaryPs
         } catch (rejection) {
-            this.recoveryInfo = {overlayURLs, dictionaryURL}
+            this.recoveryInfo = {overlayURLs, dictionaryURLs}
             this.transitionToState(PASearchProgressState.ErrorLoadingSchema)
         }
 

@@ -16,79 +16,49 @@ export const CONTROL_TYPE = {
 
 // ----- FORM ---------------------------------------------------------
 
-export class PAQueryEditor extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            autofocus: null,
-            keysControlledByTextField: null
-        }
+export function PAQueryEditor(props) {
+    const [autofocus, setAutofocus] = React.useState(null)
+
+    const actions = {}
+    Object.assign(actions, props.actionSet)
+    actions.addCriteria = (name) => {
+        props.actionSet.addCriteria(name)
+        setAutofocus(name)
     }
 
-    static getDerivedStateFromProps(props, state) {
-        state.buttonList = PAQueryEditor.makeUnusedButtonList(props.schema, props.template)
-        return state
-    }
-
-    static makeUnusedButtonList(schema, template) {
-        const buttons = []
-        const lang = document.querySelector("html").getAttribute("lang")
-        Object.keys(schema.criteria).forEach((v) => {
-            if (v.behaviour && v.behaviour.lang_whitelist && !v.behaviour.lang_whitelist.includes(lang)) {
-                return
-            }
-            if (!template.includes(v)) {
-                buttons.push(v)
-            }
-        })
-
-        return buttons
-    }
-
-    addCriteriaAction(name) {
-        this.props.actionSet.addCriteria(name)
-        this.setState({ autofocus: name })
-    }
-
-    performSearchAction(event) {
+    const performSearchAction = (event) => {
         event.preventDefault()
-        this.props.actionSet.performSearch()
+        props.actionSet.performSearch()
     }
 
-    render() {
-        const actions = {}
-        Object.assign(actions, this.props.actionSet)
-        actions.addCriteria = this.addCriteriaAction.bind(this)
-
-        return <div>
-            <div className="form-row mb-4">
-                <div className="search-overlay-grp">
-                    <PASearchTextField
-                        dictionary={this.props.dictionary}
-                        schema={this.props.schema} 
-                        expert={this.props.expert}
-                        setTypedQueryValuesAction={this.props.actionSet.setTypedQueryValues} />
-                    <input type="submit" 
-                        className="btn btn-primary" 
-                        value={Infra.strings.Search.ButtonLabel}
-                        onClick={(e) => this.performSearchAction(e)} />
-                </div>
+    return <div>
+        <div className="form-row mb-4">
+            <div className="search-overlay-grp">
+                <PASearchTextField
+                    dictionary={props.dictionary}
+                    schema={props.schema} 
+                    expert={props.expert}
+                    setTypedQueryValuesAction={props.actionSet.setTypedQueryValues} />
+                <input type="submit" 
+                    className="btn btn-primary" 
+                    value={Infra.strings.Search.ButtonLabel}
+                    onClick={performSearchAction} />
             </div>
-            <PAFormErrorBanner message={this.props.errorMessage} />
-            <PAQueryList 
-                schema={this.props.schema} 
-                editors={this.props.template} 
-                queryValues={this.props.queryValues}
-                sortBy={this.props.sortBy}
-                actions={actions}
-                autofocus={this.state.autofocus} />
-            <PAPurgatoryMessage schema={this.props.schema} record={this.props.purgatory} actions={actions} />
-            <PACriteriaList
-                schema={this.props.schema} 
-                buttonList={this.state.buttonList}
-                actions={actions} />
         </div>
-    }
+        <PAFormErrorBanner message={props.errorMessage} />
+        <PAQueryList 
+            schema={props.schema} 
+            editors={props.template} 
+            queryValues={props.queryValues}
+            sortBy={props.sortBy}
+            actions={actions}
+            autofocus={autofocus} />
+        <PAPurgatoryMessage schema={props.schema} record={props.purgatory} actions={actions} />
+        <PACriteriaList
+            schema={props.schema} 
+            template={props.template}
+            actions={actions} />
+    </div>
 }
 
 class PASearchTextField extends React.Component {
@@ -359,7 +329,7 @@ class PAQueryList extends React.Component {
     }
 }
 
-class PACriteriaList extends React.Component {
+class PACriteriaList extends React.PureComponent {
     iconClassForCriteriaName(name) {
         switch (name) {
         case "id":
@@ -432,8 +402,24 @@ class PACriteriaList extends React.Component {
         </button>
     }
 
+    makeUnusedButtonList(schema, template) {
+        const buttons = []
+        const lang = document.querySelector("html").getAttribute("lang")
+        Object.keys(schema.criteria).forEach((v) => {
+            if (v.behaviour && v.behaviour.lang_whitelist && !v.behaviour.lang_whitelist.includes(lang)) {
+                return
+            }
+            if (!template.includes(v)) {
+                buttons.push(v)
+            }
+        })
+
+        return buttons
+    }
+
     render() {
-        if (this.props.buttonList.length == 0) {
+        const buttonList = this.makeUnusedButtonList(this.props.schema, this.props.template)
+        if (buttonList.length == 0) {
             return null
         }
 
@@ -446,7 +432,7 @@ class PACriteriaList extends React.Component {
                     onClick={(e) => this.applyPresetAction(e, ps)}>{ps.name}</button>
             )}
             <p className="h6">{Infra.strings.Search.CriteriaBlocksTitle}</p>
-            {this.props.buttonList.map(
+            {buttonList.map(
                 (k) => this.renderSingleCriteriaButton(k, this.props.schema.criteria[k], act)
             )}
         </div>
@@ -745,7 +731,7 @@ export class PASortField extends React.Component {
         let control = <select 
             id="input-for-_sort"
             className="custom-select" 
-            value={this.props.value || ""} 
+            value={this.props.value || ".empty"} 
             onChange={(e) => this.acceptInput(e)}>
             <option value=".empty">{Infra.strings.Search.EnumPlaceholder}</option>
 
