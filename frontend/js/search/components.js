@@ -1,6 +1,5 @@
 import React from "react"
 import Infra from "../infra"
-import { isCompletionistSupported } from "./completionist"
 import { toHTMLDateInputFormat, isActivationKey } from "./util"
 import { ModalManager } from "../modals"
 
@@ -47,7 +46,6 @@ export class PAQueryEditor extends React.Component {
     }
 
     addCriteriaAction(name) {
-        console.debug("hooked addCriteriaAction")
         this.props.actionSet.addCriteria(name)
         this.setState({ autofocus: name })
     }
@@ -65,7 +63,11 @@ export class PAQueryEditor extends React.Component {
         return <div>
             <div className="form-row mb-4">
                 <div className="search-overlay-grp">
-                    <PASearchTextField schema={this.props.schema} />
+                    <PASearchTextField
+                        dictionary={this.props.dictionary}
+                        schema={this.props.schema} 
+                        expert={this.props.expert}
+                        setTypedQueryValuesAction={this.props.actionSet.setTypedQueryValues} />
                     <input type="submit" 
                         className="btn btn-primary" 
                         value={Infra.strings.Search.ButtonLabel}
@@ -95,25 +97,22 @@ class PASearchTextField extends React.Component {
     }
 
     componentWillUnmount() {
-        if (this.debounceTime) clearTimeout(this.debounceTime)
+        if (this.debounceTime) {
+            clearTimeout(this.debounceTime)
+        }
     }
 
-    setQueryValueAction(key, value) {
-        const nextState = this.state.queryValues
-        
-        if (value === undefined) {
-            delete nextState[key]
-        } else {
-            nextState[key] = value
-        }
-
-        this.setState(this.props.expert.didChangeCriteria(this, key, {queryValues: nextState}))
+    textQueriesSupported() {
+        return this.props.schema.language == "en"
     }
 
     _textQueryApplyKeyword(forCriteria, kwValue, toAggregatedValue) {
-        if (this.props.schema.criteria[forCriteria].behaviour?.compare_type === "bit-set") {
-            const aggregate = toAggregatedValue
-                || this.props.schema.criteria[forCriteria].choices.map(v => v.value)
+        const crStruct = this.props.schema.criteria[forCriteria]
+
+        // Merge value for checkbox fields
+        if ((crStruct.type === CONTROL_TYPE.ENUM || crStruct.type === CONTROL_TYPE.ENUM_2)
+            && crStruct.behaviour?.compare_type === "bit-set") {
+            const aggregate = toAggregatedValue || crStruct.choices.map(v => v.value)
             const idx = aggregate.indexOf(kwValue)
             if (idx > -1) {
                 aggregate.splice(idx, 1)
@@ -125,74 +124,73 @@ class PASearchTextField extends React.Component {
     }
 
     _parseTextQuery(str) {
-        const combined = []
+        const quotedWords = []
         const kv = {}
 
         const splitQuotes = str.split(/"/)
         splitQuotes.forEach((v, i) => {
             if (i % 2 != 0) {
-                combined.push(v)
-            } else {
-                const words = v.split(/[\s]+/).map((w) => w.trim()).filter((w) => w !== "")
-                words.forEach((v) => {
-                    const ent = this.props.dictionary[v.toLowerCase()]
-                    if (ent) {
-                        kv[ent.target] = this._textQueryApplyKeyword(ent.target, ent.value, kv[ent.target]) 
-                    } else {
-                        combined.push(v)
-                    }
-                })
+                quotedWords.push(v)
+                return
             }
+
+            const words = v.split(/[\s]+/).map((w) => w.trim()).filter((w) => w !== "")
+            words.forEach((v) => {
+                // 1. direct matched keywords go directly into query
+                const ent = this.props.dictionary[v.toLowerCase()]
+                if (ent) {
+                    kv[ent.target] = this._textQueryApplyKeyword(ent.target, ent.value, kv[ent.target])
+                    return
+                } 
+
+                // 2. ask expert if it can understand the word
+                const dynamic = this.props.expert.dynamicKeywordToQueryValues(v)
+                if (dynamic) {
+                    Object.keys(dynamic).forEach((targ) => {
+                        kv[targ] = this._textQueryApplyKeyword(targ, dynamic[targ], kv[targ])
+                    })
+                } else {
+                    // 3. if not, put it into the FTS field
+                    quotedWords.push(v)
+                }
+            })
         })
 
-        const leftovers = combined.join(" ")
-        if (leftovers) {
-            kv.card_fts_v2 = leftovers
+        const quotedTarget = this.props.expert.criteriaTargetForQuotedWords()
+        if (quotedTarget && quotedWords.length > 0) {
+            kv[quotedTarget] = quotedWords.join(" ")
         }
+
         return kv
+    }
+
+    _flush() {
+        if (this.debounceTime) {
+            clearTimeout(this.debounceTime)
+            this.debounceTime = null
+        }
+
+        if (this.savedText !== undefined) {
+            this.setTextQueryAction(this.savedText)
+        }
     }
 
     setTextQueryAction(fromString) {
         const kvMap = this._parseTextQuery(fromString)
-        console.debug("keywords:", kvMap)
-        const nextTemplate = this.state.queryTemplate.slice()
-        const nextValues = this.state.queryValues
-        const previousControlledValues = this.state.keysControlledByTextField || []
-        const nextControlledValues = Object.keys(kvMap)
-
-        previousControlledValues.forEach((key) => {
-            if (!nextControlledValues.includes(key)) {
-                delete nextValues[key]
-            }
-        })
-
-        nextControlledValues.forEach((key) => {
-            nextValues[key] = kvMap[key]
-            if (!nextTemplate.includes(key)) {
-                nextTemplate.push(key)
-            }
-        })
-
-        this.setState({
-            keysControlledByTextField: nextControlledValues, 
-            queryValues: nextValues, 
-            queryTemplate: nextTemplate
-        })
-
-        //this.setState(this.props.expert.didChangeCriteria(this, key, {queryValues: nextState}))
+        this.props.setTypedQueryValuesAction(kvMap)
     }
 
-    updateText(from) {
-        if (from.value.charAt(from.selectionEnd - 1) == " " || from.value.length == 0) {
+    updateText(from, now) {
+        this.savedText = from.value.trim()
+        if (now || this.savedText.length == 0 || from.value.charAt(from.selectionEnd - 1) == " ") {
+            this._flush()
+        } else {
             if (this.debounceTime) {
                 clearTimeout(this.debounceTime)
-                this.debounceTime = null
             }
-            this.setTextQueryAction(from.value.trim())
-        } else {
-            if (this.debounceTime) clearTimeout(this.debounceTime)
+
             this.debounceTime = setTimeout(() => {
-                this.setTextQueryAction(from.value.trim())
+                this.setTextQueryAction(this.savedText)
                 this.debounceTime = null
             }, 500)
         }
@@ -200,10 +198,11 @@ class PASearchTextField extends React.Component {
 
     render() {
         let tf
-        if (isCompletionistSupported(this.props.schema.language)) {
+        if (this.textQueriesSupported()) {
             tf = <input type="text" 
                 className="form-control search-field" 
                 onChange={(e) => this.updateText(e.target)}
+                onBlur={(e) => this.updateText(e.target, true)}
                 placeholder={Infra.strings.Search.TextBoxHint} />
         } else {
             tf = <input type="text" tabIndex="-1"

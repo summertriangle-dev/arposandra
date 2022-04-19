@@ -68,8 +68,16 @@ export class PACardSearchDomainExpert {
         }
     }
 
-    didChangeCriteria(context, addedCriteria) {
+    didChangeCriteria(/* context, addedCriteria */) {
 
+    }
+
+    criteriaTargetForQuotedWords() {
+        return "card_fts_v2"
+    }
+
+    dynamicKeywordToQueryValues(/* keyword */) {
+        return null
     }
 }
 
@@ -121,11 +129,19 @@ export class PAAccessorySearchDomainExpert {
         })
     }
 
-    didAddCriteria(context, addedCriteria) {
+    didAddCriteria(/* context, addedCriteria */) {
 
     }
 
-    didChangeCriteria(context, addedCriteria) {
+    didChangeCriteria(/* context, addedCriteria */) {
 
+    }
+
+    criteriaTargetForQuotedWords() {
+        return null
+    }
+
+    dynamicKeywordToQueryValues(/* keyword */) {
+        return null
     }
 }

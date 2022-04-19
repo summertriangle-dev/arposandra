@@ -31,6 +31,7 @@ class PAQueryManager {
         this.schema = schema
         this.queryValues = {}
         this.template = []
+        this.textBoxControlled = []
         this.sort = null
         this.purgatory = null
         this.expert = hooks
@@ -100,7 +101,36 @@ class PAQueryManager {
             this.queryValues[key] = value
         }
 
+        let idx
+        if ((idx = this.textBoxControlled.indexOf(key)) !== -1) {
+            this.textBoxControlled.splice(idx, 1)
+        }
+
         this.expert.didChangeCriteria(this, key)
+    }
+
+    setTypedQueryValues(map) {
+        Object.keys(map).forEach((key) => {
+            if (this.template.indexOf(key) === -1) {
+                this.template.push(key)
+            }
+        })
+
+        this.textBoxControlled.forEach((key) => {
+            if (map[key] === undefined) {
+                let idx
+                if ((idx = this.template.indexOf(key)) !== -1) {
+                    this.template.splice(idx, 1)
+                }
+                
+                delete this.queryValues[key]
+            }
+        })
+
+        this.textBoxControlled = Object.keys(map)
+        // console.debug("Text box controlled crits are now:", this.textBoxControlled)
+        // console.debug("Template is now:", this.template)
+        Object.assign(this.queryValues, map)
     }
 
     setSort(value) {
@@ -172,6 +202,7 @@ class PASearchContext {
             addCriteria: (name) => { this.queryManager.addCriteria(name); this.render() },
             removeCriteria: (name) => { this.queryManager.removeCriteria(name); this.render() },
             setQueryValue: (key, value) => { this.queryManager.setQueryValue(key, value); this.render() },
+            setTypedQueryValues: (map) => { this.queryManager.setTypedQueryValues(map); this.render() },
             setSort: (column) => { this.queryManager.setSort(column); this.render() },
             restorePurgatory: () => { this.queryManager.restorePurgatory(); this.render() },
             applyPreset: (preset) => { this.applyPresetAction(preset) },
@@ -277,6 +308,7 @@ class PASearchContext {
         case PASearchProgressState.ErrorZeroResults:
             widget = <PAQueryEditor 
                 schema={this.schema} 
+                dictionary={this.dictionary}
                 queryValues={this.queryManager.queryValues}
                 template={this.queryManager.template}
                 sortBy={this.queryManager.sort}
