@@ -51,15 +51,26 @@ export class PAQueryEditor extends React.Component {
         this.setState({ autofocus: name })
     }
 
+    performSearchAction(event) {
+        event.preventDefault()
+        this.props.actionSet.performSearch()
+    }
+
     render() {
         const actions = {}
         Object.assign(actions, this.props.actionSet)
         actions.addCriteria = this.addCriteriaAction.bind(this)
 
         return <div>
-            <PASearchButton 
-                schema={this.props.schema}
-                performSearchAction={this.props.actionSet.performSearch} />
+            <div className="form-row mb-4">
+                <div className="search-overlay-grp">
+                    <PASearchTextField schema={this.props.schema} />
+                    <input type="submit" 
+                        className="btn btn-primary" 
+                        value={Infra.strings.Search.ButtonLabel}
+                        onClick={(e) => this.performSearchAction(e)} />
+                </div>
+            </div>
             <PAFormErrorBanner message={this.props.errorMessage} />
             <PAQueryList 
                 schema={this.props.schema} 
@@ -77,19 +88,33 @@ export class PAQueryEditor extends React.Component {
     }
 }
 
-class PASearchButton extends React.Component {
-    // updateText(toValue) {
-    //     let proposedValue = toValue.trim()
-    //     if (proposedValue.length === 0) {
-    //         this.props.setQueryValueAction(this.props.textBoxQueryTarget, undefined)    
-    //     } else {
-    //         this.props.setQueryValueAction(this.props.textBoxQueryTarget, proposedValue)
-    //     }
-    // }
+class PASearchTextField extends React.Component {
+    componentDidMount() {
+        this.debounceTime = null
+    }
 
-    performSearchAction(event) {
-        event.preventDefault()
-        this.props.performSearchAction()
+    componentWillUnmount() {
+        if (this.debounceTime) clearTimeout(this.debounceTime)
+    }
+
+    setTextQueryAction() {
+        console.debug("simulated setTextQueryAction")
+    }
+
+    updateText(from) {
+        if (from.value.charAt(from.selectionEnd - 1) == " " || from.value.length == 0) {
+            if (this.debounceTime) {
+                clearTimeout(this.debounceTime)
+                this.debounceTime = null
+            }
+            this.setTextQueryAction(from.value.trim())
+        } else {
+            if (this.debounceTime) clearTimeout(this.debounceTime)
+            this.debounceTime = setTimeout(() => {
+                this.setTextQueryAction(from.value.trim())
+                this.debounceTime = null
+            }, 500)
+        }
     }
 
     render() {
@@ -97,7 +122,7 @@ class PASearchButton extends React.Component {
         if (isCompletionistSupported(this.props.schema.language)) {
             tf = <input type="text" 
                 className="form-control search-field" 
-                // onChange={(e) => this.updateText(e.target.value)}
+                onChange={(e) => this.updateText(e.target)}
                 placeholder={Infra.strings.Search.TextBoxHint} />
         } else {
             tf = <input type="text" tabIndex="-1"
@@ -109,17 +134,13 @@ class PASearchButton extends React.Component {
                 placeholder={Infra.strings.Search.TextBoxHint} />
         }
 
-        return <div className="form-row mb-4">
+        return <>
             <label className="sr-only" htmlFor="criteria-finder">{Infra.strings.Search.TextBoxSRLabel}</label>
             <div className="search-overlay-grp">
                 <i className="overlay icon icon ion-ios-search"></i>
                 {tf}
-                <input type="submit" 
-                    className="btn btn-primary" 
-                    value={Infra.strings.Search.ButtonLabel}
-                    onClick={(e) => this.performSearchAction(e)} />
             </div>
-        </div>
+        </>
     }
 }
 
