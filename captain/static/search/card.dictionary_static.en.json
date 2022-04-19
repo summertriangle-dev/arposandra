@@ -1,0 +1,65 @@
+{
+  "dictionary": {
+    "vo": {
+      "target": "role",
+      "value": 1
+    },
+    "sp": {
+      "target": "role",
+      "value": 2
+    },
+    "gd": {
+      "target": "role",
+      "value": 3
+    },
+    "sk": {
+      "target": "role",
+      "value": 4
+    },
+    "muse": {
+      "target": "member_group",
+      "value": 1
+    },
+    "niji": {
+      "target": "member_group",
+      "value": 3
+    },
+    
+    "lw": {
+      "target": "member_subunit",
+      "value": 3
+    },
+    "cyaron": {
+      "target": "member_subunit",
+      "value": 4
+    },
+    "gk": {
+      "target": "member_subunit",
+      "value": 6
+    },
+    "quartz": {
+      "target": "member_subunit",
+      "value": 9
+    },
+    "fes": {
+      "target": "source",
+      "value": 6
+    },
+    "party": {
+      "target": "source",
+      "value": 7
+    },
+    "event": {
+      "target": "source",
+      "value": 2
+    },
+    "pickup": {
+      "target": "source",
+      "value": 5
+    },
+    "spotlight": {
+      "target": "source",
+      "value": 5
+    }
+  }
+}

@@ -6,43 +6,38 @@ import re
 Sentence = namedtuple("Sentence", ("vec", "name", "value"))
 
 
-class Dictionary(object):
-    def __init__(self):
-        self.high = set()
-        self.word_bag = set()
-        self.seen_sentences = set()
-        self.sentences = []
-        self.map_word_to_sentences = defaultdict(list)
+def should_include_keywords(criteria_name):
+    return criteria_name in ["member", "member_subunit", "member_group", "rarity", "attribute"]
 
-    def clean(self, sentence):
-        sentence = re.sub(r"[^a-zA-Z0-9 \-]", "", sentence.lower())
-        return sentence
 
-    def add_sentence(self, sentence, criteria_name, criteria_value):
-        association = (sentence, criteria_name, criteria_value)
-        if association in self.seen_sentences:
-            return
+def transmog(value, for_criteria):
+    if for_criteria == "member":
+        return value.split(maxsplit=1)[0]
+    elif for_criteria == "member_subunit":
+        return value.replace(" ", "")
 
-        self.seen_sentences.add(association)
-        words = tuple(self.clean(sentence).split())
-        self.sentences.append(Sentence(words, criteria_name, criteria_value))
-        self.high.add(words[0])
-        self.word_bag.update(words)
+    return value
 
-    def finalize(self):
-        self.sentences.sort()
-        smap = [*enumerate(self.sentences)]
-        for word in self.word_bag:
-            self.map_word_to_sentences[word] = [i for i, v in smap if word in v.vec]
 
-    def process_table(self, table):
-        for (name, criteria) in table["criteria"].items():
-            if "choices" in criteria:
-                for choice in criteria["choices"]:
-                    print(name, choice.get("display_name") or choice["name"])
-                    self.add_sentence(
-                        choice.get("display_name") or choice["name"], name, choice["value"]
-                    )
+def process_table(table):
+    keywords = {}
+    for (name, criteria) in table["criteria"].items():
+        if not should_include_keywords(name):
+            continue
+
+        if "choices" in criteria:
+            for choice in criteria["choices"]:
+                if choice.get("separator"):
+                    continue
+
+                kwd = transmog((choice.get("display_name") or choice["name"]).lower(), name)
+                # print(name, kwd)
+                keywords[kwd] = {
+                    "target": name,
+                    "value": choice["value"],
+                }
+
+    return keywords
 
 
 @plac.pos("output_file", "Where to write the definitions.")
@@ -50,21 +45,14 @@ class Dictionary(object):
 def main(output_file, *input_files):
     assert len(input_files) >= 1
 
-    d = Dictionary()
+    d = {}
     for file in input_files:
         with open(file, "r") as f:
-            d.process_table(json.load(f))
+            d.update(process_table(json.load(f)))
 
-    d.finalize()
-
-    word_map = sorted(d.map_word_to_sentences.items())
     with open(output_file, "w") as outjs:
         json.dump(
-            {
-                "words": [k for k, v in word_map],
-                "bag": [{"sentences": v, "priority": 2 if k in d.high else 1} for k, v in word_map],
-                "sen": [x._asdict() for x in d.sentences],
-            },
+            {"dictionary": d},
             outjs,
             indent=2,
             ensure_ascii=False,

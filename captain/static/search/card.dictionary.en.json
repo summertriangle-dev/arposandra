@@ -1,0 +1,208 @@
+{
+  "dictionary": {
+    "honoka": {
+      "target": "member",
+      "value": 1
+    },
+    "eli": {
+      "target": "member",
+      "value": 2
+    },
+    "kotori": {
+      "target": "member",
+      "value": 3
+    },
+    "umi": {
+      "target": "member",
+      "value": 4
+    },
+    "rin": {
+      "target": "member",
+      "value": 5
+    },
+    "maki": {
+      "target": "member",
+      "value": 6
+    },
+    "nozomi": {
+      "target": "member",
+      "value": 7
+    },
+    "hanayo": {
+      "target": "member",
+      "value": 8
+    },
+    "nico": {
+      "target": "member",
+      "value": 9
+    },
+    "chika": {
+      "target": "member",
+      "value": 101
+    },
+    "riko": {
+      "target": "member",
+      "value": 102
+    },
+    "kanan": {
+      "target": "member",
+      "value": 103
+    },
+    "dia": {
+      "target": "member",
+      "value": 104
+    },
+    "you": {
+      "target": "member",
+      "value": 105
+    },
+    "yoshiko": {
+      "target": "member",
+      "value": 106
+    },
+    "hanamaru": {
+      "target": "member",
+      "value": 107
+    },
+    "mari": {
+      "target": "member",
+      "value": 108
+    },
+    "ruby": {
+      "target": "member",
+      "value": 109
+    },
+    "ayumu": {
+      "target": "member",
+      "value": 201
+    },
+    "kasumi": {
+      "target": "member",
+      "value": 202
+    },
+    "shizuku": {
+      "target": "member",
+      "value": 203
+    },
+    "karin": {
+      "target": "member",
+      "value": 204
+    },
+    "ai": {
+      "target": "member",
+      "value": 205
+    },
+    "kanata": {
+      "target": "member",
+      "value": 206
+    },
+    "setsuna": {
+      "target": "member",
+      "value": 207
+    },
+    "emma": {
+      "target": "member",
+      "value": 208
+    },
+    "rina": {
+      "target": "member",
+      "value": 209
+    },
+    "shioriko": {
+      "target": "member",
+      "value": 210
+    },
+    "mia": {
+      "target": "member",
+      "value": 211
+    },
+    "lanzhu": {
+      "target": "member",
+      "value": 212
+    },
+    "μ's": {
+      "target": "member_group",
+      "value": 1
+    },
+    "aqours": {
+      "target": "member_group",
+      "value": 2
+    },
+    "nijigasaki": {
+      "target": "member_group",
+      "value": 3
+    },
+    "printemps": {
+      "target": "member_subunit",
+      "value": 1
+    },
+    "bibi": {
+      "target": "member_subunit",
+      "value": 2
+    },
+    "lilywhite": {
+      "target": "member_subunit",
+      "value": 3
+    },
+    "cyaron!": {
+      "target": "member_subunit",
+      "value": 4
+    },
+    "guiltykiss": {
+      "target": "member_subunit",
+      "value": 6
+    },
+    "azalea": {
+      "target": "member_subunit",
+      "value": 5
+    },
+    "azuna": {
+      "target": "member_subunit",
+      "value": 7
+    },
+    "qu4rtz": {
+      "target": "member_subunit",
+      "value": 9
+    },
+    "diverdiva": {
+      "target": "member_subunit",
+      "value": 8
+    },
+    "r": {
+      "target": "rarity",
+      "value": 10
+    },
+    "sr": {
+      "target": "rarity",
+      "value": 20
+    },
+    "ur": {
+      "target": "rarity",
+      "value": 30
+    },
+    "smile": {
+      "target": "attribute",
+      "value": 1
+    },
+    "pure": {
+      "target": "attribute",
+      "value": 2
+    },
+    "cool": {
+      "target": "attribute",
+      "value": 3
+    },
+    "active": {
+      "target": "attribute",
+      "value": 4
+    },
+    "natural": {
+      "target": "attribute",
+      "value": 5
+    },
+    "elegant": {
+      "target": "attribute",
+      "value": 6
+    }
+  }
+}

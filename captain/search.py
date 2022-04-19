@@ -30,14 +30,22 @@ class CardSearch(BaseHTMLHandler, DatabaseMixin):
             self.static_url(f"search/card.presets.{code}.json"),
         ]
 
-    def dictionary_for_lang(self):
-        return self.static_url("search/dictionary.dummy.json")
+    def dictionaries_for_lang(self):
+        if self.locale.code in self.SUPPORTED_LANGS:
+            code = self.locale.code
+        else:
+            code = self.SUPPORTED_LANGS[0]
+
+        return [
+            self.static_url(f"search/card.dictionary.{code}.json"),
+            self.static_url(f"search/card.dictionary_static.{code}.json"),
+        ]
 
     def get(self):
         self.render(
             "card_search_scaffold.html",
             config_indexes=self.indexes_for_lang(),
-            config_dictionary=self.dictionary_for_lang(),
+            config_dictionary=self.dictionaries_for_lang(),
         )
 
 

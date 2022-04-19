@@ -8,7 +8,9 @@
     {% for index in config_indexes %}
     <meta name="x-panther-index-discovery" content="{{ index }}">
     {% end %}
-    <meta name="x-panther-dictionary-discovery" content="{{ config_dictionary }}">
+    {% for dictionary in config_dictionary %}
+    <meta name="x-panther-dictionary-discovery" content="{{ dictionary }}">
+    {% end %}
     <meta name="x-panther-api" content="cards">
 
     <meta property="og:type" content="website" />
