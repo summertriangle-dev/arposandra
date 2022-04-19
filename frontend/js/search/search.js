@@ -80,6 +80,7 @@ class PASearchContext {
         case PASearchProgressState.ErrorZeroResults:
             widget = <PAQueryEditor 
                 schema={this.schema} 
+                dictionary={this.dictionary}
                 query={this.currentQuery}
                 template={this.currentTemplate}
                 sortBy={this.currentSort}
@@ -283,7 +284,7 @@ class PASearchContext {
         })
     }
 
-    async reloadSchema(overlayURLs, dictionaryURL) {
+    async reloadSchema(overlayURLs, dictionaryURLs) {
         this.transitionToState(PASearchProgressState.LoadingSchema)
 
         const schemaPs = Promise.all(overlayURLs.map((x) => this.sendSchemaRequest(x)))
@@ -315,14 +316,18 @@ class PASearchContext {
             }
         }
 
-        const dictionaryP = this.sendSchemaRequest(dictionaryURL)
+        const dictionaryPs = Promise.all(dictionaryURLs.map((x) => this.sendSchemaRequest(x)))
+        let dicts
         try {
-            const dict = await dictionaryP
-            this.dictionary = dict
+            dicts = await dictionaryPs
         } catch (rejection) {
             this.recoveryInfo = {overlayURLs, dictionaryURL}
             this.transitionToState(PASearchProgressState.ErrorLoadingSchema)
         }
+
+        const dictionary = {}
+        Object.assign(dictionary, ...dicts.map(v => v.dictionary))
+        this.dictionary = dictionary
     }
 
     performFirstLoadStateRestoration() {
@@ -370,7 +375,7 @@ class PASearchContext {
         if (this.flightState === PASearchProgressState.ErrorLoadingCards) {
             this.displayResultList(this.recoveryInfo.results, this.recoveryInfo.page, false)
         } else {
-            this.reloadSchema(this.recoveryInfo.overlayURLs, this.recoveryInfo.dictionaryURL).then(() => {
+            this.reloadSchema(this.recoveryInfo.overlayURLs, this.recoveryInfo.dictionaryURLs).then(() => {
                 if (!this.schema || !this.dictionary) {
                     return 
                 }
@@ -445,9 +450,13 @@ function getConfig() {
         idxFiles.push(idxFilesNodes[i].content)
     }
 
-    const dictNode = document.querySelector("meta[name=x-panther-dictionary-discovery]")
+    const dictFilesNodes = document.querySelectorAll("meta[name=x-panther-dictionary-discovery]")
+    const dictFiles = []
+    for (let i = 0; i < dictFilesNodes.length; i++) {
+        dictFiles.push(dictFilesNodes[i].content)
+    }
 
-    return {indexes: idxFiles, dictionary: dictNode.content}
+    return {indexes: idxFiles, dictionaries: dictFiles}
 }
 
 export function initializeSearch() {
@@ -455,7 +464,7 @@ export function initializeSearch() {
     const context = new PASearchContext(apiType)
     const cfg = getConfig()
 
-    context.reloadSchema(cfg.indexes, cfg.dictionary).then(() => {
+    context.reloadSchema(cfg.indexes, cfg.dictionaries).then(() => {
         if (context.schema && context.dictionary) {
             context.performFirstLoadStateRestoration()
         }

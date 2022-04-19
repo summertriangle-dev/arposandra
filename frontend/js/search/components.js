@@ -41,6 +41,7 @@ export class PAQueryEditor extends React.Component {
             buttonList: this.makeUnusedButtonList(queryTemplateInitial),
             purgatory: null,
             autofocus: null,
+            keysControlledByTextField: null
         }
     }
 
@@ -128,6 +129,78 @@ export class PAQueryEditor extends React.Component {
         }
 
         this.setState(this.props.expert.didChangeCriteria(this, key, {queryValues: nextState}))
+    }
+
+    _textQueryApplyKeyword(forCriteria, kwValue, toAggregatedValue) {
+        if (this.props.schema.criteria[forCriteria].behaviour?.compare_type === "bit-set") {
+            const aggregate = toAggregatedValue
+                || this.props.schema.criteria[forCriteria].choices.map(v => v.value)
+            const idx = aggregate.indexOf(kwValue)
+            if (idx > -1) {
+                aggregate.splice(idx, 1)
+            }
+            return aggregate
+        }
+
+        return kwValue
+    }
+
+    _parseTextQuery(str) {
+        const combined = []
+        const kv = {}
+
+        const splitQuotes = str.split(/"/)
+        splitQuotes.forEach((v, i) => {
+            if (i % 2 != 0) {
+                combined.push(v)
+            } else {
+                const words = v.split(/[\s]+/).map((w) => w.trim()).filter((w) => w !== "")
+                words.forEach((v) => {
+                    const ent = this.props.dictionary[v.toLowerCase()]
+                    if (ent) {
+                        kv[ent.target] = this._textQueryApplyKeyword(ent.target, ent.value, kv[ent.target]) 
+                    } else {
+                        combined.push(v)
+                    }
+                })
+            }
+        })
+
+        const leftovers = combined.join(" ")
+        if (leftovers) {
+            kv.card_fts_v2 = leftovers
+        }
+        return kv
+    }
+
+    setTextBoxQueryValues(fromString) {
+        const kvMap = this._parseTextQuery(fromString)
+        console.debug("keywords:", kvMap)
+        const nextTemplate = this.state.queryTemplate.slice()
+        const nextValues = this.state.queryValues
+        const previousControlledValues = this.state.keysControlledByTextField || []
+        const nextControlledValues = Object.keys(kvMap)
+
+        previousControlledValues.forEach((key) => {
+            if (!nextControlledValues.includes(key)) {
+                delete nextValues[key]
+            }
+        })
+
+        nextControlledValues.forEach((key) => {
+            nextValues[key] = kvMap[key]
+            if (!nextTemplate.includes(key)) {
+                nextTemplate.push(key)
+            }
+        })
+
+        this.setState({
+            keysControlledByTextField: nextControlledValues, 
+            queryValues: nextValues, 
+            queryTemplate: nextTemplate
+        })
+
+        //this.setState(this.props.expert.didChangeCriteria(this, key, {queryValues: nextState}))
     }
 
     setSortAction(value) {
@@ -250,12 +323,14 @@ export class PAQueryEditor extends React.Component {
             setQueryValue: this.setQueryValueAction.bind(this),
             setSort: this.setSortAction.bind(this),
             restorePurgatory: this.restorePurgatoryAction.bind(this),
-            applyPreset: this.applyPresetAction.bind(this)
+            applyPreset: this.applyPresetAction.bind(this),
+            setTextBoxQueryValues: this.setTextBoxQueryValues.bind(this)
         }
 
         return <div>
             <PASearchButton 
                 schema={this.props.schema}
+                actions={actions}
                 performSearchAction={this.performSearchAction.bind(this)} />
             <PAFormErrorBanner message={this.props.errorMessage} />
             <PAQueryList 
@@ -275,21 +350,17 @@ export class PAQueryEditor extends React.Component {
 }
 
 class PASearchButton extends React.Component {
-    // updateText(toValue) {
-    //     let proposedValue = toValue.trim()
-    //     if (proposedValue.length === 0) {
-    //         this.props.setQueryValueAction(this.props.textBoxQueryTarget, undefined)    
-    //     } else {
-    //         this.props.setQueryValueAction(this.props.textBoxQueryTarget, proposedValue)
-    //     }
-    // }
+    updateText(toValue) {
+        const proposedValue = toValue.trim()
+        this.props.actions.setTextBoxQueryValues(proposedValue)
+    }
 
     render() {
         let tf
         if (isCompletionistSupported(this.props.schema.language)) {
             tf = <input type="text" 
                 className="form-control search-field" 
-                // onChange={(e) => this.updateText(e.target.value)}
+                onChange={(e) => this.updateText(e.target.value)}
                 placeholder={Infra.strings.Search.TextBoxHint} />
         } else {
             tf = <input type="text" tabIndex="-1"
