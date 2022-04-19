@@ -9,6 +9,7 @@ export const CONTROL_TYPE = {
     DATETIME: 3,
     STRING_MAX: 4,
     COMPOSITE: 5,
+    FLOAT: 6,
     ENUM: 1000,
     // FIXME: remove
     ENUM_2: 1001,
@@ -256,6 +257,7 @@ class PAQueryList extends React.Component {
 
         switch(criteria.type) {
         case CONTROL_TYPE.NUMBER:
+        case CONTROL_TYPE.FLOAT:
             input = <PANumericField 
                 name={k}
                 criteria={criteria}
@@ -585,7 +587,8 @@ export class PANumericField extends React.Component {
 
     normState() {
         if (this.state.compare_to) {
-            const iv = parseInt(this.state.compare_to)
+            const iv = this.props.criteria.type == CONTROL_TYPE.NUMBER ?
+                parseInt(this.state.compare_to) : parseFloat(this.state.compare_to)
             if (isNaN(iv)) {
                 return undefined
             }

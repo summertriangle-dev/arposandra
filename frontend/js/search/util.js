@@ -14,7 +14,8 @@ export function serializeQuery(fromSchema, query) {
         }
 
         switch(schema.type) {
-        case CONTROL_TYPE.NUMBER: {
+        case CONTROL_TYPE.NUMBER:
+        case CONTROL_TYPE.FLOAT: {
             const val = `${value.compare_type},${value.compare_to}`
             frags.push(`${k}=${encodeURIComponent(val)}`)
             break
@@ -94,10 +95,13 @@ export function deserializeQuery(fromSchema, fragment) {
 
         const schema = fromSchema.criteria[key] 
         switch(schema.type) {
-        case CONTROL_TYPE.NUMBER: {
+        case CONTROL_TYPE.NUMBER:
+        case CONTROL_TYPE.FLOAT: {
             const [ct, num] = value.split(",")
-            if (["lt", "gt", "eq"].includes(ct) && !isNaN(parseInt(num))) {
-                builtQuery[key] = {compare_to: parseInt(num), compare_type: ct}
+            const nPars = schema.type == CONTROL_TYPE.NUMBER ?
+                parseInt(num) : parseFloat(num)
+            if (["lt", "gt", "eq"].includes(ct) && !isNaN(nPars)) {
+                builtQuery[key] = {compare_to: nPars, compare_type: ct}
             }
             break
         }
