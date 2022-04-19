@@ -1,0 +1,8 @@
+{
+    "presets": [
+        {
+            "name": "Remove All Filters",
+            "template": []
+        }
+    ]
+}

@@ -299,7 +299,16 @@ SetIndex = Schema(
         Field.text("representative", primary=True),
         Field.enum(
             "set_type",
-            ("same_name", "event", "song", "ordinal_fes", "ordinal_pickup", "ordinal_party", "initial", "else"),
+            (
+                "same_name",
+                "event",
+                "song",
+                "ordinal_fes",
+                "ordinal_pickup",
+                "ordinal_party",
+                "initial",
+                "else",
+            ),
         ),
         Field.integer("nijigasaki_member_state"),
         Field.composite(

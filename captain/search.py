@@ -198,6 +198,7 @@ class AccessorySearch(BaseHTMLHandler, DatabaseMixin):
         return [
             self.static_url(f"search/accessory.base.{code}.json"),
             self.static_url(f"search/accessory.skills.enum.{code}.json"),
+            self.static_url(f"search/accessory.presets.json"),
         ]
 
     def dictionary_for_lang(self):
