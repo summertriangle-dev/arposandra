@@ -153,7 +153,7 @@ class PASearchTextField extends React.Component {
 
     updateText(from, now) {
         this.savedText = from.value.trim()
-        if (now || this.savedText.length == 0 || from.value.charAt(from.selectionEnd - 1) == " ") {
+        if (now || this.savedText.length == 0) {
             this._flush()
         } else {
             if (this.debounceTime) {
@@ -167,6 +167,12 @@ class PASearchTextField extends React.Component {
         }
     }
 
+    keyDown(event) {
+        if (event.key === " " || event.key === "Enter") {
+            this.updateText(event.target, true)
+        }
+    }
+
     render() {
         let tf
         if (this.textQueriesSupported()) {
@@ -174,6 +180,7 @@ class PASearchTextField extends React.Component {
                 className="form-control search-field" 
                 onChange={(e) => this.updateText(e.target)}
                 onBlur={(e) => this.updateText(e.target, true)}
+                onKeyDown={(e) => this.keyDown(e)}
                 placeholder={Infra.strings.Search.TextBoxHint} />
         } else {
             tf = <input type="text" tabIndex="-1"
