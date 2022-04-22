@@ -1,5 +1,9 @@
 {
   "dictionary": {
+    "yohane": {
+      "target": "member",
+      "value": 106
+    },
     "vo": {
       "target": "role",
       "value": 1
