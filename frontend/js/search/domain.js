@@ -8,7 +8,38 @@ const MatchValueForAutoSetApplyType = {
 
 const CanAutoSetApplyTypeKeys = Object.keys(MatchValueForAutoSetApplyType).slice(0)
 
-export class PACardSearchDomainExpert {
+class PAExpertBase {
+    async sendAjaxRequest(/* objectIds */) {
+        return await Promise.reject(901)
+    }
+
+    async sendSearchRequest(/* withParams */) {
+        return await Promise.reject({error: "sendSearchRequest was unimplemented"})
+    }
+
+    didAddCriteria(/* context, addedCriteria */) {
+
+    }
+
+    didChangeCriteria(/* context, addedCriteria */) {
+
+    }
+
+    criteriaTargetForQuotedWords() {
+        return null
+    }
+
+    dynamicKeywordToQueryValues(/* keyword */) {
+        return null
+    }
+
+    keywordHelpURL() {
+        return null
+    }
+}
+
+
+export class PACardSearchDomainExpert extends PAExpertBase {
     async sendAjaxRequest(objectIds) {
         return await new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest()
@@ -68,20 +99,16 @@ export class PACardSearchDomainExpert {
         }
     }
 
-    didChangeCriteria(/* context, addedCriteria */) {
-
-    }
-
     criteriaTargetForQuotedWords() {
         return "card_fts_v2"
     }
 
-    dynamicKeywordToQueryValues(/* keyword */) {
-        return null
+    keywordHelpURL() {
+        return "https://kirara.ca/allstars/card-search-keywords/"
     }
 }
 
-export class PAAccessorySearchDomainExpert {
+export class PAAccessorySearchDomainExpert extends PAExpertBase {
     async sendAjaxRequest(objectIds) {
         return await new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest()
@@ -127,21 +154,5 @@ export class PAAccessorySearchDomainExpert {
             xhr.setRequestHeader("Content-Type", "application/json")
             xhr.send(JSON.stringify(withParams))
         })
-    }
-
-    didAddCriteria(/* context, addedCriteria */) {
-
-    }
-
-    didChangeCriteria(/* context, addedCriteria */) {
-
-    }
-
-    criteriaTargetForQuotedWords() {
-        return null
-    }
-
-    dynamicKeywordToQueryValues(/* keyword */) {
-        return null
     }
 }

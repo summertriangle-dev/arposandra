@@ -120,7 +120,7 @@ export default {
         SortDesc: "(High to Low)",
         SortAsc: "(Low to High)",
         TextBoxSRLabel: "Search Box",
-        TextBoxHint: "Find filters...",
+        TextBoxHint: "Type keywords...",
         ButtonLabel: "Search",
         SchemaLoadErrorTryAgain: "Try again",
         EnumPlaceholder: "Choose one...",
@@ -165,6 +165,7 @@ export default {
         ReplacePresetPromptMerge: "Merge",
         ReplacePresetPromptReplace: "Replace",
         ReplacePresetPromptCancel: "Cancel",
+        KeywordHelpText: "List of supported keywords..."
     },
     AlertShim: {
         Dismiss: "OK"

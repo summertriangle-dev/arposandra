@@ -32,6 +32,7 @@ export function PAQueryEditor(props) {
         props.actionSet.performSearch()
     }
 
+    const kwdHelp = props.expert.keywordHelpURL()
     return <div>
         <div className="form-row mb-4">
             <div className="search-overlay-grp">
@@ -39,12 +40,16 @@ export function PAQueryEditor(props) {
                     dictionary={props.dictionary}
                     schema={props.schema} 
                     expert={props.expert}
-                    setTypedQueryValuesAction={props.actionSet.setTypedQueryValues} />
+                    initialText={props.savedText}
+                    setTypedQueryAction={props.actionSet.setTypedQuery} />
                 <input type="submit" 
                     className="btn btn-primary" 
                     value={Infra.strings.Search.ButtonLabel}
                     onClick={performSearchAction} />
             </div>
+            {(kwdHelp !== null)? <p className="mb-0 mt-1 ml-3 small">
+                <a target="_blank" href={kwdHelp}>{Infra.strings.Search.KeywordHelpText}</a>
+            </p> : null}
         </div>
         <PAFormErrorBanner message={props.errorMessage} />
         <PAQueryList 
@@ -63,6 +68,13 @@ export function PAQueryEditor(props) {
 }
 
 class PASearchTextField extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            savedText: props.initialText || ""
+        }
+    }
+
     componentDidMount() {
         this.debounceTime = null
     }
@@ -77,94 +89,32 @@ class PASearchTextField extends React.Component {
         return this.props.schema.language == "en"
     }
 
-    _textQueryApplyKeyword(forCriteria, kwValue, toAggregatedValue) {
-        const crStruct = this.props.schema.criteria[forCriteria]
-
-        // Merge value for checkbox fields
-        if ((crStruct.type === CONTROL_TYPE.ENUM || crStruct.type === CONTROL_TYPE.ENUM_2)
-            && crStruct.behaviour?.compare_type === "bit-set") {
-            const aggregate = toAggregatedValue || crStruct.choices.map(v => v.value)
-            const idx = aggregate.indexOf(kwValue)
-            if (idx > -1) {
-                aggregate.splice(idx, 1)
-            }
-            return aggregate
-        }
-
-        return kwValue
-    }
-
-    _parseTextQuery(str) {
-        const quotedWords = []
-        const kv = {}
-
-        const splitQuotes = str.split(/"/)
-        splitQuotes.forEach((v, i) => {
-            if (i % 2 != 0) {
-                quotedWords.push(v)
-                return
-            }
-
-            const words = v.split(/[\s]+/).map((w) => w.trim()).filter((w) => w !== "")
-            words.forEach((v) => {
-                // 1. direct matched keywords go directly into query
-                const ent = this.props.dictionary[v.toLowerCase()]
-                if (ent) {
-                    kv[ent.target] = this._textQueryApplyKeyword(ent.target, ent.value, kv[ent.target])
-                    return
-                } 
-
-                // 2. ask expert if it can understand the word
-                const dynamic = this.props.expert.dynamicKeywordToQueryValues(v)
-                if (dynamic) {
-                    Object.keys(dynamic).forEach((targ) => {
-                        kv[targ] = this._textQueryApplyKeyword(targ, dynamic[targ], kv[targ])
-                    })
-                } else {
-                    // 3. if not, put it into the FTS field
-                    quotedWords.push(v)
-                }
-            })
-        })
-
-        const quotedTarget = this.props.expert.criteriaTargetForQuotedWords()
-        if (quotedTarget && quotedWords.length > 0) {
-            kv[quotedTarget] = quotedWords.join(" ")
-        }
-
-        return kv
-    }
-
-    _flush() {
+    flush() {
         if (this.debounceTime) {
             clearTimeout(this.debounceTime)
             this.debounceTime = null
         }
 
-        if (this.savedText !== undefined) {
-            this.setTextQueryAction(this.savedText)
+        if (this.state.savedText !== undefined) {
+            this.props.setTypedQueryAction(this.state.savedText.trim())
         }
-    }
-
-    setTextQueryAction(fromString) {
-        const kvMap = this._parseTextQuery(fromString)
-        this.props.setTypedQueryValuesAction(kvMap)
     }
 
     updateText(from, now) {
-        this.savedText = from.value.trim()
-        if (now || this.savedText.length == 0) {
-            this._flush()
-        } else {
-            if (this.debounceTime) {
-                clearTimeout(this.debounceTime)
+        this.setState({savedText: from.value}, () => {
+            if (now || this.state.savedText.length == 0) {
+                this.flush()
+            } else {
+                if (this.debounceTime) {
+                    clearTimeout(this.debounceTime)
+                }
+    
+                this.debounceTime = setTimeout(() => {
+                    this.debounceTime = null
+                    this.flush()
+                }, 500)
             }
-
-            this.debounceTime = setTimeout(() => {
-                this.setTextQueryAction(this.savedText)
-                this.debounceTime = null
-            }, 500)
-        }
+        })
     }
 
     keyDown(event) {
@@ -178,6 +128,7 @@ class PASearchTextField extends React.Component {
         if (this.textQueriesSupported()) {
             tf = <input type="text" 
                 className="form-control search-field" 
+                value={this.state.savedText}
                 onChange={(e) => this.updateText(e.target)}
                 onBlur={(e) => this.updateText(e.target, true)}
                 onKeyDown={(e) => this.keyDown(e)}
@@ -194,10 +145,8 @@ class PASearchTextField extends React.Component {
 
         return <>
             <label className="sr-only" htmlFor="criteria-finder">{Infra.strings.Search.TextBoxSRLabel}</label>
-            <div className="search-overlay-grp">
-                <i className="overlay icon icon ion-ios-search"></i>
-                {tf}
-            </div>
+            <i className="overlay icon icon ion-ios-search"></i>
+            {tf}
         </>
     }
 }

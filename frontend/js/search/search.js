@@ -2,7 +2,7 @@ import React from "react"
 import ReactDOM from "react-dom"
 import Infra from "../infra"
 import { ModalManager } from "../modals"
-import { PAFakeSearchButton, PAPageControl, PAQueryEditor } from "./components"
+import { PAFakeSearchButton, PAPageControl, PAQueryEditor, CONTROL_TYPE } from "./components"
 import { serializeQuery, deserializeQuery, isActivationKey, /* simulatedNetworkDelay */ } from "./util"
 import { PACardSearchDomainExpert, PAAccessorySearchDomainExpert } from "./domain"
 
@@ -27,13 +27,15 @@ class PurgatoryRecord {
 }
 
 class PAQueryManager {
-    constructor(schema, hooks) {
+    constructor(schema, dictionary, hooks) {
         this.schema = schema
+        this.dictionary = dictionary
         this.queryValues = {}
         this.template = []
         this.textBoxControlled = []
         this.sort = null
         this.purgatory = null
+        this.savedTextQuery = null
         this.expert = hooks
     }
 
@@ -109,7 +111,67 @@ class PAQueryManager {
         this.expert.didChangeCriteria(this, key)
     }
 
-    setTypedQueryValues(map) {
+    _parseTextQuery(str) {
+        const quotedWords = []
+        const kv = {}
+
+        const splitQuotes = str.split(/"/)
+        splitQuotes.forEach((v, i) => {
+            if (i % 2 != 0) {
+                quotedWords.push(v)
+                return
+            }
+
+            const words = v.split(/[\s]+/).map((w) => w.trim()).filter((w) => w !== "")
+            words.forEach((v) => {
+                // 1. direct matched keywords go directly into query
+                const ent = this.dictionary[v.toLowerCase()]
+                if (ent) {
+                    kv[ent.target] = this._textQueryApplyKeyword(ent.target, ent.value, kv[ent.target])
+                    return
+                } 
+
+                // 2. ask expert if it can understand the word
+                const dynamic = this.expert.dynamicKeywordToQueryValues(v)
+                if (dynamic) {
+                    Object.keys(dynamic).forEach((targ) => {
+                        kv[targ] = this._textQueryApplyKeyword(targ, dynamic[targ], kv[targ])
+                    })
+                } else {
+                    // 3. if not, put it into the FTS field
+                    quotedWords.push(v)
+                }
+            })
+        })
+
+        const quotedTarget = this.expert.criteriaTargetForQuotedWords()
+        if (quotedTarget && quotedWords.length > 0) {
+            kv[quotedTarget] = quotedWords.join(" ")
+        }
+
+        return kv
+    }
+
+    _textQueryApplyKeyword(forCriteria, kwValue, toAggregatedValue) {
+        const crStruct = this.schema.criteria[forCriteria]
+
+        // Merge value for checkbox fields
+        if ((crStruct.type === CONTROL_TYPE.ENUM || crStruct.type === CONTROL_TYPE.ENUM_2)
+            && crStruct.behaviour?.compare_type === "bit-set") {
+            const aggregate = toAggregatedValue || crStruct.choices.map(v => v.value)
+            const idx = aggregate.indexOf(kwValue)
+            if (idx > -1) {
+                aggregate.splice(idx, 1)
+            }
+            return aggregate
+        }
+
+        return kwValue
+    }
+
+    setTypedQuery(queryString) {
+        this.savedTextQuery = queryString
+        const map = this._parseTextQuery(queryString)
         Object.keys(map).forEach((key) => {
             if (this.template.indexOf(key) === -1) {
                 this.template.push(key)
@@ -202,7 +264,7 @@ class PASearchContext {
             addCriteria: (name) => { this.queryManager.addCriteria(name); this.render() },
             removeCriteria: (name) => { this.queryManager.removeCriteria(name); this.render() },
             setQueryValue: (key, value) => { this.queryManager.setQueryValue(key, value); this.render() },
-            setTypedQueryValues: (map) => { this.queryManager.setTypedQueryValues(map); this.render() },
+            setTypedQuery: (str) => { this.queryManager.setTypedQuery(str); this.render() },
             setSort: (column) => { this.queryManager.setSort(column); this.render() },
             restorePurgatory: () => { this.queryManager.restorePurgatory(); this.render() },
             applyPreset: (preset) => { this.applyPresetAction(preset) },
@@ -223,7 +285,7 @@ class PASearchContext {
         case "accessories": this.api = new PAAccessorySearchDomainExpert(); break
         }
 
-        this.queryManager = new PAQueryManager(this.schema, this.api)
+        this.queryManager = new PAQueryManager(this.schema, this.dictionary, this.api)
     }
 
     askUserForPresetMergeBehaviour() {
@@ -308,7 +370,7 @@ class PASearchContext {
         case PASearchProgressState.ErrorZeroResults:
             widget = <PAQueryEditor 
                 schema={this.schema} 
-                dictionary={this.dictionary}
+                savedText={this.queryManager.savedTextQuery}
                 queryValues={this.queryManager.queryValues}
                 template={this.queryManager.template}
                 sortBy={this.queryManager.sort}
@@ -555,6 +617,7 @@ class PASearchContext {
         const dictionary = {}
         Object.assign(dictionary, ...dicts.map(v => v.dictionary))
         this.dictionary = dictionary
+        this.queryManager.dictionary = dictionary
     }
 
     performFirstLoadStateRestoration() {
