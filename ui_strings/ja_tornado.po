@@ -491,7 +491,10 @@ msgid "Show All Limit Breaks"
 msgstr "全ての限界突破を表示する"
 
 msgid "SkillValueShort"
-msgstr "値"
+msgstr "①"
+
+msgid "SkillValueShort2"
+msgstr "②"
 
 msgid "Stam."
 msgstr "スタミナ"

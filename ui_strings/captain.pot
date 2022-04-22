@@ -454,6 +454,9 @@ msgstr "Show All Limit Breaks"
 msgid "SkillValueShort"
 msgstr "SkillValueShort"
 
+msgid "SkillValueShort2"
+msgstr "SkillValueShort2"
+
 msgid "Stam."
 msgstr "Stam."
 
