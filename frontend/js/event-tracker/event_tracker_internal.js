@@ -305,27 +305,15 @@ export class SaintT10DatasetCoordinator extends SaintDatasetCoordinator {
     }
 
     summaryForDatasets(wantNames) {
-        let ret = {}
+        // this isn't the greatest way to do it, but...
+        let ret = super.summaryForDatasets(wantNames)
         for (let key of wantNames) {
             if (!Object.hasOwnProperty.call(this.datasets, key)) {
                 continue
             }
 
             const len = this.datasets[key].data.length
-            ret[key] = {
-                points: this.datasets[key].data[len - 1].y,
-                label: this.datasets[key].name,
-                who: this.datasets[key].data[len - 1].n
-            }
-
-            if (len > 1) {
-                ret[key].delta = ret[key].points - this.datasets[key].data[len - 2].y
-            }
-
-            if (len > 2) {
-                ret[key].delta2 = ret[key].delta - (this.datasets[key].data[len - 2].y 
-                    - this.datasets[key].data[len - 3].y)
-            }
+            ret[key].who = this.datasets[key].data[len - 1].n
         }
         return ret
     }
