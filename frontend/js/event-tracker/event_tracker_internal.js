@@ -18,6 +18,15 @@ const DEFAULT_DATASETS_TO_SHOW_MINING = {
     "voltage.10000": true,
 }
 
+const DEFAULT_DATASETS_TO_SHOW_T10 = {
+    "points.1": true,
+    "points.2": true,
+    "points.3": true,
+    "voltage.1": true,
+    "voltage.2": true,
+    "voltage.3": true,
+}
+
 // slow!
 export function compareDatasetKey(a, b) {
     const A = parseInt(a.split(".")[1])
@@ -28,6 +37,7 @@ export function compareDatasetKey(a, b) {
 export function rankTypesForEventType(eventType) {
     switch(eventType) {
     case "mining":
+    case "mining_t10":
         return ["points", "voltage"]
     default:
         return ["points"]
@@ -47,11 +57,15 @@ export const SaintUserConfig = createSlice({
     initialState: {
         displayTiers: {
             marathon: DEFAULT_DATASETS_TO_SHOW_MARATHON, 
-            mining: DEFAULT_DATASETS_TO_SHOW_MINING
+            mining: DEFAULT_DATASETS_TO_SHOW_MINING,
+            marathon_t10: DEFAULT_DATASETS_TO_SHOW_T10, 
+            mining_t10: DEFAULT_DATASETS_TO_SHOW_T10
         },
         rankMode: {
             marathon: "points",
             mining: "points",
+            marathon_t10: "points",
+            mining_t10: "points"
         },
         timeScale: 24
     },
@@ -85,7 +99,7 @@ export const SaintUserConfig = createSlice({
                 Object.assign(state.rankMode, json.rankMode)
             }
             if (json.displayTiers && json.displayTiers.length === undefined) {
-                state.displayTiers = json.displayTiers
+                Object.assign(state.displayTiers, json.displayTiers)
             }
             if (json.timeScale) {
                 state.timeScale = parseInt(json.timeScale)
