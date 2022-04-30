@@ -136,7 +136,7 @@ function SaintDisplayBoardCardT10(props) {
                 {" "}
                 <span className="h6 my-0">
                     {symbolForDelta2(props.datum)} {" "}
-                    <span className="delta-word">{props.datum.delta || "--"}</span>
+                    <span className="delta-word">{props.datum.delta || "--"}/{relTime(props.datum.deltaCover)}</span>
                 </span>
             </p>
         </div>
@@ -322,7 +322,7 @@ const SaintRoot = connect(
             {props.editMode?
                 <SaintDisplayEditor eventType={props.eventType} available={props.availableSet}/> :
                 <SaintDisplayBoard eventType={props.eventType} summaryData={props.summaries} 
-                    trackType={props.trackType}/> }
+                    trackType={props.trackType} /> }
             <p className="small mb-3 mt-3">
                 {props.timerInstalled? Infra.strings.Saint.UpdateTimeNote : Infra.strings.Saint.UpdatesDisabled}
                 {" "}
@@ -344,6 +344,7 @@ class SaintDisplayController {
         if (canvas.dataset.trackWorld == "top10") {
             this.chartData = new SaintT10DatasetCoordinator(canvas.dataset.serverId, 
                 parseInt(canvas.dataset.eventId))
+            this.eventType = canvas.dataset.eventType + "_t10"
         } else {
             this.chartData = new SaintDatasetCoordinator(canvas.dataset.serverId, 
                 parseInt(canvas.dataset.eventId))
