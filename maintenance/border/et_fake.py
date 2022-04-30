@@ -1,12 +1,9 @@
-import sys
-import json
 import asyncio
-from unittest import mock
 from datetime import datetime
 import logging
-import time
 import random
 import models
+import itertools
 
 ESTART = 1579478400
 ECLOSE = 1579824000
@@ -70,7 +67,8 @@ async def get_event_border(db: models.DatabaseConnection):
     last_ep = {k: 0 for k in PT}
     last_ep_v = {k: 0 for k in VO}
 
-    for dp in range(ESTART, ECUTOFF, 3600):
+    gen_range = range(ESTART, ECUTOFF, 3600)
+    for dp in itertools.chain(gen_range, [gen_range[-1] + 900]):
         observe_time = datetime.utcfromtimestamp(dp)
         logging.info("T = %s", observe_time)
 
