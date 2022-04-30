@@ -73,8 +73,8 @@ export default {
         EnterEditMode: "Edit",
         ExitEditMode: "Done",
         PointCount: "{0} pts",
-        TrendingUp: "Trending up (+{0} from last delta)",
-        TrendingDown: "Trending down ({0} from last delta)",
+        TrendingUp: "Speeding up (+{0}pt/h from last delta)",
+        TrendingDown: "Slowing down ({0}pt/h from last delta)",
         UpdateTime: "Last cutoff update: {1}. Last check-in with server: {0}",
         UpdateTimeNote: "Updated automatically.",
         UpdatesDisabled: "The event has ended.",
@@ -83,6 +83,11 @@ export default {
             Hours: "{0}h",
             Days: "{0}d",
             All: "All",
+        },
+        BoardNoRankingsEnabledHint: "Select rankings to show using the Edit button above.",
+        RTime: {
+            Hours: "{0}h",
+            Minutes: "{0}m"
         }
     },
     SendFeedback: {

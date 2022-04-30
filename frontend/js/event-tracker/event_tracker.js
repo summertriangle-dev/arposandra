@@ -2,7 +2,7 @@ import Infra from "../infra"
 import React from "react"
 import ReactDOM from "react-dom"
 import Chart from "chart.js"
-import {connect, Provider} from "react-redux"
+import {connect, Provider, useSelector} from "react-redux"
 import { SaintDatasetCoordinator, SaintT10DatasetCoordinator, SaintUserConfig, toRankTypeFriendlyName, 
     rankTypesForEventType, compareDatasetKey } from "./event_tracker_internal"
 import { MultiValueSwitch } from "../ui_lib"
@@ -100,6 +100,16 @@ function symbolForDelta2(datum) {
     return diff2sym
 }
 
+const ONE_HR_MS = 3600000
+const ONE_MIN_MS = 60000
+function relTime(msecs) {
+    if (msecs >= 3600000) {
+        return Infra.strings.formatString(Infra.strings.Saint.RTime.Hours, (msecs / ONE_HR_MS).toFixed(0))
+    } else {
+        return Infra.strings.formatString(Infra.strings.Saint.RTime.Minutes, (msecs / ONE_MIN_MS).toFixed(0))
+    }
+}
+
 function SaintDisplayBoardCard(props) {
     return <div className="card kars-event-cutoff-card">
         <div className="card-body">
@@ -109,7 +119,7 @@ function SaintDisplayBoardCard(props) {
                 {" "}
                 <span className="h6 my-0">
                     {symbolForDelta2(props.datum)} {" "}
-                    <span className="delta-word">{props.datum.delta || "--"}</span>
+                    <span className="delta-word">{props.datum.delta || "--"}/{relTime(props.datum.deltaCover)}</span>
                 </span>
             </p>
             
@@ -133,22 +143,30 @@ function SaintDisplayBoardCardT10(props) {
     </div>
 }
 
-const SaintDisplayBoard = connect(
-    (state) => {
-        return {
-            rankMode: state.saint.rankMode,
-            displayTiers: state.saint.displayTiers
-        }
-    }
-)(function(props) {
-    const prefix = `${props.rankMode[props.eventType]}.`
-    const vset = Object.keys(props.displayTiers[props.eventType]).filter((v) => {
-        return v.startsWith(prefix) && props.displayTiers[props.eventType][v]
+function SaintDisplayBoard(props) {
+    const config = useSelector((state) => ({
+        rankMode: state.saint.rankMode,
+        displayTiers: state.saint.displayTiers
+    }))
+    const prefix = `${config.rankMode[props.eventType]}.`
+    const vset = Object.keys(config.displayTiers[props.eventType]).filter((v) => {
+        return v.startsWith(prefix) && config.displayTiers[props.eventType][v]
     })
-
+    vset.sort(compareDatasetKey)
     const CardProp = props.trackType == "top10"? SaintDisplayBoardCardT10 : SaintDisplayBoardCard
 
-    vset.sort(compareDatasetKey)
+    if (vset.length == 0) {
+        return <div className="row">
+            <div className="col-12">
+                <div className="card kars-event-cutoff-card">
+                    <div className="card-body h6 mb-0 text-center">
+                        {Infra.strings.Saint.BoardNoRankingsEnabledHint}
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
     return <div className="row">
         {vset.map((k) => {
             const s = props.summaryData[k]
@@ -160,7 +178,7 @@ const SaintDisplayBoard = connect(
             </div>
         })}
     </div>
-})
+}
 
 class _SaintDisplayEditor extends React.Component {
     buttonsToShow() {

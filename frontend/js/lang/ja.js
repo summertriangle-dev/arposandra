@@ -72,8 +72,8 @@ export default {
         EnterEditMode: "編集",
         ExitEditMode: "完了",
         PointCount: "{0} P",
-        TrendingUp: "上昇傾向 (最後の差額から: +{0})",
-        TrendingDown: "下降傾向 (最後の差額から: {0})",
+        TrendingUp: "上昇傾向 (最後の差額から: +{0}pt/h)",
+        TrendingDown: "下降傾向 (最後の差額から: {0}pt/h)",
         UpdateTime: "最終更新(ボーダー): {1}。 最終連絡(サーバー): {0}。",
         UpdateTimeNote: "自動的に更新される。",
         UpdatesDisabled: "イベントは終了しました。",
@@ -82,6 +82,11 @@ export default {
             Hours: "{0}時",
             Days: "{0}日間",
             All: "全て",
+        },
+        BoardNoRankingsEnabledHint: "Select rankings to show using the Edit button above.",
+        RTime: {
+            Hours: "{0}h",
+            Minutes: "{0}m"
         }
     },
     SendFeedback: {

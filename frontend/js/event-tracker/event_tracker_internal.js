@@ -94,6 +94,8 @@ export const SaintUserConfig = createSlice({
     }
 })
 
+const ONE_HR_MS = 3600000
+
 export class SaintDatasetCoordinator {
     constructor(serverid, eventID) {
         this.serverid = serverid
@@ -197,12 +199,19 @@ export class SaintDatasetCoordinator {
             }
 
             if (len > 1) {
+                const dt = this.datasets[key].data[len - 1].x.getTime() - this.datasets[key].data[len - 2].x.getTime()
+                // We want this to be accurate so we're not scaling this value.
+                // Instead we'll display the time delta alongside it.
                 ret[key].delta = ret[key].points - this.datasets[key].data[len - 2].y
-            }
+                ret[key].deltaCover = dt
 
-            if (len > 2) {
-                ret[key].delta2 = ret[key].delta - (this.datasets[key].data[len - 2].y 
-                    - this.datasets[key].data[len - 3].y)
+                if (len > 2) {
+                    // The delta2 however is not as important, so it'll be normalized to per-hour point gain.
+                    const prevDelta2Tscale = ONE_HR_MS / (this.datasets[key].data[len - 2].x.getTime() 
+                        - this.datasets[key].data[len - 3].x.getTime())
+                    ret[key].delta2 = Math.round(ret[key].delta * (ONE_HR_MS / dt) - (this.datasets[key].data[len - 2].y 
+                        - this.datasets[key].data[len - 3].y) * prevDelta2Tscale)
+                }
             }
         }
         return ret
