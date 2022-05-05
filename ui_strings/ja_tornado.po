@@ -306,7 +306,7 @@ msgstr ""
 "affiliations."
 
 msgid "OpengraphCardDescriptionMultiple"
-msgstr "ほら、後ろに! 初音ミクさんだ!"
+msgstr "ほら、後ろに! スペシャルウィークだ!"
 
 msgid "OpengraphCardSearchDescription"
 msgstr "Search for cards by type, skills, and more."
