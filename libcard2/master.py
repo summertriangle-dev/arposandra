@@ -409,7 +409,7 @@ class MasterData(MasterDataLite):
                 c_demux_key = demux_key
 
             c_skill.levels.append(D.Skill.Effect(*row[EFFECT_1 : EFFECT_1 + EFFECT_COUNT]))
-            if row[13]:
+            if row[14]:
                 c_skill.levels_2.append(D.Skill.Effect(*row[EFFECT_2 : EFFECT_2 + EFFECT_COUNT]))
 
         if c_skill:
