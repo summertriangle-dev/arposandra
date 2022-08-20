@@ -107,7 +107,7 @@ class SkillEffectDescriberContext(object):
         if tt.levels[0].effect_type not in IMPLICIT_TARGET_SKILL_TYPES:
             e1 = self.target(tt.target, strings, context)
         if (tt.levels_2 and tt.levels_2[0].effect_type not in IMPLICIT_TARGET_SKILL_TYPES 
-            and tt.target_2.id != tt.target.id):
+            and tt.target_2 and tt.target_2.id != tt.target.id):
             e2 = self.target(tt.target_2, strings, context)
 
         if e1 and e2:
