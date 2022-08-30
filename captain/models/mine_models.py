@@ -99,16 +99,17 @@ class CardExpert(object):
                 )
 
         for skill in self.card.passive_skills:
+            s_apply_type_1 = self._to_skill_apply_type(skill.levels[0].effect_type, skill.target)
             yield (
                 skill.levels[0].effect_type,
                 skill.trigger_type,
-                self._to_skill_apply_type(skill.levels[0].effect_type, skill.target),
+                s_apply_type_1,
             )
             if skill.levels_2:
                 yield (
                     skill.levels_2[0].effect_type,
                     skill.trigger_type,
-                    self._to_skill_apply_type(skill.levels_2[0].effect_type, skill.target_2),
+                    self._to_skill_apply_type(skill.levels_2[0].effect_type, skill.target_2) if skill.target_2 else s_apply_type_1,
                 )
 
     def _to_skill_apply_type(self, eff, tt: libcard2_skill.TargetType):
