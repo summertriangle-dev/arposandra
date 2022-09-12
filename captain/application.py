@@ -56,7 +56,7 @@ def static_strings():
 
 def find_astool_master_version(in_base):
     with open(os.path.join(in_base, "astool_store.json"), "r") as jsf:
-        return json.load(jsf)["master_version"]
+        return json.load(jsf)["latest_complete_master"]
 
 
 def create_dict_aggregator(master, language):

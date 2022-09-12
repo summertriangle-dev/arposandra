@@ -29,7 +29,7 @@ def get_master_version(tag=None):
     try:
         with open(os.path.join(root, "astool_store.json"), "r") as memof:
             memo = json.load(memof)
-        return os.path.join(root, "masters", memo["master_version"]), lang
+        return os.path.join(root, "masters", memo["latest_complete_master"]), lang
     except (FileNotFoundError, KeyError):
         return root, lang
 

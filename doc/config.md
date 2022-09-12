@@ -37,7 +37,7 @@ $AS_DATA_ROOT
 
 Each astool_store.json must contain at minimum the following content:
 ```
-{"master_version": "<name of a directory under masters/>"}
+{"latest_complete_master": "<name of a directory under masters/>"}
 ```
 
 AS_DEV: 0 or 1, specifies whether tornado's debug/autoreload mode is enabled. Also controls whether to load JS from static or webpack-dev-server on localhost:5002.
