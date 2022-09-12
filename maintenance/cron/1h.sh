@@ -31,7 +31,7 @@ function update_server() {
     local QUIET_FLAG=$(quiet_flag)
 
     debug "@${SID} phase: dl_master"
-    python3 -m astool "${SID}" "${QUIET_FLAG}" dl_master
+    python3 -m astool "${SID}" ${QUIET_FLAG} dl_master
     local NEW=$(python3 -m astool "${SID}" current_master)
 
     local PSPIPE=$(mktemp -t -u "psync_signal_fd.${SID}.XXXXXXXX")
@@ -40,10 +40,10 @@ function update_server() {
 
     if [[ "$SID" == "jp" ]]; then
         debug "@${SID} phase: pkgsync"
-        python3 -m astool "${SID}" "${QUIET_FLAG}" pkg_sync --signal-cts="${PSPIPE}" main card:% &
+        python3 -m astool "${SID}" ${QUIET_FLAG} pkg_sync --signal-cts="${PSPIPE}" main card:% &
     else
         debug "@${SID} phase: sync_region_banners"
-        python3 -m astool_extra.sync_region_banners "${QUIET_FLAG}" -r ${SID} -l ${SID} --signal-cts="${PSPIPE}" &
+        python3 -m astool_extra.sync_region_banners ${QUIET_FLAG} -r ${SID} -l ${SID} --signal-cts="${PSPIPE}" &
     fi
 
     # wait for input on the signal pipe from pkgsync
@@ -58,9 +58,9 @@ function update_server() {
     # Mtrack needs to run after news is settled
     debug "@${SID} phase: mtrack"
     if [[ "$CUR" != "$NEW" ]]; then
-        python3 mtrack/mtrack.py "${QUIET_FLAG}" "${SID}" "${NEW}"
+        python3 mtrack/mtrack.py ${QUIET_FLAG} "${SID}" "${NEW}"
     else
-        python3 mtrack/mtrack.py "${QUIET_FLAG}" "${SID}" -
+        python3 mtrack/mtrack.py ${QUIET_FLAG} "${SID}" -
     fi
 
     wait
