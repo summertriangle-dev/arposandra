@@ -1,13 +1,17 @@
 #!/bin/bash
 
 function debug() {
-    test '!' -z "${AS_CRON_DEBUG}" && echo $@
+    test '!' -z "${AS_CRON_DEBUG}" && echo $@ || return 0
+}
+
+function quiet_flag() {
+    test -z "${AS_CRON_DEBUG}" && echo "--quiet" || return 0
 }
 
 PIDS=""
 for JOB in $@; do 
     debug "Start job: $JOB"
-    python3 border/border.py "$JOB" &
+    python3 border/border.py $(quiet_flag) "$JOB" &
     PIDS="${PIDS} $!"
     debug $PIDS
 done

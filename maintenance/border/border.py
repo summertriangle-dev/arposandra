@@ -4,7 +4,8 @@ import asyncio
 from unittest import mock
 from datetime import datetime
 import logging
-import time
+
+import plac
 
 from astool import ctx, iceapi
 import models
@@ -351,10 +352,10 @@ async def get_event_border(ice, region, db):
     elif event["event_type"] == 1:
         await fetch_marathon_event_border(ice, region, db, eid)
 
-
-async def main():
-    logging.basicConfig(level=logging.INFO)
-    tag = sys.argv[1]
+@plac.pos("tag", "Server tag")
+@plac.flg("quiet", "Suppress most output")
+async def main(tag: str, quiet=False):
+    logging.basicConfig(level=logging.INFO if not quiet else logging.WARNING)
 
     context = ctx.ASContext(tag, None, None)
     ice = begin_session(context)
@@ -368,5 +369,5 @@ async def main():
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    loop.run_until_complete(plac.call(main))
     loop.close()
