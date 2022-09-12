@@ -248,7 +248,6 @@ def merge_gachas(tag, gachas: Iterable[DateMinedNewsItem]):
             elif gtype == SGachaMergeRecord.T_PARTY:
                 card_tag = "party"
             else:
-                logging.warn("not fes or pickup? %s", sp1_record["title"])
                 card_tag = "e_gacha"
 
             logging.debug("Yielding fes or pickup: %s.", sp1_record["title"])
