@@ -3,7 +3,6 @@ import json
 from datetime import datetime
 from dataclasses import dataclass
 from typing import List, Union
-from html import unescape
 
 from libcard2.dataclasses import Card
 
@@ -21,12 +20,13 @@ class NewsItem(object):
     def timestamp(self):
         return calendar.timegm(self.date.utctimetuple())
 
-    def display_title(self):
-        return unescape(self.title)
-
 
 class NewsDatabase(object):
     SERVER_IDS = ["jp", "en"]
+    SERVER_NEWS_LANG = {
+        "jp": "ja",
+        "en": "en"
+    }
 
     def __init__(self, coordinator):
         self.coordinator = coordinator
@@ -35,6 +35,9 @@ class NewsDatabase(object):
         if server_id not in self.SERVER_IDS:
             return self.SERVER_IDS[0]
         return server_id
+
+    def server_news_language(self, server_id):
+        return self.SERVER_NEWS_LANG[self.validate_server_id(server_id)]
 
     async def get_news_items(self, for_server, before_time, limit):
         async with self.coordinator.pool.acquire() as c:

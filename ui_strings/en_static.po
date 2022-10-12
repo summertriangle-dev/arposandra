@@ -205,3 +205,15 @@ msgstr "Spotlight"
 
 msgid "kars.gallery.fragment.gacha_type_party"
 msgstr "Party"
+
+msgid "kars.blindtime.fmt.full"
+msgstr "%d/%m/%Y %H:%M (%Z)"
+
+msgid "kars.blindtime.fmt.time"
+msgstr "%H:%M (%Z)"
+
+msgid "kars.blindtime.fmt.fullshort"
+msgstr "%d/%m %H:%M (%Z)"
+
+msgid "kars.blindtime.fmt.date"
+msgstr "%d/%m (%Z)"

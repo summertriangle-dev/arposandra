@@ -1,7 +1,7 @@
 <meta property="og:type" content="website" />
 
 {% if len(items) == 1 %}
-<meta property="og:title" content="{{ items[0].title }}" />
+<meta property="og:title" content="{{ handler.item_display_title(server, items[0].title) }}" />
 
 {% if items[0].thumbnail_asset_path %}
 <meta property="og:image" content="{{ image_url_reify(items[0].thumbnail_asset_path, "jpg") }}" />

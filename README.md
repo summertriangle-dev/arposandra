@@ -1,6 +1,6 @@
 # Arposandra
 
-You need Python 3.7 to run this thing.
+You need Python 3.9 to run this thing.
 It's split into two apps, the asset server that produces images on demand
 from the astool package cache, and the web server that produces the pages.
 

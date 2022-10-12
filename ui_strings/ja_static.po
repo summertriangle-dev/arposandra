@@ -206,3 +206,15 @@ msgstr "ピックアップ"
 
 msgid "kars.gallery.fragment.gacha_type_party"
 msgstr "パーティー"
+
+msgid "kars.blindtime.fmt.full"
+msgstr "%Y年%m月%d日 %H:%M (%Z)"
+
+msgid "kars.blindtime.fmt.time"
+msgstr "%H:%M (%Z)"
+
+msgid "kars.blindtime.fmt.fullshort"
+msgstr "%m月%d日 %H:%M (%Z)"
+
+msgid "kars.blindtime.fmt.date"
+msgstr "%m月%d日 (%Z)"

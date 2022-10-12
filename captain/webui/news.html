@@ -3,7 +3,7 @@
     <head>
         <title>
             {% if is_single %}
-                {{ news_items[0].title }} -
+                {{ handler.item_display_title(server, news_items[0].title) }} -
             {% end %}
             {{ _("PT.News") }} - {{ _("PT.SiteName") }}
         </title>

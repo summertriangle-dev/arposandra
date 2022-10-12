@@ -6,9 +6,9 @@
         <div class="item">
             <h1 class="h5 {% if news_item.thumbnail_asset_path %} mt-2 {% end %}">
                 {% if not expand %}
-                <a href="/{{ server }}/news/{{ news_item.id }}">{{ news_item.display_title() }}</a>
+                <a href="/{{ server }}/news/{{ news_item.id }}">{{ handler.item_display_title(server, news_item.title) }}</a>
                 {% else %}
-                {{ news_item.title }}
+                {{ handler.item_display_title(server, news_item.title) }}
                 {% end %}
             </h1>
             <h2 class="h6 mb-0">
