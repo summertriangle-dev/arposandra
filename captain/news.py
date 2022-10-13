@@ -1,6 +1,7 @@
 import base64
 import re
-from datetime import datetime, timedelta
+import calendar
+from datetime import datetime, timedelta, timezone
 from html import unescape
 from typing import Optional
 from zoneinfo import ZoneInfo
@@ -12,7 +13,6 @@ from . import pageutils
 from .bases import BaseHTMLHandler, BaseAPIHandler
 from .dispatch import DatabaseMixin, route
 
-JP_OFFSET_FROM_UTC = 32400
 
 class NewsBlindUtilMixin(RequestHandler):
     @staticmethod
@@ -35,6 +35,13 @@ class NewsBlindUtilMixin(RequestHandler):
 
         return fmt
 
+    def localized_time(self, time: datetime):
+        strings = self.settings["static_strings"].get(self.locale.code, "en")
+        reference_zone = ZoneInfo("Asia/Tokyo")
+        ts = calendar.timegm(time.utctimetuple())
+        formatted = time.astimezone(reference_zone).strftime(strings.gettext("kars.blindtime.fmt.full"))
+        
+        return f'<span class="kars-data-ts" data-orig-offset="{reference_zone.utcoffset(time).total_seconds()},JST" data-ts="{ts}">{formatted} JST</span>'
 
 @route(r"/news/?")
 @route(r"/([a-z]+)/news/?")
@@ -49,7 +56,7 @@ class NewsList(BaseHTMLHandler, DatabaseMixin, NewsBlindUtilMixin):
             zone = ZoneInfo("Asia/Tokyo")
             t = self.DM_TIMESTAMP_INSTR.sub(
                 lambda match: self.format_blind_time(
-                    datetime.fromtimestamp(int(match.group(2)), tz=ZoneInfo("Etc/UTC")), 
+                    datetime.fromtimestamp(int(match.group(2)), tz=timezone.utc), 
                     match.group(1), as_locale=locale, as_timezone=zone),
                 t[1:])
 
@@ -57,7 +64,7 @@ class NewsList(BaseHTMLHandler, DatabaseMixin, NewsBlindUtilMixin):
 
     def convert_user_date(self, arg: str) -> Optional[datetime]:
         if arg.isdigit():
-            return datetime.utcfromtimestamp(int(arg))
+            return datetime.fromtimestamp(int(arg), timezone.utc)
         
         try:
             isodate = datetime.strptime(arg, "%Y-%m-%d")
@@ -80,7 +87,7 @@ class NewsList(BaseHTMLHandler, DatabaseMixin, NewsBlindUtilMixin):
             before = self.convert_user_date(before_arg)
         
         if not before:
-            before = datetime.utcnow()
+            before = datetime.now(tz=timezone.utc)
             has_offset = False
 
         count = await self.database().news_database.count_news_items(server)
@@ -97,7 +104,6 @@ class NewsList(BaseHTMLHandler, DatabaseMixin, NewsBlindUtilMixin):
             has_next_page=has_next_page,
             has_offset=has_offset,
             is_single=False,
-            time_offset=JP_OFFSET_FROM_UTC,
             show_ts_msg=False,
         )
 
@@ -117,7 +123,6 @@ class NewsSingle(BaseHTMLHandler, DatabaseMixin, NewsBlindUtilMixin):
     CARD_INCLUDE_INSTR = re.compile(r"<\?asi-include-card card-id:([0-9]+)\?>")
     TIMESTAMP_INSTR = re.compile(r"<\?asi-blind-ts t:(1|2|4|5);v:([0-9]+)\?>")
     DM_TIMESTAMP_INSTR = re.compile("\uEC92(1|2|4|5)\\s+([0-9]+)")
-    JP_OFFSET_FROM_UTC = 32400
 
     def item_display_title(self, region, title):
         t = unescape(title)
@@ -126,7 +131,7 @@ class NewsSingle(BaseHTMLHandler, DatabaseMixin, NewsBlindUtilMixin):
             zone = ZoneInfo("Asia/Tokyo")
             t = self.DM_TIMESTAMP_INSTR.sub(
                 lambda match: self.format_blind_time(
-                    datetime.fromtimestamp(int(match.group(2)), tz=ZoneInfo("Etc/UTC")), 
+                    datetime.fromtimestamp(int(match.group(2)), tz=timezone.utc), 
                     match.group(1), as_locale=locale, as_timezone=zone),
                 t[1:])
 
@@ -192,8 +197,6 @@ class NewsSingle(BaseHTMLHandler, DatabaseMixin, NewsBlindUtilMixin):
             has_next_page=False,
             has_offset=False,
             is_single=True,
-            # FIXME: get rid of this
-            time_offset=JP_OFFSET_FROM_UTC,
             show_ts_msg=self.had_blinds,
         )
 

@@ -40,7 +40,7 @@
     
             <div class="card kars-card-box">
                 {% for news_item in news_items %}
-                    {% module Template("uim_news_item.html", news_item=news_item, server=server, expand=expand, show_ts_msg=show_ts_msg, time_offset=time_offset) %}
+                    {% module Template("uim_news_item.html", news_item=news_item, server=server, expand=expand, show_ts_msg=show_ts_msg) %}
                 {% end %}
     
                 {% if has_next_page %}

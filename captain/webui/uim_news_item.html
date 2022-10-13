@@ -14,7 +14,7 @@
             <h2 class="h6 mb-0">
                 {# _("NewsType.1") _("NewsType.2") _("NewsType.3") _("NewsType.4") #}
                 {{ _(f"NewsType.{news_item.category}") }},
-                <span class="kars-data-ts" data-orig-offset="{{ time_offset }},JST" data-ts="{{ news_item.timestamp() }}">{{ news_item.date }} UTC</span>
+                {% raw handler.localized_time(news_item.date) %}
             </h2>
         </div>
     </div>
