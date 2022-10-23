@@ -209,7 +209,6 @@ class CardGallery(BaseHTMLHandler, DatabaseMixin, CardThumbnailProviderMixin):
         card_tracking.CardSetRecord.T_DEFAULT,
         card_tracking.CardSetRecord.T_SONG,
         card_tracking.CardSetRecord.T_FES,
-        card_tracking.CardSetRecord.T_PICKUP,
         card_tracking.CardSetRecord.T_PARTY,
     ]
     VALID_CATEGORIES = {
