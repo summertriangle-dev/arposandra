@@ -29,8 +29,12 @@ class OrdinalSetWatcher(object):
     NEW_MEMBER_HOLDS = {
         # Initial Shio should belong to the Just Believe!!! set.
         # (which is ordinal 1 because LUMF is handled by the common-name code.)
-        (210, SUBTYPE_SONG): 1
-        # We expect Mia and Lanzhu to eventually have their own entries here.
+        (210, SUBTYPE_SONG): 1,
+        # Shioriko, fes cards start at round 2 thematically.
+        (210, SUBTYPE_FES): 1,
+        # And Lanzhu/Mia at 3.
+        (211, SUBTYPE_FES): 2,
+        (212, SUBTYPE_FES): 2,
     }
 
     def __init__(self):
@@ -87,7 +91,7 @@ class OrdinalSetWatcher(object):
             new_set = SetRecord(
                 self.make_slug(subtype, member_group, len(sets) + 1),
                 tl_name,
-                stype=self.SET_TYPES.get(subtype),
+                stype=self.SET_TYPES.get(subtype, "else"),
             )
             new_set.members.append(card_id)
             sets.append(([member_id], new_set))
