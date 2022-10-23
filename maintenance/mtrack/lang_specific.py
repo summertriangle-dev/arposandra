@@ -58,7 +58,7 @@ def gacha_label_from_name_en(name: str) -> int:
         return T_EVENT_TIE
     elif LANG_EN_EVT_SECOND_HALF in name or name.endswith(LANG_EN_STEP_UP_MARKER):
         return T_IGNORE
-    elif name.endswith(LANG_EN_PARTY_MARKER):
+    elif name == LANG_EN_PARTY_MARKER:
         return T_PARTY
     else:
         return T_ELSE
