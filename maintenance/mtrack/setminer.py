@@ -30,9 +30,7 @@ class OrdinalSetWatcher(object):
         # Initial Shio should belong to the Just Believe!!! set.
         # (which is ordinal 1 because LUMF is handled by the common-name code.)
         (210, SUBTYPE_SONG): 1,
-        # Shioriko, fes cards start at round 2 thematically.
-        (210, SUBTYPE_FES): 1,
-        # And Lanzhu/Mia at 3.
+        # Lanzhu/Mia at starts at round 3 (or 2? IDK).
         (211, SUBTYPE_FES): 2,
         (212, SUBTYPE_FES): 2,
     }
