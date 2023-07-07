@@ -24,6 +24,21 @@ from .pageutils import (
 )
 
 
+def card_spec(spec: str) -> list:
+    ret = []
+    unique = set()
+    for s in spec.split(","):
+        try:
+            v = int(s)
+        except ValueError:
+            continue
+        if v in unique:
+            continue
+        ret.append(v)
+        unique.add(v)
+    return ret
+
+
 @route(r"/cards/(random|(?:[0-9,]+))(/.*)?")
 class CardPageRedirect(BaseHTMLHandler):
     def get(self, spec, end):
@@ -35,23 +50,6 @@ class CardPage(BaseHTMLHandler, DatabaseMixin):
     def initialize(self, *args, **kwargs):
         super().initialize(*args, **kwargs)
         self._tlinject_base = ({}, set())
-
-    def card_spec(self, spec: str) -> list:
-        if spec == "everything":
-            return self.settings["master"].all_ordinals()
-
-        ret = []
-        unique = set()
-        for s in spec.split(","):
-            try:
-                v = int(s)
-            except ValueError:
-                continue
-            if v in unique:
-                continue
-            ret.append(v)
-            unique.add(v)
-        return ret
 
     def find_sets(self, sets, card_id):
         # This should be replaced with a faster method
@@ -104,7 +102,7 @@ class CardPage(BaseHTMLHandler, DatabaseMixin):
             self.redirect(f"/card/{where}")
             return
 
-        ordinals = self.card_spec(ordinal)
+        ordinals = card_spec(ordinal)
 
         cards = self.settings["master"].lookup_multiple_cards_by_id(
             self.settings["master"].card_ordinals_to_ids(ordinals)
@@ -451,22 +449,8 @@ class CardPageAjax(BaseHTMLHandler, DatabaseMixin, CardThumbnailProviderMixin):
         super().initialize(*args, **kwargs)
         CardThumbnailProviderMixin.initialize(self)
 
-    def card_spec(self, spec: str) -> list:
-        ret = []
-        unique = set()
-        for s in spec.split(","):
-            try:
-                v = int(s)
-            except ValueError:
-                continue
-            if v in unique:
-                continue
-            ret.append(v)
-            unique.add(v)
-        return ret
-
     def get(self, ids):
-        ids = self.card_spec(ids)
+        ids = card_spec(ids)
 
         cards = self.settings["master"].lookup_multiple_cards_by_id(ids)
         cards = [c for c in cards if c]
@@ -598,7 +582,7 @@ class CardAPIExtras(object):
 
 
 @route(r"/api/private/cards/(id|ordinal)/([0-9,]+)\.json")
-class CardPageAPI(CardPage, CardAPIExtras):
+class CardPageAPI(BaseAPIHandler, DatabaseMixin, CardAPIExtras):
     def initialize(self, *args, **kwargs):
         super().initialize(*args, **kwargs)
         self.init_api_extra_mixin()
@@ -629,7 +613,7 @@ class CardPageAPI(CardPage, CardAPIExtras):
         return ret
 
     async def get(self, mode, spec):
-        id_list = self.card_spec(spec)
+        id_list = card_spec(spec)
 
         if mode == "ordinal":
             id_list = self.settings["master"].card_ordinals_to_ids(id_list)
